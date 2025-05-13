@@ -1,6 +1,7 @@
 CREATE DATABASE IF NOT EXISTS Lodgehub;
 USE Lodgehub;
 
+<<<<<<< HEAD
 CREATE TABLE IF NOT EXISTS td_tipoDocumentohuespedes (id INT (3) AUTO_INCREMENT NOT NULL,
                                               descripcion VARCHAR (30) NOT NULL,
 
@@ -103,6 +104,109 @@ CREATE TABLE IF NOT EXISTS tp_empleados(numDocumento BIGINT (11) NOT NULL,
                                 tipoDocumento INT (3) NOT NULL,
                                 roles INT (3) NOT NULL,
                                 estadoCivil INT (3) NOT NULL,
+=======
+CREATE TABLE IF NOT EXISTS td_tipoDocumentohuespedes (tipdochue_id INT (3) AUTO_INCREMENT NOT NULL,
+                                              tipdochue_descripcion VARCHAR (30) NOT NULL,
+
+                                              PRIMARY KEY (tipdochue_id)
+                                              );
+
+CREATE TABLE IF NOT EXISTS td_sexohuespedes (sexhue_id INT (3) AUTO_INCREMENT NOT NULL,
+                                     sexhue_descripcion VARCHAR (20) NOT NULL,
+
+                                     PRIMARY KEY (sexhue_id)
+                                     );
+
+CREATE TABLE IF NOT EXISTS td_estadoCivilHuespedes (estcivhue_id INT (3) AUTO_INCREMENT NOT NULL,
+                                            estcivhue_descripcion VARCHAR (20) NOT NULL,
+
+                                            PRIMARY KEY (estcivhue_id)
+                                            );
+
+CREATE TABLE IF NOT EXISTS tp_huespedes (hue_numDocumento BIGINT(11) NOT NULL,
+                                         hue_numTelefono BIGINT(11) NOT NULL,
+                                         hue_correo VARCHAR(30) NOT NULL,
+                                         hue_nombres VARCHAR(50) NOT NULL,
+                                         hue_apellidos VARCHAR(50) NOT NULL,
+                                         hue_tipdochue_tipoDocumento INT(3) NOT NULL,
+                                         hue_sexhue_sexo INT(3) NOT NULL,
+                                         hue_estcivhue_estadoCivil INT (3) NOT NULL,
+                                         
+                                         PRIMARY KEY (hue_numDocumento),
+                                         FOREIGN KEY (hue_tipdochue_tipoDocumento) REFERENCES td_tipodocumentoHuespedes (tipdochue_id),
+                                         FOREIGN KEY (hue_sexhue_sexo) REFERENCES td_sexohuespedes (sexhue_id),
+                                         FOREIGN KEY (hue_estcivhue_estadoCivil) REFERENCES td_estadocivilhuespedes (estcivhue_id)
+                                         )ENGINE=INNODB;
+
+
+                                              
+CREATE TABLE IF NOT EXISTS td_tipoHabitacion (tiphab_id INT (3) AUTO_INCREMENT NOT NULL,
+                                              tiphab_descripcion VARCHAR (20) NOT NULL,
+                                              
+                                              PRIMARY KEY (tiphab_id)
+                                              )ENGINE=INNODB;
+                                               
+CREATE TABLE IF NOT EXISTS td_tamaño (tam_id INT (3) AUTO_INCREMENT NOT NULL,
+                                      tam_descripcion VARCHAR (20) NOT NULL,
+                                       
+                                      PRIMARY KEY (tam_id)
+                                      )ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS td_estadohabitacion (esthab_id INT (3) AUTO_INCREMENT NOT NULL,
+                                                esthab_descripcion VARCHAR (20) NOT NULL,
+                                                 
+                                                PRIMARY KEY (esthab_id)
+                                                )ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS tp_habitaciones (hab_numero INT (3) NOT NULL,
+                                            hab_costo DECIMAL (10,2) NOT NULL,
+                                            hab_capacidad INT (3) NOT NULL,
+                                            hab_tiphab_tipoHabitacion INT (3) NOT NULL,
+                                            hab_tam_tamaño INT (3) NOT NULL,
+                                            hab_esthab_estado INT (3) NOT NULL,
+                                            
+                                            PRIMARY KEY (hab_numero),
+                                            FOREIGN KEY (hab_tiphab_tipoHabitacion) REFERENCES td_tipohabitacion (tiphab_id),
+                                            FOREIGN KEY (hab_tam_tamaño) REFERENCES td_tamaño (tam_id),
+                                            FOREIGN KEY (hab_esthab_estado) REFERENCES td_estadohabitacion (esthab_id)
+                                            )ENGINE=INNODB;
+                                      
+CREATE TABLE IF NOT EXISTS td_roles (rol_id INT (3) AUTO_INCREMENT NOT NULL,
+                                     rol_descripcion VARCHAR (20) NOT NULL,
+                                      
+                                     PRIMARY KEY (rol_id)
+                                     )ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS td_estadoCivilEmpleados (estcivemp_id INT (3) AUTO_INCREMENT NOT NULL,
+                                                    estcivemp_descripcion VARCHAR (20) NOT NULL,
+
+                                                    PRIMARY KEY (estcivemp_id)
+                                                    )ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS td_tipoDocumentoEmpleados (tipdocemp_id INT (3) AUTO_INCREMENT NOT NULL,
+                                                      tipdocemp_descripcion VARCHAR (30) NOT NULL,
+
+                                                      PRIMARY KEY (tipdocemp_id)
+                                                      );
+
+CREATE TABLE IF NOT EXISTS td_sexoempleados (sexemp_id INT (3) AUTO_INCREMENT NOT NULL,
+                                             sexemp_descripcion VARCHAR (20) NOT NULL,
+
+                                             PRIMARY KEY (sexemp_id)
+                                             )ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS tp_empleados (emp_numDocumento BIGINT (11) NOT NULL,
+                                         emp_nombres VARCHAR (40) NOT NULL,
+                                         emp_apellidos VARCHAR (40) NOT NULL,
+                                         emp_direccion VARCHAR (30) NOT NULL,
+                                         emp_numTelefono BIGINT (11) NOT NULL,
+                                         emp_contactoPersonal BIGINT (11) NOT NULL,
+                                         emp_correo VARCHAR (30) NOT NULL,
+                                         emp_sexemp_sexo INT (3) NOT NULL,
+                                         emp_tipdocemp_tipoDocumento INT (3) NOT NULL,
+                                         emp_rol_roles INT (3) NOT NULL,
+                                         emp_estcivemp_estadoCivil INT (3) NOT NULL,
+>>>>>>> 339a6896b6f89119da69892257db6648299ed025
                                          
                                          PRIMARY KEY (emp_numdocumento),
                                          FOREIGN KEY (emp_sexemp_sexo) REFERENCES td_sexoempleados (sexemp_id),
@@ -246,7 +350,11 @@ CREATE TABLE IF NOT EXISTS tp_login (log_id INT (4) AUTO_INCREMENT NOT NULL,
                                      FOREIGN KEY (log_emp_numDocumento) REFERENCES tp_empleados (emp_numDocumento)
                                      )ENGINE=INNODB;
 
+<<<<<<< HEAD
 /*inserts*/
+=======
+--inserts
+>>>>>>> 339a6896b6f89119da69892257db6648299ed025
 
 insert into td_motivoreserva values (null,'Negocios'),
 (null,'Personal'),
@@ -404,7 +512,11 @@ VALUES
 
 
 
+<<<<<<< HEAD
 /*vistas*/
+=======
+--vistas
+>>>>>>> 339a6896b6f89119da69892257db6648299ed025
 
 create view vista_empleados as
 select e.emp_numDocumento as Documento, e.emp_nombres as Nombres, e.emp_apellidos as Apellidos, e.emp_direccion as Direccion, e.emp_numTelefono as Telefono, e.emp_contactoPersonal as Contacto_Personal, e.emp_correo as Correo, s.sexemp_descripcion as Sexo, d.tipdocemp_descripcion as Tipo_Documento, r.rol_descripcion as Rol, ec.estcivemp_descripcion as Estado_Civil
