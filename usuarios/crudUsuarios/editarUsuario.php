@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 
 require_once '../database.php';
 
@@ -9,36 +8,19 @@ if (isset($_GET['emp_numDocumento'])) {
     // Consulta para obtener los datos del usuario
     $stmt = $conn->prepare("SELECT * FROM tp_empleados WHERE emp_numDocumento = ?");
     $stmt->bind_param("i", $tp_emp_numDocumento);
-=======
-require_once '../database.php';
-
-if (isset($_GET['dni'])) {
-    $dni = intval($_GET['dni']);
-
-    // Consulta para obtener los datos del usuario
-    $stmt = $conn->prepare("SELECT * FROM empleados WHERE dni = ?");
-    $stmt->bind_param("i", $dni);
->>>>>>> 339a6896b6f89119da69892257db6648299ed025
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $usuario = $result->fetch_assoc();
-<<<<<<< HEAD
     } else {
         echo "Usuario no encontrado.";
         exit;
-=======
-        // Aquí puedes cargar los datos en el formulario para editar
-    } else {
-        echo "Usuario no encontrado.";
->>>>>>> 339a6896b6f89119da69892257db6648299ed025
     }
 
     $stmt->close();
 } else {
     echo "ID de usuario no proporcionado.";
-<<<<<<< HEAD
     exit;
 }
 
@@ -96,9 +78,3 @@ $conn->close();
     </form>
 </body>
 </html>
-=======
-}
-
-$conn->close();
-?>
->>>>>>> 339a6896b6f89119da69892257db6648299ed025
