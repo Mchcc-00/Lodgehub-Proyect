@@ -287,7 +287,7 @@ CREATE TABLE IF NOT EXISTS ti_responder (id INT (3) AUTO_INCREMENT NOT NULL,
 
 CREATE TABLE IF NOT EXISTS tp_login (id INT (4) AUTO_INCREMENT NOT NULL,
                                      emp_numDocumento BIGINT (11) NOT NULL,  
-                                     contraseña VARCHAR (20) NOT NULL,
+                                     password VARCHAR (20) NOT NULL,
                                      
                                      PRIMARY KEY (id),
                                      FOREIGN KEY (emp_numDocumento) REFERENCES tp_empleados (numDocumento)
@@ -503,7 +503,7 @@ p.descripcion AS Descripcion_pqrs,
 e.nombres AS Nombres_empleado,
 e.apellidos AS Apellidos_empleado
 FROM ti_responder r
-INNER JOIN tp_pqrs p ON r.descripcion = p.id
+INNER JOIN tp_pqrs p ON r.pqr_id = p.id
 INNER JOIN tp_empleados e ON r.emp_numDocumento = e.numDocumento;
 
 
@@ -532,39 +532,39 @@ INNER JOIN tp_habitaciones hab ON hab.numero = r.numero
 INNER JOIN td_tipohabitacion t ON hab.tipoHabitacion = t.id;
 
 CREATE VIEW vista_reservas AS
-SELECT r.res_id AS id,
+SELECT r.id AS id,
 r.costo AS Costo,
-r.res_fechainicio AS Inicio_reserva,
-r.res_fechaFin AS Fin_reserva,
-r.res_canPersonas AS Cantidad_personas,
-m.mot_descripcion AS Motivo_reserva, 
-hab.hab_numero AS Número_habitación,
-t.tiphab_descripcion AS Tipo_habitación,
-es.estres_descripcion AS Estado_reserva,
-h.hue_nombres AS Nombres_huesped,
-h.hue_apellidos AS Apellidos_huesped,
-e.emp_nombres AS Nombres_empleado, 
-e.emp_apellidos AS Apellidos_empleado
+r.fechainicio AS Inicio_reserva,
+r.fechaFin AS Fin_reserva,
+r.canPersonas AS Cantidad_personas,
+m.descripcion AS Motivo_reserva, 
+hab.numero AS Número_habitación,
+t.descripcion AS Tipo_habitación,
+es.descripcion AS Estado_reserva,
+h.nombres AS Nombres_huesped,
+h.apellidos AS Apellidos_huesped,
+e.nombres AS Nombres_empleado, 
+e.apellidos AS Apellidos_empleado
 FROM tp_reservas r
-INNER JOIN td_motivoreserva m ON r.res_mot_motivoReserva = m.mot_id
-INNER JOIN tp_empleados e ON r.res_emp_numdocumento = e.emp_numDocumento
-INNER JOIN td_estadoreserva es ON r.res_estres_estado = es.estres_id
-INNER JOIN tp_huespedes h ON r.res_hue_numdocumento = h.hue_numDocumento
-INNER JOIN tp_habitaciones hab ON hab.hab_numero = r.res_hab_numero
-INNER JOIN td_tipohabitacion t ON hab.hab_tiphab_tipoHabitacion = t.tiphab_id;
+INNER JOIN td_motivoreserva m ON r.motivoReserva = m.id
+INNER JOIN tp_empleados e ON r.emp_numdocumento = e.numDocumento
+INNER JOIN td_estadoreserva es ON r.estado = es.id
+INNER JOIN tp_huespedes h ON r.hue_numdocumento = h.numDocumento
+INNER JOIN tp_habitaciones hab ON hab.numero = r.numero
+INNER JOIN td_tipohabitacion t ON hab.tipoHabitacion = t.id;
 
 
 
 
 CREATE VIEW lista_usuarios AS
 SELECT 
-l.log_id AS Id_cuenta,
-e.emp_numDocumento AS Número_documento,
-e.emp_nombres AS Nombres,
-e.emp_apellidos AS Apellidos,
-r.rol_descripcion AS Rol,
-l.log_contraseña AS Contraseña
+l.id AS Id_cuenta,
+e.numDocumento AS Número_documento,
+e.nombres AS Nombres,
+e.apellidos AS Apellidos,
+r.descripcion AS Rol,
+l.password AS Contraseña
 FROM tp_empleados e
-INNER JOIN tp_login l ON l.log_emp_numDocumento = e.emp_numDocumento
-INNER JOIN td_roles r ON e.emp_rol_roles = r.rol_id;
+INNER JOIN tp_login l ON l.emp_numDocumento = e.numDocumento
+INNER JOIN td_roles r ON e.roles = r.id;
 
