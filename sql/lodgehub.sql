@@ -208,8 +208,17 @@ CREATE TABLE IF NOT EXISTS td_motivoReserva (id INT (3) AUTO_INCREMENT NOT NULL,
                                               PRIMARY KEY (id)
                                               ) ENGINE=INNODB;
 
+CREATE TABLE IF NOT EXISTS td_metodoPago (id INT (3) AUTO_INCREMENT NOT NULL,
+                                         descripción VARCHAR (30) NOT NULL,
 
+                                         PRIMARY KEY (id)
+                                         )ENGINE=INNODB;
 
+CREATE TABLE IF NOT EXISTS td_cantidadPersonas (id int (3) AUTO_INCREMENT NOT NULL,
+                                                descripcion VARCHAR (3) 
+
+                                                PRIMARY KEY (id)
+                                                )ENGINE=INNODB;
 
 
 
@@ -226,16 +235,21 @@ CREATE TABLE IF NOT EXISTS tp_reservas (id INT (3) AUTO_INCREMENT NOT NULL,
                                         canPersonas INT (3) NOT NULL,
                                         motivoReserva INT (3) NOT NULL,
                                         numero INT (3) NOT NULL,
+                                        metodoPago int (3) NOT NULL,
+                                        informaciónAdicional TEXT,
                                         emp_numdocumento BIGINT (11) NOT NULL,
                                         estado INT (3) NOT NULL,
                                         hue_numdocumento BIGINT (11) NOT NULL,
+                                        fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
                                        
                                         PRIMARY KEY (id),
                                         FOREIGN KEY (motivoReserva) REFERENCES td_motivoreserva (id),
                                         FOREIGN KEY (numero) REFERENCES tp_habitaciones (numero),
                                         FOREIGN KEY (emp_numdocumento) REFERENCES tp_empleados (numDocumento),
                                         FOREIGN KEY (estado) REFERENCES td_estadoreserva (id),
-                                        FOREIGN KEY (hue_numdocumento) REFERENCES tp_huespedes (numDocumento)
+                                        FOREIGN KEY (hue_numdocumento) REFERENCES tp_huespedes (numDocumento),
+                                        FOREIGN KEY (metodoPago) REFERENCES td_metodopago (id),
+                                        FOREIGN KEY (canPersonas) REFERENCES td_cantidadpersonas (id)
                                         )ENGINE=INNODB;
 
 
@@ -386,6 +400,10 @@ VALUES (NULL, 'ADMINISTRADOR'),
 (NULL, 'ATENCIÓN AL CLIENTE'),
 (NULL, 'GERENTE');
 
+insert into td_metodoPago values (null,'Tarjeta'),
+(null,'Efectivo'),
+(null,'PSE');
+
 INSERT INTO tp_huespedes
 VALUES (1000289068, 3116182673, 'Bleachowl98@gmail.com', 'Favian Alejandro', 'Machuca Pedraza', 1, 1, 4),
 (1234098756, 3124233442, 'Camilín@gmail.com', 'Camilo Andrés', 'Guerrero Yanquen', 1, 1, 1),
@@ -431,10 +449,10 @@ INSERT INTO td_estadoreserva VALUES (NULL, 'Expirada'),
 (NULL, 'Caducado');
 
 INSERT INTO tp_reservas
-VALUES (NULL, 350000.00, 20240624, 20240626, 1, 1, 10, 1029384634, 1, 1002455665),
-(NULL, 330000.00, 20241028,20241031, 1, 2, 666, 1029384634, 3, 1098785643),
-(NULL, 4000000.00, 20251215, 20251220, 4, 4, 73, 1029384634, 1, 1234098756),
-(NULL, 1300000.00, 20240321, 20240324, 2, 3, 819, 1922345555, 4, 1000289068);
+VALUES (NULL, 350000.00, 20240624, 20240626, 1, 1, 10, 1, 1, 1029384634, 1, 1002455665, '20240624 10:00:00'),
+(NULL, 330000.00, 20241028,20241031, 1, 2, 666, 1, 1, 1029384634, 3, 1098785643, '20241028 10:00:00'),
+(NULL, 4000000.00, 20251215, 20251220, 4, 4, 73, 1, 1, 1029384634, 1, 1234098756, '20251215 10:00:00'),
+(NULL, 1300000.00, 20240321, 20240324, 2, 3, 819, 1, 1, 1922345555, 4, 1000289068, '20240321 10:00:00');
 
 INSERT INTO ti_responder 
 VALUES 
