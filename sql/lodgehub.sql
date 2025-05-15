@@ -533,7 +533,7 @@ INNER JOIN td_tipohabitacion t ON hab.tipoHabitacion = t.id;
 
 CREATE VIEW vista_reservas AS
 SELECT r.res_id AS id,
-r.res_costo AS Costo,
+r.costo AS Costo,
 r.res_fechainicio AS Inicio_reserva,
 r.res_fechaFin AS Fin_reserva,
 r.res_canPersonas AS Cantidad_personas,
