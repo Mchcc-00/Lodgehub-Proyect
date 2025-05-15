@@ -35,7 +35,6 @@ CREATE TABLE IF NOT EXISTS tp_huespedes (numDocumento BIGINT(11) NOT NULL,
                                         sexo INT(3) NOT NULL,
                                         estadoCivil INT (3) NOT NULL,
 
-
                                         PRIMARY KEY (numDocumento),
                                         FOREIGN KEY (tipoDocumento) REFERENCES td_tipodocumentoHuespedes (id),
                                         FOREIGN KEY (sexo) REFERENCES td_sexohuespedes (id),
