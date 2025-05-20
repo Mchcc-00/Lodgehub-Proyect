@@ -277,7 +277,7 @@ CREATE TABLE IF NOT EXISTS tp_historialMantenimiento (id INT (4) AUTO_INCREMENT 
                                                       problemaDescripcion VARCHAR (50) NOT NULL,
                                                       accion VARCHAR (50) NOT NULL,
                                                       fechaRegistro DATE NOT NULL,
-                                                      ultimaActualización DATE NOT NULL,
+                                                      ultimaActualizacion DATE NOT NULL,
                                                       frecuencia VARCHAR (50) NOT NULL,
                                                       prioridad INT (3) NOT NULL,
                                                       numero INT (3) NOT NULL,
@@ -449,40 +449,41 @@ VALUES
 create view vista_empleados as
 select e.numDocumento as Documento, e.nombres as Nombres, e.apellidos as Apellidos, e.direccion as Direccion, e.numTelefono as Telefono, e.contactoPersonal as Contacto_Personal, e.correo as Correo, s.descripcion as Sexo, d.descripcion as Tipo_Documento, r.descripcion as Rol, ec.descripcion as Estado_Civil
 from tp_empleados e
-inner join td_sexoempleados s on  e.sexo = s.id 
-inner join td_tipodocumentoempleados d on e.tipoDocumento = d.id
+inner join td_sexo s on  e.sexo = s.id 
+inner join td_tipodocumento d on e.tipoDocumento = d.id
 inner join td_roles r on e.roles = r.id
-inner join td_estadocivilempleados ec on  e.estadoCivil = ec.id;
+inner join td_estadocivil ec on  e.estadoCivil = ec.id;
 
 
 CREATE VIEW vista_habitaciones AS
-SELECT h.numero as Numero_Habitacion, h.costo as Costo, h.capacidad as Capacidad_Personas, t.descripcion as Tipo_Habitacion, ñ.descripcion as Tamaño_Habitacion, e.descripcion as Estado_Habitacion
+SELECT h.numero as Numero_Habitacion, h.costo as Costo, h.capacidad as Capacidad_Personas, t.descripcion as Tipo_Habitacion, ta.descripcion as Tamaño_Habitacion, e.descripcion as Estado_Habitacion
 FROM tp_habitaciones h
 INNER JOIN td_tipohabitacion t ON  h.tipoHabitacion = t.id
-INNER JOIN td_tamaño ñ ON h.tamaño = ñ.id
-INNER JOIN td_estadohabitacion e ON h.estado = e.id;
+INNER JOIN td_tamano ta ON h.tamano = ta.id
+INNER JOIN td_estado e ON h.estado = e.id;
 
 
 create view vista_historialMantenimeinto as
-select h.id as id, h.problemaDescripcion as Problema, h.accion as Accion, h.fechaRegistro as Fecha_Registro, h.ultimaActualización as Ultima_Actualización, h.frecuencia as Frecuencia, h.numero as Numero_Habitacion, e.nombres as Reporta_Empleado, e.apellidos as Reporta_Apellidos, em.descripcion as Estado
+select h.id as id, h.problemaDescripcion as Problema, h.accion as Accion, h.fechaRegistro as Fecha_Registro, h.ultimaActualizacion as Ultima_Actualización, p.descripcion as Prioridad, h.frecuencia as Frecuencia, h.numero as Numero_Habitacion, e.nombres as Reporta_Empleado, e.apellidos as Reporta_Apellidos, es.descripcion as Estado
 from tp_historialmantenimiento h
+inner JOIN td_prioridad p on h.prioridad = p.id
 inner join tp_empleados e on h.emp_numDocumento = e.numDocumento
-inner join td_estadomantenimiento em on h.estadoMantenimiento = em.id;
+inner join td_estado es on h.estado = es.id;
 
 CREATE VIEW vista_huespedes AS
-SELECT u.numDocumento as Documento, u.numTelefono as Telefono, u.correo as Correo, u.nombres as Nombres, u.apellidos as Apellidos, d.descripcion as Tipo_Documento, s.descripcion as Sexo, c.descripcion as Estado_Civil
-FROM tp_huespedes u
-INNER JOIN td_tipodocumentohuespedes d ON u.tipoDocumento = d.id
-INNER JOIN td_sexohuespedes s ON u.sexo = s.id
-INNER JOIN td_estadocivilhuespedes c ON u.estadoCivil = c.id;
+SELECT h.numDocumento as Documento, h.numTelefono as Telefono, h.correo as Correo, h.nombres as Nombres, h.apellidos as Apellidos, d.descripcion as Tipo_Documento, s.descripcion as Sexo, c.descripcion as Estado_Civil
+FROM tp_huespedes h
+INNER JOIN td_tipodocumento d ON h.tipoDocumento = d.id
+INNER JOIN td_sexo s ON h.sexo = s.id
+INNER JOIN td_estadocivil c ON h.estadoCivil = c.id;
 
 create view vista_pqrs AS
-select p.id as id, p.fechaRegistro as Fecha_Registro, p.descripcion as Descripcion, p.fechaCierre as Fecha_Cierre, h.nombres as Reporta_Huesped, h.apellidos as Reporta_Apellidos, u.descripcion as Urgencia, c.descripcion as Categoria, e.descripcion as Estado, t.descripcion as Tipo
+select p.id as id, p.fechaRegistro as Fecha_Registro, p.descripcion as Descripcion, p.fechaCierre as Fecha_Cierre, h.nombres as Reporta_Huesped, h.apellidos as Reporta_Apellidos, pr.descripcion as Prioridad, c.descripcion as Categoria, e.descripcion as Estado, t.descripcion as Tipo
 from tp_pqrs p
-inner join tp_huespedes h on p.numdocumento = h.numDocumento
-inner join td_urgencia u on p.urgencia = u.id
+inner join tp_huespedes h on p.hue_numdocumento = h.numDocumento
+inner join td_prioridad pr on p.prioridad = pr.id
 inner join td_categoria c on p.categoria = c.id
-inner join td_estadopqrs e on p.estado = e.id
+inner join td_estado e on p.estado = e.id
 inner join td_tipopqrs t on p.tipo = t.id;
 
 
@@ -500,39 +501,18 @@ INNER JOIN tp_pqrs p ON r.pqr_id = p.id
 INNER JOIN tp_empleados e ON r.emp_numDocumento = e.numDocumento;
 
 
-CREATE VIEW vista_atender AS
-SELECT a.id AS id,
-r.id AS id_reserva,
-r.costo AS Costo,
-r.fechainicio AS Inicio_reserva,
-r.fechafin AS Fin_reserva,
-r.canPersonas AS Cantidad_personas,
-m.descripcion AS Motivo_reserva,
-hab.numero AS Número_habitación,
-t.descripcion AS Tipo_habitación,
-es.descripcion AS Estado_reserva,
-h.nombres AS Nombres_huesped,
-h.apellidos AS Apellidos_huesped,
-e.nombres AS Nombres_empleado,
-e.apellidos AS Apellidos_empleado
-FROM ti_atender a
-INNER JOIN tp_reservas r ON a.res_id = r.id
-INNER JOIN td_motivoreserva m ON r.motivoReserva = m.id
-INNER JOIN tp_empleados e ON r.emp_numdocumento = e.numDocumento
-INNER JOIN td_estadoreserva es ON r.estado = es.id
-INNER JOIN tp_huespedes h ON r.hue_numdocumento = h.numDocumento
-INNER JOIN tp_habitaciones hab ON hab.numero = r.numero
-INNER JOIN td_tipohabitacion t ON hab.tipoHabitacion = t.id;
-
 CREATE VIEW vista_reservas AS
 SELECT r.id AS id,
 r.costo AS Costo,
 r.fechainicio AS Inicio_reserva,
 r.fechaFin AS Fin_reserva,
-r.canPersonas AS Cantidad_personas,
+r.cantidadAdultos AS Cantidad_Adultos,
+r.cantidadNinos AS Cantidad_Niños,
+r.cantidadDiscapacitados AS Cantidad_Discapacitados,
 m.descripcion AS Motivo_reserva, 
 hab.numero AS Número_habitación,
 t.descripcion AS Tipo_habitación,
+r.informacionAdicional AS Información_Adicional,
 es.descripcion AS Estado_reserva,
 h.nombres AS Nombres_huesped,
 h.apellidos AS Apellidos_huesped,
@@ -541,23 +521,9 @@ e.apellidos AS Apellidos_empleado
 FROM tp_reservas r
 INNER JOIN td_motivoreserva m ON r.motivoReserva = m.id
 INNER JOIN tp_empleados e ON r.emp_numdocumento = e.numDocumento
-INNER JOIN td_estadoreserva es ON r.estado = es.id
+INNER JOIN td_estado es ON r.estado = es.id
 INNER JOIN tp_huespedes h ON r.hue_numdocumento = h.numDocumento
-INNER JOIN tp_habitaciones hab ON hab.numero = r.numero
+INNER JOIN tp_habitaciones hab ON hab.numero = r.numeroHabitacion
 INNER JOIN td_tipohabitacion t ON hab.tipoHabitacion = t.id;
 
-
-
-
-CREATE VIEW lista_usuarios AS
-SELECT 
-l.id AS Id_cuenta,
-e.numDocumento AS Número_documento,
-e.nombres AS Nombres,
-e.apellidos AS Apellidos,
-r.descripcion AS Rol,
-l.password AS Contraseña
-FROM tp_empleados e
-INNER JOIN tp_login l ON l.emp_numDocumento = e.numDocumento
-INNER JOIN td_roles r ON e.roles = r.id;
 
