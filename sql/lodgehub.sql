@@ -2,28 +2,42 @@ CREATE DATABASE IF NOT EXISTS Lodgehub;
 USE Lodgehub;
 
 
+
+
 CREATE TABLE IF NOT EXISTS td_tipoDocumento(id INT (3) AUTO_INCREMENT NOT NULL,
                                               descripcion VARCHAR (30) NOT NULL,
+
+
 
 
                                               PRIMARY KEY (id)
                                               );
 
 
+
+
 CREATE TABLE IF NOT EXISTS td_sexo (id INT (3) AUTO_INCREMENT NOT NULL,
                                      descripcion VARCHAR (20) NOT NULL,
+
+
 
 
                                      PRIMARY KEY (id)
                                      );
 
 
+
+
 CREATE TABLE IF NOT EXISTS td_estadoCivil (id INT (3) AUTO_INCREMENT NOT NULL,
                                             descripcion VARCHAR (20) NOT NULL,
 
 
+
+
                                             PRIMARY KEY (id)
                                             );
+
+
 
 
 CREATE TABLE IF NOT EXISTS tp_huespedes (numDocumento BIGINT(11) NOT NULL,
@@ -35,6 +49,7 @@ CREATE TABLE IF NOT EXISTS tp_huespedes (numDocumento BIGINT(11) NOT NULL,
                                         sexo INT(3) NOT NULL,
                                         estadoCivil INT (3) NOT NULL,
 
+
                                         PRIMARY KEY (numDocumento),
                                         FOREIGN KEY (tipoDocumento) REFERENCES td_tipodocumento (id),
                                         FOREIGN KEY (sexo) REFERENCES td_sexo (id),
@@ -44,28 +59,40 @@ CREATE TABLE IF NOT EXISTS tp_huespedes (numDocumento BIGINT(11) NOT NULL,
 
 
 
+
+
+
+
                                              
 CREATE TABLE IF NOT EXISTS td_tipoHabitacion (id INT (3) AUTO_INCREMENT NOT NULL,
                                             descripcion VARCHAR (20) NOT NULL,
+
+
 
 
                                             PRIMARY KEY (id)
                                             )ENGINE=INNODB;
 
 
+
+
 CREATE TABLE IF NOT EXISTS td_tamano (id INT (3) AUTO_INCREMENT NOT NULL,
                                     descripcion VARCHAR (20) NOT NULL,
+
+
 
 
                                     PRIMARY KEY (id)
                                     )ENGINE=INNODB;
 
 
-CREATE TABLE IF NOT EXISTS td_estadohabitacion (id INT (3) AUTO_INCREMENT NOT NULL,
-                                                descripcion VARCHAR (20) NOT NULL,
-                                               
-                                                PRIMARY KEY (id)
-                                                )ENGINE=INNODB;
+CREATE TABLE IF NOT EXISTS td_estado (id INT (3) AUTO_INCREMENT NOT NULL,
+                                          descripcion VARCHAR (20) NOT NULL,
+                                           
+                                          PRIMARY KEY (id)
+                                          )ENGINE=INNODB;
+
+
 
 
 CREATE TABLE IF NOT EXISTS tp_habitaciones (numero INT (3) NOT NULL,
@@ -78,16 +105,23 @@ CREATE TABLE IF NOT EXISTS tp_habitaciones (numero INT (3) NOT NULL,
                                             PRIMARY KEY (numero),
                                             FOREIGN KEY (tipoHabitacion) REFERENCES td_tipohabitacion (id),
                                             FOREIGN KEY (tamano) REFERENCES td_tamano (id),
-                                            FOREIGN KEY (estado) REFERENCES td_estadohabitacion (id)
+                                            FOREIGN KEY (estado) REFERENCES td_estado (id)
                                             )ENGINE=INNODB;
+
+
 
 
 CREATE TABLE IF NOT EXISTS td_roles (id INT (3) AUTO_INCREMENT NOT NULL,
                                     descripcion VARCHAR (20) NOT NULL,
 
 
+
+
                                     PRIMARY KEY (id)
                                     )ENGINE=INNODB;
+
+
+
 
 
 
@@ -100,46 +134,50 @@ CREATE TABLE IF NOT EXISTS tp_empleados(numDocumento BIGINT (11) NOT NULL,
                                 contactoPersonal BIGINT (11) NOT NULL,
                                 password varchar (255) NOT NULL,
                                 correo VARCHAR (30) NOT NULL,
-                                rnt int (10) NOT NULL,
-                                nit int (10) NOT NULL,
+                                rnt int (10) ,
+                                nit int (10) ,
                                 foto varchar (255) ,
                                 sexo INT (3) NOT NULL,
                                 tipoDocumento INT (3) NOT NULL,
                                 roles INT (3) NOT NULL,
                                 estadoCivil INT (3) NOT NULL,
-                                         
-                                         PRIMARY KEY (numdocumento),
-                                         FOREIGN KEY (sexo) REFERENCES td_sexo (id),
-                                         FOREIGN KEY (tipoDocumento) REFERENCES td_tipodocumento (id),
-                                         FOREIGN KEY (roles) REFERENCES td_roles (id),
-                                         FOREIGN KEY (estadoCivil) REFERENCES td_estadocivil (id)
-                                         )ENGINE=INNODB;
+
+                                PRIMARY KEY (numdocumento),
+                                FOREIGN KEY (sexo) REFERENCES td_sexo (id),
+                                FOREIGN KEY (tipoDocumento) REFERENCES td_tipodocumento (id),
+                                FOREIGN KEY (roles) REFERENCES td_roles (id),
+                                FOREIGN KEY (estadoCivil) REFERENCES td_estadocivil (id)
+                                )ENGINE=INNODB;
 
 
-                                     
 CREATE TABLE IF NOT EXISTS td_tipoPqrs (id INT (3) AUTO_INCREMENT NOT NULL,
-                                        descripcion VARCHAR (30) NOT NULL,
-                                       
+                                      descripcion VARCHAR (30) NOT NULL,
+
+                                      PRIMARY KEY (id)
+                                      )ENGINE=INNODB;
+
+
+
+
+CREATE TABLE IF NOT EXISTS td_categoria (id INT (3) AUTO_INCREMENT NOT NULL,
+                                        descripcion VARCHAR (20) NOT NULL,
+
                                         PRIMARY KEY (id)
                                         )ENGINE=INNODB;
 
 
-CREATE TABLE IF NOT EXISTS td_categoria (id INT (3) AUTO_INCREMENT NOT NULL,
-                                         descripcion VARCHAR (20) NOT NULL,
-                                         
-                                         PRIMARY KEY (id)
-                                         )ENGINE=INNODB;
 
 
-CREATE TABLE IF NOT EXISTS td_estado (id INT (3) AUTO_INCREMENT NOT NULL,
-                                          descripcion VARCHAR (20) NOT NULL,
-                                           
-                                          PRIMARY KEY (id)
-                                          )ENGINE=INNODB;
+
+
+
+
 
 
 CREATE TABLE IF NOT EXISTS td_prioridad (id INT (3) AUTO_INCREMENT NOT NULL,
                                         descripcion VARCHAR (20) NOT NULL,
+
+
 
 
                                         PRIMARY KEY (id)
@@ -152,18 +190,24 @@ CREATE TABLE IF NOT EXISTS td_prioridad (id INT (3) AUTO_INCREMENT NOT NULL,
 
 
 
+
+
+
+
+
+
+
+
 CREATE TABLE IF NOT EXISTS tp_pqrs (id INT (10) AUTO_INCREMENT NOT NULL,
                                     fechaRegistro DATE NOT NULL,
                                     descripcion VARCHAR (200) NOT NULL,
-                                    fechaCierre DATE NOT NULL,
+                                    fechaCierre DATE,
                                     hue_numdocumento BIGINT (11) NOT NULL,
                                     prioridad INT (3) NOT NULL,
                                     categoria INT(3) NOT  NULL,
                                     estado INT (3) NOT NULL,
-                                    tipo INT(3) NOT NULL, 
+                                    tipo INT(3) NOT NULL,
                          
-
-
                                       PRIMARY KEY (id),
                                       FOREIGN KEY (hue_numdocumento) REFERENCES tp_huespedes (numDocumento),
                                       FOREIGN KEY (prioridad) REFERENCES td_prioridad (id),
@@ -174,18 +218,23 @@ CREATE TABLE IF NOT EXISTS tp_pqrs (id INT (10) AUTO_INCREMENT NOT NULL,
 
 
 
-                                     
 CREATE TABLE IF NOT EXISTS td_motivoReserva (id INT (3) AUTO_INCREMENT NOT NULL,
-                                             descripcion VARCHAR (20) NOT NULL,
-                                             
-                                              PRIMARY KEY (id)
-                                              ) ENGINE=INNODB;
+                                            descripcion VARCHAR (20) NOT NULL,
+
+                                            PRIMARY KEY (id)
+                                            ) ENGINE=INNODB;
+
 
 CREATE TABLE IF NOT EXISTS td_metodoPago (id INT (3) AUTO_INCREMENT NOT NULL,
                                          descripción VARCHAR (30) NOT NULL,
 
+
                                          PRIMARY KEY (id)
                                          )ENGINE=INNODB;
+
+
+
+
 
 
 
@@ -205,7 +254,7 @@ CREATE TABLE IF NOT EXISTS tp_reservas (id INT (3) AUTO_INCREMENT NOT NULL,
                                         estado INT (3) NOT NULL,
                                         hue_numdocumento BIGINT (11) NOT NULL,
                                         fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
-                                       
+
                                         PRIMARY KEY (id),
                                         FOREIGN KEY (motivoReserva) REFERENCES td_motivoreserva (id),
                                         FOREIGN KEY (numeroHabitacion) REFERENCES tp_habitaciones (numero),
@@ -219,20 +268,32 @@ CREATE TABLE IF NOT EXISTS tp_reservas (id INT (3) AUTO_INCREMENT NOT NULL,
 
 
 
+
+
+
+
+
 CREATE TABLE IF NOT EXISTS tp_historialMantenimiento (id INT (4) AUTO_INCREMENT NOT NULL,
                                                       problemaDescripcion VARCHAR (50) NOT NULL,
                                                       accion VARCHAR (50) NOT NULL,
                                                       fechaRegistro DATE NOT NULL,
                                                       ultimaActualización DATE NOT NULL,
                                                       frecuencia VARCHAR (50) NOT NULL,
+                                                      prioridad INT (3) NOT NULL,
                                                       numero INT (3) NOT NULL,
                                                       emp_numDocumento BIGINT (11) NOT NULL,
-                                                      estadoMantenimiento INT (3) NOT NULL,
+                                                      estado INT (3) NOT NULL,
                                                       PRIMARY KEY (id),
+                                                      FOREIGN KEY (prioridad) REFERENCES td_prioridad (id),
                                                       FOREIGN KEY (numero) REFERENCES tp_habitaciones (numero),
                                                       FOREIGN KEY (emp_numDocumento) REFERENCES tp_empleados (numDocumento),
-                                                      FOREIGN KEY (estadoMantenimiento) REFERENCES td_estado (id)
+                                                      FOREIGN KEY (estado) REFERENCES td_estado (id)
                                                       )ENGINE=INNODB;
+
+
+
+
+
 
 
 
@@ -249,44 +310,56 @@ CREATE TABLE IF NOT EXISTS ti_responder (id INT (3) AUTO_INCREMENT NOT NULL,
                                          FOREIGN KEY (emp_numDocumento) REFERENCES tp_empleados (numDocumento)
                                          )ENGINE=INNODB;
 
+
 /*inserts*/
+
 
 insert into td_motivoreserva values (null,'Negocios'),
 (null,'Personal'),
 (null,'Viaje'),
 (null,'Familiar');
 
-insert into td_estadoreserva values (null,'Activo'),
+
+insert into td_estado values (null,'Activo'),
+(null,'Inactivo'),
+(null,'En uso'),
+(null,'Finalizado'),
 (null,'Pendiente'),
 (null,'Cancelado');
 
-insert into td_estadocivilhuespedes (id, descripcion) values (null, 'Soltero/a'),
+
+insert into td_estadocivil values (null, 'Soltero/a'),
 (null,'Casado/a'),
 (null,'Viudo/a'),
-(null, 'Union libre');
+(null, 'Unión libre');
 
-insert into td_sexohuespedes values (null,'Hombre'),
+
+insert into td_sexo values (null,'Hombre'),
 (null,'Mujer'),
 (null,'Otro');
 
-insert into td_tipodocumentohuespedes values (null,'Cedula de Ciudadanía'),
+
+insert into td_tipodocumento values (null,'Cedula de Ciudadanía'),
 (null,'Tarjeta de Identidad'),
 (null,'Cedula de Extranjeria'),
 (null,'Pasaporte'),
 (null,'Registro Civil');
 
-INSERT INTO td_tipohabitacion 
+
+INSERT INTO td_tipohabitacion
 VALUES (NULL, 'INDIVIDUAL'),
        (NULL, 'DOBLE'),
        (NULL, 'TRIPLE'),
        (NULL, 'SUITE'),
        (NULL, 'CONFORT');
 
-INSERT INTO td_tamaño 
+
+INSERT INTO td_tamano
 VALUES (NULL, 'PEQUEÑO'),
 (NULL, 'MEDIANO'),
 (NULL, 'GRANDE'),
 (NULL, 'EXTRAGRANDE');
+
 
 INSERT INTO td_tipopqrs
 VALUES (NULL, 'Peticiones'),
@@ -295,56 +368,28 @@ VALUES (NULL, 'Peticiones'),
 (NULL, 'Sugerencias'),
 (NULL, 'Felicitaciones');
 
-insert into td_urgencia values (null,'Bajo'),
+
+insert into td_prioridad values (null,'Bajo'),
 (null,'Medio'),
 (null,'Alto');
+
 
 insert into td_categoria values (null,'Servicio'),
 (null,'Habitacion'),
 (null,'Atencion'),
 (null,'Otro');
 
-insert into td_estadopqrs values (null,'Solucionado'),
-(null,'Pendiente'),
-(null,'Nuevo');
-
-INSERT INTO td_estadoHabitacion
-VALUES (NULL, 'EN USO'),
-(NULL, 'DISPONIBLE'),
-(NULL, 'INACTIVO');
-
-INSERT INTO td_sexoEmpleados
-VALUES (NULL, 'HOMBRE'),
-(NULL, 'MUJER'),
-(NULL, 'OTRO');
-
-INSERT INTO td_estadomantenimiento
-VALUES (NULL, 'EN PROCESO'),
-(NULL, 'FINALIZADO'),
-(NULL, 'PENDIENTE');
-
-INSERT INTO td_tipodocumentoempleados
-VALUES (NULL, 'CEDULA DE CIUDADANIA'),
-(NULL, 'TARJETA DE IDENTIDAD'),
-(NULL, 'CÉDULA DE EXTRANJERÍA'),
-(NULL, 'PASAPORTE'),
-(NULL, 'REGISTRO CIVIL');
-
-INSERT INTO td_estadocivilempleados 
-VALUES (NULL, 'SOLTERO/A'),
-(NULL, 'CASADO/A'),
-(NULL, 'VIUDO/A'),
-(NULL, 'UNIÓN LIBRE');
 
 INSERT INTO td_roles
 VALUES (NULL, 'ADMINISTRADOR'),
 (NULL, 'RECEPCIONISTA'),
-(NULL, 'ATENCIÓN AL CLIENTE'),
-(NULL, 'GERENTE');
+(NULL, 'ATENCIÓN AL CLIENTE');
+
 
 insert into td_metodoPago values (null,'Tarjeta'),
 (null,'Efectivo'),
 (null,'PSE');
+
 
 INSERT INTO tp_huespedes
 VALUES (1000289068, 3116182673, 'Bleachowl98@gmail.com', 'Favian Alejandro', 'Machuca Pedraza', 1, 1, 4),
@@ -353,17 +398,15 @@ VALUES (1000289068, 3116182673, 'Bleachowl98@gmail.com', 'Favian Alejandro', 'Ma
 (1002455665, 3144235027, 'Bray@gmail.com', 'Brayan Felipe', 'Pulido López', 1, 1, 3),
 (1012099089, 302099086, 'Willy@gmail.com', 'William Steven', 'Daza Delgado', 1, 1, 2);
 
-insert into tp_empleados values (1122123456,'Joaquin Diomedes','Gonzales Chaz','Calle 73 D#8C', "2003-02-15", 3118273847,3028732645,'GonzChaz@gmail.com',1,1,1,1),
-(1837263544,'Fernando Luis','Quintero','Cra 18-13','2003-06-20', 3124327658,3014765897,'FerLuch321@gmail.com',1,3,4,3),
-(1029384634,'Patroclo','Hernandez Pinzon','Calle 98 cra 10','2000-10-10',3107384576,3011945998,'PatrocloPinpin@gmail.com',1,2,2,1),
-(1922345555,'Ignacio Marcelo','Lomas','Cra 87-23 #65','1999-12-24',3224857743,3019476534,'IgMaLomas456@gmail.com',1,3,2,3),
-(1626478765,'Marta Maria','Muñoz Mendoza','Calle 14 #45D','2001-04-01',3216457866,3205766453,'MMMMendoza000@gmail.com',2,1,3,2);
 
-insert into tp_login values (null,1122123456,'Elcacique123'),
-(null,1837263544,'Quinterito1990'),
-(null,1029384634,'PinzonElHernandez71'),
-(null,1922345555,'LomasVaMarcelo15'),
-(null,1626478765,'MartaLaMartita23');
+insert into tp_empleados values (1122123456,'Joaquin Diomedes','Gonzales Chaz','Calle 73 D#8C', "2003-02-15", 3118273847,3028732645, '1234567485','GonzChaz@gmail.com', NULL, NULL, NULL,1,1,1,1),
+(1122123856,'Joaquin Diomedes','Gonzales Chaz','Calle 73 D#8C', "2003-02-15", 3118273847,3028732645, '1234567485','GonzChaz@gmail.com', NULL, NULL, NULL,1,1,1,1),
+(1122143456,'Joaquin Diomedes','Gonzales Chaz','Calle 73 D#8C', "2003-02-15", 3118273847,3028732645, '1234567485','GonzChaz@gmail.com', NULL, NULL, NULL,1,1,1,1),
+(1122123656,'Joaquin Diomedes','Gonzales Chaz','Calle 73 D#8C', "2003-02-15", 3118273847,3028732645, '1234567485','GonzChaz@gmail.com', NULL, NULL, NULL,1,1,1,1),
+(1132123456,'Joaquin Diomedes','Gonzales Chaz','Calle 73 D#8C', "2003-02-15", 3118273847,3028732645, '1234567485','GonzChaz@gmail.com', NULL, NULL, NULL,1,1,1,1);
+
+
+
 
 insert into tp_habitaciones values (666,280000,1,1,1,2),
 (819, 500000,2,2,3,1),
@@ -380,34 +423,24 @@ VALUES (NULL, 20241018, 'El huésped reporta que la habitación no contaba con s
 (null,20230901,'El huésped sugiere colocar revistas en la sala de espera',20230515,1012099089,1,1,1,4),
 (NULL, 20240916,'Se  reporta la falta de materiales de aseo personal (jabón) en la habitación 819', 20240916,1098785643,2,2,1,1);
 
-insert into tp_historialmantenimiento values
-(null,'Bombillos defectuosos, próximos a dañarse','Reemplazo de bombillos',20220505,20211001,'No aplica',819,1122123456,2),
-(null,'Cortinas rasgadas','Reemplazo de cortinas',20230413,20230413,'No aplica',666,1626478765,2),
-(null,'Gotera en la llave del lavamanos','Revisar y reparar la fuga de la llave de agua',20241126,20220617,'No aplica',69,1626478765,1),
-(null,'Olor raro proveniente del baño','Realizar aseo',20241115,20241115,'No aplica',819,1029384634,3),
-(null,'Piso sucio, manchas pegajosas','Realizar aseo en el piso',20240220,20220330,'No aplica',10,1122123456,2);
 
-INSERT INTO td_estadoreserva VALUES (NULL, 'Expirada'),
-(NULL, 'Caducado');
+insert into tp_historialmantenimiento values
+(null,'Bombillos defectuosos, próximos a dañarse','Reemplazo de bombillos',20220505,20211001,'No aplica', 1, 819,1122123456,2),
+(null,'Cortinas rasgadas','Reemplazo de cortinas',20230413,20230413,'No aplica',1,666,1122123856,2),
+(null,'Gotera en la llave del lavamanos','Revisar y reparar la fuga de la llave de agua',20241126,20220617,'No aplica',1,69,1122143456,1),
+(null,'Olor raro proveniente del baño','Realizar aseo',20241115,20241115,'No aplica',1,819,1122123656,3),
+(null,'Piso sucio, manchas pegajosas','Realizar aseo en el piso',20240220,20220330,'No aplica',1,10,1132123456,2);
+
 
 INSERT INTO tp_reservas
-VALUES (NULL, 350000.00, 20240624, 20240626, 1, 1, 10, 1, 1, 1029384634, 1, 1002455665, '20240624 10:00:00'),
-(NULL, 330000.00, 20241028,20241031, 1, 2, 666, 1, 1, 1029384634, 3, 1098785643, '20241028 10:00:00'),
-(NULL, 4000000.00, 20251215, 20251220, 4, 4, 73, 1, 1, 1029384634, 1, 1234098756, '20251215 10:00:00'),
-(NULL, 1300000.00, 20240321, 20240324, 2, 3, 819, 1, 1, 1922345555, 4, 1000289068, '20240321 10:00:00');
+VALUES (NULL, 350000.00, 20240624, 20240626, 1, 0, 0, 1, 10, 1, NULL,1122123456,1, 1002455665, '20240624 10:00:00');
 
 INSERT INTO ti_responder 
 VALUES 
-(NULL, '¡Gracias por tu comentario! Lamentamos que hayas tenido una mala experiencia en el hotel Chimbanadas. Tu comentario nos ayuda a mejorar día a día.', 20240916, 1, 1029384634),
-(NULL, '¡Gracias por tu comentario! Lamentamos que hayas tenido una mala experiencia en el hotel Patroclín. Tu comentario nos ayuda a mejorar nuestros servicios día a día.', 20241018, 2, 1626478765),
-(NULL, '¡Gracias por tu sugerencia! Tus comentarios nos ayudan a mejorar nuestros servicios. Atte: Hotel Bondiola', 20230515, 3, 1922345555);
+(NULL, '¡Gracias por tu comentario! Lamentamos que hayas tenido una mala experiencia en el hotel Chimbanadas. Tu comentario nos ayuda a mejorar día a día.', 20240916, 1, 1122123856),
+(NULL, '¡Gracias por tu comentario! Lamentamos que hayas tenido una mala experiencia en el hotel Patroclín. Tu comentario nos ayuda a mejorar nuestros servicios día a día.', 20241018, 2, 1132123456),
+(NULL, '¡Gracias por tu sugerencia! Tus comentarios nos ayudan a mejorar nuestros servicios. Atte: Hotel Bondiola', 20230515, 3, 1122123456);
 
-INSERT INTO ti_atender
-VALUES
-(NULL, 1, 1002455665,1029384634),
-(NULL, 2, 1098785643,1029384634),
-(NULL, 3, 1000289068,1922345555),
-(NULL, 4, 1234098756,1029384634);
 
 
 
