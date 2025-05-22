@@ -7,7 +7,7 @@
     <title>
         CREAR USUARIO
     </title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../../public/assets/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 
 </head>
@@ -17,7 +17,7 @@
 
         <header class="top-bar">
             <div class="top-bar-left">
-                <img src="../assets/img/LogoClaroLH.png"
+                <img src="../../public/assets/img/LogoClaroLH.png"
                     alt="Logo Lodgehub" class="top-logo">
             </div>
             <div class="top-bar-right">

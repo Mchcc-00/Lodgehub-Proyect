@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Perfil</title>
-    <link rel="stylesheet" href="../usuarios/assets/css/loginStyles.css">
+    <link rel="stylesheet" href="../../public/assets/css/loginStyles.css">
 </head>
 
 <body>
@@ -15,7 +15,7 @@
                 <header class="form-header">
                     <h2>CREAR PERFIL</h2>
                     <div class="logo-placeholder">
-                        <img src="../public/img/LogoClaroLH.png" alt="LogoClaroLH" width="80px" height="auto">
+                        <img src="../../public/assets/img/LogoClaroLH.png" alt="LogoClaroLH" width="80px" height="auto">
                     </div>
                 </header>
 
@@ -23,7 +23,7 @@
                     <input type="hidden" name="formulario" value="crearPerfil">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="primer_nombre">Primer nombre</label>
+                            <label for="primer_nombre">Nombres</label>
                             <input type="text" id="primer_nombre" name="primer_nombre">
                         </div>
                         <div class="form-group">
