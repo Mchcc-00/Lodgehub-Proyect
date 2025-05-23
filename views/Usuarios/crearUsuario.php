@@ -64,8 +64,8 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="dni">DNI</label>
-                            <input type="text" id="dni" name="dni" value="dni">
+                            <label for="documento">Número de documento</label>
+                            <input type="text" id="dni" name="dni">
                         </div>
                         <div class="form-group">
                             <label for="primer_apellido">Primer apellido</label>
