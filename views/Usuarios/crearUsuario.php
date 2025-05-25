@@ -32,7 +32,7 @@
                     <ul>
                         <li><a href="#">HABITACIONES</a></li>
                         <li><a href="#">RESERVAS</a></li>
-                        <li><a href="crudUsuarios.php">USUARIOS</a></li>
+                        <li><a href="listaUsuarios.php">USUARIOS</a></li>
                     </ul>
                 </nav>
                 <div class="sidebar-bottom-icons">
@@ -64,8 +64,8 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="dni">DNI</label>
-                            <input type="text" id="dni" name="dni" value="dni">
+                            <label for="documento">Número de documento</label>
+                            <input type="text" id="documento" name="documento">
                         </div>
                         <div class="form-group">
                             <label for="primer_apellido">Primer apellido</label>

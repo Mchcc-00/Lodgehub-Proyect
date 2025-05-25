@@ -6,7 +6,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $primer_nombre = trim($_POST['primer_nombre'] ?? '');
     $segundo_nombre = trim($_POST['segundo_nombre'] ?? '');
     $tipo_documento = trim($_POST['tipo_documento'] ?? '');
-    $dni = trim($_POST['dni'] ?? '');
+    $numDocumento = trim($_POST['numDocumento'] ?? '');
     $primer_apellido = trim($_POST['primer_apellido'] ?? '');
     $segundo_apellido = trim($_POST['segundo_apellido'] ?? '');
     $fecha_nacimiento = trim($_POST['fecha_nacimiento'] ?? '');
@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $primerNombre = trim($_POST['primer_nombre']);
         $segundoNombre = trim($_POST['segundo_nombre']);
         $tipoDocumento = trim($_POST['tipo_documento']);
-        $dni = trim($_POST['dni']);
+        $numDocumento = trim($_POST['numDocumento']);
         $primerApellido = trim($_POST['primer_apellido']);
         $segundoApellido = trim($_POST['segundo_apellido']);
         $fechaNacimiento = trim($_POST['fecha_nacimiento']);
@@ -54,8 +54,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if (empty($tipo_documento)) {
             die('El tipo de documento es obligatorio.');
         }
-        if (empty($dni)) {
-            die('El DNI es obligatorio.');
+        if (empty($numDocumento)) {
+            die('El número de documento es obligatorio.');
         }
         if (empty($fecha_nacimiento)) {
             die('La fecha de nacimiento es obligatoria.');
@@ -124,12 +124,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 
     // Inserta los datos en la base de datos
-    $stmt = $conn->prepare("INSERT INTO empleados (primer_nombre, segundo_nombre, tipo_documento, dni, primer_apellido, segundo_apellido, fecha_nacimiento, sexo, correo, contrasena, confirmar_contrasena, telefono, tel_emergencia, direccion, rol, rnt, nit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO empleados (primer_nombre, segundo_nombre, tipo_documento, numDocumento, primer_apellido, segundo_apellido, fecha_nacimiento, sexo, correo, contrasena, confirmar_contrasena, telefono, tel_emergencia, direccion, rol, rnt, nit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     if (!$stmt) {
         die("Error en la preparación de la consulta: " . $conn->error);
     }
 
-    $stmt->bind_param("sssssssssssssssss", $primer_nombre, $segundo_nombre, $tipo_documento, $dni, $primer_apellido, $segundo_apellido, $fecha_nacimiento, $sexo, $correo, $contrasena, $confirmar_contrasena, $telefono, $tel_emergencia, $direccion, $rol, $rnt, $nit);
+    $stmt->bind_param("sssssssssssssssss", $primer_nombre, $segundo_nombre, $tipo_documento, $numDocumento, $primer_apellido, $segundo_apellido, $fecha_nacimiento, $sexo, $correo, $contrasena, $confirmar_contrasena, $telefono, $tel_emergencia, $direccion, $rol, $rnt, $nit);
 
     if ($stmt->execute()) {
         // Redirige al formulario con un mensaje de éxito
