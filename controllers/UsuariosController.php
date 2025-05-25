@@ -141,4 +141,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt->close();
     $conn->close();
 }
-?>
+//Consulta/Leer/Read
+
+
+
+// Cerrar la conexión
