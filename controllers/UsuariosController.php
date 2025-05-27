@@ -3,53 +3,41 @@ require_once '../database.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $primer_nombre = trim($_POST['primer_nombre'] ?? '');
-    $segundo_nombre = trim($_POST['segundo_nombre'] ?? '');
-    $tipo_documento = trim($_POST['tipo_documento'] ?? '');
+    $nombres = trim($_POST['nombres'] ?? '');
+    $tipoDocumento = trim($_POST['tipoDocumento'] ?? '');
     $numDocumento = trim($_POST['numDocumento'] ?? '');
-    $primer_apellido = trim($_POST['primer_apellido'] ?? '');
-    $segundo_apellido = trim($_POST['segundo_apellido'] ?? '');
-    $fecha_nacimiento = trim($_POST['fecha_nacimiento'] ?? '');
+    $apellidos = trim($_POST['apellidos'] ?? '');
+    $fechaNacimiento = trim($_POST['fechaNacimiento'] ?? '');
     $sexo = trim($_POST['sexo'] ?? '');
     $correo = trim($_POST['correo'] ?? '');
     $contrasena = ($_POST['contrasena'] ?? '');
-    $confirmar_contrasena = ($_POST['confirmar_contrasena'] ?? '');
-    $telefono = trim($_POST['telefono'] ?? '');
-    $tel_emergencia = trim($_POST['tel_emergencia'] ?? '');
+    $numTelefono = trim($_POST['numTelefono'] ?? '');
+    $contactoPersonal = trim($_POST['contactoPersonal'] ?? '');
     $direccion = trim($_POST['direccion'] ?? '');
     $rol = trim($_POST['rol'] ?? '');
-    $rnt = trim($_POST['rnt'] ?? '');
-    $nit = trim($_POST['nit'] ?? '');
+
 
     // Validaciones básicas
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $primerNombre = trim($_POST['primer_nombre']);
-        $segundoNombre = trim($_POST['segundo_nombre']);
-        $tipoDocumento = trim($_POST['tipo_documento']);
+        $nombres = trim($_POST['nombres']);
+        $tipoDocumento = trim($_POST['tipoDocumento']);
         $numDocumento = trim($_POST['numDocumento']);
-        $primerApellido = trim($_POST['primer_apellido']);
-        $segundoApellido = trim($_POST['segundo_apellido']);
-        $fechaNacimiento = trim($_POST['fecha_nacimiento']);
+        $apellidos = trim($_POST['apellidos']);
+        $fechaNacimiento = trim($_POST['fechaNacimiento']);
         $sexo = trim($_POST['sexo']);
-        $telefono = trim($_POST['telefono']);
-        $telEmergencia = trim($_POST['tel_emergencia']);
+        $numTelefono = trim($_POST['numTelefono']);
+        $contactoPersonal = trim($_POST['contactoPersonal']);
         $direccion = trim($_POST['direccion']);
-        $rol = trim($_POST['rol']);
-        $rnt = trim($_POST['rnt']);
-        $nit = trim($_POST['nit']);
+        $rol = trim($_POST['rol']);        
         $correo = trim($_POST['correo']);
         $contrasena = $_POST['contrasena'];
-        $confirmarContrasena = $_POST['confirmar_contrasena'];
         //validaciones de nombre
-        if (empty($primer_nombre)) {
-            die('El primer nombre es obligatorio.');
+        if (empty($nombres)) {
+            die('Inserte al menos el primer nombre');
         }
-        if (empty($primer_apellido)) {
-            die('El primer apellido es obligatorio.');
-        }
-        if (empty($segundo_apellido)) {
-            die('El segundo apellido es obligatorio.');
+        if (empty($apellidos)) {
+            die('Inserte al menos el primer nombre');
         }
         if (empty($tipo_documento)) {
             die('El tipo de documento es obligatorio.');
