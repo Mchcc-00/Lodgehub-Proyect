@@ -1,0 +1,448 @@
+/* -----------------------------------
+   BARRA SUPERIOR (TOPBAR)
+----------------------------------- */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2b2b2b;        /* Gris oscuro */
+  padding: 0.5rem 1rem;             /* Espaciado vertical y horizontal */
+  border-bottom: 4px solid #FFC107; /* Línea amarilla gruesa */ 
+    padding: 20px 30px; 
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.topbar-left i {
+  font-size: 1.5rem; /* Tamaño de la flecha */
+  color: #FFC107;
+}
+
+.topbar-title {
+  font-weight: bold;
+  font-size: 2rem;   /* Ajusta aquí el tamaño de la letra */
+  color: #FFC107;
+}
+
+.topbar-right {
+  font-size: 1.8rem; /* Tamaño más acorde al diseño */
+  color: #f1b800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-img {
+  width: 40px;       /* Ajusta el tamaño según diseño */
+  height: 40px; 
+  object-fit: cover;
+}
+
+.logoSoporte{
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  right: 4px;
+}
+
+.logoConfi{
+   width: 50px;
+  height: 50px;
+  object-fit: cover;
+  right: 4px;
+
+}
+
+
+
+/* RESET BÁSICO */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* CONTENEDOR PRINCIPAL */
+.container {
+  display: flex;
+  height: 100vh;
+  background-color: #1f1f1f;
+}
+
+/* ========== TOPBAR ========== */
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background-color: #2b2b2b;
+  border-bottom: 4px solid #FFC107;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  z-index: 10;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.toggle-sidebar i {
+  font-size: 1.5rem;
+  color: #FFC107;
+}
+
+.topbar-title {
+  font-size: 2rem;
+  color: #FFC107;
+  font-weight: bold;
+}
+
+.topbar-right i {
+  font-size: 2rem;
+  color: #FFC107;
+  border: 2px solid #FFC107;
+  border-radius: 50%;
+  padding: 0.3rem;
+}
+
+/* ========== SIDEBAR ========== */
+.sidebar {
+  width: 200px;
+  padding-top: 56px;            /* Para quedar debajo del topbar */
+  background-color: #8f8f8f;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 3px solid #FFC107;
+}
+
+.nav-links {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: -1rem;
+}
+
+.nav-links a {
+  padding: 0.9rem 2rem;
+  text-decoration: none;
+  color: #fff;
+  font-weight: 500;
+  text-align: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.nav-links a:hover {
+  background-color: #FFC107;
+  color: #fff;
+}
+
+.sidebar-footer {
+  display: flex;
+  justify-content: space-around;
+  padding: 1rem 0;
+  border-top: 4px solid #b3b3b3;
+}
+
+.sidebar-footer i {
+  font-size: 1.3rem;
+  color: #FFC107;
+  padding: 6px;
+  border-radius: 6px;
+}
+
+/* ========== MAIN CONTENT ========== */
+.main-content {
+  flex: 1;
+  margin-left: 25px;   /* Ancho de la sidebar */
+  padding-top: 56px;    /* Altura de la topbar */
+  overflow-y: auto;
+}
+
+
+
+/* --------- SIDEBAR FIJA --------- */
+.sidebar {
+  position: fixed;
+  top: 56px;           /* Igual a la altura de .topbar */
+  bottom: 0;           /* Se extiende hasta abajo */
+  left: 0;
+  width: 200px;
+  background-color: #2b2b2b;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 5;          /* Por encima de main-content */
+}
+
+/* Ajusta el main-content para que no quede detrás */
+.main-content {
+  margin-left: 200px;  /* Igual al ancho de la sidebar */
+  margin-top: 56px;    /* Igual a la altura de la topbar */
+  padding: 1rem;
+  overflow-y: auto;
+  height: calc(100vh - 56px); /* Para que haga scroll dentro */
+}
+
+/* formulario */
+body {
+  background-color: #1e1e1e;
+  font-family: Arial, sans-serif;
+  color: #ffc107;
+  padding: 20px;
+}
+
+.container {
+  border-top: 3px solid #ffc107;
+  padding: 20px;
+  max-width: 800px;
+  margin: auto;
+  background-color: #2b2b2b;
+  border-radius: 10px;
+}
+
+h2 {
+  margin-bottom: 10px;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.form-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  color: #ffc107;
+}
+
+input, select, textarea {
+  padding: 8px;
+  border-radius: 5px;
+  border: none;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+
+textarea {
+  resize: vertical;
+  height: 100px;
+}
+
+.full-width {
+  flex: 1 1 100%;
+}
+
+.form-actions {
+  text-align: right;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.btn-cancel {
+  background-color: #e50914;
+  color: white;
+}
+
+.btn-submit {
+  background-color: #0f0;
+  color: white;
+}
+
+.id-section {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap:30px;
+  margin-bottom: 40px;
+  border-radius: 999px
+}
+
+.id-section span {
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+.id-box {
+  background-color: #a00060;
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+}
+
+
+/* --- Formulario PQRS --- */
+/* Contenedor principal del formulario */
+.form-container {
+  position: relative;
+  border-radius: 50px;
+  padding: 20px;
+  max-width: 1900px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+/* Título */
+.form-container h2 {
+  color: #ffc400;
+  margin-bottom: 40px;
+  font-weight: 700;
+  padding-bottom: 22px;
+  border-bottom: 4px solid #ffc400;
+}
+
+/* ID y botón de cierre */
+.form-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 30px; 
+  margin-bottom: 40px;
+  border-radius: 999px
+}
+
+
+.form-id {
+  font-weight: bold;
+  font-size: 25px;
+  color: #ffc400;
+
+}
+
+.close-btn {
+  background-color: #00ffbf;
+  color: white;
+  border: none;
+  border-radius: 60%;
+  padding: 6px 12px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Estructura de filas */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 45px;
+  margin-bottom: 45px;
+}
+
+label {
+  flex: 1 1 100px;
+  color: #ffc400;
+  font-weight: bold;
+}
+
+/* Campos de entrada y select */
+input[type="text"],
+input[type="date"],
+select,
+textarea {
+  flex: 2 1 200px;
+  padding: 8px;
+  background-color: #ffffff;
+  color: #242323;
+  border: 1px solid #ffc400;
+  border-radius: 6px;
+}
+
+textarea {
+  width: 100%;
+  resize: none;
+  height: 120px;
+  background-color: #ebebeb;
+  border: 2px solid #ffc400;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* Botones */
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.cancel-btn,
+.submit-btn {
+  padding: 10px 20px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background-color: red;
+  color: white;
+}
+
+.submit-btn {
+  background-color: rgb(10, 211, 87);
+  color: white;
+}
+
+
+.boton-info{
+  background-color: transparent; /* Elimina el fondo blanco */
+  border: none;                  /* Opcional: elimina borde */
+  padding: 0;                    /* Opcional: quita espacio alrededor */
+  cursor: pointer;              /* Muestra la manito al pasar el mouse */
+}
+
+.boton-info:hover {
+  background-color: #ba52ff;/* Azul suave translúcido */
+  border-radius: 8px; /* Opcional: bordes redondeados en el hover */
+}
+
+.logoButton {
+background-color: transparent; /* Elimina el fondo blanco */
+  border: none;                  /* Opcional: elimina borde */
+  padding: 0;                    /* Opcional: quita espacio alrededor */
+  cursor: pointer;              /* Muestra la manito al pasar el mouse */
+
+}
+
+.logoButton:hover{
+   background-color: #ba52ff;/* Azul suave translúcido */
+  border-radius: 8px; /* Opcional: bordes redondeados en el hover */
+}
+
+.sidebar-footer{
+  display: flex;
+  justify-content: flex-end;  /* Alinear a la derecha */
+  gap: 15px;                  /* Separación entre botones */
+  padding-right: 10px;        /* Espacio del borde derecho */
+}
+
+
+
+
