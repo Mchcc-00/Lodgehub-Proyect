@@ -42,7 +42,7 @@
             </aside>
 
             <main class="form-content-container">
-                <h2>EDITAR USUARIO</h2>
+                <h2 class="form-title">EDITAR USUARIO</h2>
 
                 <form action="../crudUsuarios/procesarUsuario.php" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="formulario" value="crearUsuario">

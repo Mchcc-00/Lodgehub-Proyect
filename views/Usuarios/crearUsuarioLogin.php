@@ -13,7 +13,7 @@
         <div class="borde-container">
             <div class="form-container">
                 <header class="form-header">
-                    <h2>CREAR USUARIO</h2>
+                    <h2 class="form-title">CREAR USUARIO</h2>
                     <div class="logo-placeholder">
                         <img src="../../public/assets/img/LogoClaroLH.png" alt="LogoClaroLH" width="80px" height="auto">
                     </div>

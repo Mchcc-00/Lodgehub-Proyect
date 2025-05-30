@@ -447,7 +447,16 @@ VALUES
 /*vistas*/
 
 create view vista_empleados as
-select e.numDocumento as Documento, e.nombres as Nombres, e.apellidos as Apellidos, e.direccion as Direccion, e.numTelefono as Telefono, e.contactoPersonal as Contacto_Personal, e.correo as Correo, s.descripcion as Sexo, d.descripcion as Tipo_Documento, r.descripcion as Rol, ec.descripcion as Estado_Civil
+select e.numDocumento as Documento, e.nombres as Nombres, 
+e.apellidos as Apellidos, 
+e.direccion as Direccion, 
+e.numTelefono as Telefono, 
+e.contactoPersonal as Contacto_Personal, 
+e.correo as Correo, 
+s.descripcion as Sexo, 
+d.descripcion as Tipo_Documento, 
+r.descripcion as Rol, 
+ec.descripcion as Estado_Civil
 from tp_empleados e
 inner join td_sexo s on  e.sexo = s.id 
 inner join td_tipodocumento d on e.tipoDocumento = d.id

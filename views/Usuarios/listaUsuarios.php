@@ -36,49 +36,68 @@
 
             <!-- CRUD Content -->
             <main class="form-content-container">
-
-                <a href="../crudUsuarios/crearUsuario.php" class="add-button" title="Agregar">Agregar Usuario</a>
-
                 <!-- Lista de usuarios -->
-                <h2>Lista de Usuarios</h2>
+                <h2 class="form-title">Lista de Usuarios</h2>
+                <a href="../../views/Usuarios/crearUsuario.php" class="btn-add" title="Agregar">Agregar Usuario</a>
                 <table class="user-table">
-                    <thead class="table-header">
+                    <thead class="user-table-header">
                         <tr>
+                            <th>Tipo de documento</th>
                             <th>Número de documento</th>
                             <th>Nombres</th>
                             <th>Apellidos</th>
+                            <th>Sexo</th>
+                            <th>Teléfono</th>
+                            <th>Contacto personal</th>
                             <th>Correo</th>
                             <th>Rol</th>
-                            <th>Acciones</th>
+                            <th></th>
                         </tr>
                     </thead>
-                    <tbody class="table-body">
+                    <tbody class="user-table-body">
                         <!-- Aquí se llenará dinámicamente con PHP -->
                         <?php
-                        require_once '../database.php';
-                        $sql = "SELECT numDocumento, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, rol FROM empleados";
+                        require_once '../../config/database.php';
+                        $sql = "select d.descripcion as Tipo_Documento, 
+                                e.numDocumento as Documento,
+                                e.nombres as Nombres, 
+                                e.apellidos as Apellidos,
+                                s.descripcion as Sexo,
+                                e.numTelefono as Telefono, 
+                                e.contactoPersonal as Contacto_Personal, 
+                                e.correo as Correo, 
+                                r.descripcion as Rol, 
+                                from tp_empleados e
+                                inner join td_sexo s on e.sexo = s.id 
+                                inner join td_tipodocumento d on e.tipoDocumento = d.id
+                                inner join td_roles r on e.roles = r.id";
                         $result = $conn->query($sql);
 
-                        if ($result->num_rows > 0) {
+                        if ($result === false) {
+                            echo "<tr><td colspan='10'>Error en la consulta: " . $conn->error . "</td></tr>";
+                        } elseif ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
                                 echo "<tr>
-                                                <td>{$row['numDocumento']}</td>
-                                                <td>{$row['primer_nombre']}</td>
-                                                <td>{$row['segundo_nombre']}</td>
-                                                <td>{$row['primer_apellido']}</td>
-                                                <td>{$row['segundo_apellido']}</td>
-                                                <td>{$row['rol']}</td>
-                                                <td>
-                                                    <a href='../crudUsuarios/editarUsuario.php?numDocumento={$row['numDocumento']}' class='btn btn-edit'>Editar</a>
-                                                    <form action='eliminarUsuario.php' method='post' style='display:inline;'>
-                                                        <input type='hidden' name='numDocumento' value='{$row['numDocumento']}'>
-                                                        <button href='../crudUsuarios/eliminarUsuario.php' type='submit' class='btn btn-delete'>Eliminar</button>
-                                                    </form>
-                                                </td>
-                                            </tr>";
+                                        <td>{$row['tipoDocumento']}</td>
+                                        <td>{$row['numDocumento']}</td>
+                                        <td>{$row['nombres']}</td>
+                                        <td>{$row['apellidos']}</td>
+                                        <td>{$row['sexo']}</td>
+                                        <td>{$row['numTelefono']}</td>
+                                        <td>{$row['contactoPersonal']}</td>
+                                        <td>{$row['correo']}</td>
+                                        <td>{$row['roles']}</td>
+                                        <td>
+                                            <a href='../../views/usuarios/editarUsuario.php?numDocumento={$row['numDocumento']}' class='btn-edit'>Editar</a>
+                                            <form action='eliminarUsuario.php' method='post' style='display:inline;'>
+                                                <input type='hidden' name='numDocumento' value='{$row['numDocumento']}'>
+                                                <button type='submit' class='btn-delete'>Eliminar</button>
+                                            </form>
+                                        </td>
+                                    </tr>";
                             }
                         } else {
-                            echo "<tr><td colspan='5'>No hay usuarios registrados.</td></tr>";
+                            echo "<tr><td colspan='10'>No hay usuarios registrados.</td></tr>";
                         }
                         ?>
                     </tbody>
@@ -91,7 +110,7 @@
         </div>
     </div>
     </div>
-    <script src="../assets/js/formScript.js"></script>
+    <script src="../../public/js/formScript.js"></script>
 </body>
 
 

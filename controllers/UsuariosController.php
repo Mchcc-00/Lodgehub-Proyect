@@ -19,121 +19,108 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Validaciones básicas
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $nombres = trim($_POST['nombres']);
-        $tipoDocumento = trim($_POST['tipoDocumento']);
-        $numDocumento = trim($_POST['numDocumento']);
-        $apellidos = trim($_POST['apellidos']);
-        $fechaNacimiento = trim($_POST['fechaNacimiento']);
-        $sexo = trim($_POST['sexo']);
-        $numTelefono = trim($_POST['numTelefono']);
-        $contactoPersonal = trim($_POST['contactoPersonal']);
-        $direccion = trim($_POST['direccion']);
-        $rol = trim($_POST['rol']);        
-        $correo = trim($_POST['correo']);
-        $contrasena = $_POST['contrasena'];
-        //validaciones de nombre
-        switch($nombres){
-            case 0:
-        }
-        if (empty($nombres)) {
-            die('Inserte al menos el primer nombre');
-        }
-        if (empty($apellidos)) {
-            die('Inserte al menos el primer nombre');
-        }
-        if (empty($tipo_documento)) {
-            die('El tipo de documento es obligatorio.');
-        }
-        if (empty($numDocumento)) {
-            die('El número de documento es obligatorio.');
-        }
-        if (empty($fecha_nacimiento)) {
-            die('La fecha de nacimiento es obligatoria.');
-        }
-        if (empty($sexo)) {
-            die('El sexo es obligatorio.');
-        }
-        if (empty($correo)) {
-            die('El correo electrónico es obligatorio.');
-        }
-        //validaciones de contraseña
-        if (empty($contrasena)) {
-            die('La contraseña es obligatoria.');
-        }
-        if (empty($confirmarContrasena)) {
-            die('La confirmación de la contraseña es obligatoria.');
-        }
-        if (strlen($contrasena) < 8) {
-            die('La contraseña debe tener al menos 8 caracteres.');
-        }
-        if (!preg_match('/[A-Z]/', $contrasena)) {
-            die('La contraseña debe contener al menos una letra mayúscula.');
-        }
-        if (!preg_match('/[a-z]/', $contrasena)) {
-            die('La contraseña debe contener al menos una letra minúscula.');
-        }
-        if (!preg_match('/[0-9]/', $contrasena)) {
-            die('La contraseña debe contener al menos un número.');
-        }
-        if (!preg_match('/[\W_]/', $contrasena)) {
-            die('La contraseña debe contener al menos un carácter especial.');
-        }
-        if (preg_match('/\s/', $contrasena)) {
-            die('La contraseña no debe contener espacios en blanco.');
-        }
-        if ($contrasena !== $confirmarContrasena) {
-            die('Las contraseñas no coinciden.');
-        }
-        //validaciones de contacto
-        if (empty($telefono)) {
-            die('El teléfono es obligatorio.');
-        }
-        if (empty($tel_emergencia)) {
-            die('El teléfono de emergencia es obligatorio.');
-        }
-        if (empty($direccion)) {
-            die('La dirección es obligatoria.');
-        }
-        if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
-            die('El correo electrónico no es válido.');
-        }
-        if (empty($rol)) {
-            die('El rol es obligatorio.');
-        }
-        if ($rol == 'admin' && empty($rnt)) {
-            die('El RNT es obligatorio para el rol de administrador.');
-        }
-        if ($rol == 'admin' && empty($nit)) {
-            die('El NIT es obligatorio para el rol de administrador.');
+    $error = '';
+
+    if (empty($nombres)) {
+        $error = 'nombres';
+    } elseif (empty($apellidos)) {
+        $error = 'apellidos';
+    } elseif (empty($tipoDocumento)) {
+        $error = 'tipoDocumento';
+    } elseif (empty($numDocumento)) {
+        $error = 'numDocumento';
+    } elseif (empty($fechaNacimiento)) {
+        $error = 'fechaNacimiento';
+    } elseif (empty($sexo)) {
+        $error = 'sexo';
+    } elseif (empty($correo)) {
+        $error = 'correo';
+    } elseif (empty($contrasena)) {
+        $error = 'contrasena';
+    } elseif (empty($confirmarContrasena)) {
+        $error = 'confirmarContrasena';
+    } elseif (strlen($contrasena) < 8) {
+        $error = 'contrasena_corta';
+    } elseif (!preg_match('/[A-Z]/', $contrasena)) {
+        $error = 'contrasena_mayuscula';
+    } elseif (!preg_match('/[a-z]/', $contrasena)) {
+        $error = 'contrasena_minuscula';
+    } elseif (!preg_match('/[0-9]/', $contrasena)) {
+        $error = 'contrasena_numero';
+    } elseif (!preg_match('/[\W_]/', $contrasena)) {
+        $error = 'contrasena_especial';
+    } elseif (preg_match('/\s/', $contrasena)) {
+        $error = 'contrasena_espacio';
+    } elseif ($contrasena !== $confirmarContrasena) {
+        $error = 'contrasena_no_coincide';
+    } elseif (empty($numTelefono)) {
+        $error = 'numTelefono';
+    } elseif (empty($contactoPersonal)) {
+        $error = 'contactoPersonal';
+    } elseif (empty($direccion)) {
+        $error = 'direccion';
+    } elseif (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+        $error = 'correo_invalido';
+    } elseif (empty($rol)) {
+        $error = 'rol';
+    } elseif ($rol == 'admin' && empty($rnt)) {
+        $error = 'rnt';
+    } elseif ($rol == 'admin' && empty($nit)) {
+        $error = 'nit';
+    }
+
+    if ($error !== '') {
+        switch ($error) {
+            case 'nombres':
+                die('Inserte al menos el primer nombre');
+            case 'apellidos':
+                die('Inserte al menos el primer apellido');
+            case 'tipoDocumento':
+                die('Seleccione un tipo de documento.');
+            case 'numDocumento':
+                die('Inserte el número de documento.');
+            case 'fechaNacimiento':
+                die('Inserte la fecha de nacimiento.');
+            case 'sexo':
+                die('Inserte un sexo.');
+            case 'correo':
+                die('Inserte el correo electrónico.');
+            case 'contrasena':
+                die('La contraseña es obligatoria.');
+            case 'confirmarContrasena':
+                die('La confirmación de la contraseña es obligatoria.');
+            case 'contrasena_corta':
+                die('La contraseña debe tener al menos 8 caracteres.');
+            case 'contrasena_mayuscula':
+                die('La contraseña debe contener al menos una letra mayúscula.');
+            case 'contrasena_minuscula':
+                die('La contraseña debe contener al menos una letra minúscula.');
+            case 'contrasena_numero':
+                die('La contraseña debe contener al menos un número.');
+            case 'contrasena_especial':
+                die('La contraseña debe contener al menos un carácter especial.');
+            case 'contrasena_espacio':
+                die('La contraseña no debe contener espacios en blanco.');
+            case 'contrasena_no_coincide':
+                die('Las contraseñas no coinciden.');
+            case 'numTelefono':
+                die('Inserte un número telefónico.');
+            case 'contactoPersonal':
+                die('Inserte un número en caso de emergencia.');
+            case 'direccion':
+                die('Inserte su dirección.');
+            case 'correo_invalido':
+                die('El correo electrónico no es válido.');
+            case 'rol':
+                die('Inserte un rol.');
+            case 'rnt':
+                die('El RNT es obligatorio para el rol de administrador.');
+            case 'nit':
+                die('El NIT es obligatorio para el rol de administrador.');
+            default:
+                die('Error desconocido.');
         }
     }
 
 
-
-    // Procesa los datos si son válidos
-
-
-    // Inserta los datos en la base de datos
-    $stmt = $conn->prepare("INSERT INTO empleados (primer_nombre, segundo_nombre, tipo_documento, numDocumento, primer_apellido, segundo_apellido, fecha_nacimiento, sexo, correo, contrasena, confirmar_contrasena, telefono, tel_emergencia, direccion, rol, rnt, nit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    if (!$stmt) {
-        die("Error en la preparación de la consulta: " . $conn->error);
-    }
-
-    $stmt->bind_param("sssssssssssssssss", $primer_nombre, $segundo_nombre, $tipo_documento, $numDocumento, $primer_apellido, $segundo_apellido, $fecha_nacimiento, $sexo, $correo, $contrasena, $confirmar_contrasena, $telefono, $tel_emergencia, $direccion, $rol, $rnt, $nit);
-
-    if ($stmt->execute()) {
-        // Redirige al formulario con un mensaje de éxito
-        header("Location: /lodgehub/crudUsuarios/crudUsuarios.php?mensaje=Usuario registrado exitosamente");
-        exit();;
-    } else {
-        echo "Error al registrar el usuario: " . $stmt->error . "<br>";
-    }
-    $stmt->close();
-    $conn->close();
 }
-//Consulta/Leer/Read
-
-
-
-// Cerrar la conexión
