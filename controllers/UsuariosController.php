@@ -33,6 +33,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $correo = trim($_POST['correo']);
         $contrasena = $_POST['contrasena'];
         //validaciones de nombre
+        switch($nombres){
+            case 0:
+        }
         if (empty($nombres)) {
             die('Inserte al menos el primer nombre');
         }
