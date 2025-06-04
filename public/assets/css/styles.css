@@ -9,7 +9,6 @@ html, body {
     width: auto;
     margin: 0;
     padding: 0;
-    /* Asegura que ocupe al menos toda la altura */
     height: 100%;
 }
 
@@ -18,8 +17,6 @@ html, body {
     flex: 1;
     /* Ancho como el anterior .borde-container */
     height: 100%;
-    /* Altura mínima */
-    /* Azul oscuro principal */
     display: flex;
     flex-direction: column;
     /* Apila top-bar sobre content-area */
@@ -152,10 +149,8 @@ html, body {
 
 /* NUEVO: Contenedor del Formulario (Derecha) */
 .form-content-container {
-    flex-grow: 1;
-    /* Ocupa el espacio restante */
+    flex-grow: 1; /* Ocupa el espacio restante */   
     background-color: #EDF7FF;
-    /* Fondo claro para el formulario */
     padding: 20px 35px;
     overflow-y: auto;
     /* Scroll si el contenido es muy alto */
@@ -165,16 +160,19 @@ html, body {
     color: #0E4153;
     font-weight: 645;
     font-size: 2.2em;
-    /* Ajusta tamaño */
     margin-bottom: 30px;
-    /* Espacio bajo el título */
     border-bottom: 3px solid #296DAC;
-    /* Línea bajo el título */
     padding-bottom: 8px;
     width: 35%;
-    /* Ancho se ajusta al texto */
 }
 /* Estilos de la tabla de usuarios */
+.user-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 20px;
+}
 .user-table {
     width: 100%;
     border-collapse: separate;
@@ -182,6 +180,7 @@ html, body {
     color: #0E4153;
     font-size: 0.8em;
     font-weight: 550;
+    overflow-y: auto;
 }
 .user-table tr,
 .user-table th {
@@ -223,15 +222,25 @@ html, body {
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
+.btn-add .fa-plus {
+    color: #296DAC;
+    font-size: 1.8em;
+    vertical-align: middle;
+}
+.btn-add:hover{
+    color: #0E4153;
+    transform: scale(1.1); /* Efecto de agrandar */
+    transition: color 0.2s, transform 0.2s;
+}
 .btn-add{
-    background-color: #00baaa;
-    color: #ffffff;
+    background-color: #B2CAF5;
+    color: #296DAC;
+    border:5px solid #296DAC ;
+    float: left;
     margin-bottom: 50px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
+    padding: 15px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
 }
 
 

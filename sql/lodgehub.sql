@@ -447,14 +447,15 @@ VALUES
 /*vistas*/
 
 create view vista_empleados as
-select e.numDocumento as Documento, e.nombres as Nombres, 
+select d.descripcion as Tipo_Documento, 
+e.numDocumento as Documento, 
+e.nombres as Nombres, 
 e.apellidos as Apellidos, 
 e.direccion as Direccion, 
 e.numTelefono as Telefono, 
 e.contactoPersonal as Contacto_Personal, 
 e.correo as Correo, 
-s.descripcion as Sexo, 
-d.descripcion as Tipo_Documento, 
+s.descripcion as Sexo,  
 r.descripcion as Rol, 
 ec.descripcion as Estado_Civil
 from tp_empleados e

@@ -37,8 +37,11 @@
             <!-- CRUD Content -->
             <main class="form-content-container">
                 <!-- Lista de usuarios -->
-                <h2 class="form-title">Lista de Usuarios</h2>
-                <a href="../../views/Usuarios/crearUsuario.php" class="btn-add" title="Agregar">Agregar Usuario</a>
+                 <div class="user-header">
+                    <h2 class="form-title">Lista de Usuarios</h2>
+                    <a href="../../views/Usuarios/crearUsuario.php" class="btn-add" title="Agregar">
+                        <i class="fas fa-plus" width></i>
+                    </a>
                 <table class="user-table">
                     <thead class="user-table-header">
                         <tr>
@@ -58,19 +61,10 @@
                         <!-- Aquí se llenará dinámicamente con PHP -->
                         <?php
                         require_once '../../config/database.php';
-                        $sql = "select d.descripcion as Tipo_Documento, 
-                                e.numDocumento as Documento,
-                                e.nombres as Nombres, 
-                                e.apellidos as Apellidos,
-                                s.descripcion as Sexo,
-                                e.numTelefono as Telefono, 
-                                e.contactoPersonal as Contacto_Personal, 
-                                e.correo as Correo, 
-                                r.descripcion as Rol, 
-                                from tp_empleados e
-                                inner join td_sexo s on e.sexo = s.id 
-                                inner join td_tipodocumento d on e.tipoDocumento = d.id
-                                inner join td_roles r on e.roles = r.id";
+                        $sql = "select *
+                                from tp_empleados
+                                inner join td_roles on roles = id
+                                ";
                         $result = $conn->query($sql);
 
                         if ($result === false) {
@@ -86,7 +80,7 @@
                                         <td>{$row['numTelefono']}</td>
                                         <td>{$row['contactoPersonal']}</td>
                                         <td>{$row['correo']}</td>
-                                        <td>{$row['roles']}</td>
+                                        <td>{$row['descripcion']}</td>
                                         <td>
                                             <a href='../../views/usuarios/editarUsuario.php?numDocumento={$row['numDocumento']}' class='btn-edit'>Editar</a>
                                             <form action='eliminarUsuario.php' method='post' style='display:inline;'>
