@@ -5,13 +5,13 @@ USE Lodgehub;
 
 
 CREATE TABLE IF NOT EXISTS td_tipoDocumento(id INT (3) AUTO_INCREMENT NOT NULL,
-                                              descripcion VARCHAR (30) NOT NULL,
+                                            descripcion VARCHAR (30) NOT NULL,
 
 
 
 
-                                              PRIMARY KEY (id)
-                                              );
+                                            PRIMARY KEY (id)
+                                            );
 
 
 

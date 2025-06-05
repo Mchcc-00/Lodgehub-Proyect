@@ -37,11 +37,12 @@
             <!-- CRUD Content -->
             <main class="form-content-container">
                 <!-- Lista de usuarios -->
-                 <div class="user-header">
+                <div class="user-header">
                     <h2 class="form-title">Lista de Usuarios</h2>
                     <a href="../../views/Usuarios/crearUsuario.php" class="btn-add" title="Agregar">
                         <i class="fas fa-plus" width></i>
                     </a>
+                </div>
                 <table class="user-table">
                     <thead class="user-table-header">
                         <tr>
@@ -61,9 +62,20 @@
                         <!-- Aquí se llenará dinámicamente con PHP -->
                         <?php
                         require_once '../../config/database.php';
-                        $sql = "select *
-                                from tp_empleados
-                                inner join td_roles on roles = id
+                        $sql = "select
+                                    d.descripcion AS tipo_documento,
+                                    e.numDocumento,
+                                    e.nombres,
+                                    e.apellidos,
+                                    s.descripcion AS sexo,
+                                    e.numTelefono,
+                                    e.contactoPersonal,
+                                    e.correo,
+                                    r.descripcion AS rol
+                                from tp_empleados e
+                                inner join td_tipodocumento d on e.tipoDocumento = d.id
+                                inner join td_sexo s on e.sexo = s.id
+                                inner join td_roles r on e.roles = r.id
                                 ";
                         $result = $conn->query($sql);
 
@@ -72,7 +84,7 @@
                         } elseif ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
                                 echo "<tr>
-                                        <td>{$row['tipoDocumento']}</td>
+                                        <td>{$row['tipo_documento']}</td>
                                         <td>{$row['numDocumento']}</td>
                                         <td>{$row['nombres']}</td>
                                         <td>{$row['apellidos']}</td>
@@ -80,7 +92,7 @@
                                         <td>{$row['numTelefono']}</td>
                                         <td>{$row['contactoPersonal']}</td>
                                         <td>{$row['correo']}</td>
-                                        <td>{$row['descripcion']}</td>
+                                        <td>{$row['rol']}</td>
                                         <td>
                                             <a href='../../views/usuarios/editarUsuario.php?numDocumento={$row['numDocumento']}' class='btn-edit'>Editar</a>
                                             <form action='eliminarUsuario.php' method='post' style='display:inline;'>

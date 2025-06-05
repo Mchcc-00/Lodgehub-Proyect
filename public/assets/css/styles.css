@@ -170,7 +170,7 @@ html, body {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    width: 100%;
+    width: 95%;
     margin-bottom: 20px;
 }
 .user-table {
@@ -225,7 +225,6 @@ html, body {
 .btn-add .fa-plus {
     color: #296DAC;
     font-size: 1.8em;
-    vertical-align: middle;
 }
 .btn-add:hover{
     color: #0E4153;
@@ -237,8 +236,10 @@ html, body {
     color: #296DAC;
     border:5px solid #296DAC ;
     float: left;
-    margin-bottom: 50px;
-    padding: 15px;
+    margin: 20px 0;
+    padding: 10px;
+    text-align: center;
+    font-size: 1.5em;
     border-radius: 10px;
     cursor: pointer;
 }
