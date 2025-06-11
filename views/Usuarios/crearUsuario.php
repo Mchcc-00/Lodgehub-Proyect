@@ -144,7 +144,7 @@
 
 
                     <div class="form-actions">
-                        <button href="../crudUsuarios/crudUsuarios.php" type="button" class="btn btn-secondary">Cancelar</button>
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='../../views/Usuarios/listaUsuarios.php'">Cancelar</button>
                         <button type="submit" class="btn btn-primary">Registrar</button>
                     </div>
                 </form>
