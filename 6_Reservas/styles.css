@@ -1,0 +1,614 @@
+/*body{
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom, #272727, #303030,#272727);
+}
+
+
+h1{
+    color: aliceblue;
+    text-align: center;
+}*/
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    display: flex;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background: #272727;
+    height: 60px;
+    flex-shrink: 0;
+    border-bottom: 3px solid #F2A90B;
+}
+
+.navbar .left {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.navbar .right {
+    display: flex;
+    align-items: center;
+}
+
+h1{
+    color: #F2A90B;
+    font-size: 40px;
+}
+
+.Lateral{
+    background: #4A4A4A;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.ListaElementos ul {
+    list-style-type: none;
+    margin:0px;
+    padding: 0;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+
+.ListaElementos ul li a{
+    color: #FFFFFF;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.paginaActual {
+    display: block;
+    padding: 15px 0px;
+    background: linear-gradient(to right, #F2A90B, #F2A90B,#4A4A4A);
+    color: #000;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.otrasPaginas {
+    display: block;
+    padding: 15px 0px;
+    text-decoration: none;
+    color: white;
+}
+
+.otrasPaginas:hover{
+    display: block;
+    color: #f1f1f1;
+    background: #6b6b6b;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+}
+
+.ListaElementosIconos{
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    padding: 10px 15px;
+}
+
+.ListaElementosIconos:hover{
+    color: #f1f1f1;
+    background: #6b6b6b;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.linea-horizontalSeparadorIconos {
+    height: 2px;
+    background-color: #6b6b6b;
+    margin: 0 15px;
+    border-radius: 4px;
+}
+
+.content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 35px 30px;
+    background: linear-gradient(to bottom, #272727, #303030,#272727);
+}
+
+.content h2{
+    color: #F2A90B;
+    margin: 0;
+    margin-bottom: 10px ;
+    font-size: 27px;
+}
+
+.linea-horizontalContent {
+    height: 3px;
+    background-color: #F2A90B;
+    border-radius: 2px;
+}
+
+.content h3{
+    color: #F2A90B;
+    margin: 20px 10px 10px;
+    font-size: 17px;
+}
+
+
+.campos {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin: 30px 20px;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+
+    
+}
+
+.campo label {
+    margin-left: 2px;
+    margin-bottom: 5px;
+    font-weight: 600;
+    font-size: 15px;
+    color: #F2A90B;
+}
+
+.campo input{
+    background: #F1F1F1;
+    box-sizing: border-box;
+    padding: 5px 10px;
+    border-style: none;
+    border: 3px solid #F2A90B;
+    border-radius: 15px;
+    font-size: 15px;
+}
+
+.campo select{
+    background: #F1F1F1;
+    box-sizing: border-box;
+    padding: 5px;
+    border-style: none;
+    border: 3px solid #F2A90B;
+    border-radius: 15px;
+    font-size: 15px;
+}
+
+#nombreHuesped{
+    width: 450px;
+    height: 40px;
+}
+
+#ApellidoHuesped{
+    width: 450px;
+    height: 40px;
+}
+
+#tipoDocumentoHuesped{
+    width: 200px;
+    height: 40px;
+}
+
+#NumDocumentoHuesped{
+    width: 250px;
+    height: 40px;
+}
+
+#SexHuesped{
+    width: 250px;
+    height: 40px;
+}
+
+#EstCivHuespedes{
+    width: 250px;
+    height: 40px;
+}
+
+#NumContactoHuesped{
+    width: 300px;
+    height: 40px;
+}
+
+#CorreoHuesped{
+    width: 400px;
+    height: 40px;
+}
+
+.linea-horizontalContent2 {
+    height: 3px;
+    width: 270px;
+    background-color: #F2A90B;
+    border-radius: 2px;
+}
+
+#fechaInicioReserva{
+    width: 240px;
+    height: 40px;
+}
+
+#fechaFinReserva{
+    width: 240px;
+    height: 40px;
+}
+
+.CamposCapacidades{
+    margin: 0 70px;
+}
+
+.content h4{
+    color: #F2A90B;
+    margin: 0 0 5px 0;
+}
+
+.campos2 label {
+    margin-left: 2px;
+    margin-bottom: 5px;
+    font-weight: 500;
+    font-size: 15px;
+    color: #F2A90B;
+}
+
+.campos2 input{
+    background: #F1F1F1;
+    box-sizing: border-box;
+    padding: 5px 10px;
+    border-style: none;
+    border: 3px solid #F2A90B;
+    border-radius: 15px;
+    font-size: 15px;
+}
+
+#CantidadAdultos{
+    width: 50px;
+    height: 40px;
+    margin-left: 10px;
+    margin-right: 40px;
+}
+
+#CantidadMenores{
+    width: 50px;
+    height: 40px;
+    margin-left: 10px;
+    margin-right: 40px;
+}
+
+#CantidadDiscapacitados{
+    width: 50px;
+    height: 40px;
+    margin-left: 10px;
+}
+
+
+#MotReservaHuesped{
+    width: 250px;
+    height: 40px;
+}
+
+#NumeroHabitacion{
+    width: 100px;
+    height: 40px;
+}
+
+.camposPago {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin: 20px 0px;
+}
+
+#MetodosPago{
+    width: 150px;
+    height: 40px;
+}
+
+#TotalPagoHuespued{
+    width: 200px;
+    height: 40px;
+}
+
+.campoPago {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0 0 0;
+    flex-shrink: 0;
+}
+
+.campoEmpleado{
+    margin-top: 50px;
+}
+
+#NumDocumentoEmpleado{
+    width: 300px;
+    height: 40px;
+}
+
+.campo textarea{
+    background: #F1F1F1;
+    box-sizing: border-box;
+    padding: 20px;
+    border-style: none;
+    border: 3px solid #F2A90B;
+    border-radius: 15px;
+    font-size: 15px;
+    font-family: sans-serif;
+}
+
+.campoTextArea{
+    margin-left: 150px;
+}
+
+#InformacionAdicional{
+    width: 900px;
+    height: 200px;
+}
+
+
+.botones-derecha {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px; /* espacio entre botones */
+    margin: 0px 10px 20px 0; /* opcional, para separación con el resto */
+}
+
+.botones-derecha input {
+    width: 150px;
+    height: 40px;
+    font-size: 20px;
+    font-weight: 600;
+    font-family: sans-serif;
+    border: 3px solid;
+    border-radius: 15px;
+    color: #313131;
+}
+
+#BotonCancelarReserva{
+    background: #FF5656;
+    border-color: #BA0000;
+}
+
+#BotonReservarReserva{
+    background: #5FFF56;
+    border-color: #0FBA00;
+}
+
+
+#BotonCancelarReserva:hover {
+    box-shadow: 0 0 4px 2px #f20b0b;
+}
+
+#BotonReservarReserva:hover {
+    box-shadow: 0 0 4px 2px #73f20b;
+}
+
+
+
+.tabla-reservas {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+    color: #5D0270;
+    font-weight: 700;
+}
+
+
+.tabla-reservas tr {
+    background-color: #B3B3B3;
+}
+
+.tabla-reservas th{
+    padding: 15px 20px;
+    text-align: center;
+}
+
+.tabla-reservas td{
+padding: 20px 40px;
+text-align: center;
+}
+
+
+.tabla-reservas th:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.tabla-reservas th:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+
+.tabla-reservas tr td:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.tabla-reservas tr td:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.division1Informacion span{
+    margin-left: 20px;
+    color: #f20b0b;
+    font-size: 40px;
+}
+
+#verInformacionReserva{
+    padding: 10px 30px;
+    background: #9520af;
+    color: #fff;
+    border-radius: 10px;
+    border: #fff solid 2px;
+    font-size: 15px;
+    font-weight: 100;
+}
+
+#verInformacionReserva:hover{
+    background: #5D0270;
+}
+
+.btnEliminar{
+    padding: 10px 10px;
+    background: #FF5656;
+    color: #fff;
+    border-radius: 10px;
+    border: #fff solid 2px;
+    font-size: 15px;
+    font-weight: 100;
+}
+
+.btnEliminar:hover{
+    background: #d33131;
+}
+
+
+.modal {
+  display: none; /* Oculto por defecto */
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+
+
+.informacionReservaContenido{
+    color: #fff;
+    display: flex;
+    gap: 100px;
+    padding-left: 20px;
+}
+
+.modal h3{
+    color: #F2A90B;
+    margin: 0;
+    font-size: 17px;
+}
+
+.division1Informacion {
+  background-color: #1A1A1A;
+  margin: 60px auto 0 auto;
+  padding: 20px;
+  justify-content: space-between;
+  border-radius: 10px 10px 0 0;
+  width: 40%;
+
+  display: flex;
+}
+
+.division2Informacion {
+  background-color: #2C2C2C;
+  margin: 0 auto 0 auto;
+  padding: 20px;
+  width: 40%;
+
+}
+
+.division3Informacion {
+  background-color: #242424;
+  margin: 0 auto 0 auto;
+  padding: 20px;
+  width: 40%;
+}
+
+.infoNumeroPersonas{
+    margin: 0 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    margin: auto;
+    gap: 90px;
+}
+
+.contenedoresPersonas{
+    box-sizing: border-box;
+    border-radius: 10px;
+    width: 60px;
+    height: 50px;
+    margin: auto;
+    padding:  1px 0 0px 25px;
+    background: #4A4A4A;
+}
+
+.division4Informacion {
+    background-color: #242424;
+    margin: 0 auto 0 auto;
+    padding: 20px;
+    border-radius: 0 0 10px 10px;
+    width: 40%;
+}
+
+.division4InformacionAdicional{
+    color: #fff;
+    padding-left: 20px;
+    gap: 20px;
+    display: flex;
+    flex-direction: column;
+}
+.contenedorInfoAdicional p{
+    color: #000000;
+}
+
+.contenedorInfoAdicional{
+    width: 80%;
+    height: 100px;
+    background: #D4D4D4;
+    border-radius: 10px;
+    padding-left: 20px;
+    margin: auto;
+}
+
+.cerrar {
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+/*-------------------------------------------------*/
+
+#LogoNav{
+    height: 50px;
+}
+
+#flechaNav{
+    height: 30px;
+}
+
+#IconUserNav{
+    height: 60px;
+}
+
+#IconPQRS{
+    height: 45px;
+}
+
+#IconAjustes{
+    height: 45px;
+}
