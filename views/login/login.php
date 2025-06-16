@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - LodgeHub</title>
-    <link rel="stylesheet" href="../usuarios/assets/css/loginStyles.css"> <!-- Enlaza el archivo CSS -->
+    <link rel="stylesheet" href="../../public/assets/css/loginStyles.css"> <!-- Enlaza el archivo CSS -->
 </head>
 
 <body>
@@ -19,18 +19,18 @@
                 <div class="circle circle-3"></div>
                 <div class="circle circle-4"></div>
 
-                <form class="login-form" action="validar.php" method="post">
+                <form class="login-form" action="../../controllers/AuthLogin.php" method="post">
 
                     <h1>¡BIENVENIDO A LODGEHUB!</h1> <!-- Título -->
 
                     <div class="input-group">
                         <label for="username">Usuario</label>
-                        <input type="text" id="usuario" name="usuario" placeholder="Ingresa tu usuario" required>
+                        <input type="text" id="usuario" name="correo" placeholder="Ingresa tu usuario" required>
                     </div>
 
                     <div class="input-group">
                         <label for="password">Contraseña</label>
-                        <input type="password" id="password" name="contraseña" placeholder="Ingresa tu contraseña" required>
+                        <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña" required>
                     </div>
 
                     <a href="#" class="account-link">¿Olvidaste tu contraseña?</a>
@@ -46,7 +46,7 @@
             </div>
             <div class ="degrade-container"></div>
             <div class="logo-container">
-                <img src="../public/img/LogoClaroLH.png" alt="">
+                <img src="../../public/img/LogoClaroLH.png" alt="">
                 <h6>lodgehubgroup © 2025</h6>
             </div>
 
