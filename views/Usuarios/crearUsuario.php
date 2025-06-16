@@ -58,9 +58,12 @@
                         <div class="form-group">
                             <label for="tipo_documento">Tipo de documento</label>
                             <select id="tipo_documento" name="tipo_documento">
-                                <option value="cedula">Cédula</option>
-                                <option value="pasaporte">Pasaporte</option>
-                                <option value="otro">Otro</option>
+                                <option value="" disabled selected>Seleccionar...</option>
+                                <option value="1">Cédula de ciudadanía</option>
+                                <option value="2">Tarjeta de identidad</option>
+                                <option value="3">Cédula de extranjería</option>
+                                <option value="4">Pasaporte</option>                               
+                                <option value="5">Registro civil</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -83,9 +86,9 @@
                             <label for="sexo">Sexo</label>
                             <select id="sexo" name="sexo">
                                 <option value="" disabled selected>Seleccionar...</option>
-                                <option value="masculino">Masculino</option>
-                                <option value="femenino">Femenino</option>
-                                <option value="otro">Otro</option>
+                                <option value="1">Hombre</option>
+                                <option value="2">Mujer</option>
+                                <option value="3">Otro</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -116,8 +119,9 @@
                             <label for="rol">Rol</label>
                             <select id="rol" name="rol">
                                 <option value="" disabled selected>Seleccionar...</option>
-                                <option value="administrador">Administrador</option>
-                                <option value="recepcionista">Recepcionista</option>
+                                <option value="1">Administrador</option>
+                                <option value="2">Recepcionista</option>
+                                <option value="3">Atención al cliente</option>
                             </select>
                         </div>
                         <div class="form-group">
