@@ -158,7 +158,27 @@
         </div>
         </main>
     </div>
-
+    <!-- Script para habilitar/deshabilitar RNT y NIT según el rol -->
+    <script>
+    document.getElementById('rol').addEventListener('change', function() {
+        const rnt = document.getElementById('rnt');
+        const nit = document.getElementById('nit');
+        if (this.value === '1') { // 1 = Administrador
+            rnt.disabled = false;
+            nit.disabled = false;
+            rnt.required = true;
+            nit.required = true;
+        } else {
+            rnt.disabled = true;
+            nit.disabled = true;
+            rnt.required = false;
+            nit.required = false;
+            rnt.value = '';
+            nit.value = '';
+        }
+    });
+    document.getElementById('rol').dispatchEvent(new Event('change'));
+    </script>
     <script src="../assets/js/formScripts.js"></script>
 </body>
 

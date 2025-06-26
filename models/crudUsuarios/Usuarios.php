@@ -1,112 +1,99 @@
 <?php
+// filepath: c:\xampp\htdocs\loch\usuarios.php
 
-require_once '../database.php';
-// Insertar/Crear
-// Crear un nuevo usuario
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $nombres = trim($_POST['nombres'] ?? '');
-    $correo = trim($_POST['correo'] ?? '');
+require_once '../../conexionGlobal.php';
 
-    if (empty($nombres) || empty($correo)) {
+// Función para limpiar datos
+function limpiar($dato)
+{
+    return htmlspecialchars(trim($dato));
+}
+
+$db = conexionDB(); // Usamos $db como la conexión PDO
+
+// Insertar usuario
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['accion'] === 'insertar') {
+    // Validar y limpiar datos
+    $numDocumento = limpiar($_POST['numDocumento'] ?? '');
+    $nombres = limpiar($_POST['nombres'] ?? '');
+    $apellidos = limpiar($_POST['apellidos'] ?? '');
+    $direccion = limpiar($_POST['direccion'] ?? '');
+    $fechaNacimiento = limpiar($_POST['fechaNacimiento'] ?? '');
+    $numTelefono = limpiar($_POST['numTelefono'] ?? '');
+    $contactoPersonal = limpiar($_POST['contactoPersonal'] ?? '');
+    $password = limpiar($_POST['password'] ?? '');
+    $correo = limpiar($_POST['correo'] ?? '');
+    $rnt = limpiar($_POST['rnt'] ?? '');
+    $nit = limpiar($_POST['nit'] ?? '');
+    $foto = $_FILES['foto'] ?? null;
+    $sexo = limpiar($_POST['sexo'] ?? '');
+    $tipoDocumento = limpiar($_POST['tipoDocumento'] ?? '');
+    $roles = limpiar($_POST['roles'] ?? '');
+    $estadoCivil = limpiar($_POST['estadoCivil'] ?? '');
+
+    // Validación de campos obligatorios GENERAL
+    if (
+        empty($numDocumento) || empty($tipoDocumento) || empty($nombres) || empty($apellidos) || empty($direccion)
+        || empty($fechaNacimiento) || empty($numTelefono) || empty($contactoPersonal) || empty($password)
+        || empty($correo) || empty($foto) || empty($sexo) || empty($roles) || empty($estadoCivil)
+    ) {
         die("Por favor, completa todos los campos obligatorios.");
     }
-
-    $stmt = $conn->prepare("INSERT INTO tp_empleados (nombres, correo) VALUES (?, ?)");
-    if (!$stmt) {
-        die("Error en la preparación de la consulta: " . $conn->error);
+    // Validación específica para ADMINISTRADOR
+    if ($roles === '1') { // Asumiendo que '1' es el ID del rol ADMINISTRADOR
+        if (empty($rnt) || empty($nit)) {
+            die("RNT y NIT son obligatorios para el rol ADMINISTRADOR.");
+        }
     }
 
-    $stmt->bind_param("ss", $nombres, $correo);
-
-    if ($stmt->execute()) {
-        // Redirige al formulario con un mensaje de éxito
+    $stmt = $db->prepare("INSERT INTO tp_empleados (nombres, correo) VALUES (?, ?)");
+    if ($stmt->execute([$nombres, $correo])) {
         header("Location: crearUsuario.html?mensaje=Usuario registrado exitosamente");
         exit();
     } else {
-        echo "Error al registrar el usuario: " . $stmt->error;
+        echo "Error al registrar el usuario.";
+    }
+}
+
+// Actualizar usuario
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['accion'] === 'actualizar') {
+    $emp_numDocumento = limpiar($_POST['emp_numDocumento'] ?? '');
+    $emp_direccion = limpiar($_POST['emp_direccion'] ?? '');
+    $emp_numTelefono = limpiar($_POST['emp_numTelefono'] ?? '');
+    $emp_contactoPersonal = limpiar($_POST['emp_contactoPersonal'] ?? '');
+    $emp_correo = limpiar($_POST['emp_correo'] ?? '');
+    $emp_rol_roles = limpiar($_POST['emp_rol_roles'] ?? '');
+    $emp_estcivemp_estadoCivil = limpiar($_POST['emp_estcivemp_estadoCivil'] ?? '');
+
+    if (
+        empty($emp_numDocumento) || empty($emp_direccion) || empty($emp_numTelefono) ||
+        empty($emp_contactoPersonal) || empty($emp_correo) || empty($emp_rol_roles) || empty($emp_estcivemp_estadoCivil) ||
+        !filter_var($emp_correo, FILTER_VALIDATE_EMAIL)
+    ) {
+        die("Por favor, completa todos los campos correctamente.");
     }
 
-    $stmt->close();
-    $conn->close();
-}
-//Eliminar/Delete
-// Eliminar un usuario
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $numDocumento = ($_POST['numDocumento'] ?? null);
-
-    if ($numDocumento) {
-        // Preparar la consulta para eliminar el registro
-        $stmt = $conn->prepare("DELETE FROM empleados WHERE numDocumento = ?");
-        if ($stmt) {
-            $stmt->bind_param("s", $numDocumento);
-            if ($stmt->execute()) {
-                // Redirigir con un mensaje de éxito
-                header("Location: ../crudUsuarios/crudUsuarios.php?mensaje=Usuario eliminado exitosamente");
-                exit();
-            } else {
-                echo "Error al eliminar el usuario: " . $stmt->error;
-            }
-            $stmt->close();
-        } else {
-            echo "Error en la preparación de la consulta: " . $conn->error;
-        }
+    $stmt = $db->prepare("UPDATE tp_empleados SET emp_direccion = ?, emp_numTelefono = ?, emp_contactoPersonal = ?, emp_correo = ?, emp_rol_roles = ?, emp_estcivemp_estadoCivil = ? WHERE emp_numDocumento = ?");
+    if ($stmt->execute([$emp_direccion, $emp_numTelefono, $emp_contactoPersonal, $emp_correo, $emp_rol_roles, $emp_estcivemp_estadoCivil, $emp_numDocumento])) {
+        echo "Usuario actualizado correctamente.";
     } else {
-        echo "ID de usuario no proporcionado.";
+        echo "Error al actualizar el usuario.";
     }
 }
 
+// Eliminar usuario
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['accion'] === 'eliminar') {
+    $emp_numDocumento = limpiar($_POST['emp_numDocumento'] ?? '');
 
-$conn->close();
+    if (empty($emp_numDocumento)) {
+        die("ID de usuario no proporcionado.");
+    }
 
-if (isset($_GET['emp_numDocumento'])) {
-    $numDocumento = intval($_GET['emp_numDocumento']);
-
-    // Consulta para obtener los datos del usuario
-    $stmt = $conn->prepare("SELECT * FROM tp_empleados WHERE emp_numDocumento = ?");
-    $stmt->bind_param("i", $tp_emp_numDocumento);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        $usuario = $result->fetch_assoc();
+    $stmt = $db->prepare("DELETE FROM tp_empleados WHERE emp_numDocumento = ?");
+    if ($stmt->execute([$emp_numDocumento])) {
+        header("Location: ../crudUsuarios/crudUsuarios.php?mensaje=Usuario eliminado exitosamente");
+        exit();
     } else {
-        echo "Usuario no encontrado.";
-        exit;
-    }
-
-    $stmt->close();
-} else {
-    echo "ID de usuario no proporcionado.";
-    exit;
-}
-//Editar/Actualizar
-// Procesar el formulario de edición
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $emp_direccion = $_POST['emp_direccion'];
-    $emp_numTelefono = $_POST['emp_numTelefono'];
-    $emp_contactoPersonal = $_POST['emp_contactoPersonal'];
-    $emp_correo = $_POST['emp_correo'];
-    $emp_rol_roles = $_POST['emp_rol_roles'];
-    $emp_estcivemp_estadoCivil = $_POST['emp_estcivemp_estadoCivil'];
-
-    // Validar los datos (puedes agregar más validaciones según sea necesario)
-    if (!empty($emp_direccion) && !empty($emp_numTelefono) && !empty($emp_contactoPersonal) && filter_var($emp_correo, FILTER_VALIDATE_EMAIL) && !empty($emp_rol_roles) && !empty($emp_estcivemp_estadoCivil)) {
-        // Actualizar los datos en la base de datos
-        $stmt = $conn->prepare("UPDATE tp_empleados SET emp_direccion = ?, emp_numTelefono = ?,  emp_contactoPersonal = ?, emp_correo = ?, emp_rol_roles = ?,  emp_estcivemp_estadosCivil WHERE emp_numDocumento = ?");
-        $stmt->bind_param("ssssssi", $emp_direccion, $emp_numTelefono, $emp_contactoPersonal, $emp_correo, $emp_rol_roles, $emp_estcivemp_estadoCivil, $emp_numDocumento);
-        
-
-        if ($stmt->execute()) {
-            echo "Usuario actualizado correctamente.";
-        } else {
-            echo "Error al actualizar el usuario.";
-        }
-
-        $stmt->close();
-    } else {
-        echo "Por favor, completa todos los campos correctamente.";
+        echo "Error al eliminar el usuario.";
     }
 }
-
-$conn->close();
-?>

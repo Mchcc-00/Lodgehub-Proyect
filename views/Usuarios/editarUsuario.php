@@ -116,8 +116,9 @@
                             <label for="rol">Rol</label>
                             <select id="rol" name="rol">
                                 <option value="" disabled selected>Seleccionar...</option>
-                                <option value="administrador">Administrador</option>
-                                <option value="recepcionista">Recepcionista</option>
+                                <option value="1">Administrador</option>
+                                <option value="2">Recepcionista</option>
+                                <option value="3">Atención al cliente</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -154,7 +155,27 @@
         </div>
         </main>
     </div>
-
+<!-- Script para habilitar/deshabilitar RNT y NIT según el rol -->
+    <script>
+    document.getElementById('rol').addEventListener('change', function() {
+        const rnt = document.getElementById('rnt');
+        const nit = document.getElementById('nit');
+        if (this.value === '1') { // 1 = Administrador
+            rnt.disabled = false;
+            nit.disabled = false;
+            rnt.required = true;
+            nit.required = true;
+        } else {
+            rnt.disabled = true;
+            nit.disabled = true;
+            rnt.required = false;
+            nit.required = false;
+            rnt.value = '';
+            nit.value = '';
+        }
+    });
+    document.getElementById('rol').dispatchEvent(new Event('change'));
+    </script>
     <script src="../assets/js/formScripts.js"></script>
 </body>
 
