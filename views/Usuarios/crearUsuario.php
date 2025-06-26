@@ -44,7 +44,7 @@
             <main class="form-content-container">
                 <h2 class="form-title">NUEVO USUARIO</h2>
 
-                <form action="../crudUsuarios/procesarUsuario.php" method="post" enctype="multipart/form-data">
+                <form action="../../models/crudUsuarios/Usuarios.php" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="formulario" value="crearUsuario">
                     <div class="form-grid">
                         <div class="form-group">
@@ -134,7 +134,7 @@
                         </div>
 
                         <div class="form-group photo-upload-area">
-                            <label for="foto_perfil" class="photo-upload-label">
+                            <label for="foto" class="photo-upload-label">
                                 SUBIR FOTO
                                 <input type="file" id="foto_perfil" name="foto_perfil" accept="image/*"
                                     class="photo-input-hidden">

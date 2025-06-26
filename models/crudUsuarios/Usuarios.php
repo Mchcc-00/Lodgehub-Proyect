@@ -1,7 +1,7 @@
 <?php
 // filepath: c:\xampp\htdocs\loch\usuarios.php
 
-require_once '../../conexionGlobal.php';
+require_once __DIR__ . '/../../config/conexionGlobal.php';
 
 // Función para limpiar datos
 function limpiar($dato)
@@ -46,9 +46,34 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['
         }
     }
 
-    $stmt = $db->prepare("INSERT INTO tp_empleados (nombres, correo) VALUES (?, ?)");
-    if ($stmt->execute([$nombres, $correo])) {
-        header("Location: crearUsuario.html?mensaje=Usuario registrado exitosamente");
+    $stmt = $db->prepare(
+        "INSERT INTO tp_empleados 
+    (numDocumento, nombres, apellidos, direccion, fechaNacimiento, numTelefono, contactoPersonal, 
+    password, correo, rnt, nit, sexo, tipoDocumento, roles, estadoCivil, foto)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    );
+
+    $stmt->execute([
+        $numDocumento,
+        $nombres,
+        $apellidos,
+        $direccion,
+        $fechaNacimiento,
+        $numTelefono,
+        $contactoPersonal,
+        $password,
+        $correo,
+        $rnt,
+        $nit,
+        $sexo,
+        $tipoDocumento,
+        $roles,
+        $estadoCivil,
+        $foto ? file_get_contents($foto['tmp_name']) : null // o guarda la ruta si subes el archivo
+    ]);
+
+    if ($stmt) {
+        header("Location: ../../views/Usuarios/crearUsuario.php?mensaje=¡Usuario registrado exitosamente!");
         exit();
     } else {
         echo "Error al registrar el usuario.";
