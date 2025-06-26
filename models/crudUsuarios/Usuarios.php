@@ -1,5 +1,8 @@
 <?php
-// filepath: c:\xampp\htdocs\loch\usuarios.php
+// Habilitar la visualización de errores para depuración
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 require_once __DIR__ . '/../../config/conexionGlobal.php';
 
@@ -13,6 +16,7 @@ $db = conexionDB(); // Usamos $db como la conexión PDO
 
 // Insertar usuario
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['accion'] === 'insertar') {
+    echo "<p>Debug: Entrando a registro de usuario</p>";
     // Validar y limpiar datos
     $numDocumento = limpiar($_POST['numDocumento'] ?? '');
     $nombres = limpiar($_POST['nombres'] ?? '');
@@ -31,52 +35,61 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['
     $roles = limpiar($_POST['roles'] ?? '');
     $estadoCivil = limpiar($_POST['estadoCivil'] ?? '');
 
+    echo "<p>Debug: Datos recibidos - numDocumento: $numDocumento, nombres: $nombres, correo: $correo</p>";
+
     // Validación de campos obligatorios GENERAL
     if (
         empty($numDocumento) || empty($tipoDocumento) || empty($nombres) || empty($apellidos) || empty($direccion)
         || empty($fechaNacimiento) || empty($numTelefono) || empty($contactoPersonal) || empty($password)
-        || empty($correo) || empty($foto) || empty($sexo) || empty($roles) || empty($estadoCivil)
+        || empty($correo) || empty($sexo) || empty($roles) || empty($estadoCivil)
     ) {
-        die("Por favor, completa todos los campos obligatorios.");
+        die("<p>Debug: Faltan campos obligatorios</p>");
     }
     // Validación específica para ADMINISTRADOR
     if ($roles === '1') { // Asumiendo que '1' es el ID del rol ADMINISTRADOR
         if (empty($rnt) || empty($nit)) {
-            die("RNT y NIT son obligatorios para el rol ADMINISTRADOR.");
+            die("<p>Debug: Faltan RNT o NIT para administrador</p>");
         }
     }
 
-    $stmt = $db->prepare(
-        "INSERT INTO tp_empleados 
-    (numDocumento, nombres, apellidos, direccion, fechaNacimiento, numTelefono, contactoPersonal, 
-    password, correo, rnt, nit, sexo, tipoDocumento, roles, estadoCivil, foto)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-    );
+    try {
+        $stmt = $db->prepare(
+            "INSERT INTO tp_empleados 
+        (numDocumento, nombres, apellidos, direccion, fechaNacimiento, numTelefono, contactoPersonal, 
+        password, correo, rnt, nit, sexo, tipoDocumento, roles, estadoCivil, foto)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        );
+        echo "<p>Debug: Consulta preparada</p>";
 
-    $stmt->execute([
-        $numDocumento,
-        $nombres,
-        $apellidos,
-        $direccion,
-        $fechaNacimiento,
-        $numTelefono,
-        $contactoPersonal,
-        $password,
-        $correo,
-        $rnt,
-        $nit,
-        $sexo,
-        $tipoDocumento,
-        $roles,
-        $estadoCivil,
-        $foto ? file_get_contents($foto['tmp_name']) : null // o guarda la ruta si subes el archivo
-    ]);
+        $ejecutado = $stmt->execute([
+            $numDocumento,
+            $nombres,
+            $apellidos,
+            $direccion,
+            $fechaNacimiento,
+            $numTelefono,
+            $contactoPersonal,
+            $password,
+            $correo,
+            $rnt,
+            $nit,
+            $sexo,
+            $tipoDocumento,
+            $roles,
+            $estadoCivil,
+            $foto ? file_get_contents($foto['tmp_name']) : null // o guarda la ruta si subes el archivo
+        ]);
+        echo "<p>Debug: Consulta ejecutada</p>";
 
-    if ($stmt) {
-        header("Location: ../../views/Usuarios/crearUsuario.php?mensaje=¡Usuario registrado exitosamente!");
-        exit();
-    } else {
-        echo "Error al registrar el usuario.";
+        if ($ejecutado) {
+            echo "<p>Debug: Usuario registrado correctamente</p>";
+            header("Location: ../../views/Usuarios/crearUsuario.php?mensaje=¡Usuario registrado exitosamente!");
+            exit();
+        } else {
+            echo "<p>Debug: Error al registrar el usuario (execute devolvió false)</p>";
+        }
+    } catch (PDOException $e) {
+        echo "<p>Debug: Error en PDO - " . $e->getMessage() . "</p>";
     }
 }
 
