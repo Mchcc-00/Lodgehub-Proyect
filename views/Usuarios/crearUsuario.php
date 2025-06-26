@@ -163,7 +163,7 @@
     document.getElementById('rol').addEventListener('change', function() {
         const rnt = document.getElementById('rnt');
         const nit = document.getElementById('nit');
-        if (this.value === '1') { // 1 = Administrador
+        if (this.value === '1') { // 1 = rol Administrador
             rnt.disabled = false;
             nit.disabled = false;
             rnt.required = true;

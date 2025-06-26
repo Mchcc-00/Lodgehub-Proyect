@@ -19,7 +19,7 @@
                     </div>
                 </header>
 
-                <form action="crudUsuarios/procesarUsuario.php" method="post" enctype="multipart/form-data">
+                <form action="../../models/crudUsuarios/Usuarios.php" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="formulario" value="crearPerfil">
                     <div class="form-grid">
                         <div class="form-group">
@@ -142,7 +142,7 @@
     document.getElementById('rol').addEventListener('change', function() {
         const rnt = document.getElementById('rnt');
         const nit = document.getElementById('nit');
-        if (this.value === '1') { // 1 = Administrador
+        if (this.value === '1') { // 1 = rol Administrador
             rnt.disabled = false;
             nit.disabled = false;
             rnt.required = true;
