@@ -135,3 +135,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['
         echo "Error al eliminar el usuario.";
     }
 }
+?>
