@@ -4,7 +4,7 @@ require_once '../config/conexionGlobal.php';
 
 $db = conexionDB();
 
-    $sql = "SELECT r.id, r.costo,r.fechainicio,r.fechaFin, r.cantidadAdultos, r.cantidadNinos, r.cantidadDiscapacitados,r.hue_numDocumento, em.nombres as empNombres, em.apellidos as empApellidos, r.numeroHabitacion, mp.descripción as metodoPago,h.nombres, h.apellidos, d.descripcion as tipDoc, s.descripcion as sexo, ec.descripcion as estaCiv, h.numTelefono, h.correo, r.fechaRegistro, r.informacionAdicional,  e.descripcion FROM tp_reservas as r
+    $sql = "SELECT r.id, r.costo,r.fechainicio,r.fechaFin, r.cantidadAdultos, r.cantidadNinos, r.cantidadDiscapacitados,r.hue_numDocumento, em.nombres as empNombres, em.apellidos as empApellidos, r.numeroHabitacion, mp.descripcion as metodoPago,h.nombres, h.apellidos, d.descripcion as tipDoc, s.descripcion as sexo, ec.descripcion as estaCiv, h.numTelefono, h.correo, r.fechaRegistro, r.informacionAdicional,  e.descripcion as estadoReserva FROM tp_reservas as r
     
     INNER JOIN td_estado AS e ON  r.estado = e.id
     INNER JOIN tp_huespedes AS h ON  r.hue_numDocumento = h.numDocumento
