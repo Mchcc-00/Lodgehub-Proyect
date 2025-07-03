@@ -52,7 +52,7 @@ if (!$stmt) {
 
 // Vincular parámetros
 $stmt->bind_param(
-    "idssssssssi",
+    "isssssssssi",
     $id, $fecha, $tipo_pqrs, $urgencia, $categoria,
     $descripcion, $nombre, $apellido, $empleado,
     $tipo_documento, $numero_documento
@@ -135,3 +135,4 @@ if ($stmt->execute()) {
 $stmt->close();
 $conn->close();
 ?>
+
