@@ -1,4 +1,5 @@
 <?php
+echo "<p>Debug: El archivo Usuarios.php se está ejecutando</p>";
 // Habilitar la visualización de errores para depuración
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -6,21 +7,27 @@ error_reporting(E_ALL);
 
 require_once __DIR__ . '/../../config/conexionGlobal.php';
 
+// Debug: Mostrar método y POST
+echo "<p>Debug: Método: ". $_SERVER["REQUEST_METHOD"] ."</p>";
+echo "<pre>Debug: POST: ".print_r($_POST, true)."</pre>";
+
+$db = conexionDB(); // Usamos $db como la conexión PDO
+if (!$db) {
+    die("Error al conectar a la base de datos.");
+}
+
 // Función para limpiar datos
 function limpiar($dato)
 {
     return htmlspecialchars(trim($dato));
 }
-
-$db = conexionDB(); // Usamos $db como la conexión PDO
-
 // Insertar usuario
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['accion'] === 'insertar') {
-    echo "<p>Debug: Entrando a registro de usuario</p>";
+
     // Validar y limpiar datos
     $numDocumento = limpiar($_POST['numDocumento'] ?? '');
-    $nombres = limpiar($_POST['nombres'] ?? '');
-    $apellidos = limpiar($_POST['apellidos'] ?? '');
+    $nombres = trim((($_POST['primer_nombre'] ?? '') . ' ' . ($_POST['segundo_nombre'] ?? '')));
+    $apellidos = trim((($_POST['primer_apellido'] ?? '') . ' ' . ($_POST['segundo_apellido'] ?? '')));
     $direccion = limpiar($_POST['direccion'] ?? '');
     $fechaNacimiento = limpiar($_POST['fechaNacimiento'] ?? '');
     $numTelefono = limpiar($_POST['numTelefono'] ?? '');
@@ -34,8 +41,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['
     $tipoDocumento = limpiar($_POST['tipoDocumento'] ?? '');
     $roles = limpiar($_POST['roles'] ?? '');
     $estadoCivil = limpiar($_POST['estadoCivil'] ?? '');
-
-    echo "<p>Debug: Datos recibidos - numDocumento: $numDocumento, nombres: $nombres, correo: $correo</p>";
 
     // Validación de campos obligatorios GENERAL
     if (
@@ -82,9 +87,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['
         echo "<p>Debug: Consulta ejecutada</p>";
 
         if ($ejecutado) {
-            echo "<p>Debug: Usuario registrado correctamente</p>";
-            header("Location: ../../views/Usuarios/crearUsuario.php?mensaje=¡Usuario registrado exitosamente!");
-            exit();
+            echo "<h2 style='color:green'>Usuario registrado correctamente. Puedes volver atrás.</h2>";
+             header("Location: ../../views/Usuarios/crearUsuario.php?mensaje=¡Usuario registrado exitosamente!");
+            // exit();
         } else {
             echo "<p>Debug: Error al registrar el usuario (execute devolvió false)</p>";
         }

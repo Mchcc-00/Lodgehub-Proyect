@@ -56,8 +56,8 @@
                             <input type="text" id="segundo_nombre" name="segundo_nombre">
                         </div>
                         <div class="form-group">
-                            <label for="tipo_documento">Tipo de documento</label>
-                            <select id="tipo_documento" name="tipo_documento">
+                            <label for="tipoDocumento">Tipo de documento</label>
+                            <select id="tipoDocumento" name="tipDocumento">
                                 <option value="" disabled selected>Seleccionar...</option>
                                 <option value="1">Cédula de ciudadanía</option>
                                 <option value="2">Tarjeta de identidad</option>
@@ -67,8 +67,8 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="documento">Número de documento</label>
-                            <input type="text" id="documento" name="documento">
+                            <label for="numDocumento">Número de documento</label>
+                            <input type="text" id="numDocumento" name="numDocumento">
                         </div>
                         <div class="form-group">
                             <label for="primer_apellido">Primer apellido</label>
@@ -79,7 +79,7 @@
                             <input type="text" id="segundo_apellido" name="segundo_apellido">
                         </div>
                         <div class="form-group">
-                            <label for="fecha_nacimiento">Fecha de nacimiento</label>
+                            <label for="fechaNacimiento">Fecha de nacimiento</label>
                             <input type="date" id="fecha_nacimiento" name="fecha_nacimiento"">
                         </div>
                         <div class=" form-group">
@@ -96,28 +96,28 @@
                             <input type="email" id="correo" name="correo">
                         </div>
                         <div class="form-group password-wrapper">
-                            <label for="contrasena">Contraseña</label>
-                            <input type="password" id="contrasena" name="contrasena">
+                            <label for="password">Contraseña</label>
+                            <input type="password" id="password" name="password">
                         </div>
                         <div class="form-group">
-                            <label for="confirmar_contrasena">Confirmar contraseña</label>
-                            <input type="password" id="confirmar_contrasena" name="confirmar_contrasena">
+                            <label for="confirmar_password">Confirmar contraseña</label>
+                            <input type="password" id="confirmar_password" name="confirmar_passowrd">
                         </div>
                         <div class="form-group">
-                            <label for="telefono">Número de teléfono</label>
-                            <input type="tel" id="telefono" name="telefono">
+                            <label for="numTelefono">Número de teléfono</label>
+                            <input type="tel" id="numTelefono" name="numTelefono">
                         </div>
                         <div class="form-group">
-                            <label for="tel_emergencia">Teléfono de emergencia</label>
-                            <input type="tel" id="tel_emergencia" name="tel_emergencia">
+                            <label for="telEmergencia">Teléfono de emergencia</label>
+                            <input type="tel" id="telEmergencia" name="telEmergencia">
                         </div>
                         <div class="form-group">
                             <label for="direccion">Dirección</label>
                             <input type="text" id="direccion" name="direccion">
                         </div>
                         <div class="form-group">
-                            <label for="rol">Rol</label>
-                            <select id="rol" name="rol">
+                            <label for="roles">Rol</label>
+                            <select id="roles" name="roles">
                                 <option value="" disabled selected>Seleccionar...</option>
                                 <option value="1">Administrador</option>
                                 <option value="2">Recepcionista</option>

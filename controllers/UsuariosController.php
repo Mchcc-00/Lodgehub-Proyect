@@ -1,5 +1,10 @@
 <?php
-require_once '../database.php';
+require_once __DIR__ . '/../../config/conexionGlobal.php';
+
+$db = conexionDB(); // Usamos $db como la conexión PDO
+if (!$db) {
+    die("Error al conectar a la base de datos.");
+}
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
@@ -10,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $fechaNacimiento = trim($_POST['fechaNacimiento'] ?? '');
     $sexo = trim($_POST['sexo'] ?? '');
     $correo = trim($_POST['correo'] ?? '');
-    $contrasena = ($_POST['contrasena'] ?? '');
+    $password = ($_POST['password'] ?? '');
     $numTelefono = trim($_POST['numTelefono'] ?? '');
     $contactoPersonal = trim($_POST['contactoPersonal'] ?? '');
     $direccion = trim($_POST['direccion'] ?? '');
@@ -18,9 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 
     // Validaciones básicas
-
     $error = '';
-
     if (empty($nombres)) {
         $error = 'nombres';
     } elseif (empty($apellidos)) {
@@ -35,24 +38,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $error = 'sexo';
     } elseif (empty($correo)) {
         $error = 'correo';
-    } elseif (empty($contrasena)) {
-        $error = 'contrasena';
-    } elseif (empty($confirmarContrasena)) {
-        $error = 'confirmarContrasena';
-    } elseif (strlen($contrasena) < 8) {
+    } elseif (empty($password)) {
+        $error = 'password';
+    } elseif (strlen($password) < 8) {
         $error = 'contrasena_corta';
-    } elseif (!preg_match('/[A-Z]/', $contrasena)) {
+    } elseif (!preg_match('/[A-Z]/', $password)) {
         $error = 'contrasena_mayuscula';
-    } elseif (!preg_match('/[a-z]/', $contrasena)) {
+    } elseif (!preg_match('/[a-z]/', $password)) {
         $error = 'contrasena_minuscula';
-    } elseif (!preg_match('/[0-9]/', $contrasena)) {
+    } elseif (!preg_match('/[0-9]/', $password)) {
         $error = 'contrasena_numero';
-    } elseif (!preg_match('/[\W_]/', $contrasena)) {
+    } elseif (!preg_match('/[\W_]/', $password)) {
         $error = 'contrasena_especial';
-    } elseif (preg_match('/\s/', $contrasena)) {
+    } elseif (preg_match('/\s/', $password)) {
         $error = 'contrasena_espacio';
-    } elseif ($contrasena !== $confirmarContrasena) {
-        $error = 'contrasena_no_coincide';
     } elseif (empty($numTelefono)) {
         $error = 'numTelefono';
     } elseif (empty($contactoPersonal)) {
