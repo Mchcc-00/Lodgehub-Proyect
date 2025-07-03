@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario PQRS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="stylescrud.css">
+</head>
+
+<body>
+
+    <section class="table-card">
+        <h3>Consulta de PQRS</h3>
+
+        <div class="consulta-filtros">
+            <label for="filtroPQRS">Filtrar:</label>
+            <select class="filtro-pqrs" id="filtroPQRS">
+                <option value="todos">Todos</option>
+                <option value="abierto">Abiertos</option>
+                <option value="solucionado">Solucionados</option>
+                <option value="alta">Urgencia Alta</option>
+                <option value="media">Urgencia Media</option>
+                <option value="baja">Urgencia Baja</option>
+            </select>
+        </div>
+
+        <div class="tabla-responsive">
+            <table class="tabla-pqrs">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha registro</th>
+                        <th>Nivel de urgencia</th>
+                        <th>Categoría</th>
+                        <th>Tipo</th>
+                        <th>Solicitante</th>
+                        <th>Registra</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaCuerpo">
+                    <!-- Aquí se insertarán filas dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="empty-state" id="estadoVacio">
+            <i class="fa-solid fa-circle-info"></i>
+            No hay registros de PQRS disponibles.
+        </div>
+
+        <div class="acciones-tabla">
+            <button type="button" id="btnEditar" class="btn-editar">Editar PQRS</button>
+        </div>
+    </section>
+
+</body>
+
+</html>
