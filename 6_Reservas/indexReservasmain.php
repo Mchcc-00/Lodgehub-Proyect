@@ -32,7 +32,7 @@
                             <a href="indexHabitaciones.html" class="otrasPaginas">HABITACIONES</a>
                         </li>
                         <li>
-                            <a href="indexMantenimiento.html" class="otrasPaginas">MANTENIMIENT</a>
+                            <a href="indexMantenimiento.html" class="otrasPaginas">MANTENIMIENTO</a>
                         </li>
                     </ul>
                 </div>
