@@ -226,7 +226,7 @@ CREATE TABLE IF NOT EXISTS td_motivoReserva (id INT (3) AUTO_INCREMENT NOT NULL,
 
 
 CREATE TABLE IF NOT EXISTS td_metodoPago (id INT (3) AUTO_INCREMENT NOT NULL,
-                                         descripción VARCHAR (30) NOT NULL,
+                                         descripcion VARCHAR (30) NOT NULL,
 
 
                                          PRIMARY KEY (id)
