@@ -1,53 +1,23 @@
 <?php
-echo "<p>Debug: El archivo Usuarios.php se está ejecutando</p>";
-// Habilitar la visualización de errores para depuración
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 
 require_once __DIR__ . '/../../config/conexionGlobal.php';
 
-// Debug: Mostrar método y POST
-echo "<p>Debug: Método: ". $_SERVER["REQUEST_METHOD"] ."</p>";
-echo "<pre>Debug: POST: ".print_r($_POST, true)."</pre>";
 
 $db = conexionDB(); // Usamos $db como la conexión PDO
 if (!$db) {
     die("Error al conectar a la base de datos.");
 }
-
-// Función para limpiar datos
-function limpiar($dato)
-{
-    return htmlspecialchars(trim($dato));
-}
-// Insertar usuario
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['accion'] === 'insertar') {
-
-    // Validar y limpiar datos
-    $numDocumento = limpiar($_POST['numDocumento'] ?? '');
-    $nombres = trim((($_POST['primer_nombre'] ?? '') . ' ' . ($_POST['segundo_nombre'] ?? '')));
-    $apellidos = trim((($_POST['primer_apellido'] ?? '') . ' ' . ($_POST['segundo_apellido'] ?? '')));
-    $direccion = limpiar($_POST['direccion'] ?? '');
-    $fechaNacimiento = limpiar($_POST['fechaNacimiento'] ?? '');
-    $numTelefono = limpiar($_POST['numTelefono'] ?? '');
-    $contactoPersonal = limpiar($_POST['contactoPersonal'] ?? '');
-    $password = limpiar($_POST['password'] ?? '');
-    $correo = limpiar($_POST['correo'] ?? '');
-    $rnt = limpiar($_POST['rnt'] ?? '');
-    $nit = limpiar($_POST['nit'] ?? '');
-    $foto = $_FILES['foto'] ?? null;
-    $sexo = limpiar($_POST['sexo'] ?? '');
-    $tipoDocumento = limpiar($_POST['tipoDocumento'] ?? '');
-    $roles = limpiar($_POST['roles'] ?? '');
-    $estadoCivil = limpiar($_POST['estadoCivil'] ?? '');
-
-    // Validación de campos obligatorios GENERAL
-    if (
-        empty($numDocumento) || empty($tipoDocumento) || empty($nombres) || empty($apellidos) || empty($direccion)
-        || empty($fechaNacimiento) || empty($numTelefono) || empty($contactoPersonal) || empty($password)
-        || empty($correo) || empty($sexo) || empty($roles) || empty($estadoCivil)
-    ) {
+var_dump($_POST['numDocumento']);
+var_dump($_POST['primer_nombre']);
+var_dump($_POST['primer_apellido']);
+die();
+if (
+        empty($numDocumento)
+        //  || empty($tipoDocumento) || empty($nombres) || empty($apellidos) || empty($direccion)
+        // || empty($fechaNacimiento) || empty($numTelefono) || empty($contactoPersonal) || empty($password)
+        // || empty($correo) || empty($sexo) || empty($roles) || empty($estadoCivil)
+        
+    ) echo "Entró";{
         die("<p>Debug: Faltan campos obligatorios</p>");
     }
     // Validación específica para ADMINISTRADOR
@@ -96,6 +66,35 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['
     } catch (PDOException $e) {
         echo "<p>Debug: Error en PDO - " . $e->getMessage() . "</p>";
     }
+
+// Función para limpiar datos
+function limpiar($dato)
+{
+    return htmlspecialchars(trim($dato));
+}
+// Insertar usuario
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['accion'] === 'insertar') {
+
+    // Validar y limpiar datos
+    $numDocumento = limpiar($_POST['numDocumento'] ?? '');
+    $nombres = trim((($_POST['primer_nombre'] ?? '') . ' ' . ($_POST['segundo_nombre'] ?? '')));
+    $apellidos = trim((($_POST['primer_apellido'] ?? '') . ' ' . ($_POST['segundo_apellido'] ?? '')));
+    $direccion = limpiar($_POST['direccion'] ?? '');
+    $fechaNacimiento = limpiar($_POST['fechaNacimiento'] ?? '');
+    $numTelefono = limpiar($_POST['numTelefono'] ?? '');
+    $contactoPersonal = limpiar($_POST['contactoPersonal'] ?? '');
+    $password = limpiar($_POST['password'] ?? '');
+    $correo = limpiar($_POST['correo'] ?? '');
+    $rnt = limpiar($_POST['rnt'] ?? '');
+    $nit = limpiar($_POST['nit'] ?? '');
+    $foto = $_FILES['foto'] ?? null;
+    $sexo = limpiar($_POST['sexo'] ?? '');
+    $tipoDocumento = limpiar($_POST['tipoDocumento'] ?? '');
+    $roles = limpiar($_POST['roles'] ?? '');
+    $estadoCivil = limpiar($_POST['estadoCivil'] ?? '');
+
+    // Validación de campos obligatorios GENERAL
+    
 }
 
 // Actualizar usuario
