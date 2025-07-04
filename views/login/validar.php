@@ -4,14 +4,16 @@
 require_once '../../config/conexionGlobal.php';
 
 $db = conexionDB();
- 
+
 
 $usuario=$_POST['usuario'];
 $contraseña=$_POST['contraseña'];
 session_start();
 $_SESSION['usuario']=$usuario;
 
-$conexion=mysqli_connect("localhost","root","","login");
+include('../../config/db.php');
+
+$conexion=mysqli_connect("localhost","root","","lodgehub");
 
 $consulta="SELECT*FROM usuarios where usuario= '$usuario' and contraseña= '$contraseña'";
 $resultado=mysqli_query($conexion,$consulta);
@@ -24,10 +26,10 @@ if($filas){
 }else {
     ?>
     <?php
-    include("index.php");
+    include("login.php");
     ?>
 
-        <h4 class= "bad">ERROR EN LA AUTENTIFICACIÓN</h4>
+        <h1 class= "bad">ERROR EN LA AUTENTIFICACIÓN</h1>
 
     <?php
 }

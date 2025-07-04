@@ -1,36 +1,82 @@
 <?php
-$correo = $_POST['correo'];
-$password = $_POST['password'];
 session_start();
 
-$conexion = mysqli_connect("localhost", "root", "", "lodgehub");
+// Incluir configuraciones
+require_once __DIR__ . '../../views/login/database.php';
+require_once __DIR__ . '../../views/login/functions.php';
 
-// Consulta solo por el correo
-$consulta = "SELECT * FROM tp_empleados WHERE correo = ?";
-$stmt = mysqli_prepare($conexion, $consulta);
-mysqli_stmt_bind_param($stmt, "s", $correo);
-mysqli_stmt_execute($stmt);
-$resultado = mysqli_stmt_get_result($stmt);
-
-if ($user = mysqli_fetch_assoc($resultado)) {
-    // Si la contraseña está hasheada, usa password_verify
-    if (password_verify($password, $user['password'])) {
-        $_SESSION['correo'] = $correo;
-        header("Location: ../views/Homepage/index.php");
-        exit();
-    } else {
-        // Contraseña incorrecta
-        $_SESSION['login_error'] = "Contraseña incorrecta.";
-        header("Location: ../views/Homepage/index.php");
-        exit();
-    }
-} else {
-    // Usuario no encontrado
-    $_SESSION['login_error'] = "Usuario no encontrado.";
-    header("Location: ../views/Homepage/index.php");
+// Validar token CSRF
+if (empty($_POST['csrf_token']) || !validateCsrfToken($_POST['csrf_token'])) {
+    $_SESSION['login_error'] = "Error de seguridad. Por favor recargue la página.";
+    header("Location: ../views/login.php");
     exit();
 }
 
-mysqli_free_result($resultado);
-mysqli_close($conexion);
+// Validar entrada
+if (empty($_POST['correo']) || empty($_POST['password'])) {
+    $_SESSION['login_error'] = "Por favor ingrese correo y contraseña";
+    header("Location: ../views/login.php");
+    exit();
+}
 
+$correo = trim($_POST['correo']);
+$password = $_POST['password'];
+
+// Registrar intento de login (para prevención de fuerza bruta)
+registerLoginAttempt($correo);
+
+// Verificar si hay muchos intentos fallidos
+if (isAccountLocked($correo)) {
+    $_SESSION['login_error'] = "Demasiados intentos fallidos. Por favor intente más tarde.";
+    header("Location: ../views/login.php");
+    exit();
+}
+
+try {
+    // Buscar usuario con PDO
+    $db = getDatabaseConnection();
+    $stmt = $db->prepare("SELECT * FROM tp_empleados WHERE correo = :correo");
+    $stmt->bindParam(':correo', $correo);
+    $stmt->execute();
+    
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($user) {
+        // Verificar contraseña hasheada
+        if (password_verify($password, $user['password'])) {
+            // Restablecer contador de intentos fallidos
+            resetFailedAttempts($correo);
+            
+            // Regenerar ID de sesión para prevenir fixation
+            session_regenerate_id(true);
+            
+            // Almacenar datos de usuario en sesión
+            $_SESSION['user'] = [
+                'id' => $user['id'],
+                'correo' => $user['correo'],
+                'nombre' => $user['nombre'] ?? '',
+                'last_login' => time()
+            ];
+            
+            header("Location: ../views/homepage/homepage.php");
+            exit();
+        } else {
+            // Contraseña incorrecta
+            recordFailedAttempt($correo);
+            $_SESSION['login_error'] = "Credenciales inválidas";
+            header("Location: ../views/login.php");
+            exit();
+        }
+    } else {
+        // Usuario no encontrado
+        recordFailedAttempt($correo);
+        $_SESSION['login_error'] = "Credenciales inválidas";
+        header("Location: ../views/login.php");
+        exit();
+    }
+} catch (PDOException $e) {
+    error_log("Error de base de datos: " . $e->getMessage());
+    $_SESSION['login_error'] = "Error en el sistema. Por favor intente más tarde.";
+    header("Location: ../views/login.php");
+    exit();
+}

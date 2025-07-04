@@ -11,9 +11,11 @@
 
         <div class="navbar">
         <div class="left">
-            <img src="../public/img/FLECHA.png" alt="Atras" id="flechaNav">
+            <img src="../../public/img/FLECHA.png" alt="Atras" id="flechaNav">
             <h1>LODGEHUB</h1>
         </div>
+
+        
         <div class="right">
             <img src="../public/img/iconoPerfil.png" alt="Perfil" id="IconUserNav">
         </div>
