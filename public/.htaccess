@@ -1,0 +1,11 @@
+# Activa el motor de reescritura de URLs
+RewriteEngine On
+
+# Condición: Si la URL solicitada NO es un archivo que existe físicamente
+RewriteCond %{REQUEST_FILENAME} !-f
+# Condición: Y si la URL solicitada NO es un directorio que existe físicamente
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Regla: Redirige cualquier petición que cumpla las condiciones a index.php
+# [L] significa que es la última regla a aplicar.
+RewriteRule . index.php [L]

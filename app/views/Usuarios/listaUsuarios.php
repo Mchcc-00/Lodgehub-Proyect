@@ -61,7 +61,12 @@
                     <tbody class="user-table-body">
                         <!-- Aquí se llenará dinámicamente con PHP -->
                         <?php
-                        require_once '../../config/database.php';
+                        require_once '../../config/conexionGlobal.php';
+                        $db=conexionDB();
+                        if (!$db) {
+                            die("Error al conectar a la base de datos.");
+                        }
+                        
                         $sql = "select
                                     d.descripcion AS tipo_documento,
                                     e.numDocumento,
@@ -69,7 +74,7 @@
                                     e.apellidos,
                                     s.descripcion AS sexo,
                                     e.numTelefono,
-                                    e.contactoPersonal,
+                                    e.telEmergencia,
                                     e.correo,
                                     r.descripcion AS rol
                                 from tp_empleados e
@@ -77,32 +82,32 @@
                                 inner join td_sexo s on e.sexo = s.id
                                 inner join td_roles r on e.roles = r.id
                                 ";
-                        $result = $conn->query($sql);
-
-                        if ($result === false) {
-                            echo "<tr><td colspan='10'>Error en la consulta: " . $conn->error . "</td></tr>";
-                        } elseif ($result->num_rows > 0) {
-                            while ($row = $result->fetch_assoc()) {
-                                echo "<tr>
-                                        <td>{$row['tipo_documento']}</td>
-                                        <td>{$row['numDocumento']}</td>
-                                        <td>{$row['nombres']}</td>
-                                        <td>{$row['apellidos']}</td>
-                                        <td>{$row['sexo']}</td>
-                                        <td>{$row['numTelefono']}</td>
-                                        <td>{$row['contactoPersonal']}</td>
-                                        <td>{$row['correo']}</td>
-                                        <td>{$row['rol']}</td>
-                                        <td>
-                                            <a href='../../views/usuarios/editarUsuario.php?numDocumento={$row['numDocumento']}' class='btn-edit'>Editar</a>
-                                            <form action='eliminarUsuario.php' method='post' style='display:inline;'>
-                                                <input type='hidden' name='numDocumento' value='{$row['numDocumento']}'>
-                                                <button type='submit' class='btn-delete'>Eliminar</button>
-                                            </form>
-                                        </td>
-                                    </tr>";
-                            }
-                        } else {
+                        $result = $db->prepare($sql);
+                        $result->execute();
+                        if (!$result) {
+                            die("Error al ejecutar la consulta: " . implode(", ", $db->errorInfo()));
+                        }
+                        while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                            echo "<tr>
+                                    <td>{$row['tipo_documento']}</td>
+                                    <td>{$row['numDocumento']}</td>
+                                    <td>{$row['nombres']}</td>
+                                    <td>{$row['apellidos']}</td>
+                                    <td>{$row['sexo']}</td>
+                                    <td>{$row['numTelefono']}</td>
+                                    <td>{$row['telEmergencia']}</td>
+                                    <td>{$row['correo']}</td>
+                                    <td>{$row['rol']}</td>
+                                    <td>
+                                        <a href='../../views/usuarios/editarUsuario.php?numDocumento={$row['numDocumento']}' class='btn-edit'>Editar</a>
+                                        <form action='eliminarUsuario.php' method='post' style='display:inline;'>
+                                            <input type='hidden' name='numDocumento' value='{$row['numDocumento']}'>
+                                            <button type='submit' class='btn-delete'>Eliminar</button>
+                                        </form>
+                                    </td>
+                                </tr>";
+                        }
+                        if ($result->rowCount() == 0) {
                             echo "<tr><td colspan='10'>No hay usuarios registrados.</td></tr>";
                         }
                         ?>
