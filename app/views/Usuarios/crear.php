@@ -1,7 +1,7 @@
 
 <h2 class="form-title">NUEVO USUARIO</h2>
 
-<form action="/usuarios/guardar" method="post" enctype="multipart/form-data">
+<form action="/models/crudUsuarios/usuarios.php" method="post" enctype="multipart/form-data">
     <input type="hidden" name="formulario" value="crearUsuario">
     <div class="form-grid">
         <div class="form-group">
@@ -102,7 +102,7 @@
     <?php endif; ?>
 
     <div class="form-actions">
-        <button type="button" class="btn btn-secondary" onclick="window.location.href='/usuarios/lista'">Cancelar</button>
+        <button type="button" class="btn btn-secondary" onclick="window.location.href='/usuarios/listaUsuarios'">Cancelar</button>
         <button type="submit" class="btn btn-primary">Registrar</button>
     </div>
 </form>

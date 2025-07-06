@@ -1,142 +1,87 @@
 <?php
 
-require_once __DIR__ . '/../../config/conexionGlobal.php';
+class Usuario {
+    // Variable para guardar la conexión a la BD
+    private $db;
 
+    // El constructor recibe la conexión a la BD cuando se crea un objeto Usuario
+    public function __construct($database_connection) {
+        $this->db = $database_connection;
+    }
 
-$db = conexionDB(); // Usamos $db como la conexión PDO
-if (!$db) {
-    die("Error al conectar a la base de datos.");
-}
-var_dump($_POST['numDocumento']);
-var_dump($_POST['primer_nombre']);
-var_dump($_POST['primer_apellido']);
-die();
-if (
-        empty($numDocumento)
-        //  || empty($tipoDocumento) || empty($nombres) || empty($apellidos) || empty($direccion)
-        // || empty($fechaNacimiento) || empty($numTelefono) || empty($contactoPersonal) || empty($password)
-        // || empty($correo) || empty($sexo) || empty($roles) || empty($estadoCivil)
+    /**
+     * Crea un nuevo usuario en la base de datos.
+     * Recibe un array con los datos validados del controlador.
+     * @return bool Devuelve true si tuvo éxito, false si falló.
+     */
+    public function guardar(array $datos) {
+        $sql = "INSERT INTO tp_empleados
+                (numDocumento, nombres, apellidos, direccion, fechaNacimiento, numTelefono, contactoPersonal, password, correo, rnt, nit, sexo, tipoDocumento, roles)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
-    ) echo "Entró";{
-        die("<p>Debug: Faltan campos obligatorios</p>");
-    }
-    // Validación específica para ADMINISTRADOR
-    if ($roles === '1') { // Asumiendo que '1' es el ID del rol ADMINISTRADOR
-        if (empty($rnt) || empty($nit)) {
-            die("<p>Debug: Faltan RNT o NIT para administrador</p>");
+        try {
+            $stmt = $this->db->prepare($sql);
+            // El execute devuelve true o false directamente
+            return $stmt->execute([
+                $datos['numDocumento'],
+                $datos['nombres'],
+                $datos['apellidos'],
+                $datos['direccion'],
+                $datos['fecha_nacimiento'], // Asegúrate que el name en el form sea este
+                $datos['numTelefono'],
+                $datos['telEmergencia'], // Asegúrate que el name en el form sea este
+                $datos['password_hash'], // El controlador le pasa el hash
+                $datos['correo'],
+                $datos['rnt'],
+                $datos['nit'],
+                $datos['sexo'],
+                $datos['tipoDocumento'],
+                $datos['roles']
+            ]);
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return false;
         }
     }
 
-    try {
-        $stmt = $db->prepare(
-            "INSERT INTO tp_empleados 
-        (numDocumento, nombres, apellidos, direccion, fechaNacimiento, numTelefono, contactoPersonal, 
-        password, correo, rnt, nit, sexo, tipoDocumento, roles, estadoCivil, foto)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-        );
-        echo "<p>Debug: Consulta preparada</p>";
 
-        $ejecutado = $stmt->execute([
-            $numDocumento,
-            $nombres,
-            $apellidos,
-            $direccion,
-            $fechaNacimiento,
-            $numTelefono,
-            $contactoPersonal,
-            $password,
-            $correo,
-            $rnt,
-            $nit,
-            $sexo,
-            $tipoDocumento,
-            $roles,
-            $estadoCivil,
-            $foto ? file_get_contents($foto['tmp_name']) : null // o guarda la ruta si subes el archivo
-        ]);
-        echo "<p>Debug: Consulta ejecutada</p>";
-
-        if ($ejecutado) {
-            echo "<h2 style='color:green'>Usuario registrado correctamente. Puedes volver atrás.</h2>";
-             header("Location: ../../views/Usuarios/crearUsuario.php?mensaje=¡Usuario registrado exitosamente!");
-            // exit();
-        } else {
-            echo "<p>Debug: Error al registrar el usuario (execute devolvió false)</p>";
+    //Actualiza un usuario existente.
+    // @return bool Devuelve true si tuvo éxito, false si falló.
+    //
+    public function actualizar($id, array $datos) {
+        $sql = "UPDATE tp_empleados SET direccion = ?, numTelefono = ?, correo = ?, roles = ? WHERE numDocumento = ?";
+        
+        try {
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute([
+                $datos['direccion'], 
+                $datos['numTelefono'], 
+                $datos['correo'], 
+                $datos['roles'], 
+                $id
+            ]);
+        } catch (PDOException $e) {
+            return false;
         }
-    } catch (PDOException $e) {
-        echo "<p>Debug: Error en PDO - " . $e->getMessage() . "</p>";
     }
 
-// Función para limpiar datos
-function limpiar($dato)
-{
-    return htmlspecialchars(trim($dato));
-}
-// Insertar usuario
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['accion'] === 'insertar') {
 
-    // Validar y limpiar datos
-    $numDocumento = limpiar($_POST['numDocumento'] ?? '');
-    $nombres = trim((($_POST['primer_nombre'] ?? '') . ' ' . ($_POST['segundo_nombre'] ?? '')));
-    $apellidos = trim((($_POST['primer_apellido'] ?? '') . ' ' . ($_POST['segundo_apellido'] ?? '')));
-    $direccion = limpiar($_POST['direccion'] ?? '');
-    $fechaNacimiento = limpiar($_POST['fechaNacimiento'] ?? '');
-    $numTelefono = limpiar($_POST['numTelefono'] ?? '');
-    $contactoPersonal = limpiar($_POST['contactoPersonal'] ?? '');
-    $password = limpiar($_POST['password'] ?? '');
-    $correo = limpiar($_POST['correo'] ?? '');
-    $rnt = limpiar($_POST['rnt'] ?? '');
-    $nit = limpiar($_POST['nit'] ?? '');
-    $foto = $_FILES['foto'] ?? null;
-    $sexo = limpiar($_POST['sexo'] ?? '');
-    $tipoDocumento = limpiar($_POST['tipoDocumento'] ?? '');
-    $roles = limpiar($_POST['roles'] ?? '');
-    $estadoCivil = limpiar($_POST['estadoCivil'] ?? '');
-
-    // Validación de campos obligatorios GENERAL
+    //Elimina un usuario por su número de documento.
+    //@return bool Devuelve true si tuvo éxito, false si falló.
+    //
+    public function eliminar($numDocumento) {
+        $sql = "DELETE FROM tp_empleados WHERE numDocumento = ?";
+        
+        try {
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute([$numDocumento]);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
     
-}
-
-// Actualizar usuario
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['accion'] === 'actualizar') {
-    $emp_numDocumento = limpiar($_POST['emp_numDocumento'] ?? '');
-    $emp_direccion = limpiar($_POST['emp_direccion'] ?? '');
-    $emp_numTelefono = limpiar($_POST['emp_numTelefono'] ?? '');
-    $emp_contactoPersonal = limpiar($_POST['emp_contactoPersonal'] ?? '');
-    $emp_correo = limpiar($_POST['emp_correo'] ?? '');
-    $emp_rol_roles = limpiar($_POST['emp_rol_roles'] ?? '');
-    $emp_estcivemp_estadoCivil = limpiar($_POST['emp_estcivemp_estadoCivil'] ?? '');
-
-    if (
-        empty($emp_numDocumento) || empty($emp_direccion) || empty($emp_numTelefono) ||
-        empty($emp_contactoPersonal) || empty($emp_correo) || empty($emp_rol_roles) || empty($emp_estcivemp_estadoCivil) ||
-        !filter_var($emp_correo, FILTER_VALIDATE_EMAIL)
-    ) {
-        die("Por favor, completa todos los campos correctamente.");
-    }
-
-    $stmt = $db->prepare("UPDATE tp_empleados SET emp_direccion = ?, emp_numTelefono = ?, emp_contactoPersonal = ?, emp_correo = ?, emp_rol_roles = ?, emp_estcivemp_estadoCivil = ? WHERE emp_numDocumento = ?");
-    if ($stmt->execute([$emp_direccion, $emp_numTelefono, $emp_contactoPersonal, $emp_correo, $emp_rol_roles, $emp_estcivemp_estadoCivil, $emp_numDocumento])) {
-        echo "Usuario actualizado correctamente.";
-    } else {
-        echo "Error al actualizar el usuario.";
-    }
-}
-
-// Eliminar usuario
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['accion'] === 'eliminar') {
-    $emp_numDocumento = limpiar($_POST['emp_numDocumento'] ?? '');
-
-    if (empty($emp_numDocumento)) {
-        die("ID de usuario no proporcionado.");
-    }
-
-    $stmt = $db->prepare("DELETE FROM tp_empleados WHERE emp_numDocumento = ?");
-    if ($stmt->execute([$emp_numDocumento])) {
-        header("Location: ../crudUsuarios/crudUsuarios.php?mensaje=Usuario eliminado exitosamente");
-        exit();
-    } else {
-        echo "Error al eliminar el usuario.";
-    }
+    // Puedes añadir más métodos como:
+    // public function obtenerTodos() { ... }
+    // public function obtenerPorId($id) { ... }
 }
 ?>

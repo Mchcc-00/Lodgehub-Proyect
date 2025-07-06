@@ -1,39 +1,71 @@
 <?php
 
+require_once '../app/Models/Usuarios/CrudUsuarios/Usuarios.php';
+require_once '../config/conexionGlobal.php';
+
 class UsuarioController {
     
-    // Método para mostrar el formulario de creación
+    private $db;
+    private $usuarioModel;
+
+    public function __construct() {
+        $this->db = conexionDB();
+        $this->usuarioModel = new Usuario($this->db);
+    }
+
+    // --- MÉTODOS PARA MOSTRAR VISTAS (generalmente peticiones GET) ---
+
+    /**
+     * Muestra el formulario para crear un nuevo usuario.
+     */
     public function mostrarFormularioCreacion() {
-        // Datos para la plantilla
-        $data = [
-            'title' => 'Crear Nuevo Usuario'
-        ];
-        
-        // Llama a la función render para unir layout y vista
-        $this->render('crear', $data);
+        $this->render('usuarios/crear', ['titulo' => 'Crear Nuevo Usuario']);
     }
-    
-    // Método para guardar el nuevo usuario
+
+    /**
+     * Muestra la lista de todos los usuarios.
+     */
+    public function mostrarLista() {
+        // Lógica para obtener todos los usuarios del modelo
+        // $usuarios = $this->usuarioModel->obtenerTodos();
+        // $this->render('usuarios/lista', ['titulo' => 'Lista de Usuarios', 'usuarios' => $usuarios]);
+    }
+
+
+    // --- MÉTODOS PARA PROCESAR ACCIONES (generalmente peticiones POST o GET con ID) ---
+
+    /**
+     * Procesa la creación de un nuevo usuario.
+     */
     public function guardar() {
-        // Aquí iría tu lógica para procesar el $_POST y guardarlo en la BD
-        // que antes tenías en 'crudUsuarios/Usuarios.php'
-        
-        // Después de guardar, rediriges a otra página
-        // header('Location: /usuarios/lista?mensaje=Usuario creado exitosamente');
-        // exit();
+        // ... (Lógica de validación, delegación al modelo y redirección) ...
     }
-    
+
+    /**
+     * Procesa la actualización de un usuario existente.
+     */
+    public function actualizar() {
+        // ... (Lógica de validación, delegación al modelo y redirección) ...
+    }
+
+    /**
+     * Procesa la eliminación de un usuario.
+     */
+    public function eliminar() {
+        // ... (Lógica de validación, delegación al modelo y redirección) ...
+    }
+
+
+    // --- MÉTODO DE AYUDA (HELPER) PARA RENDERIZAR VISTAS ---
+
     /**
      * Renderiza una vista dentro del layout principal.
      */
     protected function render($vista, $data = []) {
         extract($data);
-        
         ob_start();
-        require_once __DIR__ . "/../views/Usuarios/{$vista}.php";
+        require_once "../app/Views/{$vista}.php"; // Ajusta la ruta si es necesario
         $contenido = ob_get_clean();
-        
-        require_once __DIR__ . '/../views/layouts/main.php';
+        require_once '../app/Views/layouts/main.php'; // Ajusta la ruta si es necesario
     }
 }
-?>

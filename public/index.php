@@ -5,7 +5,8 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 // Carga el controlador de usuarios
-require_once __DIR__ . '/controllers/Usuarios.php';
+require_once '../app/Core/Router.php';
+require_once '../app/Controllers/Usuarios.php';
 
 // Rutina simple para decidir qué acción ejecutar
 $controller = new UsuarioController();

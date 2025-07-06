@@ -1,9 +1,4 @@
 <?php
-
-conexionDB();
-
-
-
 function conexionDB(){
     try {
         $dsn = "mysql:host=localhost;dbname=Lodgehub";
