@@ -91,12 +91,12 @@
                 </fieldset>
             <div id="line"></div>
         </div>
-        <button type="submit" id="btnRegistrarReserva">Reservar</button>
+        <div>
+            <button type="button" id="btnLimpiarFormulario">Limpiar formulario</button>
+            <button type="button" id="btnCancelarReserva">Cancelar</button>
+            <button type="submit" id="btnRegistrarReserva">Reservar</button>
+        </div>
     </form>
-
-    
-    <button type="button" id="btnCancelarReserva">Cancelar</button>
-
 </body>
     <script src="scripts.js"></script>
 </html>
