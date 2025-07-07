@@ -51,6 +51,7 @@
                         <option value="1">Hombre</option>
                         <option value="2">Mujer</option>
                         <option value="3">Otro</option>
+                        <option value="4">Prefiero no decirlo</option>
                     </select>
                 </label>
             </fieldset>
@@ -91,7 +92,7 @@
                 </fieldset>
             <div id="line"></div>
         </div>
-        <div>
+        <div id="botonesFormulario">
             <button type="button" id="btnLimpiarFormulario">Limpiar formulario</button>
             <button type="button" id="btnCancelarReserva">Cancelar</button>
             <button type="submit" id="btnRegistrarReserva">Reservar</button>

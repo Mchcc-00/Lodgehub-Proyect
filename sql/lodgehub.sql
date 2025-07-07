@@ -3,40 +3,27 @@ USE Lodgehub;
 
 
 
-
 CREATE TABLE IF NOT EXISTS td_tipoDocumento(id INT (3) AUTO_INCREMENT NOT NULL,
                                             descripcion VARCHAR (30) NOT NULL,
 
-
-
-
                                             PRIMARY KEY (id)
                                             );
-
 
 
 
 CREATE TABLE IF NOT EXISTS td_sexo (id INT (3) AUTO_INCREMENT NOT NULL,
                                     descripcion VARCHAR (20) NOT NULL,
 
-
-
-
                                     PRIMARY KEY (id)
                                     );
-
 
 
 
 CREATE TABLE IF NOT EXISTS td_estadoCivil (id INT (3) AUTO_INCREMENT NOT NULL,
                                             descripcion VARCHAR (20) NOT NULL,
 
-
-
-
                                             PRIMARY KEY (id)
                                             );
-
 
 
 
@@ -58,32 +45,21 @@ CREATE TABLE IF NOT EXISTS tp_huespedes (numDocumento VARCHAR(15) NOT NULL,
 
 
 
-
-
-
-
-
                                             
 CREATE TABLE IF NOT EXISTS td_tipoHabitacion (id INT (3) AUTO_INCREMENT NOT NULL,
                                             descripcion VARCHAR (20) NOT NULL,
-
-
-
 
                                             PRIMARY KEY (id)
                                             )ENGINE=INNODB;
 
 
 
-
 CREATE TABLE IF NOT EXISTS td_tamano (id INT (3) AUTO_INCREMENT NOT NULL,
                                     descripcion VARCHAR (20) NOT NULL,
 
-
-
-
                                     PRIMARY KEY (id)
                                     )ENGINE=INNODB;
+
 
 
 CREATE TABLE IF NOT EXISTS td_estado (id INT (3) AUTO_INCREMENT NOT NULL,
@@ -94,14 +70,14 @@ CREATE TABLE IF NOT EXISTS td_estado (id INT (3) AUTO_INCREMENT NOT NULL,
 
 
 
-
 CREATE TABLE IF NOT EXISTS tp_habitaciones (numero VARCHAR (5) NOT NULL,
                                             costo DECIMAL (10,2) NOT NULL,
                                             capacidad INT (3) NOT NULL,
                                             tipoHabitacion INT (3) NOT NULL,
                                             tamano INT (3) NOT NULL,
                                             estado INT (3) NOT NULL,
-                                            
+
+
                                             PRIMARY KEY (numero),
                                             FOREIGN KEY (tipoHabitacion) REFERENCES td_tipohabitacion (id),
                                             FOREIGN KEY (tamano) REFERENCES td_tamano (id),
@@ -110,18 +86,11 @@ CREATE TABLE IF NOT EXISTS tp_habitaciones (numero VARCHAR (5) NOT NULL,
 
 
 
-
 CREATE TABLE IF NOT EXISTS td_roles (id INT (3) AUTO_INCREMENT NOT NULL,
                                     descripcion VARCHAR (20) NOT NULL,
 
-
-
-
                                     PRIMARY KEY (id)
                                     )ENGINE=INNODB;
-
-
-
 
 
 
@@ -142,6 +111,7 @@ CREATE TABLE IF NOT EXISTS tp_empleados(numDocumento VARCHAR (15) NOT NULL,
                                 roles INT (3) NOT NULL,
                                 estadoCivil INT (3) NOT NULL,
 
+
                                 PRIMARY KEY (numdocumento),
                                 FOREIGN KEY (sexo) REFERENCES td_sexo (id),
                                 FOREIGN KEY (tipoDocumento) REFERENCES td_tipodocumento (id),
@@ -150,12 +120,12 @@ CREATE TABLE IF NOT EXISTS tp_empleados(numDocumento VARCHAR (15) NOT NULL,
                                 )ENGINE=INNODB;
 
 
+
 CREATE TABLE IF NOT EXISTS td_tipoPqrs (id INT (3) AUTO_INCREMENT NOT NULL,
                                       descripcion VARCHAR (30) NOT NULL,
 
                                       PRIMARY KEY (id)
                                       )ENGINE=INNODB;
-
 
 
 
@@ -167,34 +137,11 @@ CREATE TABLE IF NOT EXISTS td_categoria (id INT (3) AUTO_INCREMENT NOT NULL,
 
 
 
-
-
-
-
-
-
-
 CREATE TABLE IF NOT EXISTS td_prioridad (id INT (3) AUTO_INCREMENT NOT NULL,
                                         descripcion VARCHAR (20) NOT NULL,
 
-
-
-
                                         PRIMARY KEY (id)
                                         ) ENGINE=INNODB;
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -207,7 +154,8 @@ CREATE TABLE IF NOT EXISTS tp_pqrs (id INT (10) AUTO_INCREMENT NOT NULL,
                                     categoria INT(3) NOT  NULL,
                                     estado INT (3) NOT NULL,
                                     tipo INT(3) NOT NULL,
-                        
+
+
                                       PRIMARY KEY (id),
                                       FOREIGN KEY (hue_numdocumento) REFERENCES tp_huespedes (numDocumento),
                                       FOREIGN KEY (prioridad) REFERENCES td_prioridad (id),
@@ -225,17 +173,12 @@ CREATE TABLE IF NOT EXISTS td_motivoReserva (id INT (3) AUTO_INCREMENT NOT NULL,
                                             ) ENGINE=INNODB;
 
 
+
 CREATE TABLE IF NOT EXISTS td_metodoPago (id INT (3) AUTO_INCREMENT NOT NULL,
                                         descripcion VARCHAR (30) NOT NULL,
 
-
                                         PRIMARY KEY (id)
                                         )ENGINE=INNODB;
-
-
-
-
-
 
 
 
@@ -245,7 +188,7 @@ CREATE TABLE IF NOT EXISTS tp_reservas (id INT (3) AUTO_INCREMENT NOT NULL,
                                         fechaFin DATE NOT NULL,
                                         cantidadAdultos INT (2) NULL,
                                         cantidadNinos INT (2) NULL,
-                                        cantidadDiscapacitados (2) NULL,
+                                        cantidadDiscapacitados INT (2) NULL,
                                         motivoReserva INT (3) NOT NULL,
                                         numeroHabitacion VARCHAR (5) NOT NULL,
                                         metodoPago int (3) NOT NULL,
@@ -254,6 +197,7 @@ CREATE TABLE IF NOT EXISTS tp_reservas (id INT (3) AUTO_INCREMENT NOT NULL,
                                         estado INT (3) NOT NULL,
                                         hue_numdocumento VARCHAR (15) NOT NULL,
                                         fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
+
 
                                         PRIMARY KEY (id),
                                         FOREIGN KEY (motivoReserva) REFERENCES td_motivoreserva (id),
@@ -266,13 +210,6 @@ CREATE TABLE IF NOT EXISTS tp_reservas (id INT (3) AUTO_INCREMENT NOT NULL,
 
 
 
-
-
-
-
-
-
-
 CREATE TABLE IF NOT EXISTS tp_historialMantenimiento (id INT (4) AUTO_INCREMENT NOT NULL,
                                                       problemaDescripcion VARCHAR (50) NOT NULL,
                                                       accion VARCHAR (50) NOT NULL,
@@ -280,22 +217,17 @@ CREATE TABLE IF NOT EXISTS tp_historialMantenimiento (id INT (4) AUTO_INCREMENT 
                                                       ultimaActualizacion DATE NOT NULL,
                                                       frecuencia VARCHAR (50) NOT NULL,
                                                       prioridad INT (3) NOT NULL,
-                                                      numeroHabitacion INT (3) NOT NULL,
+                                                      numeroHabitacion VARCHAR (5) NOT NULL,
                                                       emp_numDocumento VARCHAR (15) NOT NULL,
                                                       estado INT (3) NOT NULL,
+
+
                                                       PRIMARY KEY (id),
                                                       FOREIGN KEY (prioridad) REFERENCES td_prioridad (id),
-                                                      FOREIGN KEY (numero) REFERENCES tp_habitaciones (numero),
+                                                      FOREIGN KEY (numeroHabitacion) REFERENCES tp_habitaciones (numero),
                                                       FOREIGN KEY (emp_numDocumento) REFERENCES tp_empleados (numDocumento),
                                                       FOREIGN KEY (estado) REFERENCES td_estado (id)
                                                       )ENGINE=INNODB;
-
-
-
-
-
-
-
 
 
 
@@ -304,7 +236,8 @@ CREATE TABLE IF NOT EXISTS ti_responder (id INT (3) AUTO_INCREMENT NOT NULL,
                                         fechaRespuesta DATE NOT NULL,
                                         pqr_id INT (3) NOT NULL,
                                         emp_numDocumento VARCHAR (15) NOT NULL,
-                                        
+
+
                                         PRIMARY KEY (id),
                                         FOREIGN KEY (pqr_id) REFERENCES tp_pqrs (id),
                                         FOREIGN KEY (emp_numDocumento) REFERENCES tp_empleados (numDocumento)
@@ -313,14 +246,15 @@ CREATE TABLE IF NOT EXISTS ti_responder (id INT (3) AUTO_INCREMENT NOT NULL,
 
 /*inserts*/
 
-
-insert into td_motivoreserva values (null,'Negocios'),
+insert into td_motivoreserva values
+(null,'Negocios'),
 (null,'Personal'),
 (null,'Viaje'),
 (null,'Familiar');
 
 
-insert into td_estado values (null,'Activo'),
+insert into td_estado values
+(null,'Activo'),
 (null,'Inactivo'),
 (null,'En uso'),
 (null,'Finalizado'),
@@ -328,95 +262,98 @@ insert into td_estado values (null,'Activo'),
 (null,'Cancelado');
 
 
-insert into td_estadocivil values (null, 'Soltero/a'),
+insert into td_estadocivil values
+(null, 'Soltero/a'),
 (null,'Casado/a'),
 (null,'Viudo/a'),
 (null, 'Unión libre');
 
 
-insert into td_sexo values (null,'Hombre'),
+insert into td_sexo values
+(null,'Hombre'),
 (null,'Mujer'),
-(null,'Otro');
+(null,'Otro'),
+(null,'Prefiero no decirlo');
 
 
-insert into td_tipodocumento values (null,'Cedula de Ciudadanía'),
+insert into td_tipodocumento values
+(null,'Cedula de Ciudadanía'),
 (null,'Tarjeta de Identidad'),
 (null,'Cedula de Extranjeria'),
 (null,'Pasaporte'),
 (null,'Registro Civil');
 
 
-INSERT INTO td_tipohabitacion
-VALUES (NULL, 'INDIVIDUAL'),
-       (NULL, 'DOBLE'),
-       (NULL, 'TRIPLE'),
-       (NULL, 'SUITE'),
-       (NULL, 'CONFORT');
+INSERT INTO td_tipohabitacion VALUES
+(NULL, 'Individual'),
+(NULL, 'Doble'),
+(NULL, 'Triple'),
+(NULL, 'Suite'),
+(NULL, 'Confort');
 
 
-INSERT INTO td_tamano
-VALUES (NULL, 'PEQUEÑO'),
-(NULL, 'MEDIANO'),
-(NULL, 'GRANDE'),
-(NULL, 'EXTRAGRANDE');
+INSERT INTO td_tamano VALUES
+(NULL, 'Pequeño'),
+(NULL, 'Medio'),
+(NULL, 'Grande'),
+(NULL, 'Extra Grande');
 
 
-INSERT INTO td_tipopqrs
-VALUES (NULL, 'Peticiones'),
+INSERT INTO td_tipopqrs VALUES
+(NULL, 'Peticiones'),
 (NULL, 'Quejas'),
 (NULL, 'Reclamos'),
 (NULL, 'Sugerencias'),
 (NULL, 'Felicitaciones');
 
 
-insert into td_prioridad values (null,'Bajo'),
+insert into td_prioridad values
+(null,'Bajo'),
 (null,'Medio'),
 (null,'Alto');
 
 
-insert into td_categoria values (null,'Servicio'),
+insert into td_categoria values
+(null,'Servicio'),
 (null,'Habitacion'),
 (null,'Atencion'),
 (null,'Otro');
 
 
-INSERT INTO td_roles
-VALUES (NULL, 'ADMINISTRADOR'),
-(NULL, 'RECEPCIONISTA'),
-(NULL, 'ATENCIÓN AL CLIENTE');
+INSERT INTO td_roles VALUES
+(NULL, 'Administrador'),
+(NULL, 'Recepcionista'),
+(NULL, 'Atención al Cliente');
 
 
-insert into td_metodoPago values (null,'Tarjeta'),
+insert into td_metodoPago values
+(null,'Tarjeta'),
 (null,'Efectivo'),
 (null,'PSE');
 
 
-INSERT INTO tp_huespedes
-VALUES (1000289068, 3116182673, 'Bleachowl98@gmail.com', 'Favian Alejandro', 'Machuca Pedraza', 1, 1, 4),
+INSERT INTO tp_huespedes VALUES
+(1000289068, 3116182673, 'Bleachowl98@gmail.com', 'Favian Alejandro', 'Machuca Pedraza', 1, 1, 4),
 (1234098756, 3124233442, 'Camilín@gmail.com', 'Camilo Andrés', 'Guerrero Yanquen', 1, 1, 1),
 (1098785643, 3214566786, 'Jhonny@gmail.com', 'Jonathan David', 'Fernández López', 1, 1, 1),
 (1002455665, 3144235027, 'Bray@gmail.com', 'Brayan Felipe', 'Pulido López', 1, 1, 3),
 (1012099089, 302099086, 'Willy@gmail.com', 'William Steven', 'Daza Delgado', 1, 1, 2);
 
 
-insert into tp_empleados values (1122123456,'Joaquin Diomedes','Gonzales Chaz','Calle 73 D#8C', "2003-02-15", 3118273847,3028732645, '1234567485','GonzChaz@gmail.com', NULL, NULL, NULL,1,1,1,1),
-(1122123856,'Joaquin Diomedes','Gonzales Chaz','Calle 73 D#8C', "2003-02-15", 3118273847,3028732645, '1234567485','GonzChaz@gmail.com', NULL, NULL, NULL,1,1,1,1),
-(1122143456,'Joaquin Diomedes','Gonzales Chaz','Calle 73 D#8C', "2003-02-15", 3118273847,3028732645, '1234567485','GonzChaz@gmail.com', NULL, NULL, NULL,1,1,1,1),
-(1122123656,'Joaquin Diomedes','Gonzales Chaz','Calle 73 D#8C', "2003-02-15", 3118273847,3028732645, '1234567485','GonzChaz@gmail.com', NULL, NULL, NULL,1,1,1,1),
-(1132123456,'Joaquin Diomedes','Gonzales Chaz','Calle 73 D#8C', "2003-02-15", 3118273847,3028732645, '1234567485','GonzChaz@gmail.com', NULL, NULL, NULL,1,1,1,1);
+insert into tp_empleados values
+(1122123456,'Joaquin Diomedes','Gonzales Chaz','Calle 73 D#8C', "2003-02-15", 3118273847,3028732645, '1234567485','GonzChaz@gmail.com', NULL, NULL, NULL,1,1,1,1);
 
 
-
-
-insert into tp_habitaciones values (666,280000,1,1,1,2),
+insert into tp_habitaciones values
+(666,280000,1,1,1,2),
 (819, 500000,2,2,3,1),
 (10,300000,1,1,3,1),
 (73,900000,4,4,3,3),
 (69,1200000,5,5,4,2);
 
 
-INSERT INTO tp_pqrs
-VALUES (NULL, 20241018, 'El huésped reporta que la habitación no contaba con servicio de agua',20241019,1000289068, 3, 2, 2, 1),
+INSERT INTO tp_pqrs VALUES
+(NULL, 20241018, 'El huésped reporta que la habitación no contaba con servicio de agua',20241019,1000289068, 3, 2, 2, 1),
 (NULL, 20240312, 'Se reporta que las cobijas de la cama se encuentra en mal estado(sucias y manchadas),no hicieron el debido aseo en la habitación 73', 20240313, 1098785643, 2, 2, 1, 3),
 (null, 20241126,'Se reporta una fuga de agua en la habitación 666', null, 1002455665,3,2,3,2),
 (null,20220425,'Se reporta un extraño olor en el pasillo',null, 1234098756,2,3,1,1),
@@ -426,21 +363,20 @@ VALUES (NULL, 20241018, 'El huésped reporta que la habitación no contaba con s
 
 insert into tp_historialmantenimiento values
 (null,'Bombillos defectuosos, próximos a dañarse','Reemplazo de bombillos',20220505,20211001,'No aplica', 1, 819,1122123456,2),
-(null,'Cortinas rasgadas','Reemplazo de cortinas',20230413,20230413,'No aplica',1,666,1122123856,2),
-(null,'Gotera en la llave del lavamanos','Revisar y reparar la fuga de la llave de agua',20241126,20220617,'No aplica',1,69,1122143456,1),
-(null,'Olor raro proveniente del baño','Realizar aseo',20241115,20241115,'No aplica',1,819,1122123656,3),
-(null,'Piso sucio, manchas pegajosas','Realizar aseo en el piso',20240220,20220330,'No aplica',1,10,1132123456,2);
+(null,'Cortinas rasgadas','Reemplazo de cortinas',20230413,20230413,'No aplica',1,666,1122123456,2),
+(null,'Gotera en la llave del lavamanos','Revisar y reparar la fuga de la llave de agua',20241126,20220617,'No aplica',1,69,1122123456,1),
+(null,'Olor raro proveniente del baño','Realizar aseo',20241115,20241115,'No aplica',1,819,1122123456,3),
+(null,'Piso sucio, manchas pegajosas','Realizar aseo en el piso',20240220,20220330,'No aplica',1,10,1122123456,2);
 
 
-INSERT INTO tp_reservas
-VALUES (NULL, 350000.00, 20240624, 20240626, 1, 0, 0, 1, 10, 1, NULL,1122123456,1, 1002455665, '20240624 10:00:00');
+INSERT INTO tp_reservas VALUES
+(NULL, 350000.00, 20240624, 20240626, 1, 0, 0, 1, 10, 1, NULL,1122123456,1, 1002455665, '20240624 10:00:00');
 
-INSERT INTO ti_responder 
-VALUES 
-(NULL, '¡Gracias por tu comentario! Lamentamos que hayas tenido una mala experiencia en el hotel Chimbanadas. Tu comentario nos ayuda a mejorar día a día.', 20240916, 1, 1122123856),
-(NULL, '¡Gracias por tu comentario! Lamentamos que hayas tenido una mala experiencia en el hotel Patroclín. Tu comentario nos ayuda a mejorar nuestros servicios día a día.', 20241018, 2, 1132123456),
+
+INSERT INTO ti_responder VALUES 
+(NULL, '¡Gracias por tu comentario! Lamentamos que hayas tenido una mala experiencia en el hotel Chimbanadas. Tu comentario nos ayuda a mejorar día a día.', 20240916, 1, 1122123456),
+(NULL, '¡Gracias por tu comentario! Lamentamos que hayas tenido una mala experiencia en el hotel Patroclín. Tu comentario nos ayuda a mejorar nuestros servicios día a día.', 20241018, 2, 1122123456),
 (NULL, '¡Gracias por tu sugerencia! Tus comentarios nos ayudan a mejorar nuestros servicios. Atte: Hotel Bondiola', 20230515, 3, 1122123456);
-
 
 
 
@@ -474,11 +410,12 @@ INNER JOIN td_estado e ON h.estado = e.id;
 
 
 create view vista_historialMantenimeinto as
-select h.id as id, h.problemaDescripcion as Problema, h.accion as Accion, h.fechaRegistro as Fecha_Registro, h.ultimaActualizacion as Ultima_Actualización, p.descripcion as Prioridad, h.frecuencia as Frecuencia, h.numero as Numero_Habitacion, e.nombres as Reporta_Empleado, e.apellidos as Reporta_Apellidos, es.descripcion as Estado
+select h.id as id, h.problemaDescripcion as Problema, h.accion as Accion, h.fechaRegistro as Fecha_Registro, h.ultimaActualizacion as Ultima_Actualización, p.descripcion as Prioridad, h.frecuencia as Frecuencia, h.numeroHabitacion as Numero_Habitacion, e.nombres as Reporta_Empleado, e.apellidos as Reporta_Apellidos, es.descripcion as Estado
 from tp_historialmantenimiento h
 inner JOIN td_prioridad p on h.prioridad = p.id
 inner join tp_empleados e on h.emp_numDocumento = e.numDocumento
 inner join td_estado es on h.estado = es.id;
+
 
 CREATE VIEW vista_huespedes AS
 SELECT h.numDocumento as Documento, h.numTelefono as Telefono, h.correo as Correo, h.nombres as Nombres, h.apellidos as Apellidos, d.descripcion as Tipo_Documento, s.descripcion as Sexo, c.descripcion as Estado_Civil
@@ -486,6 +423,7 @@ FROM tp_huespedes h
 INNER JOIN td_tipodocumento d ON h.tipoDocumento = d.id
 INNER JOIN td_sexo s ON h.sexo = s.id
 INNER JOIN td_estadocivil c ON h.estadoCivil = c.id;
+
 
 create view vista_pqrs AS
 select p.id as id, p.fechaRegistro as Fecha_Registro, p.descripcion as Descripcion, p.fechaCierre as Fecha_Cierre, h.nombres as Reporta_Huesped, h.apellidos as Reporta_Apellidos, pr.descripcion as Prioridad, c.descripcion as Categoria, e.descripcion as Estado, t.descripcion as Tipo
@@ -495,8 +433,6 @@ inner join td_prioridad pr on p.prioridad = pr.id
 inner join td_categoria c on p.categoria = c.id
 inner join td_estado e on p.estado = e.id
 inner join td_tipopqrs t on p.tipo = t.id;
-
-
 
 
 CREATE VIEW vista_respuestas AS
