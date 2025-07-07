@@ -16,9 +16,9 @@
                 <label for="apellidosHuesped">Apellidos<input id="apellidosHuesped" type="text" name="apellidosHuesped" placeholder="Ingrese los apellidos del huesped" required></label>
             </fieldset>
             <fieldset id="campo2">
-                <label for="tipoDocumento">
+                <label for="tipoDocumentoHuesped">
                     Tipo Documento
-                    <select name="tipoDocumento" id="tipoDocumento" required>
+                    <select name="tipoDocumentoHuesped" id="tipoDocumentoHuesped" required>
                         <option value="" disabled selected>Seleccione</option>
                         <option value="1">Cedula de Ciudadania</option>
                         <option value="2">Tarjeta de Identidad</option>
@@ -27,11 +27,11 @@
                         <option value="5">Registro Civil</option>
                     </select>
                 </label>
-                <label for="numDocumento">Nº Documento<input id="numDocumento" type="text" name="numDocumento" minlength="10" maxlength="15" placeholder="Documento del huesped" required></label>
-                <label for="contacto">Contacto<input id="contacto" type="text" name="contacto" minlength="10" maxlength="15" placeholder="Contacto del huesped" required></label>
-                <label for="estadoCivil">
+                <label for="numDocumentoHuesped">Nº Documento<input id="numDocumentoHuesped" type="text" name="numDocumentoHuesped" minlength="10" maxlength="15" placeholder="Documento del huesped" required></label>
+                <label for="contactoHuesped">Contacto<input id="contactoHuesped" type="text" name="contactoHuesped" minlength="10" maxlength="15" placeholder="Contacto del huesped" required></label>
+                <label for="estadoCivilHuesped">
                     Estado Civil
-                    <select name="estadoCivil" id="estadoCivil" required>
+                    <select name="estadoCivilHuesped" id="estadoCivilHuesped" required>
                         <option value="" disabled selected>Seleccione</option>
                         <option value="1">Soltero/a</option>
                         <option value="2">Casado/a</option>
@@ -41,12 +41,12 @@
                 </label>
             </fieldset>
             <fieldset id="campo3">
-                <label for="email">Correo<input id="email" type="email" name="email" placeholder="Correo electronico del huesped" required></label>
+                <label for="emailHuesped">Correo<input id="emailHuesped" type="email" name="emailHuesped" placeholder="Correo electronico del huesped" required></label>
             </fieldset>
             <fieldset id="campo4">
-                <label for="sexo">
+                <label for="sexoHuesped">
                     Sexo
-                    <select name="sexo" id="sexo" required>
+                    <select name="sexoHuesped" id="sexoHuesped" required>
                         <option value="" disabled selected>Seleccione</option>
                         <option value="1">Hombre</option>
                         <option value="2">Mujer</option>
@@ -64,17 +64,17 @@
                 </fieldset>
                 <fieldset id="campo6">
                     <legend>Habitación</legend>
-                    <label for="numHabitacion">Nº<input id="numHabitacion" type="text" name="numHabitacion" maxlength="3" placeholder="Numero de habitacion a reservar" required></label>
+                    <label for="numHabitacionReserva">Nº<input id="numHabitacionReserva" type="text" name="numHabitacionReserva" maxlength="3" placeholder="Numero de habitacion a reservar" required></label>
                 </fieldset>
                 <fieldset id="campo7">
                     <legend>Número de personas</legend>
-                    <label for="numAdultos">Adultos<input id="numAdultos" type="number" name="numAdultos" min="0" max="10" maxlength="2"></label>
-                    <label for="numNinos">Niños<input id="numNinos" type="number" name="numNinos" min="0" max="10" maxlength="2"></label>
-                    <label for="numDiscapacitados">Discapacitados<input id="numDiscapacitados" type="number" name="numDiscapacitados" min="0" max="10" maxlength="2"></label>
+                    <label for="numAdultos">Adultos<input id="numAdultos" type="number" name="numAdultos" min="1" max="10"></label>
+                    <label for="numNinos">Niños<input id="numNinos" type="number" name="numNinos" min="1" max="10"></label>
+                    <label for="numDiscapacitados">Discapacitados<input id="numDiscapacitados" type="number" name="numDiscapacitados" min="1" max="10"></label>
                 </fieldset>
                 <fieldset id="campo8">
                     <legend>Información adicional</legend>
-                    <textarea name="infoAdicional" id="infoAdicional" rows="7" placeholder="Información necesaria a tener en cuenta o sugerencias"></textarea>
+                    <textarea name="infoAdicionalReserva" id="infoAdicionalReserva" rows="7" placeholder="Información necesaria a tener en cuenta o sugerencias"></textarea>
                 </fieldset>
                 <fieldset id="campo9">
                     <label for="metodoPago">
@@ -86,7 +86,7 @@
                             <option value="3">PSE</option>
                         </select>
                     </label>
-                    <label for="numEmpleado">Empleado que registra<input id="numEmpleado" type="text" name="numEmpleado" minlength="10" maxlength="15" placeholder="Ingrese su numero de documento" required></label>
+                    <label for="numEmpleadoReserva">Empleado que registra<input id="numEmpleadoReserva" type="text" name="numEmpleadoReserva" minlength="10" maxlength="15" placeholder="Ingrese su numero de documento" required></label>
                     <label for="totalPago">Total a pagar<input id="totalPago" type="text" name="totalPago" required></label>
                 </fieldset>
             <div id="line"></div>

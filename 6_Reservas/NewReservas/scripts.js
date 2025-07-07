@@ -9,34 +9,29 @@ newHuesp.addEventListener("click", function () {
     }
 })};
 
-
-
 const form = document.getElementById("formRegistrarReserva");
 const btn = document.getElementById("btnRegistrarReserva");
 
+
     // Validacion solo numeros
-    const inputAdultos = document.getElementById("CantidadAdultos");
-    const inputMenores = document.getElementById("CantidadMenores");
-    const inputDiscapacitados = document.getElementById("CantidadDiscapacitados");
-    const inputCostoReserva = document.getElementById("TotalPagoHuespued");
+    const inputAdultos = document.getElementById("numAdultos");
+    const inputMenores = document.getElementById("numNinos");
+    const inputDiscapacitados = document.getElementById("numDiscapacitados");
 
     function aplicarFiltroNumerico(input) {
         input.addEventListener("input", function () {
             this.value = this.value.replace(/\D/g, '');
+            if (this.value.length > 2) {
+            this.value = this.value.slice(0, 2);
+        }
         });
-    }
+    };
 
     [
-        inputDocumento,
-        inputContacto,
         inputAdultos,
         inputMenores,
         inputDiscapacitados,
-        inputHabitacion,
-        inputCostoReserva
     ].forEach(aplicarFiltroNumerico);
-
-
 
 // Validación del formulario de registro de huesped
 if (form && btn) {
@@ -46,7 +41,7 @@ if (form && btn) {
         let errores = [];
 
         // Email
-        const email = document.getElementById("email").value.trim();
+        const email = document.getElementById("emailHuesped").value.trim();
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             errores.push("El correo electrónico no es válido.");
         }
@@ -58,15 +53,22 @@ if (form && btn) {
         }
 
         // Número de documento
-        const numDocumento = document.getElementById("numDocumento").value.trim();
-        if (!/^\d{6,10}$/.test(numDocumento)) {
-            errores.push("El número de documento debe tener entre 6 y 10 dígitos.");
+        const numDocumento = document.getElementById("numDocumentoHuesped").value.trim();
+        if (!/^\d{10,15}$/.test(numDocumento)) {
+            errores.push("El número de documento debe tener entre 10 y 15 dígitos.");
         }
         // Teléfono (contacto)
-        const contacto = document.getElementById("contacto").value.trim();
-        if (!/^\d{7,10}$/.test(contacto)) {
-            errores.push("El número de contacto debe tener entre 7 y 10 dígitos.");
+        const contacto = document.getElementById("contactoHuesped").value.trim();
+        if (!/^\d{10,15}$/.test(contacto)) {
+            errores.push("El número de contacto debe tener entre 10 y 15 dígitos.");
         }
+
+        //
+        const numEmpleado = document.getElementById("numEmpleadoReserva").value.trim();
+        if (!/^\d{10,15}$/.test(numEmpleado)) {
+            errores.push("El número de documento debe tener entre 10 y 15 dígitos.");
+        }
+
         // Confirmación de registro
         if (errores.length > 0) {
             alert(errores.join("\n"));
