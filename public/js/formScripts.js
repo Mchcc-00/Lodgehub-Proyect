@@ -22,7 +22,7 @@ document.querySelector("form").addEventListener("submit", function (event) {
     const sexo = document.getElementById("sexo").value.trim();
 
     if (!primerNombre) {
-        alert("El primer nombre es obligatorio.");
+        alert("El primer nombre es obligatorioo.");
         event.preventDefault();
         return;
     }

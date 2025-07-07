@@ -45,4 +45,5 @@ function isAccountLocked($correo) {
     }
     
     return false;
+    return;
 }

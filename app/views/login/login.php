@@ -57,3 +57,25 @@
 </body>
 
 </html>
+
+
+//incripta la contraseña
+<?php
+
+if (!empty($_POST["registro"])) {
+    if (empty($_POST["nombre"]) or empty($_POST["apellido"]) or empty($_POST["usuario"]) or empty($_POST["clave"]))  {
+        echo '<div class="alerta">Uno de los campos esta vacio</div>';
+    } else {
+        $nombre=$_POST["nombre"];
+        $apellido=$_POST["apellido"];
+        $usuario=$_POST["usuario"];
+        $clave=$_POST["clave"];
+        $sql=$conexion->query ("inser into usuario(nombres,apellidos,usuarios,clave)values('$nombre','$apellido','$usuario','$clave')");
+        if ($sql ==1) {
+            echo '<div class= "success">registrado correctamente</div>';
+        } else {
+            echo '<div class="alerta ">error al registrar</div>';
+        }
+
+    }
+}

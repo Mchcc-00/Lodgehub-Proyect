@@ -29,7 +29,7 @@ if($filas){
     include("login.php");
     ?>
 
-        <h1 class= "bad">ERROR EN LA AUTENTIFICACIÓN</h1>
+        <h1 class= "bad">ERROR EN EL REGISTRO</h1>
 
     <?php
 }

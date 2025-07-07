@@ -17,13 +17,13 @@ CREATE TABLE IF NOT EXISTS td_tipoDocumento(id INT (3) AUTO_INCREMENT NOT NULL,
 
 
 CREATE TABLE IF NOT EXISTS td_sexo (id INT (3) AUTO_INCREMENT NOT NULL,
-                                     descripcion VARCHAR (20) NOT NULL,
+                                    descripcion VARCHAR (20) NOT NULL,
 
 
 
 
-                                     PRIMARY KEY (id)
-                                     );
+                                    PRIMARY KEY (id)
+                                    );
 
 
 
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS tp_huespedes (numDocumento BIGINT(11) NOT NULL,
 
 
 
-                                             
+                                            
 CREATE TABLE IF NOT EXISTS td_tipoHabitacion (id INT (3) AUTO_INCREMENT NOT NULL,
                                             descripcion VARCHAR (20) NOT NULL,
 
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS td_tamano (id INT (3) AUTO_INCREMENT NOT NULL,
 
 CREATE TABLE IF NOT EXISTS td_estado (id INT (3) AUTO_INCREMENT NOT NULL,
                                           descripcion VARCHAR (20) NOT NULL,
-                                           
+                                          
                                           PRIMARY KEY (id)
                                           )ENGINE=INNODB;
 
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS tp_habitaciones (numero INT (3) NOT NULL,
                                             tipoHabitacion INT (3) NOT NULL,
                                             tamano INT (3) NOT NULL,
                                             estado INT (3) NOT NULL,
-                                           
+                                            
                                             PRIMARY KEY (numero),
                                             FOREIGN KEY (tipoHabitacion) REFERENCES td_tipohabitacion (id),
                                             FOREIGN KEY (tamano) REFERENCES td_tamano (id),
@@ -207,7 +207,7 @@ CREATE TABLE IF NOT EXISTS tp_pqrs (id INT (10) AUTO_INCREMENT NOT NULL,
                                     categoria INT(3) NOT  NULL,
                                     estado INT (3) NOT NULL,
                                     tipo INT(3) NOT NULL,
-                         
+                        
                                       PRIMARY KEY (id),
                                       FOREIGN KEY (hue_numdocumento) REFERENCES tp_huespedes (numDocumento),
                                       FOREIGN KEY (prioridad) REFERENCES td_prioridad (id),
@@ -226,11 +226,11 @@ CREATE TABLE IF NOT EXISTS td_motivoReserva (id INT (3) AUTO_INCREMENT NOT NULL,
 
 
 CREATE TABLE IF NOT EXISTS td_metodoPago (id INT (3) AUTO_INCREMENT NOT NULL,
-                                         descripcion VARCHAR (30) NOT NULL,
+                                        descripcion VARCHAR (30) NOT NULL,
 
 
-                                         PRIMARY KEY (id)
-                                         )ENGINE=INNODB;
+                                        PRIMARY KEY (id)
+                                        )ENGINE=INNODB;
 
 
 
@@ -300,15 +300,15 @@ CREATE TABLE IF NOT EXISTS tp_historialMantenimiento (id INT (4) AUTO_INCREMENT 
 
 
 CREATE TABLE IF NOT EXISTS ti_responder (id INT (3) AUTO_INCREMENT NOT NULL,
-                                         descripcion VARCHAR (50) NOT NULL,
-                                         fechaRespuesta DATE NOT NULL,
-                                         pqr_id INT (3) NOT NULL,
-                                         emp_numDocumento BIGINT (11) NOT NULL,
-                                         
-                                         PRIMARY KEY (id),
-                                         FOREIGN KEY (pqr_id) REFERENCES tp_pqrs (id),
-                                         FOREIGN KEY (emp_numDocumento) REFERENCES tp_empleados (numDocumento)
-                                         )ENGINE=INNODB;
+                                        descripcion VARCHAR (50) NOT NULL,
+                                        fechaRespuesta DATE NOT NULL,
+                                        pqr_id INT (3) NOT NULL,
+                                        emp_numDocumento BIGINT (11) NOT NULL,
+                                        
+                                        PRIMARY KEY (id),
+                                        FOREIGN KEY (pqr_id) REFERENCES tp_pqrs (id),
+                                        FOREIGN KEY (emp_numDocumento) REFERENCES tp_empleados (numDocumento)
+                                        )ENGINE=INNODB;
 
 
 /*inserts*/
