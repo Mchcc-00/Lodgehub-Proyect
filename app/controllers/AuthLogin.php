@@ -2,7 +2,7 @@
 session_start();
 
 // Incluir configuraciones
-require_once __DIR__ . '../../views/login/database.php';
+require_once __DIR__ . '../../views/login/databse.php';
 require_once __DIR__ . '../../views/login/functions.php';
 
 // Validar token CSRF
