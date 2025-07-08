@@ -34,7 +34,7 @@
                     </div>
 
                     <a href="contraseña.php" class="account-link">¿Olvidaste tu contraseña?</a>
-                    <a href=" ../Usuarios/crearUsuario.php" class="account-link">¿No tienes una cuenta? ¡Crea una!</a>
+                    <a href=" ../Usuarios/crearUsuariologin.php" class="account-link">¿No tienes una cuenta? ¡Crea una!</a>
 
                     <button type="submit" class="login-button">Ingresar</button>
                 </form>
