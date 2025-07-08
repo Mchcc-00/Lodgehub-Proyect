@@ -6,15 +6,11 @@
 
 
 $correo=$_POST['correo'];
-$password=$_POST['password'];
-session_start();
-$_SESSION['correo']=$correo;
-
 
 
 $conexion=mysqli_connect("localhost","root","","lodgehub");
 
-$consulta="SELECT*FROM tp_empleados where correo= '$correo' and password= '$password'";
+$consulta="SELECT*FROM tp_empleados where correo= '$correo'";
 $resultado=mysqli_query($conexion,$consulta);
 
 $filas=mysqli_num_rows($resultado);

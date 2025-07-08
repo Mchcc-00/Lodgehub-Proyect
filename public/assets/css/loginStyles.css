@@ -119,10 +119,10 @@ body {
 h1, form, .logo {
     position: relative;
     z-index: 1;
-
+}
 /* TÍTULO */
 h1 {
-    color: #333;
+    color: #000000;
     font-size: 24px;
     margin-bottom: 30px;
     font-weight: normal;
@@ -188,18 +188,71 @@ h1 {
 .bad{
     text-align: left;  
     background-color: #a22;
-    color: #000000
+    color: #ffffff
 
 }
 
 
 
+/*RECUPERAR CONTRASEÑA*/
+
+
+.login-form{
+    height: auto;
+    text-align: center;
+}
+
+
+
+.recuperarcontraseña{
+    position: relative;
+    z-index: 1;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+h4 {
+    color: #000000;
+    font-size: 18px;
+    margin-top: 30px;
+    margin-bottom: 40px;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/*boton*/
+
+.recuperarcontraseña-button{
+    text-align: center;
+    margin-left: 60%;
+    margin-top: 30px;
+    width: 100px;
+    padding: 5px 5px;
+    background-color: #186A87;
+    color: #CEE7FF;
+    border: 1px color #ffffff;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 
 }
 
-/*favian*/
+
+.recuperarcontraseña-button:hover {
+    background-color: #0E4153;
+}
 
 
+
+
+
+
+
+
+
+/*CREAR USUARIOS*/
 
 .borde-container{
     background-color: #296DAC;

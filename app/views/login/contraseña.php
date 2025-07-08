@@ -19,24 +19,15 @@
                 <div class="circle circle-3"></div>
                 <div class="circle circle-4"></div>
 
-                <form action="validar.php" method="post">
+                <form class="recuperarcontraseña" method="post">
 
-                    <h1>¡BIENVENIDO A LODGEHUB!</h1> <!-- Título -->
-
-                    <div class="input-group">
-                        <label for="username">Correo</label>
-                        <input type="text" id="correo" name="correo" placeholder="Ingresa tu correo" required>
-                    </div>
+                    <h4>Ingresa tu correo electronico para enviarte un codigo de seguridad</h4> 
 
                     <div class="input-group">
-                        <label for="password">Contraseña</label>
-                        <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña" required>
+                        <input type="text" id="correo" name="correo" placeholder="Ingresa tu correo electronico" required>
                     </div>
-
-                    <a href="contraseña.php" class="account-link">¿Olvidaste tu contraseña?</a>
-                    <a href=" ../Usuarios/crearUsuario.php" class="account-link">¿No tienes una cuenta? ¡Crea una!</a>
-
-                    <button type="submit" class="login-button">Ingresar</button>
+                    
+                    <button type="submit" class="recuperarcontraseña-button">Recuperar contraseña</button>
                 </form>
 
                 <?php
@@ -55,7 +46,3 @@
         </div>
     </div>
 </body>
-
-</html>
-
-
