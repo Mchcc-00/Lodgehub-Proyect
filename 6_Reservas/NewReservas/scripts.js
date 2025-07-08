@@ -50,6 +50,19 @@
         // Validación de campos
         let errores = [];
 
+
+        // Nombres
+        const nombres = document.getElementById("nombresHuesped").value.trim();
+        if (nombres === "") {
+            errores.push("El campo Nombres es obligatorio.");
+        }
+
+        // Apellidos
+        const apellidos = document.getElementById("apellidosHuesped").value.trim();
+        if (apellidos === "") {
+            errores.push("El campo Apellidos es obligatorio.");
+        }
+
         // Email
         const email = document.getElementById("emailHuesped").value.trim();
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -70,6 +83,12 @@
         const contacto = document.getElementById("contactoHuesped").value.trim();
         if (!/^.{10,15}$/.test(contacto)) {
             errores.push("El número de contacto debe tener entre 10 y 15 dígitos.");
+        }
+
+        // Habitación
+        const habitacion = document.getElementById("numHabitacionReserva").value.trim();
+        if (habitacion === "") {
+            errores.push("El número de habitación es obligatorio");
         }
         // Numero documento del empleado
         const numEmpleado = document.getElementById("numEmpleadoReserva").value.trim();
@@ -140,28 +159,3 @@ document.addEventListener("DOMContentLoaded", function () {
             form.addEventListener("submit", verificarCampos);
         };
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-        // Nombres
-        const nombres = document.getElementById("nombresHuesped").value.trim();
-        if (nombres === "") {
-            errores.push("El campo Nombres es obligatorio.");
-        }
-        // Apellidos
-        const apellidos = document.getElementById("apellidosHuesped").value.trim();
-        if (apellidos === "") {
-            errores.push("El campo Apellidos es obligatorio.");
-        }
-*/
