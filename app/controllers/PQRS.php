@@ -120,14 +120,21 @@ if ($stmt->execute()) {
 
     <div class="mensaje-exito">
         <div class="mensaje-icono">
-        <img src="Img/FlechaOscura.png" alt="FlechaOscura" class="logo-img">
+            <img src="../../../public/img/flecha flechita_claro.png" alt="Flechaclara" class="logo-img">
         </div>
         <div class="mensaje-contenido">
             <h2>REGISTRO EXITOSO</h2>
-            <p>Tu solicitud fue registrada correctamente. Ahora puedes hacer <strong style="color: #fff;">seguimiento</strong>.</p>
-            <a class="boton" href="index.html">Continuar</a>
+            <p>Tu solicitud fue registrada correctamente. Serás redirigido en unos segundos...</p>
+            <a class="boton" href="/lodgehub/app/views/pqrs/crud.php" >Volver al formulario</a>
         </div>
-    </div>';
+    </div>
+
+    <script>
+        setTimeout(function() {
+            window.location.href = "/lodgehub/app/views/pqrs/crud.php"
+        }, 4000); // 4000 ms = 4 segundos
+    </script>
+    ';
 } else {
     echo "<p style='color:white;'>Error al guardar: " . htmlspecialchars($stmt->error) . "</p>";
 }
