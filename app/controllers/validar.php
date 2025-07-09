@@ -25,7 +25,7 @@ if($filas){
 }else {
     ?>
     <?php
-    include("login.php");
+    include("../views/login/login.php");
     ?>
 
         <h6 class= "bad">ERROR EN EL REGISTRO</h6>

@@ -341,8 +341,8 @@ INSERT INTO tp_huespedes VALUES
 
 
 insert into tp_empleados values
-(1122123456,'Joaquin Diomedes','Gonzales Chaz','Calle 73 D#8C', "2003-02-15", 3118273847,3028732645, '1234567485','GonzChaz@gmail.com', NULL, NULL, NULL,1,1,1,1),
-(1014596349, 'Brayan', 'Pulido', 'calle 47 sur numero 1 f 20 este', '2006-03-03', 3172509298, 3126354874, '123456789', 'brayan06.pulido@gmail.com', '4987432145', '8765219854', 'asdasdasdasdqwrewf', '0', 'hola', '30', 1, 1, 1, 4); 
+(1122123456,'Joaquin Diomedes','Gonzales Chaz','Calle 73 D#8C', "2003-02-15", 3118273847,3028732645, '1234567485','GonzChaz@gmail.com', NULL, NULL, NULL,'0','hola','30',1,1,1),
+(1014596349, 'Brayan', 'Pulido', 'calle 47 sur numero 1 f 20 este', '2006-03-03', 3172509298, 3126354874, '123456789', 'brayan06.pulido@gmail.com', '4987432145', '8765219854', 'asdasdasdasdqwrewf', '0', 'hola', '30', 1, 1, 1); 
 
 
 insert into tp_habitaciones values
@@ -393,13 +393,11 @@ e.numTelefono as Telefono,
 e.telEmergencia as Telefono_Emergencia, 
 e.correo as Correo, 
 s.descripcion as Sexo,  
-r.descripcion as Rol, 
-ec.descripcion as Estado_Civil
+r.descripcion as Rol
 from tp_empleados e
 inner join td_sexo s on  e.sexo = s.id 
 inner join td_tipodocumento d on e.tipoDocumento = d.id
-inner join td_roles r on e.roles = r.id
-inner join td_estadocivil ec on  e.estadoCivil = ec.id;
+inner join td_roles r on e.roles = r.id;
 
 
 CREATE VIEW vista_habitaciones AS
