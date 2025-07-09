@@ -20,7 +20,7 @@ $resultado=mysqli_query($conexion,$consulta);
 $filas=mysqli_num_rows($resultado);
 
 if($filas){
-    header("location: ../homepage/homepage.php");
+    header("location: ../views/homepage/homepage.php");
 
 }else {
     ?>

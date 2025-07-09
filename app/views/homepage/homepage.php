@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>home</title>
-    <link rel="stylesheet" href="../../public/assets/css/styles.css"> <!-- Enlaza el archivo CSS -->
+    <link rel="stylesheet" href="../../../6_Reservas/styles.css"> <!-- Enlaza el archivo CSS -->
 
 </head>
 <body>
@@ -27,13 +27,13 @@
                 <div class="ListaElementos">
                     <ul>
                         <li>
-                            <a href="indexReservasmain.php" class="paginaActual">RESERVAS</a>
+                            <a href="../../../6_Reservas/indexReservasmain.php" class="paginaActual">RESERVAS</a>
                         </li>
                         <li>
                             <a href="indexHabitaciones.html" class="otrasPaginas">HABITACIONES</a>
                         </li>
                         <li>
-                            <a href="indexMantenimiento.html" class="otrasPaginas">MANTENIMIENTO</a>
+                            <a href="../views/PQRS/index.html" class="otrasPaginas">MANTENIMIENTO</a>
                         </li>
                     </ul>
                 </div>
@@ -41,7 +41,8 @@
                     <div class="linea-horizontalSeparadorIconos"></div>
                     <div class="ListaElementosIconos">
                         <div class="iconoPQRS">
-                            <img src="../public/img/iconoPQRS.png" alt="PQRS" id="IconPQRS">
+
+                            <a href="../PQRS/index.html"><img src="../public/img/iconoPQRS.png" alt="PQRS" id="IconPQRS"> </a>
                         </div>
                         <div class="iconoAjustes">
                             <img src="../public/img/tuercaAjustes.png" alt="Ajustes" id="IconAjustes">
