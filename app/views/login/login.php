@@ -19,7 +19,7 @@
                 <div class="circle circle-3"></div>
                 <div class="circle circle-4"></div>
 
-                <form action="../../controllers/validar.php" method="post">
+                <form action="validar.php" method="post">
 
                     <h1>¡BIENVENIDO A LODGEHUB!</h1> <!-- Título -->
 

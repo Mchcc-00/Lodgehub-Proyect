@@ -20,12 +20,12 @@ $resultado=mysqli_query($conexion,$consulta);
 $filas=mysqli_num_rows($resultado);
 
 if($filas){
-    header("location: ../views/homepage/homepage.php");
+    header("location: ../homepage/homepage.php");
 
 }else {
     ?>
     <?php
-    include("../views/login/login.php");
+    include("login.php");
     ?>
 
         <h6 class= "bad">ERROR EN EL REGISTRO</h6>

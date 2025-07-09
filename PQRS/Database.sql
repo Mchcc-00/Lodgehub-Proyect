@@ -1,3 +1,5 @@
+CREATE DATABASE IF NOT EXISTS formulario_pqrs;
+
 USE formulario_pqrs;
 
 -- Crear tabla pqrs
