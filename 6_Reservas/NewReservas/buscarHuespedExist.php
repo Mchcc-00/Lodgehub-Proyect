@@ -20,8 +20,9 @@ if (isset($_GET['buscarHuesped'])) {
     if ($huesped) {
         // Muestra la información del huésped y el botón para generar reserva
         ?>
-        <h3>Información del huésped</h3>
-            <div>
+        <div class="mostrarInfoHuesped">
+            <div class="tablaInfoHuesped">
+                <h3>INFORMACIÓN DEL HUÉSPED</h3>
                 <p><strong> Nombres: </strong><?php echo htmlspecialchars($huesped['nombres']);?></p>
                 <p><strong> Apellidos: </strong><?php echo htmlspecialchars($huesped['apellidos']);?></p>
                 <p><strong> Tipo Documento: </strong><?php echo htmlspecialchars($huesped['tipoDocumento']);?></p>
@@ -31,10 +32,12 @@ if (isset($_GET['buscarHuesped'])) {
                 <p><strong> Contacto: </strong><?php echo htmlspecialchars($huesped['numTelefono']);?></p>
                 <p><strong> Correo: </strong><?php echo htmlspecialchars($huesped['correo']);?></p>
             </div>
-        <form id="formReserva" action="generarReserva.php" method="POST">
-            <input type="hidden" name="documentoHuesped" value="<?php echo htmlspecialchars($documentoHuesped); ?>">
-            <button type="submit" id="btnGenerarReserva" style="cursor:pointer;">Generar Reserva</button>
-        </form>
+            <form id="formReserva" action="generarReserva.php" method="POST">
+                <input type="hidden" name="documentoHuesped" value="<?php echo htmlspecialchars($documentoHuesped); ?>">
+                <button type="submit" id="btnGenerarReserva" style="cursor:pointer;">Generar Reserva</button>
+            </form>
+        </div>
+            
     <?php
     } else {
         echo "No se encontró ningún huésped con ese documento.";
