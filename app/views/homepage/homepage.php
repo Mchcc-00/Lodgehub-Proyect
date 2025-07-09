@@ -30,7 +30,7 @@
                             <a href="../../../6_Reservas/indexReservasmain.php" class="paginaActual">RESERVAS</a>
                         </li>
                         <li>
-                            <a href="indexHabitaciones.html" class="otrasPaginas">HABITACIONES</a>
+                            <a href="../../../HABITACIONES/views/dashboard.php" class="otrasPaginas">HABITACIONES</a>
                         </li>
                         <li>
                             <a href="../views/PQRS/index.html" class="otrasPaginas">MANTENIMIENTO</a>
