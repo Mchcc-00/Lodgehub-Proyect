@@ -7,12 +7,16 @@
 </head>
 <body>
     <h2>Nueva Reserva</h2>
-    <h3>Huesped</h3>
-    <div id="buscadorHuesped">
-        <input type="text" id="buscarHuesped" placeholder="Documento Huesped" name="buscarHuesped" pattern="\d+" maxlength="10" required>
-        <button id="btnBuscarHuesped" type="button" name="btnBuscarHuesped">Buscar</button>
-    </div>
-    <button type="button" id="registrarHuesped" name="registrarHuesped">Nuevo Huesped</button>
+    <form id="buscadorHuesped" action="buscarHuespedExist.php" method="GET">
+        <label for="buscarHuesped">Buscar huesped<input type="text" id="buscarHuesped" placeholder="Documento Huesped" name="buscarHuesped" minlength="10" maxlength="15" required></label>
+        <button id="btnBuscarHuesped" type="submit">Buscar</button>
+    </form>
+    <button type="button" id="registrarHuesped">Nuevo Huesped</button>
+
+    <div id="infoHuesped"></div>
+
+    
+
     
 </body>
     <script src="scripts.js"></script>

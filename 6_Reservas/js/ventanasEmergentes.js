@@ -1,7 +1,7 @@
 document.getElementById("NuevaReservaForm").addEventListener("click", function () {
     const confirmar = confirm("¿Deseas crear una nueva reserva?");
     if (confirmar) {
-        window.location.href = "indexNuevaReserva.php"
+        window.location.href = "/Lodgehub/6_Reservas/NewReservas/crearReserva.php";
     }
 });
 

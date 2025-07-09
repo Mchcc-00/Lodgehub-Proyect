@@ -14,39 +14,18 @@ nuevaReserva();
 
     $db->beginTransaction();
 
-    $documentoHuesped = $_POST["numDocumentoHuesped"];
-    $contactoHuesped = $_POST["contactoHuesped"];
-    $correoHuesped = $_POST["emailHuesped"];
-    $nombreHuesped = $_POST["nombresHuesped"];
-    $apellidosHuesped = $_POST["apellidosHuesped"];
-    $tipDocumentoHuesped = $_POST["tipoDocumentoHuesped"];
-    $sexoHuesped = $_POST["sexoHuesped"];
-    $estadoCivilHuesped = $_POST["estadoCivilHuesped"];
-
-
-    $sql = "INSERT INTO tp_huespedes (numDocumento, numTelefono, correo, nombres, apellidos, tipoDocumento, sexo, estadoCivil) VALUES (:numDocumento, :numTelefono, :correo, :nombres, :apellidos, :tipoDocumento, :sexo, :estadoCivil)";
-    $stmt = $db->prepare($sql);
-    $stmt->bindParam(':numDocumento', $documentoHuesped, PDO::PARAM_STR);
-    $stmt->bindParam(':numTelefono', $contactoHuesped, PDO::PARAM_STR);
-    $stmt->bindParam(':correo', $correoHuesped, PDO::PARAM_STR);
-    $stmt->bindParam(':nombres', $nombreHuesped, PDO::PARAM_STR);
-    $stmt->bindParam(':apellidos', $apellidosHuesped, PDO::PARAM_STR);
-    $stmt->bindParam(':tipoDocumento', $tipDocumentoHuesped, PDO::PARAM_INT);
-    $stmt->bindParam(':sexo', $sexoHuesped, PDO::PARAM_INT);
-    $stmt->bindParam(':estadoCivil', $estadoCivilHuesped, PDO::PARAM_INT);
-    $stmt->execute();
-
-    $costoReserva = $_POST["totalPago"];
-    $fechaInicioReserva = $_POST["fechaInicio"];
-    $fechaFinReserva = $_POST["fechaFin"];
-    $canAdultosReserva = $_POST["numAdultos"];
-    $canNinosReserva = $_POST["numNinos"];
-    $canDiscapacidadReserva = $_POST["numDiscapacitados"];
-    $motivoReserva = $_POST["motivoReserva"];
-    $habitacionReserva = $_POST["numHabitacionReserva"];
-    $metodoPagoReserva = $_POST["metodoPago"];
-    $infoAdicionalReserva = $_POST["infoAdicionalReserva"];
-    $documentoEmpleado = $_POST["numEmpleadoReserva"];
+    $documentoHuesped = $_POST["documentoHuespedExist"];
+    $costoReserva = $_POST["totalPagoExist"];
+    $fechaInicioReserva = $_POST["fechaInicioExist"];
+    $fechaFinReserva = $_POST["fechaFinExist"];
+    $canAdultosReserva = $_POST["numAdultosExist"];
+    $canNinosReserva = $_POST["numNinosExist"];
+    $canDiscapacidadReserva = $_POST["numDiscapacitadosExist"];
+    $motivoReserva = $_POST["motivoReservaExist"];
+    $habitacionReserva = $_POST["numHabitacionReservaExist"];
+    $metodoPagoReserva = $_POST["metodoPagoExist"];
+    $infoAdicionalReserva = $_POST["infoAdicionalReservaExist"];
+    $documentoEmpleado = $_POST["numEmpleadoReservaExist"];
     $estadoReserva = 1;
 
 

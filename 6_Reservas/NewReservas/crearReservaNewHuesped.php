@@ -8,7 +8,7 @@
 <body>
     <h2>Nueva Reserva</h2>
     
-    <form id="formRegistrarReserva" action="" method="POST">
+    <form id="formRegistrarReserva" action="procesarFormulario.php" method="POST">
         <div id="formularioHuesped">
             <h3>INFORMACIÓN HUESPED</h3>
             <fieldset id="campo1">
@@ -62,6 +62,16 @@
                 <fieldset id="campo5">
                     <label for="fechaInicio">Fecha inicio<input id="fechaInicio" type="date" name="fechaInicio" required></label>
                     <label for="fechaFin">Fecha salida<input id="fechaFin" type="date" name="fechaFin" required></label>
+                    <label for="motivoReserva">
+                        Motivo de la reserva
+                        <select name="motivoReserva" id="motivoReserva" required>
+                            <option value="" disabled selected>Seleccione</option>
+                            <option value="1">Negocios</option>
+                            <option value="2">Personal</option>
+                            <option value="3">Viaje</option>
+                            <option value="4">Familiar</option>
+                        </select>
+                    </label>
                 </fieldset>
                 <fieldset id="campo6">
                     <legend>Habitación</legend>
@@ -90,7 +100,7 @@
                     <label for="numEmpleadoReserva">Empleado que registra<input id="numEmpleadoReserva" type="text" name="numEmpleadoReserva" minlength="10" maxlength="15" placeholder="Ingrese su numero de documento" required></label>
                     <label for="totalPago">Total a pagar<input id="totalPago" type="text" name="totalPago" required></label>
                 </fieldset>
-            <div id="line"></div>
+            <div id="line2"></div>
         </div>
         <div id="botonesFormulario">
             <button type="button" id="btnLimpiarFormulario">Limpiar formulario</button>
