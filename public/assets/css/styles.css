@@ -204,12 +204,14 @@ html, body {
     border-bottom-right-radius: 10px;
 }
 .btn-delete {
+    background-color: rgb(201, 70, 70);
     color: #ffffff;
     font-size: 0.8em;
     padding: 5px 10px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.2s ease;   
 }
 
 .btn-edit {
