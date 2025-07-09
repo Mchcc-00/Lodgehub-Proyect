@@ -1,7 +1,6 @@
-
 <h2 class="form-title">NUEVO USUARIO</h2>
 
-<form action="/models/crudUsuarios/usuarios.php" method="post" enctype="multipart/form-data">
+<form action="<?php echo BASE_URL; ?>/usuarios/guardar" method="post" enctype="multipart/form-data">
     <input type="hidden" name="formulario" value="crearUsuario">
     <div class="form-grid">
         <div class="form-group">
@@ -37,7 +36,7 @@
         </div>
         <div class="form-group">
             <label for="fechaNacimiento">Fecha de nacimiento</label>
-            <input type="date" id="fechaNacimiento" name="fecha_nacimiento">
+            <input type="date" id="fechaNacimiento" name="fechaNacimiento">
         </div>
         <div class="form-group">
             <label for="sexo">Sexo</label>
@@ -81,13 +80,15 @@
                 <option value="3">Atención al cliente</option>
             </select>
         </div>
-        <div class="form-group">
-            <label for="rnt">RNT</label>
-            <input type="text" id="rnt" name="rnt">
-        </div>
-        <div class="form-group">
-            <label for="nit">NIT</label>
-            <input type="text" id="nit" name="nit">
+        <div id="admin-fields" style="display: none;">
+            <div class="form-group">
+                <label for="rnt">RNT</label>
+                <input type="text" id="rnt" name="rnt">
+            </div>
+            <div class="form-group">
+                <label for="nit">NIT</label>
+                <input type="text" id="nit" name="nit">
+            </div>
         </div>
         <div class="form-group photo-upload-area">
             <label for="foto_perfil" class="photo-upload-label">
@@ -96,40 +97,17 @@
             </label>
         </div>
     </div>
-    
+
     <?php if (isset($_GET['mensaje'])): ?>
         <p class="mensaje-feedback" style="color: green;"><?php echo htmlspecialchars($_GET['mensaje']); ?></p>
     <?php endif; ?>
 
     <div class="form-actions">
-        <button type="button" class="btn btn-secondary" onclick="window.location.href='/usuarios/listaUsuarios'">Cancelar</button>
-        <button type="submit" class="btn btn-primary">Registrar</button>
+        <button type="button" class="btn btn-secondary" onclick="window.location.href='/lodge/public/index.php?action=mostrarLista'">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Confirmar</button>
     </div>
 </form>
 
 <footer class="form-footer">
     lodgehubgroup © 2025
 </footer>
-
-<script>
-    document.getElementById('roles').addEventListener('change', function() {
-        const rnt = document.getElementById('rnt');
-        const nit = document.getElementById('nit');
-        // Tu lógica de habilitar/deshabilitar aquí...
-        if (this.value === '1') {
-             rnt.disabled = false;
-             nit.disabled = false;
-             rnt.required = true;
-             nit.required = true;
-        } else {
-            rnt.disabled = true;
-            nit.disabled = true;
-            rnt.required = false;
-            nit.required = false;
-            rnt.value = '';
-            nit.value = '';
-        }
-    });
-    // Disparar el evento al cargar la página por si hay valores preseleccionados
-    document.getElementById('roles').dispatchEvent(new Event('change'));
-</script>

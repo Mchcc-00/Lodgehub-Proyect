@@ -112,14 +112,11 @@ CREATE TABLE IF NOT EXISTS tp_empleados(numDocumento VARCHAR (15) NOT NULL,
                                 sexo INT (3) NOT NULL,
                                 tipoDocumento INT (3) NOT NULL,
                                 roles INT (3) NOT NULL,
-                                estadoCivil INT (3) NOT NULL,
-
 
                                 PRIMARY KEY (numdocumento),
                                 FOREIGN KEY (sexo) REFERENCES td_sexo (id),
                                 FOREIGN KEY (tipoDocumento) REFERENCES td_tipodocumento (id),
-                                FOREIGN KEY (roles) REFERENCES td_roles (id),
-                                FOREIGN KEY (estadoCivil) REFERENCES td_estadocivil (id)
+                                FOREIGN KEY (roles) REFERENCES td_roles (id)
                                 )ENGINE=INNODB;
 
 

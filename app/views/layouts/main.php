@@ -27,7 +27,7 @@
                     <ul>
                         <li><a href="#">HABITACIONES</a></li>
                         <li><a href="#">RESERVAS</a></li>
-                        <li><a href="/usuarios/lista">USUARIOS</a></li>
+                        <li><a href="<?php echo BASE_URL; ?>/usuarios/lista">USUARIOS</a></li>
                     </ul>
                 </nav>
                 <div class="sidebar-bottom-icons">
@@ -41,5 +41,6 @@
 
         </div>
     </div>
+    <script src="<?php echo BASE_URL; ?>/assets/js/form-validation.js"></script>
     </body>
 </html>

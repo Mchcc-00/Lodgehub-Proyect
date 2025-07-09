@@ -243,7 +243,29 @@ html, body {
     border-radius: 10px;
     cursor: pointer;
 }
+/* Estilo para los campos con error */
+.form-group input.is-invalid,
+.form-group select.is-invalid {
+    border-color: #dc3545; /* Rojo */
+    background-color: #f8d7da; /* Fondo rosado suave */
+}
 
+/* Estilo para los mensajes de error */
+.error-message {
+    color: #dc3545;
+    font-size: 0.85em;
+    margin-top: 5px;
+    opacity: 0; /* Oculto por defecto */
+    max-height: 0; /* Oculto por defecto */
+    overflow: hidden;
+    transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out; /* Animación */
+}
+
+/* Cuando el mensaje de error es visible */
+.error-message.visible {
+    opacity: 1;
+    max-height: 20px; /* Ajusta según el tamaño de tu fuente */
+}
 
 
 /* --- ESTILOS HEREDADOS DEL FORMULARIO ANTERIOR --- */

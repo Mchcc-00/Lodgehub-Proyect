@@ -1,20 +1,39 @@
 <?php
-// Muestra errores para depuración
+//Mostrar Errores y Iniciar Sesión
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+session_start();
 
-// Carga el controlador de usuarios
+define('BASE_URL', '/Lodge/public');
+
+//Cargar Clases Necesarias
 require_once '../app/Core/Router.php';
-require_once '../app/Controllers/Usuarios.php';
+require_once '../app/Controllers/UsuarioController.php';
 
-// Rutina simple para decidir qué acción ejecutar
-$controller = new UsuarioController();
+$basePath = '/Lodge/public'; // La subcarpeta donde vive el proyecto
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-$action = $_GET['action'] ?? 'mostrarFormularioCreacion';
-
-if (method_exists($controller, $action)) {
-    $controller->$action();
-} else {
-    echo "Acción no encontrada.";
+if (strpos($uri, $basePath) === 0) {
+    $uri = substr($uri, strlen($basePath));
 }
+
+if (empty($uri)) {
+    $uri = '/';
+}
+
+$request_method = $_SERVER['REQUEST_METHOD'];
+$router = new Router();
+
+// Definir el Mapa de Rutas de la página
+// AQUÍ VAN TODAS LAS RUTAS JUNTAS, ANTES DE LLAMAR A DISPATCH
+$router->add('/usuarios/lista', 'UsuarioController', 'mostrarLista', 'GET');
+$router->add('/usuarios/crear', 'UsuarioController', 'mostrarFormularioCreacion', 'GET');
+$router->add('/usuarios/guardar', 'UsuarioController', 'guardar', 'POST');
+$router->add('/usuarios/editar', 'UsuarioController', 'mostrarFormularioEdicion', 'GET');
+$router->add('/usuarios/actualizar', 'UsuarioController', 'actualizar', 'POST');
+$router->add('/usuarios/eliminar', 'UsuarioController', 'eliminar', 'GET');
+
+
+//Poner a Trabajar al Router
+$router->dispatch($uri, $request_method);

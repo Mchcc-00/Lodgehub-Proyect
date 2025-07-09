@@ -1,5 +1,6 @@
 <?php
-class Router {
+class Router
+{
     // Un array para almacenar todas las rutas definidas
     protected $routes = [];
 
@@ -7,7 +8,8 @@ class Router {
      * Añade una nueva ruta al mapa de rutas.
      * Llamado desde index.php para cada ruta.
      */
-    public function add($uri, $controller, $method, $request_type) {
+    public function add($uri, $controller, $method, $request_type)
+    {
         $this->routes[] = [
             'uri' => $uri,
             'controller' => $controller,
@@ -27,11 +29,10 @@ class Router {
             if ($route['uri'] === $uri && $route['request_type'] === $request_type) {
                 
                 // Crea una instancia del controlador definido en la ruta
-                // ej: new UsuarioController();
                 $controller = new $route['controller']();
 
                 // Obtiene el nombre del método a llamar
-                $method = $route['method']; // ej: 'mostrarFormularioCreacion'
+                $method = $route['method'];
 
                 // Llama al método del controlador
                 $controller->$method();
