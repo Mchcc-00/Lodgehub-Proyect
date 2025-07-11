@@ -1,3 +1,9 @@
+<?php
+
+    require_once '../login/validarSesion.php';
+
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -51,6 +57,9 @@
                 </div>
             </div>
         </aside>
+        <div>
+            <?php include '../login/navbar.php'?>
+        </div>
 
 
 </body>

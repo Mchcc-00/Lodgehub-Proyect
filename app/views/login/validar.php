@@ -14,12 +14,16 @@ $_SESSION['correo']=$correo;
 
 $conexion=mysqli_connect("localhost","root","","lodgehub");
 
-$consulta="SELECT*FROM tp_empleados where correo= '$correo' and password= '$password'";
+$consulta="SELECT*FROM tp_empleados where correo= '$correo' and password= '$password' and sesionCaducada = 1";
 $resultado=mysqli_query($conexion,$consulta);
 
 $filas=mysqli_num_rows($resultado);
 
 if($filas){
+
+    session_start();
+    $_SESSION['user'] = $correo;
+    
     header("location: ../homepage/homepage.php");
 
 }else {
@@ -34,3 +38,5 @@ if($filas){
 }
 mysqli_free_result($resultado);
 mysqli_close($conexion);
+
+?>
