@@ -1,1 +1,1 @@
-<p>Hola <?php echo $_SESSION['user'] ?>, ¿Deseas cerrar sesión? <a href="cerrar.php">Cerrar Sesión</a></p>
+<p>Hola <?php echo $_SESSION['user'] ?>, ¿Deseas cerrar sesión? <a href="../homepage/cerrarSesion.php">Cerrar Sesión</a></p>

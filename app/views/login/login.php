@@ -33,7 +33,7 @@
                         <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña" required>
                     </div>
 
-                    <a href="contraseña.php" class="account-link">¿Olvidaste tu contraseña?</a>
+                    <a href="../recuperarcontraseña/recuperarContraseña.php" class="account-link">¿Olvidaste tu contraseña?</a>
                     <a href=" ../Usuarios/crearUsuariologin.php" class="account-link">¿No tienes una cuenta? ¡Crea una!</a>
 
                     <button type="submit" class="login-button">Ingresar</button>

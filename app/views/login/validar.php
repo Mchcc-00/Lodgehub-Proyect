@@ -27,13 +27,8 @@ if($filas){
     header("location: ../homepage/homepage.php");
 
 }else {
+    header("location: login.php");
     ?>
-    <?php
-    include("login.php");
-    ?>
-
-        <h6 class= "bad">ERROR EN EL REGISTRO</h6>
-
     <?php
 }
 mysqli_free_result($resultado);
