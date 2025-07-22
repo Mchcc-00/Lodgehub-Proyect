@@ -42,7 +42,7 @@ if (isset($_POST['documentoHuesped'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nueva Reserva</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Enlaza el archivo CSS -->
+    <link rel="stylesheet" href=""> <!-- Enlaza el archivo CSS -->
     </head>
 <body>
     <div class="container">

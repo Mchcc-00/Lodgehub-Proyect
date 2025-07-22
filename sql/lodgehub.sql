@@ -341,9 +341,9 @@ INSERT INTO tp_huespedes VALUES
 
 
 insert into tp_empleados values
-(1122123456,'Joaquin Diomedes','Gonzales Chaz','Calle 73 D#8C', "2003-02-15", 3118273847,3028732645, '1234567485','GonzChaz@gmail.com', NULL, NULL, NULL,'0','hola','30', '0', 1, 1, 1),
-(1014596349, 'Brayan', 'Pulido', 'calle 47 sur numero 1 f 20 este', '2006-03-03', 3172509298, 3126354874, '123456789', 'brayan06.pulido@gmail.com', '4987432145', '8765219854', 'asdasdasdasdqwrewf', '0', 'hola', '30','1', 1, 1, 1); 
-(123456789, 'brayan', 'pulido', 'calle 61 30', '2025-07-29', 3216848548, 3159798546, '987654321', 'brayan@gmail.com', NULL, NULL, NULL, '0', NULL, '1', '1', '1', '1');
+(1122123456,'Joaquin Diomedes','Gonzales Chaz','Calle 73 D#8C', "2003-02-15", 3118273847,3028732645, '1234567485','GonzChaz@gmail.com', NULL, NULL, NULL,'0','hola', '0', 1, 1, 1),
+(1014596349, 'Brayan', 'Pulido', 'calle 47 sur numero 1 f 20 este', '2006-03-03', 3172509298, 3126354874, '123456789', 'brayan06.pulido@gmail.com', '4987432145', '8765219854', 'asdasdasdasdqwrewf', '0', 'hola','1', 1, 1, 1),
+(1234567890, 'brayan', 'pulido', 'calle 61 30', '2025-07-29', 3216848548, 3159798546, '987654321', 'brayan@gmail.com', NULL, NULL, NULL, '0', NULL, '1', 1, 1, 1);
 
 insert into tp_habitaciones values
 (666,280000,1,1,1,2),
