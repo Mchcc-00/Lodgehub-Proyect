@@ -27,7 +27,7 @@ function limpiarFormulario(event) {
 
 // Botón Cancelar para CUALQUIER formulario
 function cancelarReserva(event) { // Recibe el evento para encontrar el formulario
-    const cancelar = confirm("¿Estás seguro de que deseas cancelar la reserva?");
+    const cancelar = confirm("¿Estás seguro de cancelar la reserva?");
     if (cancelar) {
         // Busca el formulario al que pertenece el botón que disparó el evento
         event.target.closest("form").reset(); 

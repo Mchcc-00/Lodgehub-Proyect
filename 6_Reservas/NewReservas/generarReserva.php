@@ -3,11 +3,11 @@ require_once '../../config/conexionGlobal.php';
 
 $huesped = null; // Inicializa la variable huesped
 
-// 1. Verificar si se recibió el documento del huésped por POST
+//Verificar si se recibió el documento del huésped por POST
 if (isset($_POST['documentoHuesped'])) {
     $documentoHuesped = trim($_POST['documentoHuesped']);
     
-    // 2. Realizar la consulta a la base de datos (similar a buscarHuespedExist.php)
+    //Realizar la consulta a la base de datos (similar a buscarHuespedExist.php)
     $db = conexionDB();
     $sql = "SELECT h.numDocumento, h.numTelefono, h.correo, h.nombres, h.apellidos, td.descripcion as tipoDocumento, s.descripcion as sexo, ec.descripcion as estadoCivil FROM tp_huespedes AS h
 
