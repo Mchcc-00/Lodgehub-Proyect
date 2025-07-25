@@ -32,7 +32,7 @@ if (isset($_GET['buscarHuesped'])) {
                 <p><strong> Contacto: </strong><?php echo htmlspecialchars($huesped['numTelefono']);?></p>
                 <p><strong> Correo: </strong><?php echo htmlspecialchars($huesped['correo']);?></p>
             </div>
-            <form id="formReserva" action="generarReserva.php" method="POST">
+            <form id="formReserva" action="FormExistHuesped.php" method="POST">
                 <input type="hidden" name="documentoHuesped" value="<?php echo htmlspecialchars($documentoHuesped); ?>">
                 <button type="submit" id="btnGenerarReserva" style="cursor:pointer;">Generar Reserva</button>
             </form>

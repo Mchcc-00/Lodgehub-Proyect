@@ -8,9 +8,12 @@
 </head>
 <body>
     <div class="container">
+        <button id="retornarMainReserva" style="cursor:pointer;">
+            <img src="../../public/img/FLECHAmini.png" alt="Volver">
+        </button>
         <h2>Nueva Reserva</h2>
         <div class="search-container">
-            <form id="buscadorHuesped" action="buscarHuespedExist.php" method="GET">
+            <form id="buscadorHuesped" action="buscarHuesped.php" method="GET">
                 <fieldset>
                     <legend>Buscar huesped</legend>
                     <input type="text" id="buscarHuesped" placeholder="Documento Huesped" name="buscarHuesped" minlength="10" maxlength="15" required>
@@ -27,5 +30,5 @@
     </div>
 
 </body>
-    <script src="scripts.js"></script>
+    <script src="../scripts.js"></script>
 </html>

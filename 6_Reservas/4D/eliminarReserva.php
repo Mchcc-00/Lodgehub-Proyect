@@ -1,6 +1,6 @@
 <?php
 
-require_once '../config/conexionGlobal.php';
+require_once '../../config/conexionGlobal.php';
 
 $db = conexionDB();
 
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
         // Redirigir después de eliminar
-        header("Location: indexReservasmain.php?eliminado=ok");
+        header("Location: ../2R/mainReservas.php?eliminado=ok");
         exit();
 
     } catch (PDOException $e) {

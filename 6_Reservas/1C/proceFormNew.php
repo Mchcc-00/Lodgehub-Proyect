@@ -70,7 +70,7 @@ nuevaReserva();
 
     $db->commit();
 
-    header("Location: ../indexReservasmain.php");
+    header("Location: ../2R/mainReservas.php");
     exit();
 
 

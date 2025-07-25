@@ -1,15 +1,44 @@
+
+//Boton + reserva
+function confirmarNuevaReserva() {
+    const registrarReserva = confirm("¿Deseas crear una nueva reserva?");
+    if (registrarReserva) {
+        window.location.href = "../1C/crearReserva.php";
+    }
+}
+
+// Botón para retornar a mainReservas.php
+function retornarMainReserva() {
+    window.location.href = "../2R/mainReservas.php";
+}
+
+//MODAL
+function mostrarModal(id) {
+    const modal = document.getElementById('miModal' + id);
+    if (modal) {
+        modal.style.display = 'block';
+    }
+}
+
+function cerrarModal(id) {
+    const modal = document.getElementById('miModal' + id);
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
 // Nuevo huesped
-function NuevoHuesped() {
+function nuevoHuesped() {
     const registrarHuesped = confirm("¿Deseas registrar un nuevo huesped?");
     if (registrarHuesped) {
-        window.location.href = "crearReservaNewHuesped.php";
+        window.location.href = "FormNewHuesped.php";
     }
 }
 
 // Generar form reserva (función llamada por el botón "Generar Reserva" en buscarHuespedExist.php)
 function generarReserva(event) {
     event.preventDefault(); // Evita el envío automático inicial del formulario
-    const generar = confirm("¿Desea generar una nueva reserva?");
+    const generar = confirm("¿Desea generar la reserva?");
     if (generar) {
         event.target.submit(); // Envía el formulario si se confirma
     }
@@ -176,12 +205,34 @@ function verificarCamposExist(event) {
 // Asignación de eventos a los elementos del DOM
 document.addEventListener("DOMContentLoaded", function () {
 
+    // --- LÓGICA PARA NUEVA RESERVA ---
+    const newReserva = document.getElementById("agregarNewReserva");
+    if(newReserva) {
+        newReserva.addEventListener("click", confirmarNuevaReserva);
+    }
+
+
+    // Botón para retornar a mainReservas.php
+    const flechaback = document.getElementById("retornarMainReserva");
+    if(flechaback) {
+        flechaback.addEventListener("click", retornarMainReserva);
+    }
+
+    //cerrar modal al hacer clic fuera del contenido
+    window.onclick = function(event) {
+        const modales = document.querySelectorAll('.modal');
+        modales.forEach(modal => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    };
     // --- LÓGICA PARA crearReserva.php y crearReservaNewHuesped.php ---
 
     // Nuevo huesped (botón que redirige a crearReservaNewHuesped.php)
     const newHuesp = document.getElementById("registrarHuesped");
     if(newHuesp) {
-        newHuesp.addEventListener("click", NuevoHuesped);
+        newHuesp.addEventListener("click", nuevoHuesped);
     }
 
     // Lógica del buscador de huésped (en crearReserva.php)
@@ -194,7 +245,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const documento = document.getElementById('buscarHuesped').value;
 
-            fetch('buscarHuespedExist.php?buscarHuesped=' + encodeURIComponent(documento))
+            fetch('buscarHuesped.php?buscarHuesped=' + encodeURIComponent(documento))
                 .then(response => response.text())
                 .then(data => {
                     infoDiv.innerHTML = data; 

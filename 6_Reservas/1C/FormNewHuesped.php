@@ -9,7 +9,7 @@
 <body>
     <div class="container">
     <h2>Nueva Reserva</h2>
-        <form class="mostrarInfoHuesped" id="formRegistrarReserva" action="procesarFormulario.php" method="POST">
+        <form class="mostrarInfoHuesped" id="formRegistrarReserva" action="proceFormNew.php" method="POST">
             <div class="tablaInfoHuesped" id="formularioHuesped">
                 <h3>INFORMACIÓN HUESPED</h3>
                 <fieldset id="campo1">
@@ -112,5 +112,5 @@
         </form>
     </div>
 </body>
-    <script src="scripts.js"></script>
+    <script src="../scripts.js"></script>
 </html>

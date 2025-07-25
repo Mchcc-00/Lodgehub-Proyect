@@ -60,7 +60,7 @@ if (isset($_POST['documentoHuesped'])) {
             <p><strong>Correo: </strong><?php echo htmlspecialchars($huesped['correo'] ?? '');?></p>
         </div>
 
-        <form id="formRegistrarReservaExist" action="procesarReserva.php" method="POST">
+        <form id="formRegistrarReservaExist" action="proceFormExist.php" method="POST">
             <div id="formularioHospedajeExist">
                 <h3>INFORMACIÓN DE HOSPEDAJE</h3>
                 <div id="lineExist"></div>
@@ -118,5 +118,5 @@ if (isset($_POST['documentoHuesped'])) {
         
     </div>
 </body>
-    <script src="scripts.js"></script> 
+    <script src="../scripts.js"></script> 
 </html>
