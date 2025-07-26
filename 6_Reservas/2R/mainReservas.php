@@ -8,7 +8,7 @@
 </head>
 
 <body>
-        <div class="content">
+        <div class="container">
             <button id="agregarNewReserva" style="cursor:pointer;">
                 <img src="../../public/img/BotonAgregarTW.png" alt="Agregar Reserva">
             </button>

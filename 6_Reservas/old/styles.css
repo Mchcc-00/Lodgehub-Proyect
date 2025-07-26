@@ -415,16 +415,15 @@ h1{
 
 .tabla-reservas tr {
     background-color: #B3B3B3;
+    text-align: center;
 }
 
 .tabla-reservas th{
     padding: 15px 20px;
-    text-align: center;
 }
 
 .tabla-reservas td{
 padding: 20px 40px;
-text-align: center;
 }
 
 
