@@ -418,3 +418,62 @@ select:focus {
     /* Centrar footer? */
     border-top: 1px solid #eee;
 }
+
+
+/*homepage*/
+
+.botoneshomepage {
+    background-color: #8f8f8f;
+    display: flex;
+    justify-content: center;
+    margin: 20px ;
+    border: 2px solid #000000;
+    border-radius: 5px; 
+    gap: 90px;
+    padding: 50px;
+}
+
+
+#botonreservas {
+    background-color: #4CAF50; /* Verde */
+    color: white;
+    padding: 100px 200px;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    cursor: pointer;
+    text-transform: capitalize;
+    font-size: 20px;
+}
+
+#botonhabitaciones {
+    background-color: #008CBA; /* Azul */
+    color: white;
+    padding: 100px 200px;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    cursor: pointer;
+    text-transform: capitalize;
+    font-size: 20px;
+}
+
+#botonmantenimiento {
+    background-color: #9e4caf; /* Verde */
+    color: white;
+    padding: 100px 200px;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    cursor: pointer;
+    text-transform: capitalize;
+    font-size: 20px;
+}
+
+#botonpqrs {
+    background-color: #d63535; /* Azul */
+    color: white;
+    padding: 100px 200px;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    cursor: pointer;
+    text-transform: capitalize;
+    font-size: 20px;
+}

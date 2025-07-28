@@ -10,21 +10,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>home</title>
-    <link rel="stylesheet" href="../../../6_Reservas/styles.css"> <!-- Enlaza el archivo CSS -->
+    <link rel="stylesheet" href="../../../public/assets/css/styles.css"> <!-- Enlaza el archivo CSS -->
 
 </head>
+
 <body>
+    <?php
+    include "../layouts/nav.php";
+    ?>
 
-        <div class="navbar">
-        <div class="left">
-            <img src="../../public/img/FLECHA.png" alt="Atras" id="flechaNav">
-            <h1>LODGEHUB</h1>
+
+    <div class="botoneshomepage">
+
+        <div class="fondoprimeroboton">
+            <a href="../../../6_Reservas/2R/mainReservas.php"> <button id="botonreservas"> RESERVAS</button></a>
+        </div>
+        <div class="fondocomprobanteboton">
+            <a href="#"><button id="botonhabitaciones">HABITACIONES </button></a>
         </div>
 
-        
-        <div class="right">
-            <img src="../public/img/iconoPerfil.png" alt="Perfil" id="IconUserNav">
+    </div>
+
+    <div class="botoneshomepage">
+
+        <div class="fondosegundoboton">
+            <a href="../views/PQRS/index.html"> <button id="botonmantenimiento"> MANTENIMIENTOS </button></a>
         </div>
+        <div class="fondocomprobanteboton">
+            <a href="../PQRS/index.html"><button id="botonpqrs">PQRS </button></a>
+        </div>
+
     </div>
 
     <div class="container">
@@ -33,7 +48,7 @@
                 <div class="ListaElementos">
                     <ul>
                         <li>
-                            <a href="../../../6_Reservas/indexReservasmain.php" class="paginaActual">RESERVAS</a>
+                            <a href="../../../6_Reservas/2R/mainReservas.php" class="paginaActual">RESERVAS</a>
                         </li>
                         <li>
                             <a href="../../../HABITACIONES/views/dashboard.php" class="otrasPaginas">HABITACIONES</a>
@@ -57,9 +72,7 @@
                 </div>
             </div>
         </aside>
-        <div>
-            <?php include '../login/navbar.php'?>
-        </div>
+
 
 
 </body>
