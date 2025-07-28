@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>CRUD PQRS</title>
+  <link rel="stylesheet" href="stylescrud.css">
+</head>
+<body>
+  <div class="crud-container">
+    <div class="filters">
+      <input type="text" id="search" placeholder="Buscar PQRS" />
+      <select id="estado-filter">
+        <option>Estado</option>
+        <option>Solucionado</option>
+        <option>Pendiente</option>
+      </select>
+      <select id="urgencia-filter">
+        <option>Urgencia</option>
+        <option>Alta</option>
+        <option>Media</option>
+        <option>Baja</option>
+      </select>
+      <select id="categoria-filter">
+        <option>Categoría</option>
+        <option>Habitación</option>
+        <option>Servicio</option>
+      </select>
+      <select id="tipo-filter">
+        <option>Tipo</option>
+        <option>Queja</option>
+        <option>Sugerencia</option>
+      </select>
+      <button onclick="abrirFormulario()">+</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Fecha registro</th>
+          <th>Nivel de urgencia</th>
+          <th>Categoría</th>
+          <th>Tipo</th>
+          <th>Solicitante</th>
+          <th>Registra</th>
+          <th>Estado</th>
+          <th>Fecha cierre</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-pqrs">
+        <!-- Aquí van las filas generadas por JavaScript -->
+      </tbody>
+    </table>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
