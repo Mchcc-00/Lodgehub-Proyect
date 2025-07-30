@@ -27,6 +27,10 @@ function cerrarModal(id) {
     }
 }
 
+function menuDesplegableOpciones(){
+    
+}
+
 // Nuevo huesped
 function nuevoHuesped() {
     const registrarHuesped = confirm("¿Deseas registrar un nuevo huesped?");

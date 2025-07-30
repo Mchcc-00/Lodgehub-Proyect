@@ -9,12 +9,14 @@ body {
 
   height: 100vh;
 }
+
 fieldset {
   border: none;
 }
 
 .modal {
-  display: none; /* Oculto por defecto */
+  display: none;
+  /* Oculto por defecto */
   position: fixed;
   z-index: 1;
   left: 0;
@@ -25,32 +27,36 @@ fieldset {
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-.contentModal{
+.contentModal {
   background-color: #DBEEFF;
   border-radius: 10px;
   width: 80%;
   max-width: 650px;
   margin: 60px auto;
 }
-.contentModal h2{
+
+.contentModal h2 {
   font-size: 25px;
 }
 
-.contentModal h3{
+.contentModal h3 {
   margin-bottom: 15px;
   font-size: 20px;
 }
 
-.div1ModalInfo, .div2ModalInfo, .div3ModalInfo, .div4ModalInfo {
+.div1ModalInfo,
+.div2ModalInfo,
+.div3ModalInfo,
+.div4ModalInfo {
   padding: 20px;
   color: #0E4153;
 }
 
-.div4ModalInfo{
+.div4ModalInfo {
   padding-top: 0;
 }
 
-.div1ModalInfo{
+.div1ModalInfo {
   background-color: #296DAC;
   color: #fff;
   border-radius: 10px 10px 0 0;
@@ -66,7 +72,8 @@ fieldset {
   cursor: pointer;
 }
 
-.bloqueInfoHuesped, .bloqueInfoReserva{
+.bloqueInfoHuesped,
+.bloqueInfoReserva {
   display: flex;
   gap: 30px;
   padding-left: 20px;
@@ -79,47 +86,108 @@ fieldset {
   gap: 10px;
 }
 
-.div2ModalInfo{
+.div2ModalInfo {
   background-color: #EFFAFF;
 }
 
-.bloquesCanPersonas, .contenedorPersonas{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: auto;
-    gap: 40px;
+.bloquesCanPersonas,
+.contenedorPersonas {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  gap: 40px;
 }
 
-.espacioBloquePersonas{
+.espacioBloquePersonas {
   margin: auto;
 }
 
-#separacionTextoNumPersonas{
+#separacionTextoNumPersonas {
   margin-bottom: 20px;
 }
 
 .espacioBloquesCanPersonas {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
-.contenedorPersonas{
+.contenedorPersonas {
+  border-radius: 5px;
+  width: 40px;
+  height: 35px;
+  background: #fff;
+}
+
+.contenedorInfoAdicional {
+  width: 90%;
+  height: 100px;
+  background: #fff;
+  color: #000;
+  border-radius: 10px;
+  padding: 10px 20px;
+  margin: 20px auto;
+  overflow-y: auto;
+}
+
+/*css menusito desplegable*/
+
+.menuDesplegableContainer {
+  position: relative;
+  /* Importante: para posicionar el menú relativo al botón */
+  display: inline-block;
+  /* Para que el contenedor no ocupe todo el ancho */
+}
+
+.accionMenuDesplegableBtn {
+  background-color: #296DAC;
+  border: none;
+  cursor: pointer;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  border-radius: 5px;
+  justify-content: center;
+  align-items: center;
+}
+
+.accionMenuDesplegableBtn img {
+  width: 40px;
+  height: 40px;
+  display: block;
+}
+
+.accionMenuDesplegableBtn:hover {
+  background-color: #205383;
+}
+
+.dropdownMenuBtn{
+/* Oculto por defecto */
+    position: absolute; /* Posiciona el menú relativo a .menu-container */
+    background-color: #f9f9f9;
+    min-width: 140px; /* Ancho mínimo del menú */
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); /* Sombra para efecto 3D */
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
     border-radius: 5px;
-    width: 40px;
-    height: 35px;
-    background: #fff;
+    top: 100%; /* Coloca el menú justo debajo del botón */
+    right: 0; /* Alinea el menú a la izquierda del botón */
+    margin-top: 5px; /* Pequeño espacio entre botón y menú */
 }
 
-.contenedorInfoAdicional{
-    width: 90%;
-    height: 100px;
-    background: #fff;
-    color: #000;
-    border-radius: 10px;
-    padding: 10px 20px;
-    margin: 20px auto;
-    overflow-y: auto;
+.dropdownMenuBtn ul {
+  list-style: none; /* Elimina los puntos de la lista */
+  padding: 0; /* Elimina el padding */
+  margin: 0; /* Elimina el margin */
+}
+
+.dropdownMenuBtn li {
+  padding: 0; /* Espaciado interno */
+  cursor: pointer; /* Cambia el cursor al pasar por encima */
+}
+
+/* Clase para mostrar el menú (se añade/quita con JS) */
+.show {
+    display: block;
 }

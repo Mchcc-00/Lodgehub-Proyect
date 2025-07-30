@@ -26,10 +26,23 @@ while ($fila = $resultado->fetch(PDO::FETCH_ASSOC)) {
         <div class="contentModal">
             <div class="div1ModalInfo">
                 <h2>Reserva N°<?php echo $fila['id']; ?></h2>
-                <form action="eliminarReserva.php" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar esta reserva?');">
-                    <input type="hidden" name="idReserva" value="<?php echo $fila['id']; ?>">
-                    <button type="submit" class="btnEliminar" style="cursor:pointer;">Eliminar Reserva</button>
-                </form>
+                <div class="menuDesplegableContainer">
+                    <button id="MenuDesplegableBtn" class="accionMenuDesplegableBtn">
+                        <img src="../../public/img/modificarIcon.png" alt="Opciones de Reserva Menu">
+                    </button>
+                    <div id=dropdownMenu class="dropdownMenuBtn">
+                        <ul>
+                            <li><button>Modificar Reserva</button></li>
+                            <li>
+                                <form action="eliminarReserva.php" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar esta reserva?');">
+                                    <input type="hidden" name="idReserva" value="<?php echo $fila['id']; ?>">
+                                    <button type="submit" class="btnEliminar" style="cursor:pointer;">Eliminar Reserva</button>
+                                </form>
+                            </li>
+                        </ul>
+
+                    </div>
+                </div>
             </div>
             <div class="div2ModalInfo">
                 <h3>Datos del huesped</h3>
