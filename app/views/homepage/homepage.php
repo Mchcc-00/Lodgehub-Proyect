@@ -4,6 +4,7 @@
 
 ?>
 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,12 +13,15 @@
     <title>home</title>
     <link rel="stylesheet" href="../../../public/assets/css/styles.css"> <!-- Enlaza el archivo CSS -->
 
+    
 </head>
+    <?php
+        include "../layouts/nav.php";
+    ?>
+
 
 <body>
-    <?php
-    include "../layouts/nav.php";
-    ?>
+    
 
 
     <div class="botoneshomepage">
@@ -40,8 +44,10 @@
             <a href="../PQRS/index.html"><button id="botonpqrs">PQRS </button></a>
         </div>
 
+        
     </div>
-
+    
+<!--
     <div class="container">
         <aside>
             <div class="Lateral">
@@ -72,8 +78,9 @@
                 </div>
             </div>
         </aside>
-
+    </div> -->
 
 
 </body>
+
 </html>

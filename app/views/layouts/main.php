@@ -20,7 +20,7 @@
             </div>
         </header>
 
-        <div class="content-area">
+    <!--    <div class="content-area">
 
             <aside class="sidebar left-sidebar">
                 <nav>
@@ -41,6 +41,6 @@
 
         </div>
     </div>
-    <script src="<?php echo BASE_URL; ?>/assets/js/form-validation.js"></script>
+    <script src="<?php echo BASE_URL; ?>/assets/js/form-validation.js"></script> -->
     </body>
 </html>

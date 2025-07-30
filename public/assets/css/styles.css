@@ -423,19 +423,18 @@ select:focus {
 /*homepage*/
 
 .botoneshomepage {
-    background-color: #8f8f8f;
     display: flex;
     justify-content: center;
-    margin: 20px ;
+    /*margin: 20px ;
     border: 2px solid #000000;
-    border-radius: 5px; 
+    border-radius: 5px; */
     gap: 90px;
     padding: 50px;
 }
 
 
 #botonreservas {
-    background-color: #4CAF50; /* Verde */
+    background-color: #4CAF50; 
     color: white;
     padding: 100px 200px;
     border: 2px solid #000000;
@@ -446,7 +445,7 @@ select:focus {
 }
 
 #botonhabitaciones {
-    background-color: #008CBA; /* Azul */
+    background-color: #008CBA; 
     color: white;
     padding: 100px 200px;
     border: 2px solid #000000;
@@ -457,7 +456,7 @@ select:focus {
 }
 
 #botonmantenimiento {
-    background-color: #9e4caf; /* Verde */
+    background-color: #9e4caf; 
     color: white;
     padding: 100px 200px;
     border: 2px solid #000000;
@@ -468,7 +467,7 @@ select:focus {
 }
 
 #botonpqrs {
-    background-color: #d63535; /* Azul */
+    background-color: #d63535; 
     color: white;
     padding: 100px 200px;
     border: 2px solid #000000;
