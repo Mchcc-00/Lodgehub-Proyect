@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>CRUD PQRS</title>
-  <link rel="stylesheet" href="stylescrud.css">
+  <link rel="stylesheet" href="../../../public/assets/css/stylescrud.css">
 </head>
 <body>
   <div class="crud-container">
@@ -30,7 +30,6 @@
         <option>Queja</option>
         <option>Sugerencia</option>
       </select>
-      <button onclick="abrirFormulario()">+</button>
     </div>
 
     <table>

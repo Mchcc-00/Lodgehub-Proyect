@@ -120,18 +120,18 @@ if ($stmt->execute()) {
 
     <div class="mensaje-exito">
         <div class="mensaje-icono">
-            <img src="../../../public/img/flecha flechita_claro.png" alt="Flechaclara" class="logo-img">
+            <img src="../../public/img/flecha flechita_claro.png" alt="Flechaclara" class="logo-img">
         </div>
         <div class="mensaje-contenido">
             <h2>REGISTRO EXITOSO</h2>
             <p>Tu solicitud fue registrada correctamente. Serás redirigido en unos segundos...</p>
-            <a class="boton" href="/lodgehub/app/views/pqrs/crud.php" >Volver al formulario</a>
+            <a class="boton" href="/lodgehub-proyect/app/views/PQRS/crud.php" >Volver al formulario</a>
         </div>
     </div>
-
+    
     <script>
         setTimeout(function() {
-            window.location.href = "/lodgehub/app/views/pqrs/crud.php"
+            window.location.href = "/lodgehub-proyect/app/views/PQRS/crud.php"
         }, 4000); // 4000 ms = 4 segundos
     </script>
     ';
@@ -143,39 +143,3 @@ $stmt->close();
 $conn->close();
 ?>
 
-const datosPQRS = [
-  {
-    id: 1,
-    fechaRegistro: '06/04/2024',
-    urgencia: 'Medio',
-    categoria: 'Habitación',
-    tipo: 'Sugerencias',
-    solicitante: 'Patricio Clementino',
-    registra: 'Patrocio Hernández',
-    estado: 'Solucionado',
-    fechaCierre: '07/04/2024'
-  }
-];
-
-function cargarTabla() {
-  const tabla = document.getElementById('tabla-pqrs');
-  tabla.innerHTML = '';
-
-  datosPQRS.forEach(item => {
-    const fila = document.createElement('tr');
-    fila.innerHTML = `
-      <td>${item.id}</td>
-      <td>${item.fechaRegistro}</td>
-      <td>${item.urgencia}</td>
-      <td>${item.categoria}</td>
-      <td>${item.tipo}</td>
-      <td>${item.solicitante}</td>
-      <td>${item.registra}</td>
-      <td style="color: red;">${item.estado}</td>
-      <td>${item.fechaCierre}</td>
-    `;
-    tabla.appendChild(fila);
-  });
-}
-
-window.onload = cargarTabla;
