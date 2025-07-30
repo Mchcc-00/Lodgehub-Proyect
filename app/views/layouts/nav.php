@@ -1,5 +1,5 @@
 
-    <div class="main-container">
+<div class="main-container">
 
         <header class="top-bar">
             <div class="top-bar-left">
@@ -13,8 +13,9 @@
             <div class="top-bar-right">
                 <i class="fas fa-user-circle user-icon" title="Perfil Usuario"></i>
             </div>
+
         </header>
-<nav>
+
         <div class="content-area">
 
             <aside class="sidebar left-sidebar">
@@ -40,4 +41,4 @@
         </div>
     </div>
     <script src="<?php echo BASE_URL; ?>/assets/js/form-validation.js"></script>
-</nav>
+
