@@ -23,71 +23,74 @@ while ($fila = $resultado->fetch(PDO::FETCH_ASSOC)) {
 ?>
 
     <div id="miModal<?php echo $fila['id']; ?>" class="modal">
-        <div class="div1ModalInfo">
-            <h2>Reserva N° <?php echo $fila['id']; ?></h2>
-            <form action="eliminarReserva.php" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar esta reserva?');">
-                <input type="hidden" name="idReserva" value="<?php echo $fila['id']; ?>">
-                <button type="submit" class="btnEliminar" style="cursor:pointer;">Eliminar Reserva</button>
-            </form>
-        </div>
-        <div class="div2ModalInfo">
-            <h3>Datos del huesped</h3>
-            <div class='bloqueInfoHuesped'>
-                <div>
-                    <p><strong> Nombres: </strong><?php echo $fila['nombres']; ?></p>
-                    <p><strong> Apellidos: </strong><?php echo $fila['apellidos']; ?></p>
-                    <p><strong> Tipo Documento: </strong> <?php echo $fila['tipDoc']; ?></p>
-                    <p><strong> Documento: </strong> <?php echo $fila['hue_numDocumento']; ?></p>
-                </div>
-                <div>
-                    <p><strong> Sexo: </strong> <?php echo $fila['sexo']; ?></p>
-                    <p><strong> Estado Civil: </strong><?php echo $fila['estaCiv']; ?></p>
-                    <p><strong> Contacto: </strong><?php echo $fila['numTelefono']; ?></p>
-                    <p><strong> Correo: </strong><?php echo $fila['correo']; ?></p>
+        <div class="contentModal">
+            <div class="div1ModalInfo">
+                <h2>Reserva N°<?php echo $fila['id']; ?></h2>
+                <form action="eliminarReserva.php" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar esta reserva?');">
+                    <input type="hidden" name="idReserva" value="<?php echo $fila['id']; ?>">
+                    <button type="submit" class="btnEliminar" style="cursor:pointer;">Eliminar Reserva</button>
+                </form>
+            </div>
+            <div class="div2ModalInfo">
+                <h3>Datos del huesped</h3>
+                <div class='bloqueInfoHuesped'>
+                    <div class="espacioParrafos">
+                        <p><strong> Nombres: </strong><?php echo $fila['nombres']; ?></p>
+                        <p><strong> Apellidos: </strong><?php echo $fila['apellidos']; ?></p>
+                        <p><strong> Tipo Documento: </strong> <?php echo $fila['tipDoc']; ?></p>
+                        <p><strong> Documento: </strong> <?php echo $fila['hue_numDocumento']; ?></p>
+                    </div>
+                    <div class="espacioParrafos">
+                        <p><strong> Sexo: </strong> <?php echo $fila['sexo']; ?></p>
+                        <p><strong> Estado Civil: </strong><?php echo $fila['estaCiv']; ?></p>
+                        <p><strong> Contacto: </strong><?php echo $fila['numTelefono']; ?></p>
+                        <p><strong> Correo: </strong><?php echo $fila['correo']; ?></p>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="div3ModalInfo">
-            <div class="bloqueInfoReserva">
-                <div>
-                    <p><strong> Fecha Inicio: </strong><?php echo $fila['fechainicio']; ?></p>
-                    <p><strong> Fecha Fin: </strong><?php echo $fila['fechaFin']; ?></p>
-                    <p><strong> Habitacion: </strong> <?php echo $fila['numeroHabitacion']; ?></p>
-                    <p><strong> Metodo de Pago: </strong> <?php echo $fila['metodoPago']; ?></p>
-                    <p><strong> Total: </strong>$<?php echo $fila['costo']; ?></p>
-                </div>
-                <div>
-                    <p><strong> Numero de personas </strong></p>
-                    <div class="bloquesCanPersonas">
-                        <div>
-                            <p>Adultos</p>
-                            <div class="contenedorPersonas">
-                                <p><?php echo $fila['cantidadAdultos']; ?></p>
+            <div class="div3ModalInfo">
+                <h3>Información hospedaje</h3>
+                <div class="bloqueInfoReserva">
+                    <div class="espacioParrafos">
+                        <p><strong> Fecha Inicio: </strong><?php echo $fila['fechainicio']; ?></p>
+                        <p><strong> Fecha Fin: </strong><?php echo $fila['fechaFin']; ?></p>
+                        <p><strong> Habitacion: </strong> <?php echo $fila['numeroHabitacion']; ?></p>
+                        <p><strong> Metodo de Pago: </strong> <?php echo $fila['metodoPago']; ?></p>
+                        <p><strong> Total: </strong>$<?php echo $fila['costo']; ?></p>
+                    </div>
+                    <div class="espacioBloquePersonas">
+                        <p id="separacionTextoNumPersonas"><strong> Numero de personas </strong></p>
+                        <div class="bloquesCanPersonas">
+                            <div class="espacioBloquesCanPersonas">
+                                <p>Adultos</p>
+                                <div class="contenedorPersonas">
+                                    <p><?php echo $fila['cantidadAdultos']; ?></p>
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <p>Menores</p>
-                            <div class="contenedorPersonas">
-                                <p><?php echo $fila['cantidadNinos']; ?></p>
+                            <div class="espacioBloquesCanPersonas">
+                                <p>Menores</p>
+                                <div class="contenedorPersonas">
+                                    <p><?php echo $fila['cantidadNinos']; ?></p>
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <p>Discapacitados</p>
-                            <div class="contenedorPersonas">
-                                <p><?php echo $fila['cantidadDiscapacitados']; ?></p>
+                            <div class="espacioBloquesCanPersonas">
+                                <p>Discapacitados</p>
+                                <div class="contenedorPersonas">
+                                    <p><?php echo $fila['cantidadDiscapacitados']; ?></p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="div4ModalInfo">
-            <div class="division4InformacionAdicional">
-                <h3>Notas extra</h3>
-                <div class="contenedorInfoAdicional">
-                    <p><?php echo $fila['informacionAdicional']; ?></p>
+            <div class="div4ModalInfo">
+                <div class="division4InformacionAdicional">
+                    <h3>Notas extra</h3>
+                    <div class="contenedorInfoAdicional">
+                        <p><?php echo $fila['informacionAdicional']; ?></p>
+                    </div>
+                    <p><strong> Empleado que registro: </strong><?php echo $fila['empNombres'] . " " . $fila['empApellidos']; ?></p>
                 </div>
-                <p><strong> Empleado que registro: </strong><?php echo $fila['empNombres'] . " " . $fila['empApellidos']; ?></p>
             </div>
         </div>
     </div>
