@@ -25,7 +25,7 @@ if (isset($_POST['documentoHuesped'])) {
     // Si no se encuentra el huésped (aunque no debería pasar si viene del buscador exitoso)
     if (!$huesped) {
         // Redirigir o mostrar un error si el huésped no se encuentra
-        // Por ahora, solo mostramos un mensaje, pero en producción deberías manejarlo mejor
+
         echo "Error: No se encontró ningún huésped con el documento proporcionado.";
         exit(); // Detener la ejecución si hay un error crítico
     }   

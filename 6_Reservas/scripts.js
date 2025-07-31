@@ -69,6 +69,16 @@ function cancelarReserva(event) { // Recibe el evento para encontrar el formular
     // No se necesita preventDefault aquí si se redirige o si el confirm es false.
 }
 
+function cancelarModifReserva(event) {
+    const cancelarModif = confirm("¿Cancelar modificación de la reserva?");
+    if (cancelarModif) {
+        // Busca el formulario al que pertenece el botón que disparó el evento
+        event.target.closest("form").reset(); 
+        window.location.href = "../2R/mainReservas.php"; // Redirige a la página principal de crear reserva
+    }
+    // No se necesita preventDefault aquí si se redirige o si el confirm es false.
+}
+
 // Función para aplicar el filtro numérico
 function aplicarFiltroNumerico() {
     this.value = this.value.replace(/\D/g, '');
@@ -334,5 +344,42 @@ document.addEventListener("DOMContentLoaded", function () {
     const formExistReserva = document.getElementById("formRegistrarReservaExist");
     if (formExistReserva) {
         formExistReserva.addEventListener("submit", verificarCamposExist);
+    }
+
+    // --- LÓGICA PARA MENU OPCIONES MODAL DE RESERVAS (ModalReservas.php) ---
+    const botonesMenuDesplegable = document.querySelectorAll('.accionMenuDesplegableBtn');
+    botonesMenuDesplegable.forEach(btn => {
+        btn.addEventListener('click', function(event) {
+            event.stopPropagation(); // Evita que el clic cierre el modal
+            const id = this.id.split('_')[1] || ''; // Extrae el ID del botón, si existe
+            const dropdownMenu = document.getElementById('dropdownMenu_' + id);
+
+            document.querySelectorAll('.dropdownMenuBtn.show').forEach(openMenu => {
+                // Si el menú abierto no es el menú actual, ciérralo
+                if (openMenu !== dropdownMenu) {
+                    openMenu.classList.remove('show');
+                }
+            });
+
+            if (dropdownMenu) {
+                dropdownMenu.classList.toggle('show'); // Alterna la visibilidad del menú desplegable
+            }
+        });
+    });
+
+    window.addEventListener("click", function(event) {
+        // Verifica si el clic no fue en un botón de acción del menú
+        // Y verifica si el clic no fue DENTRO de un menú desplegable
+        if (!event.target.closest('.accionMenuDesplegableBtn') && !event.target.closest('.dropdownMenuBtn')) {
+            document.querySelectorAll('.dropdownMenuBtn.show').forEach(openMenu => {
+                openMenu.classList.remove('show');
+            });
+        }
+    });
+
+    // --- LÓGICA PARA MODIFICAR RESERVA (updateReserva.php) ---
+    const btnCancelarModifReserva = document.getElementById("btnCancelarModifReserva");
+    if(btnCancelarModifReserva) {   
+        btnCancelarModifReserva.addEventListener("click", cancelarModifReserva);
     }
 });

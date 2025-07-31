@@ -108,7 +108,6 @@
                     <button type="submit" id="btnRegistrarReserva">Reservar</button>
                 </div>
             </div>
-
         </form>
     </div>
 </body>

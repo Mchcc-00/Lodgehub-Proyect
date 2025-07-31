@@ -8,8 +8,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = $_POST['idReserva'];
 
     try {
-        $db = conexionDB();
-
 
         $sql = "DELETE FROM tp_reservas WHERE id = :id";
         $stmt = $db->prepare($sql);

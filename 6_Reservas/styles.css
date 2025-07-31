@@ -58,18 +58,12 @@ fieldset {
 
 .div1ModalInfo {
   background-color: #296DAC;
+  padding: 5px 20px;
   color: #fff;
   border-radius: 10px 10px 0 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.cerrar {
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
 }
 
 .bloqueInfoHuesped,
@@ -145,7 +139,7 @@ fieldset {
   background-color: #296DAC;
   border: none;
   cursor: pointer;
-  width: 50px;
+  width: 55px;
   height: 50px;
   display: flex;
   border-radius: 5px;
@@ -154,8 +148,7 @@ fieldset {
 }
 
 .accionMenuDesplegableBtn img {
-  width: 40px;
-  height: 40px;
+  width: 45px;
   display: block;
 }
 
@@ -164,10 +157,10 @@ fieldset {
 }
 
 .dropdownMenuBtn{
-/* Oculto por defecto */
+    display: none;/* Oculto por defecto */
     position: absolute; /* Posiciona el menú relativo a .menu-container */
     background-color: #f9f9f9;
-    min-width: 140px; /* Ancho mínimo del menú */
+    min-width: 170px; /* Ancho mínimo del menú */
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); /* Sombra para efecto 3D */
     z-index: 1000; /* Asegura que esté por encima de otros elementos */
     border-radius: 5px;
@@ -185,6 +178,21 @@ fieldset {
 .dropdownMenuBtn li {
   padding: 0; /* Espaciado interno */
   cursor: pointer; /* Cambia el cursor al pasar por encima */
+}
+
+.btonsOpcionesMiniMenu{
+  background-color: transparent;
+  font-weight: 600;
+  font-size: 15px;
+  color: #0E4153;
+  border: none;
+  padding: 10px;
+  width: 100%;
+}
+
+.dropdownMenuBtn li:hover {
+  background-color: #dfdfdf;
+   /* Cambia el color de fondo al pasar el ratón */
 }
 
 /* Clase para mostrar el menú (se añade/quita con JS) */
