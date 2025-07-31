@@ -35,8 +35,9 @@ while ($fila = $resultado->fetch(PDO::FETCH_ASSOC)) {
                             <li>
                                 <form action="../3U/updateReserva.php" method="POST" onsubmit="return confirm('¿Modificar la reserva Nº<?php echo $fila['id']; ?>?');">
                                     <input type="hidden" name="idReserva" value="<?php echo $fila['id']; ?>">
-                                    <button type="submit" id="btnModificarReserva" class="btonsOpcionesMiniMenu style="cursor:pointer;">Modificar Reserva</button>
-                                </form></li>
+                                    <button type="submit" id="btnModificarReserva" class="btonsOpcionesMiniMenu" style="cursor:pointer;">Modificar Reserva</button>
+                                </form>
+                            </li>
                             <li>
                                 <form action="eliminarReserva.php" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar esta reserva?');">
                                     <input type="hidden" name="idReserva" value="<?php echo $fila['id']; ?>">
