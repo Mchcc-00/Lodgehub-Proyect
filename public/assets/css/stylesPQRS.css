@@ -7,9 +7,10 @@
   align-items: center;
   background-color: #2b2b2b;        /* Gris oscuro */
   padding: 0.5rem 1rem;             /* Espaciado vertical y horizontal */
-  border-bottom: 4px solid #FFC107; /* Línea amarilla gruesa */ 
+  border-bottom: 4px solid #a8d9f0; /* Línea amarilla gruesa */ 
     padding: 20px 30px; 
 }
+
 
 .topbar-left {
   display: flex;
@@ -19,7 +20,7 @@
 
 .topbar-left i {
   font-size: 1.5rem; /* Tamaño de la flechaa */
-  color: #FFC107;
+  color: #ffffff; 
 }
 
 .topbar-title {
@@ -30,7 +31,7 @@
 
 .topbar-right {
   font-size: 1.8rem; /* Tamaño más acorde al diseño */
-  color: #f1b800;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -80,8 +81,8 @@
   left: 0;
   right: 0;
   height: 56px;
-  background-color: #2b2b2b;
-  border-bottom: 4px solid #FFC107;
+  background-color: #2c6fab;
+  border-bottom: 4px solid #2c6fab;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -102,7 +103,7 @@
 
 .topbar-title {
   font-size: 2rem;
-  color: #FFC107;
+  color: #ffffff;
   font-weight: bold;
 }
 
@@ -117,12 +118,12 @@
 /* ========== SIDEBAR ========== */
 .sidebar {
   width: 200px;
-  padding-top: 56px;            /* Para quedar debajo del topbar */
+  padding-top: 15px;            /* Para quedar debajo del topbar */
   background-color: #8f8f8f;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border-right: 3px solid #FFC107;
+  border-right: 3px solid #a8d9f0;
 }
 
 .nav-links {
@@ -142,20 +143,21 @@
 }
 
 .nav-links a:hover {
-  background-color: #FFC107;
+  background-color: #2c6fab;
   color: #fff;
+   transition: background 0.3s ease;
 }
 
 .sidebar-footer {
   display: flex;
   justify-content: space-around;
   padding: 1rem 0;
-  border-top: 4px solid #b3b3b3;
+  border-top: 3px solid #fff;
 }
 
 .sidebar-footer i {
   font-size: 1.3rem;
-  color: #FFC107;
+  color: #ff3705;
   padding: 6px;
   border-radius: 6px;
 }
@@ -177,7 +179,7 @@
   bottom: 0;           /* Se extiende hasta abajo */
   left: 0;
   width: 200px;
-  background-color: #2b2b2b;
+  background-color: #a8d9f0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -195,14 +197,14 @@
 
 /* formulario */
 body {
-  background-color: #1e1e1e;
+  background-color:#d4edfc;
   font-family: Arial, sans-serif;
-  color: #ffc107;
+  color: #0bda72;
   padding: 20px;
 }
 
 .container {
-  border-top: 3px solid #ffc107;
+  border-top: 3px solid #299b12;
   padding: 20px;
   max-width: 800px;
   margin: auto;
@@ -229,13 +231,13 @@ h2 {
 label {
   display: block;
   margin-bottom: 5px;
-  color: #ffc107;
+  color: #6fa517;
 }
 
 input, select, textarea {
   padding: 8px;
   border-radius: 5px;
-  border: none;
+    border: 2px solid #2c6fab;
   width: 100%;
   box-sizing: border-box;
   background-color: #fff;
@@ -265,13 +267,29 @@ textarea {
 }
 
 .btn-cancel {
-  background-color: #e50914;
+  font-weight: bold;
+  padding: 8px 20px;
+  border-radius: 12px;
+  border: 2px solid;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #e65c5c;   /* rojo suave */
   color: white;
+  border-color: #a82626;       /* borde rojo más oscuro */
 }
 
 .btn-submit {
-  background-color: #0f0;
-  color: white;
+  font-weight: bold;
+  padding: 8px 20px;
+  border-radius: 12px;
+  border: 2px solid;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+ background-color: #4cf14c;   /* verde vivo */
+  color: black;
+  border-color: #248f24;       /* borde verde más oscuro */
 }
 
 .id-section {
@@ -307,16 +325,16 @@ textarea {
   border-radius: 50px;
   padding: 20px;
   max-width: 1900px;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 10px rgba(3, 126, 228, 0.384);
 }
 
 /* Título */
 .form-container h2 {
-  color: #ffc400;
+  color: #2c6fab;
   margin-bottom: 40px;
   font-weight: 700;
   padding-bottom: 22px;
-  border-bottom: 4px solid #ffc400;
+  border-bottom: 6px solid #2c6fab;
 }
 
 /* ID y botón de cierre */
@@ -333,12 +351,12 @@ textarea {
 .form-id {
   font-weight: bold;
   font-size: 25px;
-  color: #ffc400;
+  color: #2c6fab;
 
 }
 
 .close-btn {
-  background-color: #00ffbf;
+  background-color: #7ac2df;
   color: white;
   border: none;
   border-radius: 60%;
@@ -357,7 +375,7 @@ textarea {
 
 label {
   flex: 1 1 100px;
-  color: #ffc400;
+  color: #2c6fab;
   font-weight: bold;
 }
 
@@ -370,7 +388,7 @@ textarea {
   padding: 8px;
   background-color: #ffffff;
   color: #242323;
-  border: 1px solid #ffc400;
+  border: 2 px solid #2c6fab;
   border-radius: 6px;
 }
 
@@ -378,8 +396,8 @@ textarea {
   width: 100%;
   resize: none;
   height: 120px;
-  background-color: #ebebeb;
-  border: 2px solid #ffc400;
+  background-color: #ffffff;
+  border: 2px solid #2c6fab;
   padding: 10px;
   border-radius: 8px;
 }

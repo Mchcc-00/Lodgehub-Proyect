@@ -62,7 +62,7 @@ if ($stmt->execute()) {
     echo '
     <style>
     body {
-        background-color: #202020;
+        background-color: #a8d9f0;
         margin: 0;
         padding: 0;
     }
@@ -70,16 +70,16 @@ if ($stmt->execute()) {
         display: flex;
         max-width: 600px;
         margin: 40px auto;
-        background-color: #2b2b2b;
-        border: 2px solid #ffc400;
+        background-color: #a8d9f0;
+        border: 2px solid #2c6fab;
         border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        box-shadow: 0 4px 8px #2c6fab(255, 0, 0, 0.4);
         overflow: hidden;
         font-family: Arial, sans-serif;
-        color: #ffffff;
+        color: #000000ff;
     }
     .mensaje-icono {
-        background-color: #333;
+        background-color: #2c6fab;
         padding: 20px;
         display: flex;
         align-items: center;
@@ -97,12 +97,12 @@ if ($stmt->execute()) {
     .mensaje-contenido h2 {
         margin: 0;
         font-size: 20px;
-        color: #00e676;
+        color: #2c6fab;
     }
     .mensaje-contenido p {
         font-size: 15px;
         margin: 10px 0;
-        color: #ccc;
+        color: #000;
     }
     .mensaje-contenido a.boton {
         display: inline-block;
