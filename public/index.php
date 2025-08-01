@@ -34,6 +34,12 @@ $router->add('/usuarios/editar', 'UsuarioController', 'mostrarFormularioEdicion'
 $router->add('/usuarios/actualizar', 'UsuarioController', 'actualizar', 'POST');
 $router->add('/usuarios/eliminar', 'UsuarioController', 'eliminar', 'GET');
 
+echo "<b>URI que se intenta buscar:</b>";
+var_dump($uri);
 
+echo "<br><br><b>Rutas disponibles en el mapa:</b>";
+var_dump($router->routes);
+
+die()
 //Poner a Trabajar al Router
 $router->dispatch($uri, $request_method);
