@@ -11,7 +11,7 @@ define('BASE_URL', '/lodgehub/public');
 require_once '../app/Core/Router.php';
 require_once '../app/Controllers/UsuarioController.php';
 
-$basePath = '/Lodge/public'; // La subcarpeta donde vive el proyecto
+$basePath = '/lodgehub/public'; // La subcarpeta donde vive el proyecto
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 if (strpos($uri, $basePath) === 0) {
