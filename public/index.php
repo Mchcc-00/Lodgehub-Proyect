@@ -40,6 +40,6 @@ var_dump($uri);
 echo "<br><br><b>Rutas disponibles en el mapa:</b>";
 var_dump($router->routes);
 
-die()
+die();
 //Poner a Trabajar al Router
 $router->dispatch($uri, $request_method);
