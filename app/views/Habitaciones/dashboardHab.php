@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Habitaciones..</title>
-    <link rel="stylesheet" href="../public/css/dashboardHab.css">
+    <link rel="stylesheet" href="../../../public/assets/css/dashboardHab.css">
 </head>
 <body>
     <div class="container">
@@ -26,27 +26,25 @@
             <button class="filter-btn" data-filter="precio">
                 Precio <span class="dropdown-arrow">▼</span>
             </button>
-            <button class="add-btn" aria-label="Agregar habitación" onclick="window.location.href='../views/filtroHab.php'">+</button>
+            <button class="add-btn" aria-label="Agregar habitación" onclick="window.location.href='formHab.php'">+</button>
         </div>
 
         <div class="rooms-grid" id="roomsGrid">
             <script>
                 const rooms = <?php echo json_encode(array_map(function($hab) {
-                    $estado = strtolower(is_array($hab) ? $hab['estado'] : $hab->estado);
-                    if ($estado == 'en uso') $estado = 'en-uso';
+                    // Usar los nombres correctos según la consulta SQL
                     return [
-                        'id' => is_array($hab) ? $hab['id'] : $hab->id,
-                        'number' => is_array($hab) ? $hab['numero'] : $hab->numero,
-                        'type' => is_array($hab) ? $hab['tipo'] : $hab->tipo,
-                        'status' => $estado,
-                        'tamano' => is_array($hab) ? $hab['tamano'] : $hab->tamano,
-                        'precio' => is_array($hab) ? $hab['precio'] : $hab->precio,
+                        'number'    => is_array($hab) ? $hab['numero'] : $hab->numero,
+                        'costo'     => is_array($hab) ? $hab['costo'] : $hab->costo,
+                        'type'      => is_array($hab) ? $hab['tipo_desc'] : $hab->tipo_desc,
+                        'tamano'    => is_array($hab) ? $hab['tamano_desc'] : $hab->tamano_desc,
+                        'status'    => strtolower(is_array($hab) ? $hab['estado_desc'] : $hab->estado_desc) === 'en uso' ? 'en-uso' : strtolower(is_array($hab) ? $hab['estado_desc'] : $hab->estado_desc),
                         'capacidad' => is_array($hab) ? $hab['capacidad'] : $hab->capacidad,
-                        'info' => is_array($hab) ? $hab['info'] : $hab->info
+                        'info'      => '' // Si no tienes info, puedes dejarlo vacío o eliminar esta línea
                     ];
                 }, $habitaciones)); ?>;
             </script>
-            <script src="../public/assets/js/scriptHab.js"></script>
+            <script src="../../../public/assets/js/scriptHab.js"></script>
         </div>
 
 
