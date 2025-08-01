@@ -334,50 +334,80 @@ insert into td_metodoPago values
 
 INSERT INTO tp_huespedes VALUES
 (1000289068, 3116182673, 'Bleachowl98@gmail.com', 'Favian Alejandro', 'Machuca Pedraza', 1, 1, 4),
-(1234098756, 3124233442, 'Camilín@gmail.com', 'Camilo Andrés', 'Guerrero Yanquen', 1, 1, 1),
+(1019987917, 3014053025, 'camiloagycr321@gmail.com', 'Camilo Andrés', 'Guerrero Yanquen', 1, 1, 1),
 (1098785643, 3214566786, 'Jhonny@gmail.com', 'Jonathan David', 'Fernández López', 1, 1, 1),
-(1002455665, 3144235027, 'Bray@gmail.com', 'Brayan Felipe', 'Pulido López', 1, 1, 3),
-(1012099089, 302099086, 'Willy@gmail.com', 'William Steven', 'Daza Delgado', 1, 1, 2);
+(1014596349, 3172509298, 'brayan06.pulido@gmail.com', 'Brayan Felipe', 'Pulido López', 1, 1, 3),
+(1012099089, 302099086, 'Willy@gmail.com', 'William Steven', 'Daza Delgado', 1, 1, 2),
+(1001234567, 3101234567, 'juan.perez@gmail.com', 'Juan', 'Pérez García', 1, 1, 2),
+(1002345678, 3122345678, 'maria.gomez@gmail.com', 'María', 'Gómez Rodríguez', 1, 1, 1),
+(1003456789, 3133456789, 'carlos.sanchez@gmail.com', 'Carlos', 'Sánchez Martínez', 1, 1, 3),
+(1004567890, 3144567890, 'ana.lopez@gmail.com', 'Ana', 'López Fernández', 1, 1, 4),
+(1005678901, 3155678901, 'pedro.ramirez@gmail.com', 'Pedro', 'Ramírez Díaz', 1, 1, 1),
+(1006789012, 3166789012, 'laura.torres@gmail.com', 'Laura', 'Torres Vargas', 1, 1, 2),
+(1007890123, 3177890123, 'david.ruiz@gmail.com', 'David', 'Ruiz Castro', 1, 1, 3),
+(1008901234, 3188901234, 'sofia.morales@gmail.com', 'Sofía', 'Morales Herrera', 1, 1, 4),
+(1009012345, 3199012345, 'daniel.jimenez@gmail.com', 'Daniel', 'Jiménez Navarro', 1, 1, 1),
+(1010123456, 3200123456, 'valeria.gil@gmail.com', 'Valeria', 'Gil Ortega', 1, 1, 2),
+(1011234567, 3211234567, 'andres.rojas@gmail.com', 'Andrés', 'Rojas Soto', 1, 1, 3),
+(1012345678, 3222345678, 'camila.vega@gmail.com', 'Camila', 'Vega Pardo', 1, 1, 4),
+(1013456789, 3233456789, 'ricardo.cruz@gmail.com', 'Ricardo', 'Cruz Mendoza', 1, 1, 1),
+(1014567890, 3244567890, 'paula.guerrero@gmail.com', 'Paula', 'Guerrero Bravo', 1, 1, 2),
+(1015678901, 3255678901, 'jorge.serrano@gmail.com', 'Jorge', 'Serrano Castillo', 1, 1, 3);
 
 
 insert into tp_empleados values
-(1122123456,'Joaquin Diomedes','Gonzales Chaz','Calle 73 D#8C', "2003-02-15", 3118273847,3028732645, '1234567485','GonzChaz@gmail.com', NULL, NULL, NULL,'0','hola', '0', 1, 1, 1),
-(1014596349, 'Brayan', 'Pulido', 'calle 47 sur numero 1 f 20 este', '2006-03-03', 3172509298, 3126354874, '123456789', 'brayan06.pulido@gmail.com', '4987432145', '8765219854', 'asdasdasdasdqwrewf', '0', 'hola','1', 1, 1, 1),
-(1234567890, 'brayan', 'pulido', 'calle 61 30', '2025-07-29', 3216848548, 3159798546, '987654321', 'brayan@gmail.com', NULL, NULL, NULL, '0', NULL, '1', 1, 1, 1);
+(1000289068,'Favian Alejandro','Machuca Pedraza','Calle 73 D#8C', "2003-02-15", 3116182673,3028732645, '1234567485','Bleachowl98@gmail.com', NULL, NULL, NULL,'0','hola', '0', 1, 1, 1),
+(1014596349, 'Brayan Felipe', 'Pulido López', 'calle 47 sur numero 1 f 20 este', '2006-03-03', 3172509298, 3126354874, '123456789', 'brayan06.pulido@gmail.com', '4987432145', '8765219854', 'asdasdasdasdqwrewf', '0', 'hola','1', 1, 1, 1),
+(1019987917, 'Camilo Andrés', 'Guerrero Yanquen', 'calle 61 30', '2025-07-29', 3216848548, 3014053025, '987654321', 'camiloagycr321@gmail.com', NULL, NULL, NULL, '0', NULL, '1', 1, 1, 1),
+(1001001001,'Ana María','López García','Carrera 10 #20-30', "1990-01-01", 3101112233,3001001001, '1112223334','ana.lopez@example.com', NULL, NULL, NULL,'0','Primer contacto', '0', 1, 1, 1),
+(1001001002,'Luis Alberto','Ramírez Díaz','Avenida Siempre Viva 123', "1985-05-10", 3112223344,3012012012, '2223334445','luis.ramirez@example.com', '1234567890', NULL, NULL, '0', 'Cliente potencial','1', 1, 1, 1),
+(1001001003,'Sofía Valentina','Martínez Castro','Calle 5 #45-67', "1992-11-20", 3123334455,3023023023, '3334445556','sofia.martinez@example.com', NULL, NULL, 'Nota importante','0','Información enviada', '0', 1, 1, 1),
+(1001001004,'Diego Fernando','Sánchez Pardo','Transversal 80 #15-90', "1978-03-25", 3134445566,3034034034, '4445556667','diego.sanchez@example.com', '0987654321', '1122334455', NULL, '0', NULL, '1', 1, 1, 1),
+(1001001005,'Laura Camila','Gómez Vargas','Diagonal 20 #30-40 Sur', "2000-07-12", 3145556677,3045045045, '5556667778','laura.gomez@example.com', NULL, NULL, NULL,'0','Seguimiento pendiente', '0', 1, 1, 1),
+(1001001006,'Carlos Eduardo','Fernández Rojas','Carrera 50 #100-10', "1995-09-01", 3156667788,3056056056, '6667778889','carlos.fernandez@example.com', '6789012345', NULL, 'Comentario','0', 'Revisión agendada','1', 1, 1, 1),
+(1001001007,'Isabella Nicole','Torres Herrera','Calle 10 #5-20', "1998-02-28", 3167778899,3067067067, '7778889990','isabella.torres@example.com', NULL, NULL, NULL,'0','Sin novedades', '0', 1, 1, 1),
+(1001001008,'Javier Andrés','Ruiz Morales','Avenida El Dorado #80-100', "1982-12-05", 3178889900,3078078078, '8889990001','javier.ruiz@example.com', '2345678901', '9876543210', NULL, '0', 'Propuesta enviada', '1', 1, 1, 1),
+(1001001009,'Valentina Sofía','Jiménez Ortega','Transversal 70 #1-50 Este', "2001-04-18", 3189990011,3089089089, '9990001112','valentina.jimenez@example.com', NULL, NULL, 'Recuerdo','0','Llamar en una semana', '0', 1, 1, 1),
+(1001001010,'Felipe Andrés','Vega Pardo','Calle 90 #1-1 Este', "1993-06-30", 3190001122,3090909090, '0001112223','felipe.vega@example.com', '3456789012', NULL, NULL, '0', NULL, '1', 1, 1, 1),
+(1001001011,'Mariana José','Cruz Mendoza','Carrera 40 #70-20', "1987-10-03", 3201112233,3101010101, '1112223334','mariana.cruz@example.com', NULL, NULL, 'Otro comentario','0','Reunión programada', '0', 1, 1, 1),
+(1001001012,'Sebastián Camilo','Guerrero Bravo','Calle 20 #1-10 Oeste', "1999-01-08", 3212223344,3112112112, '2223334445','sebastian.guerrero@example.com', '4567890123', '0123456789', NULL, '0', 'En espera de respuesta', '1', 1, 1, 1),
+(1001001013,'Andrea Carolina','Serrano Castillo','Avenida 68 #40-50', "1980-04-15", 3223334455,3123123123, '3334445556','andrea.serrano@example.com', NULL, NULL, NULL,'0','Nota adicional', '0', 1, 1, 1),
+(1001001014,'Miguel Ángel','Díaz Gallardo','Diagonal 70 #10-20', "1994-08-07", 3234445566,3134134134, '4445556667','miguel.diaz@example.com', '5678901234', NULL, NULL, '0', 'Información actualizada','1', 1, 1, 1),
+(1001001015,'Natalia Alejandra','Prieto Salas','Transversal 30 #5-15', "1989-11-22", 3245556677,3145145145, '5556667778','natalia.prieto@example.com', NULL, NULL, 'Ultima nota','0','Contacto realizado', '0', 1, 1, 1),
+(1001001016,'Ricardo José','Ramos Núñez','Calle 80 #60-30', "1975-02-01", 3256667788,3156156156, '6667778889','ricardo.ramos@example.com', '6789012345', '7890123456', NULL, '0', 'Nuevo requerimiento', '1', 1, 1, 1),
+(1001001020,'Gabriela Alejandra','Muñoz López','Diagonal 120 #30-40', "1996-12-01", 3290001122,3190190190, '0001112223','gabriela.munoz@example.com', '8901234567', '4321098765', NULL, '0', 'Listo para siguiente fase', '1', 1, 1, 1);
 
 insert into tp_habitaciones values
 (666,280000,1,1,1,2),
 (819, 500000,2,2,3,1),
 (10,300000,1,1,3,1),
 (73,900000,4,4,3,3),
-(69,1200000,5,5,4,2);
+(18,1200000,5,5,4,2);
 
 
 INSERT INTO tp_pqrs VALUES
-(NULL, 20241018, 'El huésped reporta que la habitación no contaba con servicio de agua',20241019,1000289068, 3, 2, 2, 1),
+(NULL, 20241018, 'El huésped reporta que la habitación no contaba con servicio de agua',20241019,1011234567, 3, 2, 2, 1),
 (NULL, 20240312, 'Se reporta que las cobijas de la cama se encuentra en mal estado(sucias y manchadas),no hicieron el debido aseo en la habitación 73', 20240313, 1098785643, 2, 2, 1, 3),
-(null, 20241126,'Se reporta una fuga de agua en la habitación 666', null, 1002455665,3,2,3,2),
-(null,20220425,'Se reporta un extraño olor en el pasillo',null, 1234098756,2,3,1,1),
-(null,20230901,'El huésped sugiere colocar revistas en la sala de espera',20230515,1012099089,1,1,1,4),
-(NULL, 20240916,'Se  reporta la falta de materiales de aseo personal (jabón) en la habitación 819', 20240916,1098785643,2,2,1,1);
+(null, 20241126,'Se reporta una fuga de agua en la habitación 666', null, 1000289068,3,2,3,2),
+(null,20220425,'Se reporta un extraño olor en el pasillo',null, 1000289068,2,3,1,1),
+(null,20230901,'El huésped sugiere colocar revistas en la sala de espera',20230515,1000289068,1,1,1,4),
+(NULL, 20240916,'Se  reporta la falta de materiales de aseo personal (jabón) en la habitación 819', 20240916,1000289068,2,2,1,1);
 
 
 insert into tp_historialmantenimiento values
-(null,'Bombillos defectuosos, próximos a dañarse','Reemplazo de bombillos',20220505,20211001,'No aplica', 1, 819,1122123456,2),
-(null,'Cortinas rasgadas','Reemplazo de cortinas',20230413,20230413,'No aplica',1,666,1122123456,2),
-(null,'Gotera en la llave del lavamanos','Revisar y reparar la fuga de la llave de agua',20241126,20220617,'No aplica',1,69,1122123456,1),
-(null,'Olor raro proveniente del baño','Realizar aseo',20241115,20241115,'No aplica',1,819,1122123456,3),
-(null,'Piso sucio, manchas pegajosas','Realizar aseo en el piso',20240220,20220330,'No aplica',1,10,1122123456,2);
+(null,'Bombillos defectuosos, próximos a dañarse','Reemplazo de bombillos',20220505,20211001,'No aplica', 1, 819,1014596349,2),
+(null,'Cortinas rasgadas','Reemplazo de cortinas',20230413,20230413,'No aplica',1,666,1019987917,2),
+(null,'Gotera en la llave del lavamanos','Revisar y reparar la fuga de la llave de agua',20241126,20220617,'No aplica',1,69,1000289068,1);
 
 
 INSERT INTO tp_reservas VALUES
-(NULL, 350000.00, 20240624, 20240626, 1, 0, 0, 1, 10, 1, NULL,1122123456,1, 1002455665, '20240624 10:00:00');
+(NULL, 350000.00, 20240624, 20240626, 1, 0, 0, 1, 10, 1, NULL,1014596349,1, 1000289068, '20240624 10:00:00');
 
 
 INSERT INTO ti_responder VALUES 
-(NULL, '¡Gracias por tu comentario! Lamentamos que hayas tenido una mala experiencia en el hotel Chimbanadas. Tu comentario nos ayuda a mejorar día a día.', 20240916, 1, 1122123456),
-(NULL, '¡Gracias por tu comentario! Lamentamos que hayas tenido una mala experiencia en el hotel Patroclín. Tu comentario nos ayuda a mejorar nuestros servicios día a día.', 20241018, 2, 1122123456),
-(NULL, '¡Gracias por tu sugerencia! Tus comentarios nos ayudan a mejorar nuestros servicios. Atte: Hotel Bondiola', 20230515, 3, 1122123456);
+(NULL, '¡Gracias por tu comentario! Lamentamos que hayas tenido una mala experiencia en el hotel Chimbanadas. Tu comentario nos ayuda a mejorar día a día.', 20240916, 1, 1014596349),
+(NULL, '¡Gracias por tu comentario! Lamentamos que hayas tenido una mala experiencia en el hotel Patroclín. Tu comentario nos ayuda a mejorar nuestros servicios día a día.', 20241018, 2, 1019987917),
+(NULL, '¡Gracias por tu sugerencia! Tus comentarios nos ayudan a mejorar nuestros servicios. Atte: Hotel Bondiola', 20230515, 3, 1000289068);
 
 
 

@@ -768,25 +768,6 @@ textarea {
   margin: 20px 0;
 }
 
-.modal {
-  display: none; /* Oculto por defecto */
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-.cerrar {
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
 .tabla-reservas {
   width: 80%; /* Ancho de la tabla */
   min-width: 1400px;
@@ -830,4 +811,190 @@ textarea {
 .tabla-reservas tr td:last-child {
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
+}
+
+.modal {
+  display: none;
+  /* Oculto por defecto */
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.contentModal {
+  background-color: #DBEEFF;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 650px;
+  margin: 60px auto;
+}
+
+.contentModal h2 {
+  font-size: 25px;
+}
+
+.contentModal h3 {
+  margin-bottom: 15px;
+  font-size: 20px;
+}
+
+.div1ModalInfo,
+.div2ModalInfo,
+.div3ModalInfo,
+.div4ModalInfo {
+  padding: 20px;
+  color: #0E4153;
+}
+
+.div4ModalInfo {
+  padding-top: 0;
+}
+
+.div1ModalInfo {
+  background-color: #296DAC;
+  padding: 5px 20px;
+  color: #fff;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bloqueInfoHuesped,
+.bloqueInfoReserva {
+  display: flex;
+  gap: 30px;
+  padding-left: 20px;
+  flex-wrap: wrap;
+}
+
+.espacioParrafos {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.div2ModalInfo {
+  background-color: #EFFAFF;
+}
+
+.bloquesCanPersonas,
+.contenedorPersonas {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  gap: 40px;
+}
+
+.espacioBloquePersonas {
+  margin: auto;
+}
+
+#separacionTextoNumPersonas {
+  margin-bottom: 20px;
+}
+
+.espacioBloquesCanPersonas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.contenedorPersonas {
+  border-radius: 5px;
+  width: 40px;
+  height: 35px;
+  background: #fff;
+}
+
+.contenedorInfoAdicional {
+  width: 90%;
+  height: 100px;
+  background: #fff;
+  color: #000;
+  border-radius: 10px;
+  padding: 10px 20px;
+  margin: 20px auto;
+  overflow-y: auto;
+}
+
+/*css menusito desplegable*/
+
+.menuDesplegableContainer {
+  position: relative;
+  /* Importante: para posicionar el menú relativo al botón */
+  display: inline-block;
+  /* Para que el contenedor no ocupe todo el ancho */
+}
+
+.accionMenuDesplegableBtn {
+  background-color: #296DAC;
+  border: none;
+  cursor: pointer;
+  width: 55px;
+  height: 50px;
+  display: flex;
+  border-radius: 5px;
+  justify-content: center;
+  align-items: center;
+}
+
+.accionMenuDesplegableBtn img {
+  width: 45px;
+  display: block;
+}
+
+.accionMenuDesplegableBtn:hover {
+  background-color: #205383;
+}
+
+.dropdownMenuBtn{
+    display: none;/* Oculto por defecto */
+    position: absolute; /* Posiciona el menú relativo a .menu-container */
+    background-color: #f9f9f9;
+    min-width: 170px; /* Ancho mínimo del menú */
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); /* Sombra para efecto 3D */
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+    border-radius: 5px;
+    top: 100%; /* Coloca el menú justo debajo del botón */
+    right: 0; /* Alinea el menú a la izquierda del botón */
+    margin-top: 5px; /* Pequeño espacio entre botón y menú */
+}
+
+.dropdownMenuBtn ul {
+  list-style: none; /* Elimina los puntos de la lista */
+  padding: 0; /* Elimina el padding */
+  margin: 0; /* Elimina el margin */
+}
+
+.dropdownMenuBtn li {
+  padding: 0; /* Espaciado interno */
+  cursor: pointer; /* Cambia el cursor al pasar por encima */
+}
+
+.btonsOpcionesMiniMenu{
+  background-color: transparent;
+  font-weight: 600;
+  font-size: 15px;
+  color: #0E4153;
+  border: none;
+  padding: 10px;
+  width: 100%;
+}
+
+.dropdownMenuBtn li:hover {
+  background-color: #dfdfdf;
+   /* Cambia el color de fondo al pasar el ratón */
+}
+
+/* Clase para mostrar el menú (se añade/quita con JS) */
+.show {
+    display: block;
 }
