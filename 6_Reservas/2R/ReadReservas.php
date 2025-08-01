@@ -2,21 +2,17 @@
 
 require_once '../../config/conexionGlobal.php';
 
-
 datosTabla();
 
 function datosTabla(){
 
 $db = conexionDB();
 
-
-    $sql = "SELECT r.id, r.numeroHabitacion, th.descripcion as tipoHab, h.nombres, h.apellidos, r.fechaRegistro, r.fechainicio, r.fechaFin, r.costo, e.descripcion FROM tp_reservas as r
-    
+$sql = "SELECT r.id, r.numeroHabitacion, th.descripcion as tipoHab, h.nombres, h.apellidos, r.fechaRegistro, r.fechainicio, r.fechaFin, r.costo, e.descripcion FROM tp_reservas as r
     INNER JOIN tp_habitaciones AS Hab ON r.numeroHabitacion = Hab.numero
     INNER JOIN td_tipohabitacion AS th ON Hab.tipoHabitacion = th.id
-    INNER JOIN td_estado AS e ON  r.estado = e.id
-    INNER JOIN tp_huespedes AS h ON  r.hue_numDocumento = h.numDocumento
-
+    INNER JOIN td_estado AS e ON r.estado = e.id
+    INNER JOIN tp_huespedes AS h ON r.hue_numDocumento = h.numDocumento
 ORDER BY id DESC";
 
 $resultado = $db->prepare($sql);
@@ -37,12 +33,10 @@ $resultado->execute();
                 <th>Información completa</th>
             </tr>
         </thead>
-
-    <?php
-        while ($fila = $resultado->fetch(PDO::FETCH_ASSOC)){
-    ?>
-
         <tbody>
+<?php
+        while ($fila = $resultado->fetch(PDO::FETCH_ASSOC)){
+?>
             <tr>
                 <td><?php echo $fila['id'];?></td>
                 <td><?php echo $fila['numeroHabitacion'];?></td>
@@ -55,10 +49,11 @@ $resultado->execute();
                 <td><?php echo $fila['descripcion'];?></td>
                 <td><button id="verInformacionReserva" onclick="mostrarModal(<?php echo $fila['id']; ?>)" style="cursor:pointer;">Ver</button></td>
             </tr>
-        </tbody>
-
-
 <?php
-    }};
+        } // Cierre del while
 ?>
-</table>
+        </tbody>
+        </table>
+<?php
+} // Cierre de la función datosTabla
+?>
