@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($title ?? 'Lodgehub'); ?></title>
-    <link rel="stylesheet" href="/Lodge/public/assets/css/styles.css">
+    <link rel="stylesheet" href="/lodgehub/public/assets/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 </head>
 <body>
@@ -13,7 +13,7 @@
 
         <header class="top-bar">
             <div class="top-bar-left">
-                <img src="/Lodge/public/assets/img/LogoClaroLH.png" alt="Logo Lodgehub" class="top-logo">
+                <img src="/lodgehub/public/assets/img/LogoClaroLH.png" alt="Logo Lodgehub" class="top-logo">
             </div>
             <div class="top-bar-right">
                 <i class="fas fa-user-circle user-icon" title="Perfil Usuario"></i>
