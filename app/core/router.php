@@ -2,7 +2,7 @@
 class Router
 {
     // Un array para almacenar todas las rutas definidas
-    protected $routes = [];
+    public $routes = [];
 
     /**
      * Añade una nueva ruta al mapa de rutas.

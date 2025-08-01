@@ -5,13 +5,13 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 session_start();
 
-define('BASE_URL', '/Lodge/public');
+define('BASE_URL', '/lodgehub/public');
 
 //Cargar Clases Necesarias
 require_once '../app/Core/Router.php';
 require_once '../app/Controllers/UsuarioController.php';
 
-$basePath = '/Lodge/public'; // La subcarpeta donde vive el proyecto
+$basePath = '/lodgehub/public'; // La subcarpeta donde vive el proyecto
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 if (strpos($uri, $basePath) === 0) {
@@ -33,7 +33,6 @@ $router->add('/usuarios/guardar', 'UsuarioController', 'guardar', 'POST');
 $router->add('/usuarios/editar', 'UsuarioController', 'mostrarFormularioEdicion', 'GET');
 $router->add('/usuarios/actualizar', 'UsuarioController', 'actualizar', 'POST');
 $router->add('/usuarios/eliminar', 'UsuarioController', 'eliminar', 'GET');
-
 
 //Poner a Trabajar al Router
 $router->dispatch($uri, $request_method);
