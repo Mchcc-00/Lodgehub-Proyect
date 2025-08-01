@@ -20,6 +20,7 @@
         </tr>
     </thead>
     <tbody class="user-table-body">
+        
         <?php if (empty($usuarios)): ?>
             <tr>
                 <td colspan="9" style="text-align: center;">No hay usuarios registrados.</td>
