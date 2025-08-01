@@ -216,6 +216,51 @@ function verificarCamposExist(event) {
 }
 
 
+function verificarCamposModif(event) {
+    let errores = [];
+
+    // ELIMINÉ LAS VALIDACIONES PARA NOMBRES, APELLIDOS, EMAIL, DOCUMENTO DEL HUESPED, CONTACTO
+    // YA QUE ESOS CAMPOS NO SON EDITABLES EN generarReserva.php Y SOLO SE MUESTRAN COMO TEXTO.
+
+    const fechaInicioModif = document.getElementById("fechaInicioModif").value.trim();
+    const fechaFinModif = document.getElementById("fechaFinModif").value.trim();
+    if(fechaInicioModif === "" || fechaFinModif === "") { // Agregamos validación para que no estén vacías
+        errores.push("Las fechas de inicio y salida son obligatorias.");
+    } else if(fechaInicioModif > fechaFinModif) {
+        errores.push("La fecha de inicio no puede ser posterior a la fecha de salida.");
+    }
+    
+    const habitacion = document.getElementById("numHabitacionModif").value.trim();
+    if (habitacion === "") {
+        errores.push("El número de habitación es obligatorio.");
+    }
+
+    const totalPagoInput = document.getElementById("totalPagoModif"); // Referencia el elemento INPUT
+    const totalPagoValue = totalPagoInput.value.trim(); // Obtiene el valor formateado del input
+
+    if (totalPagoValue === "" || totalPagoValue === "$ 0,00" || parseFloat(totalPagoValue.replace(/[^0-9,-]+/g,"").replace(",", ".")) <= 0) {
+        errores.push("El total a pagar es obligatorio y debe ser mayor que cero.");
+    }
+
+    if (errores.length > 0) {
+        alert(errores.join("\n"));
+        event.preventDefault();
+    } else {
+        const confirmar = confirm("¿Deseas modificar esta reserva?");
+        if (!confirmar) {
+            event.preventDefault();
+        } else {
+            console.log("Formulario de reserva de huésped confirmado, modificando datos...");
+            // Aseguramos que 'valorLimpio' se calcule a partir del valor actual en el input
+            let valorLimpio = totalPagoValue.replace(/[^0-9,-]+/g, "").replace(",", ".");
+            
+            // Asignamos el valor limpio al input ANTES de que el formulario se envíe
+            totalPagoInput.value = valorLimpio;
+        }
+    }
+}
+
+
 // Asignación de eventos a los elementos del DOM
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -225,6 +270,7 @@ document.addEventListener("DOMContentLoaded", function () {
         newReserva.addEventListener("click", confirmarNuevaReserva);
     }
 
+    let table = new DataTable('#listadoReservasRead');
 
     // Botón para retornar a mainReservas.php
     const flechaback = document.getElementById("retornarMainReserva");
@@ -381,5 +427,17 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnCancelarModifReserva = document.getElementById("btnCancelarModifReserva");
     if(btnCancelarModifReserva) {   
         btnCancelarModifReserva.addEventListener("click", cancelarModifReserva);
+    }
+
+     // Validación y envío del formulario de HUÉSPED EXISTENTE
+    const formModifReserva = document.getElementById("FormModificacionReserva");
+    if (formModifReserva) {
+        formModifReserva.addEventListener("submit", verificarCamposModif);
+    }
+
+    // Formateo campo Pago como moneda para reserva modificada
+    const totalPagoInputModif = document.getElementById("totalPagoModif");
+    if (totalPagoInputModif) {
+        totalPagoInputModif.addEventListener("input", formatCurrency);
     }
 });

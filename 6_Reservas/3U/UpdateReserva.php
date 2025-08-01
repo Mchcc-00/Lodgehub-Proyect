@@ -51,30 +51,31 @@ if (isset($_POST['idReserva'])) {
     <div class="container">
         <h2>Modificar Reserva</h2>
         <form class="" id="FormModificacionReserva" action="proceUpdateReserva.php" method="POST">
+            <input type="hidden" name="idReserva" value="<?php echo htmlspecialchars($idReserva); ?>">
             <div class="FormEditReserva">
                 <h3>INFORMACIÓN DE HOSPEDAJE</h3>
                 <fieldset id="campoFechaEdit">
-                    <label for="fechaInicioModif">Fecha inicio<input id="fechaInicioModif" type="date" name="fechaInicio" value="<?php echo htmlspecialchars($fechaInicioReserva ?? ''); ?>" required></label>
-                    <label for="fechaFinModif">Fecha salida<input id="fechaFinModif" type="date" name="fechaFin" value="<?php echo htmlspecialchars($fechaFinReserva ?? ''); ?>" required></label>
+                    <label for="fechaInicioModif">Fecha inicio<input id="fechaInicioModif" type="date" name="fechaInicioModif" value="<?php echo htmlspecialchars($fechaInicioReserva ?? ''); ?>" required></label>
+                    <label for="fechaFinModif">Fecha salida<input id="fechaFinModif" type="date" name="fechaFinModif" value="<?php echo htmlspecialchars($fechaFinReserva ?? ''); ?>" required></label>
                 </fieldset>
                 <fieldset id="campoHabEdit">
                     <legend>Habitación</legend>
-                    <label for="numHabitacionModif">Nº<input id="numHabitacionModif" type="text" name="numHabitacionReserva" value="<?php echo htmlspecialchars($habitacionReserva ?? ''); ?>" maxlength="3" placeholder="Numero de habitacion" required></label>
+                    <label for="numHabitacionModif">Nº<input id="numHabitacionModif" type="text" name="numHabitacionModif" value="<?php echo htmlspecialchars($habitacionReserva ?? ''); ?>" maxlength="3" placeholder="Numero de habitacion" required></label>
                 </fieldset>
                 <fieldset id="campoCanPersonasEdit">
                     <legend>Número de personas</legend>
-                    <label for="numAdultosModif">Adultos<input id="numAdultosModif" type="number" name="numAdultos" value="<?php echo htmlspecialchars($canAdultosReserva ?? ''); ?>" min="1" max="10"></label>
-                    <label for="numNinosModif">Niños<input id="numNinosModif" type="number" name="numNinos" value="<?php echo htmlspecialchars($canNinosReserva ?? ''); ?>" min="1" max="10"></label>
-                    <label for="numDiscapacitadosModif">Discapacitados<input id="numDiscapacitadosModif" type="number" name="numDiscapacitados" value="<?php echo htmlspecialchars($canDiscapacidadReserva ?? ''); ?>" min="1" max="10"></label>
+                    <label for="numAdultosModif">Adultos<input id="numAdultosModif" type="number" name="numAdultosModif" value="<?php echo htmlspecialchars($canAdultosReserva ?? ''); ?>" min="1" max="10"></label>
+                    <label for="numNinosModif">Niños<input id="numNinosModif" type="number" name="numNinosModif" value="<?php echo htmlspecialchars($canNinosReserva ?? ''); ?>" min="1" max="10"></label>
+                    <label for="numDiscapacitadosModif">Discapacitados<input id="numDiscapacitadosModif" type="number" name="numDiscapacitadosModif" value="<?php echo htmlspecialchars($canDiscapacidadReserva ?? ''); ?>" min="1" max="10"></label>
                 </fieldset>
                 <fieldset id="campoInfoAdicionalEdit">
                     <legend>Información adicional</legend>
-                    <textarea name="infoAdicionalReserva" id="infoAdicionalModif" rows="7" value="<?php echo htmlspecialchars($$infoAdicionalReserva ?? ''); ?>" placeholder="Información necesaria a tener en cuenta o sugerencias"></textarea>
+                    <textarea name="infoAdicionalReservaModif" id="infoAdicionalModif" rows="7" value="<?php echo htmlspecialchars($$infoAdicionalReserva ?? ''); ?>" placeholder="Información necesaria a tener en cuenta o sugerencias"></textarea>
                 </fieldset>
                 <fieldset id="campoEstadoReservaEdit">
                     <label for="estadoReservaModif">
                         Estado de la reserva
-                        <select name="estadoReserva" id="estadoReservaModif" value="<?php echo htmlspecialchars($estadoReserva ?? ''); ?>" required>
+                        <select name="estadoReservaModif" id="estadoReservaModif" value="<?php echo htmlspecialchars($estadoReserva ?? ''); ?>" required>
                             <option value="" disabled selected>Seleccione</option>
                             <option value="1">Activo</option>
                             <option value="5">Pendiente</option>
@@ -82,7 +83,7 @@ if (isset($_POST['idReserva'])) {
                             <option value="6">Cancelado</option>
                         </select>
                     </label>
-                    <label for="totalPagoModif">Total a pagar<input id="totalPagoModif" type="text" name="totalPago" value="<?php echo htmlspecialchars($costoReserva ?? ''); ?>" required></label>
+                    <label for="totalPagoModif">Total a pagar<input id="totalPagoModif" type="text" name="totalPagoModif" value="<?php echo htmlspecialchars($costoReserva ?? ''); ?>" required></label>
                 </fieldset>
                 <div id="btnFormModifReserva">
                     <button type="button" id="btnCancelarModifReserva">Cancelar</button>

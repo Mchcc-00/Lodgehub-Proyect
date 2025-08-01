@@ -22,7 +22,7 @@ ORDER BY id DESC";
 $resultado = $db->prepare($sql);
 $resultado->execute();
 ?>
-    <table class='tabla-reservas'>
+    <table class='tabla-reservas' id="listadoReservasRead">
         <thead>
             <tr>
                 <th>ID</th>
@@ -59,6 +59,6 @@ $resultado->execute();
 
 
 <?php
-    }}
+    }};
 ?>
 </table>

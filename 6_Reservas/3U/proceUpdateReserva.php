@@ -4,28 +4,6 @@ require_once '../../config/conexionGlobal.php';
 
 $db = conexionDB();
 
-    if (isset($_GET['emp_numDocumento'])) {
-    $dni = intval($_GET['emp_numDocumento']);
-    // Consulta para obtener los datos del usuario
-    $stmt = $conn->prepare("SELECT * FROM tp_empleados WHERE emp_numDocumento = ?");
-    $stmt->bind_param("i", $tp_emp_numDocumento);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        $usuario = $result->fetch_assoc();
-    } else {
-        echo "Usuario no encontrado.";
-        exit;
-    }
-
-    $stmt->close();
-} else {
-    echo "ID de usuario no proporcionado.";
-    exit;
-}
-
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = $_POST['idReserva'];
 
@@ -61,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute();
 
 
-        // Redirigir después de eliminar
+        // Redirigir después de modificar
         header("Location: ../2R/mainReservas.php?modificado=ok");
         exit();
     } catch (PDOException $e) {
@@ -69,3 +47,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
