@@ -44,11 +44,7 @@
             <a href="../PQRS/index.html"><button id="botonpqrs">PQRS </button></a>
         </div>
 
-        
     </div>
-    <fieldset>
-        <legend>Camilo le gusta la puchainita=????</legend>
-    </fieldset>
 <!--
     <div class="container">
         <aside>
