@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión de Habitaciones..</title>
-    <link rel="stylesheet" href="../../../public/assets/css/dashboardHab.css">
+    <link rel="stylesheet" href="/LODGEHUB/app/public/assets/css/dashboardHab.css">
+    <title>Sistema de Gestión de Habitaciones</title>
+    
 </head>
 <body>
     <div class="container">
@@ -43,6 +44,17 @@
                         'info'      => '' // Si no tienes info, puedes dejarlo vacío o eliminar esta línea
                     ];
                 }, $habitaciones)); ?>;
+                <style>
+                    .form-container {
+                    max-width: 800px;
+                    margin: 20px auto;
+                    padding: 30px;
+                    background: white;
+                    border-radius: 15px;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                }
+    /* ... resto de los estilos ... */
+</style>
             </script>
             <script src="../../../public/assets/js/scriptHab.js"></script>
         </div>

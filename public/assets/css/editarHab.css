@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat Alternates', sans-serif;
+}
+
+body {
+    background: rgb(190, 216, 255);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.form-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.titulo {
+    font-size: 24px;
+    color: #2a7dfa;
+    margin-bottom: 20px;
+    font-weight: 600;
+    text-align: center;
+}
+
+hr {
+    border: none;
+    border-top: 2px solid #eaf3ff;
+    margin: 20px 0;
+}
+
+.formulario__grupos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.formulario__grupo {
+    display: flex;
+    flex-direction: column;
+}
+
+.formulario__grupo label {
+    margin-bottom: 8px;
+    color: #4a5568;
+    font-weight: 500;
+}
+
+.formulario__grupo input,
+.formulario__grupo select,
+.formulario__grupo textarea {
+    padding: 10px 15px;
+    border: 2px solid #eaf3ff;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.formulario__grupo input:focus,
+.formulario__grupo select:focus,
+.formulario__grupo textarea:focus {
+    outline: none;
+    border-color: #2a7dfa;
+}
+
+.info-adicional textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.formulario__acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.create-boton, .cancelar-boton {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.create-boton {
+    background: #2a7dfa;
+    color: white;
+}
+
+.create-boton:hover {
+    background: #1760b0;
+    transform: translateY(-2px);
+}
+
+.cancelar-boton {
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+.cancelar-boton:hover {
+    background: #cbd5e0;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .form-container {
+        margin: 10px;
+        padding: 20px;
+    }
+    
+    .formulario__grupos {
+        grid-template-columns: 1fr;
+    }
+}
