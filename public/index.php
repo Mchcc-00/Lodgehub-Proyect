@@ -5,7 +5,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 session_start();
 
-define('BASE_URL', '/Lodge/public');
+define('BASE_URL', '/lodgehub/public');
 
 //Cargar Clases Necesarias
 require_once '../app/Core/Router.php';
