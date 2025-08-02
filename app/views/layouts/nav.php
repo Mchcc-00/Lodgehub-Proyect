@@ -1,31 +1,52 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
-    <a class="navbar-brand" href="../homepage/cerrarSesion.php">Navbar</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-      <ul class="navbar-nav">
-        <li class="nav-item">
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <!--<li class="nav-item">
           <a class="nav-link active" aria-current="page" href="#">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Features</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Pricing</a>
-        </li>
+          <a class="nav-link" href="#">Link</a>
+        </li>-->
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Dropdown link
+          <a id="lodgebub-dropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            LODGEHUB
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
+            <li><a class="dropdown-item active" href="../homepage/homepage.php">Home</a></li>
+            <li><a class="dropdown-item" href="../../../6_Reservas/2R/mainReservas.php">Reservas</a></li>
+            <li><a class="dropdown-item" href="../../../HABITACIONES/views/dashboard.php">Habitaciones</a></li>
+            <li><a class="dropdown-item" href="../../../MANTENIMIENTO/views/dashboard.php">Mantenimiento</a></li>
+            <li><a class="dropdown-item" href="../../../PQRS/views/dashboard.php">PQRS</a></li>
           </ul>
         </li>
+
       </ul>
+      <form class="d-flex" role="perfil">
+        
+        <a href="../homepage/cerrarSesion.php" class="btn btn-danger">Cerrar sesión</a>
+      </form>
     </div>
   </div>
 </nav>
+
+<style>
+
+  .container-fluid {
+    background: #437bafff;
+    padding: 20px;
+  }
+
+  #lodgebub-dropdown {
+    color: #ffffffff;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  
+</style>
