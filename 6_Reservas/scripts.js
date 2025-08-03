@@ -280,7 +280,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     //cerrar modal al hacer clic fuera del contenido
     window.onclick = function(event) {
-        const modales = document.querySelectorAll('.modal');
+        const modales = document.querySelectorAll('.reservasModal');
         modales.forEach(modal => {
             if (event.target === modal) {
                 modal.style.display = 'none';
@@ -400,15 +400,15 @@ document.addEventListener("DOMContentLoaded", function () {
             const id = this.id.split('_')[1] || ''; // Extrae el ID del botón, si existe
             const dropdownMenu = document.getElementById('dropdownMenu_' + id);
 
-            document.querySelectorAll('.dropdownMenuBtn.show').forEach(openMenu => {
+            document.querySelectorAll('.BtonMenuDesplegable.showModalOpciones').forEach(openMenu => {
                 // Si el menú abierto no es el menú actual, ciérralo
                 if (openMenu !== dropdownMenu) {
-                    openMenu.classList.remove('show');
+                    openMenu.classList.remove('showModalOpciones');
                 }
             });
 
             if (dropdownMenu) {
-                dropdownMenu.classList.toggle('show'); // Alterna la visibilidad del menú desplegable
+                dropdownMenu.classList.toggle('showModalOpciones'); // Alterna la visibilidad del menú desplegable
             }
         });
     });
@@ -416,9 +416,9 @@ document.addEventListener("DOMContentLoaded", function () {
     window.addEventListener("click", function(event) {
         // Verifica si el clic no fue en un botón de acción del menú
         // Y verifica si el clic no fue DENTRO de un menú desplegable
-        if (!event.target.closest('.accionMenuDesplegableBtn') && !event.target.closest('.dropdownMenuBtn')) {
-            document.querySelectorAll('.dropdownMenuBtn.show').forEach(openMenu => {
-                openMenu.classList.remove('show');
+        if (!event.target.closest('.accionMenuDesplegableBtn') && !event.target.closest('.BtonMenuDesplegable')) {
+            document.querySelectorAll('.BtonMenuDesplegable.showModalOpciones').forEach(openMenu => {
+                openMenu.classList.remove('showModalOpciones');
             });
         }
     });

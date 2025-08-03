@@ -6,7 +6,7 @@ $huesped = null; // Inicializa la variable huesped
 //Verificar si se recibió el documento del huésped por POST
 if (isset($_POST['documentoHuesped'])) {
     $documentoHuesped = trim($_POST['documentoHuesped']);
-    
+
     //Realizar la consulta a la base de datos (similar a buscarHuespedExist.php)
     $db = conexionDB();
     $sql = "SELECT h.numDocumento, h.numTelefono, h.correo, h.nombres, h.apellidos, td.descripcion as tipoDocumento, s.descripcion as sexo, ec.descripcion as estadoCivil FROM tp_huespedes AS h
@@ -16,7 +16,7 @@ if (isset($_POST['documentoHuesped'])) {
     INNER JOIN td_estadoCivil AS ec ON h.estadoCivil = ec.id
     
     WHERE numDocumento = (:numDocumento)";
-    
+
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':numDocumento', $documentoHuesped, PDO::PARAM_STR);
     $stmt->execute();
@@ -28,7 +28,7 @@ if (isset($_POST['documentoHuesped'])) {
 
         echo "Error: No se encontró ningún huésped con el documento proporcionado.";
         exit(); // Detener la ejecución si hay un error crítico
-    }   
+    }
 } else {
     // Si no se recibió el documento (ej. alguien accede directamente a la URL)
     echo "Error: Documento del huésped no proporcionado.";
@@ -38,33 +38,82 @@ if (isset($_POST['documentoHuesped'])) {
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nueva Reserva</title>
-    <link rel="stylesheet" href="../styles.css"> 
     <link rel="stylesheet" href="//cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
-    </head>
-<body>
-    <div class="container">
-        <h2>Nueva Reserva</h2>
-    <div class="mostrarInfoHuesped">
-        <div class="tablaInfoHuesped">
-            <h3>INFORMACIÓN DEL HUÉSPED</h3>
-            <p><strong>Nombres: </strong><?php echo htmlspecialchars($huesped['nombres'] ?? '');?></p>
-            <p><strong>Apellidos: </strong><?php echo htmlspecialchars($huesped['apellidos'] ?? '');?></p>
-            <p><strong>Tipo Documento: </strong><?php echo htmlspecialchars($huesped['tipoDocumento'] ?? '');?></p>
-            <p><strong>Documento: </strong><?php echo htmlspecialchars($huesped['numDocumento'] ?? '');?></p>
-            <p><strong>Sexo: </strong><?php echo htmlspecialchars($huesped['sexo'] ?? '');?></p>
-            <p><strong>Estado Civil: </strong><?php echo htmlspecialchars($huesped['estadoCivil'] ?? '');?></p>
-            <p><strong>Contacto: </strong><?php echo htmlspecialchars($huesped['numTelefono'] ?? '');?></p>
-            <p><strong>Correo: </strong><?php echo htmlspecialchars($huesped['correo'] ?? '');?></p>
-        </div>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="../styles.css">
 
-        <form id="formRegistrarReservaExist" action="proceFormExist.php" method="POST">
-            <div id="formularioHospedajeExist">
-                <h3>INFORMACIÓN DE HOSPEDAJE</h3>
-                <div id="lineExist"></div>
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a id="lodgebub-dropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            LODGEHUB
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="../../app/views/homepage/homepage.php">Home</a></li>
+                            <li><a class="dropdown-item active" href="mainReservas.php">Reservas</a></li>
+                            <li><a class="dropdown-item" href="../../../HABITACIONES/views/dashboard.php">Habitaciones</a></li>
+                            <li><a class="dropdown-item" href="../../../MANTENIMIENTO/views/dashboard.php">Mantenimiento</a></li>
+                            <li><a class="dropdown-item" href="../../../PQRS/views/dashboard.php">PQRS</a></li>
+                        </ul>
+                    </li>
+
+                </ul>
+                <form class="d-flex" role="perfil">
+
+                    <a href="../../app/views/homepage/cerrarSesion.php" class="btn btn-danger">Cerrar sesión</a>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <style>
+        .container-fluid {
+            background: #437bafff;
+            padding: 20px;
+        }
+
+        #lodgebub-dropdown {
+            color: #ffffffff;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    </style>
+
+
+    <div class="contenedorReservas">
+        <h2>Nueva Reserva</h2>
+        <div class="mostrarInfoHuesped">
+            <div class="tablaInfoHuesped">
+                <h3>INFORMACIÓN DEL HUÉSPED</h3>
+                <p><strong>Nombres: </strong><?php echo htmlspecialchars($huesped['nombres'] ?? ''); ?></p>
+                <p><strong>Apellidos: </strong><?php echo htmlspecialchars($huesped['apellidos'] ?? ''); ?></p>
+                <p><strong>Tipo Documento: </strong><?php echo htmlspecialchars($huesped['tipoDocumento'] ?? ''); ?></p>
+                <p><strong>Documento: </strong><?php echo htmlspecialchars($huesped['numDocumento'] ?? ''); ?></p>
+                <p><strong>Sexo: </strong><?php echo htmlspecialchars($huesped['sexo'] ?? ''); ?></p>
+                <p><strong>Estado Civil: </strong><?php echo htmlspecialchars($huesped['estadoCivil'] ?? ''); ?></p>
+                <p><strong>Contacto: </strong><?php echo htmlspecialchars($huesped['numTelefono'] ?? ''); ?></p>
+                <p><strong>Correo: </strong><?php echo htmlspecialchars($huesped['correo'] ?? ''); ?></p>
+            </div>
+
+            <form id="formRegistrarReservaExist" action="proceFormExist.php" method="POST">
+                <div id="formularioHospedajeExist">
+                    <h3>INFORMACIÓN DE HOSPEDAJE</h3>
+                    <div id="lineExist"></div>
                     <fieldset class="label-arriba" id="campo5Exist">
                         <label for="fechaInicioExist">Fecha inicio<input id="fechaInicioExist" type="date" name="fechaInicioExist" required></label>
                         <label for="fechaFinExist">Fecha salida<input id="fechaFinExist" type="date" name="fechaFinExist" required></label>
@@ -106,20 +155,25 @@ if (isset($_POST['documentoHuesped'])) {
                         <label for="numEmpleadoReservaExist">Empleado que registra<input id="numEmpleadoReservaExist" type="text" name="numEmpleadoReservaExist" minlength="10" maxlength="15" placeholder="Ingrese su número de documento" required></label>
                         <label for="totalPagoExist">Total a pagar<input id="totalPagoExist" type="text" name="totalPagoExist" required></label>
                     </fieldset>
-                <div id="lineExist2"></div>
-            </div>
-            <div id="botonesFormularioExist">
-                <button type="button" id="btnLimpiarFormularioExist">Limpiar formulario</button>
-                <button type="button" id="btnCancelarReservaExist">Cancelar</button>
-                <button type="submit" id="btnRegistrarReservaExist">Reservar</button>
-            </div>
-            <input type="hidden" name="documentoHuespedExist" value="<?php echo htmlspecialchars($huesped['numDocumento'] ?? ''); ?>">
-        </form>
-    </div>   
-        
+                    <div id="lineExist2"></div>
+                </div>
+                <div id="botonesFormularioExist">
+                    <button type="button" id="btnLimpiarFormularioExist">Limpiar formulario</button>
+                    <button type="button" id="btnCancelarReservaExist">Cancelar</button>
+                    <button type="submit" id="btnRegistrarReservaExist">Reservar</button>
+                </div>
+                <input type="hidden" name="documentoHuespedExist" value="<?php echo htmlspecialchars($huesped['numDocumento'] ?? ''); ?>">
+            </form>
+        </div>
+
     </div>
-</body>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="//cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
     <script src="../scripts.js"></script>
+</body>
+
 </html>

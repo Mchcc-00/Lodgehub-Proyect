@@ -1,15 +1,64 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nueva reserva</title>
-    <link rel="stylesheet" href="../styles.css"> 
     <link rel="stylesheet" href="//cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="../styles.css">
 </head>
+
 <body>
-    <div class="container">
-    <h2>Nueva Reserva</h2>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a id="lodgebub-dropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            LODGEHUB
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="../../app/views/homepage/homepage.php">Home</a></li>
+                            <li><a class="dropdown-item active" href="mainReservas.php">Reservas</a></li>
+                            <li><a class="dropdown-item" href="../../../HABITACIONES/views/dashboard.php">Habitaciones</a></li>
+                            <li><a class="dropdown-item" href="../../../MANTENIMIENTO/views/dashboard.php">Mantenimiento</a></li>
+                            <li><a class="dropdown-item" href="../../../PQRS/views/dashboard.php">PQRS</a></li>
+                        </ul>
+                    </li>
+
+                </ul>
+                <form class="d-flex" role="perfil">
+
+                    <a href="../../app/views/homepage/cerrarSesion.php" class="btn btn-danger">Cerrar sesión</a>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <style>
+        .container-fluid {
+            background: #437bafff;
+            padding: 20px;
+        }
+
+        #lodgebub-dropdown {
+            color: #ffffffff;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    </style>
+
+    <div class="contenedorReservas">
+        <h2>Nueva Reserva</h2>
         <form class="mostrarInfoHuesped" id="formRegistrarReserva" action="proceFormNew.php" method="POST">
             <div class="tablaInfoHuesped" id="formularioHuesped">
                 <h3>INFORMACIÓN HUESPED</h3>
@@ -61,47 +110,47 @@
             <div id="formularioHospedaje">
                 <h3>INFORMACIÓN HOSPEDAJE</h3>
                 <div id="line"></div>
-                    <fieldset class="label-arriba" id="campo5">
-                        <label for="fechaInicio">Fecha inicio<input id="fechaInicio" type="date" name="fechaInicio" required></label>
-                        <label for="fechaFin">Fecha salida<input id="fechaFin" type="date" name="fechaFin" required></label>
-                        <label for="motivoReserva">
-                            Motivo de la reserva
-                            <select name="motivoReserva" id="motivoReserva" required>
-                                <option value="" disabled selected>Seleccione</option>
-                                <option value="1">Negocios</option>
-                                <option value="2">Personal</option>
-                                <option value="3">Viaje</option>
-                                <option value="4">Familiar</option>
-                            </select>
-                        </label>
-                    </fieldset>
-                    <fieldset id="campo6">
-                        <legend>Habitación</legend>
-                        <label for="numHabitacionReserva">Nº<input id="numHabitacionReserva" type="text" name="numHabitacionReserva" maxlength="3" placeholder="Numero de habitacion a reservar" required></label>
-                    </fieldset>
-                    <fieldset id="campo7">
-                        <legend>Número de personas</legend>
-                        <label for="numAdultos">Adultos<input id="numAdultos" type="number" name="numAdultos" min="1" max="10"></label>
-                        <label for="numNinos">Niños<input id="numNinos" type="number" name="numNinos" min="1" max="10"></label>
-                        <label for="numDiscapacitados">Discapacitados<input id="numDiscapacitados" type="number" name="numDiscapacitados" min="1" max="10"></label>
-                    </fieldset>
-                    <fieldset id="campo8">
-                        <legend>Información adicional</legend>
-                        <textarea name="infoAdicionalReserva" id="infoAdicionalReserva" rows="7" placeholder="Información necesaria a tener en cuenta o sugerencias"></textarea>
-                    </fieldset>
-                    <fieldset class="label-arriba" id="campo9">
-                        <label for="metodoPago">
-                            Metodo de pago
-                            <select name="metodoPago" id="metodoPago" required>
-                                <option value="" disabled selected>Seleccione</option>
-                                <option value="1">Tarjeta</option>
-                                <option value="2">Efectivo</option>
-                                <option value="3">PSE</option>
-                            </select>
-                        </label>
-                        <label for="numEmpleadoReserva">Empleado que registra<input id="numEmpleadoReserva" type="text" name="numEmpleadoReserva" minlength="10" maxlength="15" placeholder="Ingrese su numero de documento" required></label>
-                        <label for="totalPago">Total a pagar<input id="totalPago" type="text" name="totalPago" required></label>
-                    </fieldset>
+                <fieldset class="label-arriba" id="campo5">
+                    <label for="fechaInicio">Fecha inicio<input id="fechaInicio" type="date" name="fechaInicio" required></label>
+                    <label for="fechaFin">Fecha salida<input id="fechaFin" type="date" name="fechaFin" required></label>
+                    <label for="motivoReserva">
+                        Motivo de la reserva
+                        <select name="motivoReserva" id="motivoReserva" required>
+                            <option value="" disabled selected>Seleccione</option>
+                            <option value="1">Negocios</option>
+                            <option value="2">Personal</option>
+                            <option value="3">Viaje</option>
+                            <option value="4">Familiar</option>
+                        </select>
+                    </label>
+                </fieldset>
+                <fieldset id="campo6">
+                    <legend>Habitación</legend>
+                    <label for="numHabitacionReserva">Nº<input id="numHabitacionReserva" type="text" name="numHabitacionReserva" maxlength="3" placeholder="Numero de habitacion a reservar" required></label>
+                </fieldset>
+                <fieldset id="campo7">
+                    <legend>Número de personas</legend>
+                    <label for="numAdultos">Adultos<input id="numAdultos" type="number" name="numAdultos" min="1" max="10"></label>
+                    <label for="numNinos">Niños<input id="numNinos" type="number" name="numNinos" min="1" max="10"></label>
+                    <label for="numDiscapacitados">Discapacitados<input id="numDiscapacitados" type="number" name="numDiscapacitados" min="1" max="10"></label>
+                </fieldset>
+                <fieldset id="campo8">
+                    <legend>Información adicional</legend>
+                    <textarea name="infoAdicionalReserva" id="infoAdicionalReserva" rows="7" placeholder="Información necesaria a tener en cuenta o sugerencias"></textarea>
+                </fieldset>
+                <fieldset class="label-arriba" id="campo9">
+                    <label for="metodoPago">
+                        Metodo de pago
+                        <select name="metodoPago" id="metodoPago" required>
+                            <option value="" disabled selected>Seleccione</option>
+                            <option value="1">Tarjeta</option>
+                            <option value="2">Efectivo</option>
+                            <option value="3">PSE</option>
+                        </select>
+                    </label>
+                    <label for="numEmpleadoReserva">Empleado que registra<input id="numEmpleadoReserva" type="text" name="numEmpleadoReserva" minlength="10" maxlength="15" placeholder="Ingrese su numero de documento" required></label>
+                    <label for="totalPago">Total a pagar<input id="totalPago" type="text" name="totalPago" required></label>
+                </fieldset>
                 <div id="line2"></div>
                 <div id="botonesFormulario">
                     <button type="button" id="btnLimpiarFormulario">Limpiar formulario</button>
@@ -111,8 +160,13 @@
             </div>
         </form>
     </div>
-</body>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="//cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
     <script src="../scripts.js"></script>
+</body>
+
 </html>

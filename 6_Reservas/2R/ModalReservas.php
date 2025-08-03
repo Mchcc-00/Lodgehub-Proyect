@@ -22,15 +22,15 @@ $resultado->execute();
 while ($fila = $resultado->fetch(PDO::FETCH_ASSOC)) {
 ?>
 
-    <div id="miModal<?php echo $fila['id']; ?>" class="modal">
-        <div class="contentModal">
-            <div class="div1ModalInfo">
+    <div id="miModal<?php echo $fila['id']; ?>" class="reservasModal">
+        <div class="contenidoReservasModal">
+            <div class="informacionDiv1Modal">
                 <h2>Reserva N°<?php echo $fila['id']; ?></h2>
-                <div class="menuDesplegableContainer">
+                <div class="menuDesplegableContenedor">
                     <button id="MenuDesplegableBtn_<?php echo $fila['id']; ?>" class="accionMenuDesplegableBtn">
                         <img src="../../public/img/modificarIcon.png" alt="Opciones de Reserva Menu">
                     </button>
-                    <div id="dropdownMenu_<?php echo $fila['id']; ?>" class="dropdownMenuBtn">
+                    <div id="dropdownMenu_<?php echo $fila['id']; ?>" class="BtonMenuDesplegable">
                         <ul>
                             <li>
                                 <form action="../3U/updateReserva.php" method="POST" onsubmit="return confirm('¿Modificar la reserva Nº<?php echo $fila['id']; ?>?');">
@@ -48,7 +48,7 @@ while ($fila = $resultado->fetch(PDO::FETCH_ASSOC)) {
                     </div>
                 </div>
             </div>
-            <div class="div2ModalInfo">
+            <div class="InformacionDiv2Modal">
                 <h3>Datos del huesped</h3>
                 <div class='bloqueInfoHuesped'>
                     <div class="espacioParrafos">
@@ -65,7 +65,7 @@ while ($fila = $resultado->fetch(PDO::FETCH_ASSOC)) {
                     </div>
                 </div>
             </div>
-            <div class="div3ModalInfo">
+            <div class="InformacionDiv3Modal">
                 <h3>Información hospedaje</h3>
                 <div class="bloqueInfoReserva">
                     <div class="espacioParrafos">
@@ -100,7 +100,7 @@ while ($fila = $resultado->fetch(PDO::FETCH_ASSOC)) {
                     </div>
                 </div>
             </div>
-            <div class="div4ModalInfo">
+            <div class="InformacionDiv4Modal">
                 <div class="division4InformacionAdicional">
                     <h3>Notas extra</h3>
                     <div class="contenedorInfoAdicional">
