@@ -5,22 +5,17 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <!--<li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
-        </li>-->
         <li class="nav-item dropdown">
           <a id="lodgebub-dropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             LODGEHUB
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item active" href="../homepage/homepage.php">Home</a></li>
+            <li><a class="dropdown-item" href="../homepage/homepage.php">Home</a></li>
             <li><a class="dropdown-item" href="../../../6_Reservas/2R/mainReservas.php">Reservas</a></li>
             <li><a class="dropdown-item" href="../../../HABITACIONES/views/dashboard.php">Habitaciones</a></li>
             <li><a class="dropdown-item" href="../../../MANTENIMIENTO/views/dashboard.php">Mantenimiento</a></li>
             <li><a class="dropdown-item" href="../../../PQRS/views/dashboard.php">PQRS</a></li>
+            <li><a class="dropdown-item" href="../../../app/views/Usuarios/lista.php">Usuarios</a></li>
           </ul>
         </li>
 
