@@ -112,6 +112,7 @@ CREATE TABLE IF NOT EXISTS tp_empleados(numDocumento VARCHAR (15) NOT NULL,
                                 sexo INT (3) NOT NULL,
                                 tipoDocumento INT (3) NOT NULL,
                                 roles INT (3) NOT NULL,
+                                
 
                                 PRIMARY KEY (numdocumento),
                                 FOREIGN KEY (sexo) REFERENCES td_sexo (id),

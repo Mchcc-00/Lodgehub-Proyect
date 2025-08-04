@@ -84,10 +84,10 @@ class UsuarioController
 
         if ($exito) {
 
-            header('Location: ' . BASE_URL . '/usuarios/lista?mensaje=Usuario creado exitosamente');
+            header('Location: /lodgehub/app/views/usuarios/lista.php?mensaje=Usuario creado exitosamente');
         } else {
 
-            header('Location: ' . BASE_URL . '/usuarios/crear?error=No se pudo crear el usuario. El DNI o correo ya podría existir.');
+            header('Location: /lodgehub/app/views/usuarios/crear.php?error=No se pudo crear el usuario. El DNI o correo ya podría existir.');
         }
         exit;
     }

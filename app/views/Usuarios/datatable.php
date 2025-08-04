@@ -18,6 +18,7 @@ $usuarios = $usuarioModel->obtenerTodos();
     <link rel="stylesheet" href="../../../public/assets/css/styles.css"> 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="//cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
 </head>
 <body>
     
@@ -49,7 +50,7 @@ $usuarios = $usuarioModel->obtenerTodos();
             </a>
         </div>
         
-        <table class="user-table">
+        <table id="tablaUsuarios" class="table table-striped table-bordered" style="width:100%">
             <thead class="user-table-header">
                 <tr>
                     <th>Tipo de documento</th>
@@ -95,5 +96,6 @@ $usuarios = $usuarioModel->obtenerTodos();
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="//cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
 </body>
 </html>

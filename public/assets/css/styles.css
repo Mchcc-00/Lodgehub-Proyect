@@ -1,7 +1,8 @@
-html, body {
+html,
+body {
     /* Mantener o ajustar */
-    font-family: sans-serif;
-    background: linear-gradient(to right,#BED8FF);
+    font-family: "Arial", sans-serif;
+    background: linear-gradient(#cee7ff, #e0f9ff, #cee7ff);
     justify-content: center;
     align-items: center;
     width: auto;
@@ -36,7 +37,7 @@ html, body {
     flex-shrink: 0;
 
     /* Evita que se encoja */
-    
+
 }
 
 .top-bar-left {
@@ -82,32 +83,85 @@ html, body {
 }
 
 
-/* NUEVO: Contenedor del Formulario (Derecha) */
+/* Estilos form */
 .form-content-container {
-    flex-grow: 1; /* Ocupa el espacio restante */   
+    margin: 50px;
+    flex-grow: 1;
+    /* Ocupa el espacio restante */
     background-color: #EDF7FF;
     padding: 20px 35px;
     overflow-y: auto;
     /* Scroll si el contenido es muy alto */
 }
+
 /* NUEVO: Títulos H2 de Formularios y CRUDS */
 .form-title {
-    color: #0E4153;
+    color: #296dac;
     font-weight: 645;
-    font-size: 2.2em;
+    font-size: 2.0em;
     margin-bottom: 30px;
+    margin-left: 70px;
     border-bottom: 3px solid #296DAC;
+    padding-top: 15px;
+    padding-left: 50px;
     padding-bottom: 8px;
     width: 35%;
 }
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* 4 columnas de igual ancho */
+    grid-template-rows: repeat(5, auto);
+    /* 5 filas con altura automática */
+    gap: 15px;
+    /* Espacio entre los formularios */
+    align-items: start;
+    /* Alinea los formularios al inicio de la fila */
+    margin: 10px 50px;
+    /* Margen alrededor de la cuadrícula */
+}
+
+.form-group {
+    /* Mantener */
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    margin: 0 20px;
+}
+
+.form-actions {
+    /* Mantener o ajustar margen */
+    margin: 20px 70px;
+    padding-top: 20px;
+    border-top: 1px solid #b8b8b8;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.form-footer {
+    /* Mantener o ajustar */
+    margin: 20px 70px;
+    padding-top: 15px;
+    padding-bottom: 0px;
+    font-size: 0.8em;
+    color: #6c757d;
+    /* Gris más estándar */
+    text-align: left;
+    /* Centrar footer? */
+    border-top: 1px solid #b8b8b8;
+}
+
 /* Estilos de la tabla de usuarios */
 .user-header {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     width: 95%;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
 }
+
 .user-table {
     width: 100%;
     border-collapse: separate;
@@ -117,61 +171,75 @@ html, body {
     font-weight: 550;
     overflow-y: auto;
 }
-.user-table tr,
-.user-table th {
+
+.user-table tr{
     background-color: #95C9E3;
     padding: 15px 20px;
     text-align: center;
-    
 }
+.user-table th {
+    background-color: #296dac;
+    color: #ffffff;
+    padding: 15px 20px;
+    text-align: center;
+
+}
+
 .user-table td {
     padding: 20px 40px;
     text-align: center;
 }
+
 .user-table th:first-child,
 .user-table tr td:first-child {
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
 }
+
 .user-table th:last-child,
 .user-table tr td:last-child {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
 }
+
 .btn-delete {
     background-color: rgb(201, 70, 70);
     color: #ffffff;
     font-size: 0.8em;
-    padding: 5px 10px;
+    padding: 2px 7px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.2s ease;   
+    transition: background-color 0.2s ease;
 }
 
 .btn-edit {
     background-color: #af9d4c;
     color: #ffffff;
     font-size: 0.8em;
-    padding: 5px 10px;
+    padding: 2px 7px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
+
 .btn-add .fa-plus {
     color: #296DAC;
     font-size: 1.8em;
 }
-.btn-add:hover{
+
+.btn-add:hover {
     color: #0E4153;
-    transform: scale(1.1); /* Efecto de agrandar */
+    transform: scale(1.1);
+    /* Efecto de agrandar */
     transition: color 0.2s, transform 0.2s;
 }
-.btn-add{
+
+.btn-add {
     background-color: #B2CAF5;
     color: #296DAC;
-    border:5px solid #296DAC ;
+    border: 5px solid #296DAC;
     float: left;
     margin: 20px 0;
     padding: 10px;
@@ -180,11 +248,14 @@ html, body {
     border-radius: 10px;
     cursor: pointer;
 }
+
 /* Estilo para los campos con error */
 .form-group input.is-invalid,
 .form-group select.is-invalid {
-    border-color: #dc3545; /* Rojo */
-    background-color: #f8d7da; /* Fondo rosado suave */
+    border-color: #dc3545;
+    /* Rojo */
+    background-color: #f8d7da;
+    /* Fondo rosado suave */
 }
 
 /* Estilo para los mensajes de error */
@@ -192,46 +263,34 @@ html, body {
     color: #dc3545;
     font-size: 0.85em;
     margin-top: 5px;
-    opacity: 0; /* Oculto por defecto */
-    max-height: 0; /* Oculto por defecto */
+    opacity: 0;
+    /* Oculto por defecto */
+    max-height: 0;
+    /* Oculto por defecto */
     overflow: hidden;
-    transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out; /* Animación */
+    transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out;
+    /* Animación */
 }
 
 /* Cuando el mensaje de error es visible */
 .error-message.visible {
     opacity: 1;
-    max-height: 20px; /* Ajusta según el tamaño de tu fuente */
-}
-
-
-/* --- ESTILOS HEREDADOS DEL FORMULARIO ANTERIOR --- */
-/* (Asegúrate de que no haya conflictos con los estilos eliminados) */
-
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 columnas de igual ancho */
-    grid-template-rows: repeat(5, auto); /* 5 filas con altura automática */
-    gap: 20px; /* Espacio entre los formularios */
-    align-items: start; /* Alinea los formularios al inicio de la fila */
-    justify-items: stretch; /* Asegura que los formularios ocupen todo el ancho de la celda */
-}
-.form-group {
-    /* Mantener */
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
-    margin: 0 20px;
+    max-height: 20px;
+    /* Ajusta según el tamaño de tu fuente */
 }
 
 .photo-upload-area {
-    grid-column: -2 / -1; /* Última columna */
-    grid-row: 3/ span 8; /* Ocupa desde la fila 3 varias filas */
-    align-self: stretch; /* Asegura que ocupe toda la altura disponible en su celda */
+    grid-column: -2 / -1;
+    /* Última columna */
+    grid-row: 3/ span 8;
+    /* Ocupa desde la fila 3 varias filas */
+    align-self: stretch;
+    /* Asegura que ocupe toda la altura disponible en su celda */
     display: flex;
     justify-content: end;
     align-items: center;
-    border: 2px dashed #b0bec5; /* Borde punteado */
+    border: 2px dashed #b0bec5;
+    /* Borde punteado */
     border-radius: 8px;
     padding: 0;
     padding-bottom: 0;
@@ -245,11 +304,15 @@ html, body {
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centra verticalmente el contenido */
-    align-items: center; /* Centra horizontalmente */
+    justify-content: center;
+    /* Centra verticalmente el contenido */
+    align-items: center;
+    /* Centra horizontalmente */
     cursor: pointer;
-    position: relative; /* Necesario para posicionar el texto abajo */
-    overflow: hidden; /* Evita que el texto se salga del recuadro */
+    position: relative;
+    /* Necesario para posicionar el texto abajo */
+    overflow: hidden;
+    /* Evita que el texto se salga del recuadro */
 }
 
 .photo-input-hidden {
@@ -263,7 +326,7 @@ label {
     color: #0E4153;
     margin-bottom: 6px;
     font-weight: 500;
-    
+
 }
 
 input[type="text"],
@@ -272,7 +335,7 @@ input[type="password"],
 input[type="tel"],
 input[type="date"],
 select {
-    
+
     padding: 8px 10px;
     /* Ajusta padding */
     border: 3px solid #296DAC;
@@ -299,19 +362,11 @@ select:focus {
 
 
 
-.form-actions {
-    /* Mantener o ajustar margen */
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid #eeeeee;
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-}
+
 
 .btn {
     /* Mantener o ajustar */
-    padding: 12px 32px;
+    padding: 5px 32px;
     /* Ajusta padding */
     border: none;
     border-radius: 6px;
@@ -321,18 +376,20 @@ select:focus {
 }
 
 .btn-primary {
-    background-color: #00838f;
     color: #ffffff;
+    border: 3px solid #0a2f3d;
+    background-color: #0e4153;
 }
 
 .btn-primary:hover {
-    background-color: #006064;
+    background-color: #0a2f3d;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .btn-secondary {
-    background-color: #597e91;
-    color: #ffffff;
+    color: #fff;
+  border: 3px solid #296dac;
+  background-color: #3785ce;
 }
 
 .btn-secondary:hover {
@@ -340,14 +397,18 @@ select:focus {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.form-footer {
-    /* Mantener o ajustar */
-    margin-top: 25px;
-    padding-top: 15px;
-    font-size: 0.8em;
-    color: #6c757d;
-    /* Gris más estándar */
-    text-align: left;
-    /* Centrar footer? */
-    border-top: 1px solid #eee;
+/* NUEVO: Estilos para el nav */
+
+.container-fluid {
+    background: #437bafff;
+    padding: 20px;
+}
+
+#lodgebub-dropdown {
+    color: #ffffffff;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-weight: bold;
+    text-transform: uppercase;
 }

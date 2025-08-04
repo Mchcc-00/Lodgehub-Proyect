@@ -91,7 +91,7 @@ class Usuario
         }
     }
 
-    //Eliminarun usuario por su número de documento.
+    //Eliminar un usuario por su número de documento.
     //@return bool Devuelve true si tuvo éxito, false si falló.
     public function eliminar($numDocumento)
     {
