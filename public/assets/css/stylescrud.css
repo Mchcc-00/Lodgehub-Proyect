@@ -2,12 +2,12 @@
 body {
   margin: 0;
   padding: 0;
-  background: linear-gradient(to right, #d4edf9, #d4edf9);
+  background: #a8d9f0;
   font-family: 'Segoe UI', sans-serif;
-  color: #1a1a1a;
+  color: #18344d;
 }
 
-/* Contenedor CRUD */
+/* Contenedor principal */
 .crud-container {
   padding: 20px;
   margin: 0 20px;
@@ -17,19 +17,18 @@ body {
 .filters {
   display: flex;
   align-items: center;
-  gap: 12px;
-  background-color: #c6e6f8;
-  padding: 12px 20px;
-  border-radius: 15px;
+  gap: 30px;
+  background-color: #93cef8;
+  padding: 14px 24px;
+  border-radius: 18px;
   margin-bottom: 20px;
-  box-shadow: inset 0 0 3px #88b3c6;
 }
 
-/* Input de búsqueda con ícono */
+/* Input de búsqueda */
 .filters input[type="text"] {
   padding: 10px 15px;
   border-radius: 20px;
-  border: none;
+  border: 3px solid #2c6fab;
   background-color: #5a9bd4;
   color: white;
   width: 180px;
@@ -39,72 +38,118 @@ body {
   background-repeat: no-repeat;
   background-position: 10px center;
   padding-left: 38px;
+  outline: none;
+  box-shadow: 0 2px 4px rgba(199, 15, 15, 0.1) inset;
 }
 
-/* Selects estilo azul claro */
+/* Selects estilo botón */
 .filters select {
-  padding: 10px 20px;
+  padding: 10px 24px;
   border-radius: 20px;
   background-color: #5a9bd4;
   color: white;
-  border: none;
+  border: 3px solid #2c6fab;
   font-weight: bold;
   font-size: 14px;
   cursor: pointer;
+  outline: none;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15) inset;
 }
 
-/* Botón "+" */
-.filters button {
-  background-color: #c6e6f8;
-  color: #0c2943;
-  border: 3px solid #0c2943;
-  padding: 6px 12px;
-  font-size: 24px;
-  border-radius: 50%;
+.filters select:hover {
+  background-color: #4c8bc7;
+}
+
+/* Botón de filtro ícono */
+.filters .filter-icon {
+  background-color: #5a9bd4;
+  border: 4px solid #4079a8;
+  border-radius: 18px;
+  padding: 10px 16px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Botón de agregar */
+.add-button {
+  margin-left: auto;
+  background-color: #a6d4f4;
+  border: 2px solid #4079a8;
+  border-radius: 18px;
+  padding: 8px 16px;
+  font-size: 24px;
   font-weight: bold;
-  transition: all 0.3s ease;
+  color: #00334e;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.filters button:hover {
-  background-color: #e1f3fc;
-  transform: scale(1.1);
-}
-
+/* Tabla general */
 table {
   width: 100%;
-  border-collapse: collapse;
-  background-color: #d9f0fa;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-thead {
-  background-color: #5a9bd4;
-  color: white;
+  border-spacing: 0 12px;
 }
 
 thead th {
-  padding: 12px;
-  text-align: left;
+  padding: 14px;
+  text-align: center;
+  color: #00334e;
+  background-color: #93cef8;
+  border-radius: 0;
   font-weight: bold;
 }
 
+/* Fila con borde redondeado */
+tbody tr {
+  background-color: #4c8bc7;
+  border-radius: 12px;
+  box-shadow: 0px 2px 6px rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+/* Celdas normales */
 tbody td {
+  background-color: transparent;
   padding: 12px;
-  color: #222;
-  border-bottom: 1px solid #b4d7ea;
+  color: #eaebec;
 }
 
-tbody tr:nth-child(even) {
-  background-color: #edf9ff;
+/* Redondear solo las esquinas de los extremos */
+thead th:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
 }
 
-tbody tr:hover {
-  background-color: #d0ecf5;
+thead th:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
+tbody tr td:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+tbody tr td:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+
+
+/* Estado solucionado (en rojo) */
 td.estado-s {
   color: red;
   font-weight: bold;
 }
+
+/* Hover sobre fila */
+tbody tr:hover {
+  background-color: #91c3e3;
+}
+

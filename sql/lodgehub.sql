@@ -164,6 +164,23 @@ CREATE TABLE IF NOT EXISTS tp_pqrs (id INT (10) AUTO_INCREMENT NOT NULL,
                                       FOREIGN KEY (tipo) REFERENCES td_tipoPqrs (id)
                                       ) ENGINE=INNODB;
 
+CREATE TABLE pqrs (               id INT PRIMARY KEY AUTO_INCREMENT,
+                                  fecha DATETIME NOT NULL,
+                                  tipo_pqrs VARCHAR(50) NOT NULL,
+                                  urgencia VARCHAR(20) NOT NULL,
+                                  categoria VARCHAR(50) NOT NULL,
+                                  descripcion TEXT NOT NULL,
+                                  nombre VARCHAR(100) NOT NULL,
+                                  apellido VARCHAR(100) NOT NULL,
+                                  empleado VARCHAR(100) NOT NULL,
+                                  tipo_documento VARCHAR(10) NOT NULL,
+                                  numero_documento VARCHAR(20) NOT NULL,
+                                  estado VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Solucionado',
+                                   PRIMARY KEY (id)
+                                  ) ENGINE=INNODB;  
+                              
+
+
 
 
 CREATE TABLE IF NOT EXISTS td_motivoReserva (id INT (3) AUTO_INCREMENT NOT NULL,

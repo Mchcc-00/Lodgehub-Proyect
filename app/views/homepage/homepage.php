@@ -87,7 +87,7 @@
         </div>
         <div id="cuartocuadro" class="cuadro-principal">
             <!-- Cuarto cuadro -->
-            <a href="../../../PQRS/views/dashboard.php"><h4>PQRS</h4></a>
+            <a href="../../"><h4>PQRS</h4></a>
             <h6>PQRS pendientes</h6>
             <div class="row mt-1">
                 <div class="col-4">
