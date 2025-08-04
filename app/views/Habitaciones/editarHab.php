@@ -53,8 +53,8 @@
         </div>
         <div class="formulario__grupos">
             <div class="formulario__grupo info-adicional" style="flex:1;">
-                <label for="info">Información adicional</label>
-                <textarea id="info" name="info" rows="6"><?php echo htmlspecialchars($habitacion['info']); ?></textarea>
+                <label for="informacionAdicional">Información adicional</label>
+                <textarea id="informacionAdicional" name="informacionAdicional" rows="6"><?php echo htmlspecialchars($habitacion['informacionAdicional']); ?></textarea>
             </div>
         </div>
         <div class="formulario__acciones">
