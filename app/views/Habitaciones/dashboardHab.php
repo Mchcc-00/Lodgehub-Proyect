@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/LODGEHUB/app/public/assets/css/dashboardHab.css">
+    <link rel="stylesheet" href="../../../public/assets/css/dashboardHab.css">
     <title>Sistema de Gestión de Habitaciones</title>
     
 </head>

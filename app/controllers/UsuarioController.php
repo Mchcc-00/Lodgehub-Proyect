@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../models/Usuario.php';
-require_once '../config/conexionGlobal.php';
+require_once __DIR__ . '/../../config/conexionGlobal.php';
 
 class UsuarioController
 {
@@ -88,6 +88,54 @@ class UsuarioController
         } else {
 
             header('Location: ' . BASE_URL . '/usuarios/crear?error=No se pudo crear el usuario. El DNI o correo ya podría existir.');
+        }
+        exit;
+    }
+
+    /**
+     * Procesa el registro desde el formulario PÚBLICO.
+     */
+    public function registrarPublico()
+    {
+        // 1. VERIFICAR que la petición sea POST
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            // En este contexto, no debería pasar, pero es buena práctica
+            exit('Acceso no permitido.');
+        }
+
+        // 2. VALIDAR los datos
+        $datos = $_POST;
+        $errors = [];
+
+        // ... (Aquí va tu bloque completo de validaciones, es idéntico al de guardar()) ...
+        if (empty($datos['primer_nombre'])) {
+            $errors['nombre'] = "El nombre es obligatorio.";
+        }
+        // etc...
+
+        // Si hay errores, redirigimos de vuelta al formulario de registro con un mensaje
+        if (!empty($errors)) {
+            // NOTA: Pasar todos los errores y datos antiguos por GET es complejo.
+            // Por simplicidad, solo redirigimos con un error genérico.
+            header('Location: ../views/Usuarios/crearUsuarioLogin.php?error=Por favor, corrige los datos del formulario.');
+            exit;
+        }
+
+        // 3. PREPARAR los datos para el Modelo
+        $datos['nombres'] = trim(($datos['primer_nombre'] ?? '') . ' ' . ($datos['segundo_nombre'] ?? ''));
+        $datos['apellidos'] = trim(($datos['primer_apellido'] ?? '') . ' ' . ($datos['segundo_apellido'] ?? ''));
+        $datos['password'] = password_hash($datos['password'], PASSWORD_DEFAULT);
+
+        // 4. DELEGAR la inserción al Modelo
+        $exito = $this->usuarioModel->crear($datos);
+
+        // 5. REDIRIGIR según el resultado
+        if ($exito) {
+            // ¡ÉXITO! Redirige a la página de login.
+            header('Location: /lodgehub/app/views/login/login.php?mensaje=Registro exitoso. ¡Ya puedes iniciar sesión!');
+        } else {
+            // FALLO. Redirige de vuelta al formulario de registro.
+            header('Location: crearUsuarioLogin.php?error=No se pudo crear el usuario. El DNI o correo ya podría existir.');
         }
         exit;
     }

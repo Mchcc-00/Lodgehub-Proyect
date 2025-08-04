@@ -28,6 +28,7 @@
                             <li><a class="dropdown-item active" href="mainReservas.php">Reservas</a></li>
                             <li><a class="dropdown-item" href="../../../HABITACIONES/views/dashboard.php">Habitaciones</a></li>
                             <li><a class="dropdown-item" href="../../../MANTENIMIENTO/views/dashboard.php">Mantenimiento</a></li>
+                            <li><a class="dropdown-item" href="../../app/views/Usuarios/lista.php">Usuarios</a></li>
                             <li><a class="dropdown-item" href="../../../PQRS/views/dashboard.php">PQRS</a></li>
                         </ul>
                     </li>

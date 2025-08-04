@@ -1,5 +1,3 @@
-
-
 html, body {
     /* Mantener o ajustar */
     font-family: sans-serif;
@@ -83,69 +81,6 @@ html, body {
     /* Ocupa el resto de la altura */
 }
 
-/* NUEVO: Sidebar Izquierdo */
-.sidebar.left-sidebar {
-    width: 250px;
-    /* Ancho del sidebar */
-    background: rgb(104, 182, 211, 0.5);
-    /* Mismo azul que el fondo general */
-    padding:0px 0px;
-    flex-shrink: 0;
-    /* No se encoge */
-    display: flex;
-    flex-direction: column;
-    /* Apila nav y bottom icons */
-    justify-content: space-between;
-    /* Empuja iconos abajo */
-    
-}
-
-.sidebar nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    
-}
-
-.sidebar nav ul li a {
-    color: rgb(255, 255, 255);
-    /* Color texto enlaces (blanco azulado) */
-    text-align: center;
-    text-decoration: none;
-    display: block;
-    padding: 12px 10px;
-    font-size: 1.4em;
-    font-weight: 500;
-    margin-bottom: 5px;
-    transition: background-color 0.2s ease;
-    text-transform: uppercase;
-    /* Como en la imagen */
-}
-
-.sidebar nav ul li a:hover,
-.sidebar nav ul li a.active {
-    /* Clase 'active' para la sección actual */
-    background: linear-gradient(to right, rgba(41, 109, 172, 0.8), rgba(167, 217, 233, 1));
-    color: #ffffff;
-    width: 100%;
-    margin: 0;
-}
-
-.sidebar-bottom-icons {
-    padding: 15px 0;
-    text-align: center;
-    border-top: 1px solid #4e8cc76b;
-    /* Separador */
-    margin-top: 20px;
-    /* Espacio antes de los iconos */
-}
-
-.sidebar-bottom-icons i {
-    color: #ffffff;
-    font-size: 1.5em;
-    margin: 0 15px;
-    cursor: pointer;
-}
 
 /* NUEVO: Contenedor del Formulario (Derecha) */
 .form-content-container {
@@ -362,9 +297,7 @@ select:focus {
     position: relative;
 }
 
-.password-wrapper input[type="password"] {
-    /* ... estilos del icono ojo para mostrar contraseña */
-}
+
 
 .form-actions {
     /* Mantener o ajustar margen */
@@ -417,74 +350,4 @@ select:focus {
     text-align: left;
     /* Centrar footer? */
     border-top: 1px solid #eee;
-}
-
-
-/*homepage*/
-
-.homepage {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh; /* Ocupa toda la altura de la ventana */
-    
-}
-
-.botoneshomepage {
-    display: flex;
-    justify-content: center;
-   /* margin: 20px ;
-    border: 2px solid #000000;
-    border-radius: 5px; */
-    gap: 90px;
-    padding: 50px;
-    
-    
-}
-
-
-#botonreservas {
-    background-color: #4CAF50; 
-    color: white;
-    padding: 100px 200px;
-    border: 2px solid #000000;
-    border-radius: 5px;
-    cursor: pointer;
-    text-transform: capitalize;
-    font-size: 20px;
-    
-}
-
-#botonhabitaciones {
-    background-color: #008CBA; 
-    color: white;
-    padding: 100px 200px;
-    border: 2px solid #000000;
-    border-radius: 5px;
-    cursor: pointer;
-    text-transform: capitalize;
-    font-size: 20px;
-}
-
-#botonmantenimiento {
-    background-color: #9e4caf; 
-    color: white;
-    padding: 100px 200px;
-    border: 2px solid #000000;
-    border-radius: 5px;
-    cursor: pointer;
-    text-transform: capitalize;
-    font-size: 20px;
-}
-
-#botonpqrs {
-    background-color: #d63535; 
-    color: white;
-    padding: 100px 200px;
-    border: 2px solid #000000;
-    border-radius: 5px;
-    cursor: pointer;
-    text-transform: capitalize;
-    font-size: 20px;
 }
