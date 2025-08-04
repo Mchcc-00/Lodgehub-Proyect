@@ -153,3 +153,35 @@ tbody tr:hover {
   background-color: #91c3e3;
 }
 
+/* Estilos para los botones de editar y eliminar */
+.btn-crud {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 4px;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    margin-right: 5px;
+}
+
+.btn-editar {
+    background-color: #ffc107; /* Amarillo */
+}
+
+.btn-eliminar {
+    background-color: #dc3545; /* Rojo */
+}
+
+.btn-crud:hover {
+    opacity: 0.8;
+}
+
+/* Opcional: Estilo para los iconos si se ven muy grandes */
+.btn-crud i {
+    pointer-events: none; /* Evita que el clic se capture en el icono */
+}
+
+

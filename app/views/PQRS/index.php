@@ -39,12 +39,12 @@
               <li><a class="dropdown-item active" href="mainReservas.php">Reservas</a></li>
               <li><a class="dropdown-item" href="../../../HABITACIONES/views/dashboard.php">Habitaciones</a></li>
               <li><a class="dropdown-item" href="../../../MANTENIMIENTO/views/dashboard.php">Mantenimiento</a></li>
-              <li><a class="dropdown-item active" href="index.php">PQRS</a></li>
+              <li><a class="dropdown-item active" href="../PQRS/index.php">PQRS</a></li>
             </ul>
           </li>
         </ul>
         <form class="d-flex" role="perfil">
-          <a href="../../app/views/homepage/cerrarSesion.php" class="btn btn-danger">Cerrar sesión</a>
+          <a href="../homepage/cerrarSesion.php" class="btn btn-danger">Cerrar sesión</a>
         </form>
       </div>
     </div>
