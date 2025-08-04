@@ -14,39 +14,41 @@ function renderRooms(roomsToRender = rooms) {
     roomsGrid.innerHTML = '';
 
     // Ordenar por número de habitación de menor a mayor
-    const sortedRooms = [...roomsToRender].sort((a, b) => a.numero - b.numero);
+    const sortedRooms = [...roomsToRender].sort((a, b) => a.number - b.number);
 
     sortedRooms.forEach(room => {
         const statusText = {
             'reservada': 'Reservada',
             'en-uso': 'En uso',
-            'disponible': 'Disponible',
-            'mantenimiento': 'Mantenimiento'
+            'disponible': 'Disponible'
         };
 
+        // Ajustar clase de estado para CSS
         let estadoClass = '';
-        if (room.estado === 'en-uso') {
+        if (room.status === 'en-uso') {
             estadoClass = 'estado-enuso';
         } else {
-            estadoClass = 'estado-' + room.estado;
+            estadoClass = 'estado-' + room.status;
         }
 
         const roomCard = document.createElement('div');
         roomCard.className = `room-card ${estadoClass}`;
         roomCard.innerHTML = `
-            <h3>Habitación N° ${room.numero}</h3>
+            <h3>Habitación N° ${room.number}</h3>
             <div class="room-img"><img src='../public/img/iconCama.png' alt='Cama' style='width:60px;height:auto;display:block;margin:auto;'></div>
-            <div class="room-type">Tipo: ${room.tipo}</div>
-            <span class="estado-label">Estado: ${statusText[room.estado] ?? room.estado}</span>
-            <button class="edit-room-btn" data-room-id="${room.numero}">Editar</button>
+            <div class="room-type">Tipo: ${room.type}</div>
+            <span class="estado-label">Estado: ${statusText[room.status]}</span>
+            <button class="edit-room-btn" data-room-id="${room.id}">Editar</button>
         `;
         roomsGrid.appendChild(roomCard);
 
+        // Event listener para el botón editar
         roomCard.querySelector('.edit-room-btn').addEventListener('click', function() {
             editarHabitacion(room);
         });
 
         roomCard.addEventListener('click', function(e) {
+            // Evitar que el click en el botón editar dispare el modal de detalles
             if (e.target.classList.contains('edit-room-btn')) return;
             showRoomDetails(room);
         });
@@ -64,10 +66,10 @@ function filterRooms(status) {
         renderRooms(rooms);
         currentFilter = 'all';
     } else {
-        // Usar el campo correcto para estado
-        const filteredRooms = rooms.filter(room => room.estado === status);
+        const filteredRooms = rooms.filter(room => room.status === status);
         renderRooms(filteredRooms);
         currentFilter = status;
+        
         // Activar botón correspondiente
         const activeButton = document.querySelector(`[data-filter="estado"]`);
         if (activeButton) activeButton.classList.add('active');
@@ -80,8 +82,6 @@ function filterRoomsBy(field, value) {
         // value puede ser un rango, por ejemplo: '0-100000', '100000-200000', etc.
         const [min, max] = value.split('-').map(Number);
         filtered = rooms.filter(room => room.precio >= min && room.precio <= max);
-    } else if (field === 'tamano' || field === 'tipo' || field === 'estado') {
-        filtered = rooms.filter(room => String(room[field]).toLowerCase() === value.toLowerCase());
     } else {
         filtered = rooms.filter(room => String(room[field]).toLowerCase() === value.toLowerCase());
     }
@@ -123,7 +123,9 @@ function initializeFilters() {
     document.querySelectorAll('.filter-btn').forEach(button => {
         button.addEventListener('click', function() {
             const filter = this.getAttribute('data-filter');
+            
             if (filter === 'estado') {
+                // Crear dropdown para estados
                 showStatusDropdown(this);
             } else if (filter === 'tamano') {
                 showGenericDropdown(this, 'tamano', [
@@ -132,7 +134,7 @@ function initializeFilters() {
                     { value: 'Grande', text: 'Grande' }
                 ]);
             } else if (filter === 'tipo') {
-                showGenericDropdown(this, 'tipo', [
+                showGenericDropdown(this, 'type', [
                     { value: 'Individual', text: 'Individual' },
                     { value: 'Doble', text: 'Doble' },
                     { value: 'Suite', text: 'Suite' }
@@ -144,6 +146,7 @@ function initializeFilters() {
                     { value: '200001-9999999', text: 'Más de $200,000' }
                 ]);
             } else {
+                // Para otros filtros, mostrar mensaje
                 alert(`Filtro ${filter} - Funcionalidad pendiente de implementar`);
             }
         });
@@ -248,7 +251,7 @@ function showRoomDetails(room) {
     const infoAdicional = document.createElement('div');
     infoAdicional.innerHTML = `
         <div style='font-size:1.2em;font-weight:700;color:#4299e1;margin-bottom:12px;'>INFORMACIÓN ADICIONAL</div>
-        <div style='font-size:1em;line-height:1.6;margin-bottom:18px;'>${room.informacionAdicional ? room.informacionAdicional.replace(/\n/g, '<br>') : 'Sin información adicional.'}</div>
+        <div style='font-size:1em;line-height:1.6;margin-bottom:18px;'>${room.info ? room.info.replace(/\n/g, '<br>') : 'Sin información adicional.'}</div>
     `;
 
     // Información general
@@ -256,12 +259,12 @@ function showRoomDetails(room) {
     infoGeneral.innerHTML = `
         <div style='font-size:1.1em;font-weight:700;color:#4299e1;margin-bottom:10px;'>INFORMACIÓN GENERAL</div>
         <div style='display:flex;flex-wrap:wrap;gap:18px 32px;font-size:1em;'>
-            <div><b>Habitación:</b> ${room.numero}</div>
+            <div><b>Habitación:</b> ${room.number}</div>
             <div><b>Costo:</b> $${Number(room.precio).toLocaleString('es-CO')}</div>
-            <div><b>Tipo:</b> ${room.tipo}</div>
+            <div><b>Tipo:</b> ${room.type}</div>
             <div><b>Tamaño:</b> ${room.tamano}</div>
             <div><b>Capacidad:</b> ${room.capacidad ? room.capacidad + ' personas' : '-'}</div>
-            <div><b>Estado:</b> ${room.estado === 'en-uso' ? 'En uso' : (room.estado ? room.estado.charAt(0).toUpperCase() + room.estado.slice(1) : '-')}</div>
+            <div><b>Estado:</b> ${room.status === 'en-uso' ? 'En uso' : room.status.charAt(0).toUpperCase() + room.status.slice(1)}</div>
         </div>
     `;
 
@@ -325,7 +328,7 @@ function addRoom() {
 
 // Función para editar habitación (redirige al controlador para cargar el formulario con datos)
 function editarHabitacion(room) {
-    window.location.href = `../../app/controllers/habitacionController.php?accion=editar&numero=${room.numero}`;
+    window.location.href = `../controllers/habitacionController.php?accion=editar&numero=${room.number}`;
 }
 
 // Inicializar la aplicación

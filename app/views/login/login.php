@@ -22,6 +22,7 @@
                 <form action="validar.php" method="post">
 
                     <h1>¡BIENVENIDO A LODGEHUB!</h1> <!-- Título -->
+                    
 
                     <div class="input-group">
                         <label for="username">Correo</label>
@@ -32,13 +33,38 @@
                         <label for="password">Contraseña</label>
                         <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña" required>
                     </div>
+                        <?php
+    if (isset($_GET['mensaje'])) {
+
+    ?>
+        <div class="alert" role="alert">
+            <?php
+            switch ($_GET['mensaje']) {
+                case 'Correo enviado correctamente':
+                    echo "Se te envió un correo para restablecer tu contraseña.";
+                    break;
+                case 'Contraseña actualizada correctamente':
+                    echo "La contraseña se ha actualizado correctamente.";
+                    break;
+
+                default:
+                    echo "Hubo un error al enviar el correo, o el usuario no existe.";
+            }
+            ?>
+        </div>
+
+    <?php
+    }
+    ?>
+
+
 
                     <a href="../recuperarcontraseña/recuperarContraseña.php" class="account-link">¿Olvidaste tu contraseña?</a>
                     <a href=" ../Usuarios/crearUsuariologin.php" class="account-link">¿No tienes una cuenta? ¡Crea una!</a>
 
                     <button type="submit" class="login-button">Ingresar</button>
 
-                    
+
                 </form>
 
                 <?php
@@ -46,18 +72,18 @@
 
 
             </div>
-            <div class ="degrade-container"></div>
+            <div class="degrade-container"></div>
             <div class="logo-container">
                 <img src="../../../public/img/LogoClaroLH.png" alt="">
                 <h6>lodgehubgroup © 2025</h6>
             </div>
 
 
-            
+
         </div>
     </div>
+
+    
 </body>
 
 </html>
-
-

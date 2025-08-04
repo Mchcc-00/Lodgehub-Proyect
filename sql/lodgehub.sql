@@ -76,7 +76,6 @@ CREATE TABLE IF NOT EXISTS tp_habitaciones (numero VARCHAR (5) NOT NULL,
                                             tipoHabitacion INT (3) NOT NULL,
                                             tamano INT (3) NOT NULL,
                                             estado INT (3) NOT NULL,
-                                            informacionAdicional TEXT,
 
 
                                             PRIMARY KEY (numero),
@@ -263,25 +262,6 @@ CREATE TABLE IF NOT EXISTS ti_responder (id INT (3) AUTO_INCREMENT NOT NULL,
 
 
 /*inserts*/
-
-INSERT INTO td_tipohabitacion (descripcion) VALUES
-('Individual'),
-('Doble'),
-('Triple'),
-('Suite'),
-('Confort');
-
-INSERT INTO td_tamano (descripcion) VALUES
-('Pequeño'),
-('Medio'),
-('Grande'),
-('Extra Grande');
-
-INSERT INTO td_estado (descripcion) VALUES 
-('Disponible'),
-('Ocupada'),
-('Mantenimiento'),
-('Reservada');
 
 insert into td_motivoreserva values
 (null,'Negocios'),

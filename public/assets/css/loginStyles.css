@@ -111,6 +111,18 @@ body {
     background: #A1B2FF;
 }
 
+.alert {
+    background-color: #c0e4f5;
+    border: #000000 1px solid;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-size: 1em;
+    text-align: center;
+}
+
+
+
 .login-form{
     height: auto;
     text-align: center;

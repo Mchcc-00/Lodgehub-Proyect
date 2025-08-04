@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Editar Habitaciones</title>
+    <title>Editar Habitación</title>
     <link rel="stylesheet" href="../../../public/assets/css/editarHab.css">
 </head>
 <body>
@@ -53,8 +53,8 @@
         </div>
         <div class="formulario__grupos">
             <div class="formulario__grupo info-adicional" style="flex:1;">
-                <label for="informacionAdicional">Información adicional</label>
-                <textarea id="informacionAdicional" name="informacionAdicional" rows="6"><?php echo htmlspecialchars($habitacion['informacionAdicional']); ?></textarea>
+                <label for="info">Información adicional</label>
+                <textarea id="info" name="info" rows="6"><?php echo htmlspecialchars($habitacion['info']); ?></textarea>
             </div>
         </div>
         <div class="formulario__acciones">

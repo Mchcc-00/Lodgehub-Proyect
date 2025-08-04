@@ -19,7 +19,7 @@
                 <div class="circle circle-3"></div>
                 <div class="circle circle-4"></div>
 
-                <form class="recuperarcontraseña" method="post">
+                <form action="recovery.php" method="post">
 
                     <h4>Ingresa tu correo electronico para enviarte un codigo de seguridad</h4> 
 
