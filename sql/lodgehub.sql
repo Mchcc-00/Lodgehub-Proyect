@@ -165,21 +165,19 @@ CREATE TABLE IF NOT EXISTS tp_pqrs (id INT (10) AUTO_INCREMENT NOT NULL,
                                       FOREIGN KEY (tipo) REFERENCES td_tipoPqrs (id)
                                       ) ENGINE=INNODB;
 
-CREATE TABLE pqrs (               id INT PRIMARY KEY AUTO_INCREMENT,
-                                  fecha DATETIME NOT NULL,
-                                  tipo_pqrs VARCHAR(50) NOT NULL,
-                                  urgencia VARCHAR(20) NOT NULL,
-                                  categoria VARCHAR(50) NOT NULL,
-                                  descripcion TEXT NOT NULL,
-                                  nombre VARCHAR(100) NOT NULL,
-                                  apellido VARCHAR(100) NOT NULL,
-                                  empleado VARCHAR(100) NOT NULL,
-                                  tipo_documento VARCHAR(10) NOT NULL,
-                                  numero_documento VARCHAR(20) NOT NULL,
-                                  estado VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Solucionado',
-                                   PRIMARY KEY (id)
-                                  ) ENGINE=INNODB;  
-                              
+CREATE TABLE pqrs                   (id INT AUTO_INCREMENT PRIMARY KEY,
+                                    fecha DATETIME NOT NULL,
+                                    tipo_pqrs VARCHAR(50) NOT NULL,
+                                    urgencia VARCHAR(20) NOT NULL,
+                                    categoria VARCHAR(50) NOT NULL,
+                                    descripcion TEXT NOT NULL,
+                                    nombre VARCHAR(100) NOT NULL,
+                                    apellido VARCHAR(100) NOT NULL,
+                                    empleado VARCHAR(100) NOT NULL,
+                                    tipo_documento VARCHAR(10) NOT NULL,
+                                    numero_documento VARCHAR(20) NOT NULL,
+                                    estado VARCHAR(20) NOT NULL DEFAULT 'Solucionado'
+                                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 
@@ -423,14 +421,14 @@ insert into tp_habitaciones values
 (405, 290000.00, 2, 2, 2, 1);
 
 
-INSERT INTO tp_pqrs VALUES
-(NULL, 20241018, 'El huésped reporta que la habitación no contaba con servicio de agua',20241019,1011234567, 3, 2, 2, 1),
-(NULL, 20240312, 'Se reporta que las cobijas de la cama se encuentra en mal estado(sucias y manchadas),no hicieron el debido aseo en la habitación 73', 20240313, 1098785643, 2, 2, 1, 3),
-(null, 20241126,'Se reporta una fuga de agua en la habitación 666', null, 1000289068,3,2,3,2),
-(null,20220425,'Se reporta un extraño olor en el pasillo',null, 1000289068,2,3,1,1),
-(null,20230901,'El huésped sugiere colocar revistas en la sala de espera',20230515,1000289068,1,1,1,4),
-(NULL, 20240916,'Se  reporta la falta de materiales de aseo personal (jabón) en la habitación 819', 20240916,1000289068,2,2,1,1);
-
+INSERT INTO pqrs (fecha, tipo_pqrs, urgencia, categoria, descripcion, nombre, apellido, empleado, tipo_documento, numero_documento, estado)
+VALUES
+('2024-10-18', 'Reclamo', 'Alta', 'Servicios generales', 'El huésped reporta que la habitación no contaba con servicio de agua.', 'Juan', 'Pérez', 'Luis Gómez', 'CC', '1011234567', 'Pendiente'),
+('2024-03-12', 'Queja', 'Media', 'Aseo', 'Se reporta que las cobijas de la cama se encuentran en mal estado (sucias y manchadas), no hicieron el debido aseo en la habitación 73.', 'María', 'López', 'Sandra Torres', 'CC', '1098785643', 'Solucionado'),
+('2024-11-26', 'Reclamo', 'Alta', 'Mantenimiento', 'Se reporta una fuga de agua en la habitación 666.', 'Pedro', 'Mejía', 'Laura Ríos', 'TI', '1000289068', 'En proceso'),
+('2022-04-25', 'Queja', 'Media', 'Ambiente', 'Se reporta un extraño olor en el pasillo.', 'Carlos', 'Díaz', 'Alejandra Ruiz', 'CE', '1000289068', 'Pendiente'),
+('2023-09-01', 'Sugerencia', 'Baja', 'Recepción', 'El huésped sugiere colocar revistas en la sala de espera.', 'Ana', 'Martínez', 'Luis Vargas', 'CC', '1000289068', 'Solucionado'),
+('2024-09-16', 'Reclamo', 'Media', 'Dotación', 'Se reporta la falta de materiales de aseo personal (jabón) en la habitación 819.', 'Felipe', 'Rojas', 'Diana Herrera', 'CC', '1000289068', 'Pendiente');
 
 insert into tp_historialmantenimiento values
 (null,'Bombillos defectuosos, próximos a dañarse','Reemplazo de bombillos',20220505,20211001,'No aplica', 1, 819,1014596349,2),
