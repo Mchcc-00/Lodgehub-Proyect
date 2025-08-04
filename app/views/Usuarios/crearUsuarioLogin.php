@@ -139,7 +139,7 @@ $baseURL = '/lodgehub/public'; // Ajusta si el nombre de tu carpeta principal es
                     <?php endif; ?>
 
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="window.location.href='login.php'">Cancelar</button>
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='../login/login.php'">Cancelar</button>
                         <button type="submit" class="btn btn-primary">Confirmar</button>
                     </div>
                 </form>
