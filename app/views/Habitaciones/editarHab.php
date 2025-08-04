@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Editar Habitación</title>
+    <title>Editar Habitaciones</title>
     <link rel="stylesheet" href="../../../public/assets/css/editarHab.css">
 </head>
 <body>
