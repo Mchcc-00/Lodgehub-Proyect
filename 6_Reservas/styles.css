@@ -557,13 +557,13 @@ div.dataTables_wrapper {
 #listadoReservasRead thead th { /* Usa el ID */
     background-color: #296dac;
     color: white;
-    padding: 12px 15px;
+    /*padding: 12px 15px;*/
     text-align: left;
     border-bottom: 2px solid #1a4e7e;
 }
 
 #listadoReservasRead tbody td { /* Usa el ID */
-    padding: 10px 15px;
+    /*padding: 10px 15px;*/
     border-bottom: 1px solid #ddd;
     vertical-align: middle;
 }
