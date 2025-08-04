@@ -1,14 +1,661 @@
+body,
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+li {
+  margin: 0;
+  padding: 0;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
+img {
+  max-width: 100%;
+  height: auto; /* Mantiene la proporción */
+  display: block; /* Elimina un pequeño espacio inferior en algunos navegadores */
+}
+
+body {
+  font-family: "Arial", sans-serif; /* O la fuente que uses en tu proyecto */
+  font-size: 16px; /* Tamaño base para el texto */
+  background-color: #f8f9fa; /* Un fondo muy ligero para la página */
+  display: flex; /* Convierte el contenedor principal en flex */
+  flex-direction: column; /* Apila los ítems verticalmente: header, main, footer */
+  height: 100vh;
+  padding-top: 94px; /* Espacio para el navbar fijo */
+}
+
+/*nav*/
+.navbar {
+  position: fixed; /* ¡Añadir esto! */
+  top: 0; /* ¡Añadir esto! */
+  left: 0; /* ¡Añadir esto! */
+  width: 100%;
+  z-index: 1030;
+  background-color: #fff;
+  flex-shrink: 0;
+}
+
+.container-fluid {
+  background: #437bafff;
+  padding: 20px;
+}
+
+#lodgebub-dropdown {
+  color: #ffffffff;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+/*----*/
+
+.contenedorReservas {
+  background: linear-gradient(#cee7ff, #e0f9ff, #cee7ff);
+  width: 100%;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.contenedorReservas h2 {
+  color: #296dac;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.contenedorReservas h3 {
+  color: #296dac;
+  font-size: 20px;
+  font-weight: 700;
+}
+.editIconEstilo {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.lineaEncuadre {
+  width: 100%;
+  height: 3px;
+  background-color: #296dac;
+  margin: 10px 0;
+}
+
+.estiloFieldsetReservas {
+  border: none; /* Un borde visible para ver mejor */
+  padding: 7px 5px; /* Un padding generoso para el contenido */
+}
+
+.estiloFieldsetReservas label {
+  margin-bottom: 10px;
+}
+.estiloFieldsetReservas legend {
+  margin: 0; /* Elimina márgenes exteriores */
+  padding: 0; /* Elimina paddings interiores */
+  float: none;
+  width: auto;
+  color: #296dac;
+  font-size: 18px;
+  font-weight: 600;
+}
+/*
+  max-width: 1100px;
+  margin: 40px auto;
+*/
+
+.subContenedorFormsReservas,
+.subContenedorReservasBuscar,
+.subContenedorFormsReservasNew,
+.subContenedorFormsReservasExist,
+.subContenedorModifReservas {
+  margin: 20px;
+  padding: 0 20px;
+}
+
+.subContenedorFormsReservasNew,
+.subContenedorFormsReservasExist,
+.subContenedorModifReservas {
+  color: #296dac;
+}
+
+.subContenedorFormsReservasExist {
+  max-width: 1100px;
+  margin: 20px auto;
+}
+.subContenedorFormsReservasNew {
+  max-width: 1100px;
+  margin: 20px auto;
+}
+.subContenedorModifReservas {
+  max-width: 570px;
+  margin: 20px auto;
+}
+
+.FormMarginReserva {
+  padding: 10px 30px;
+}
+
+.subContenedorFormsReservas {
+  max-width: 1500px;
+  margin: 20px auto;
+}
+
+.contenedorformsFlex {
+  display: flex;
+  padding: 20px 0;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.estiloDefaultInput {
+  background-color: #f1f1f1;
+  min-height: 35px;
+  border: 3px solid #296dac;
+  border-radius: 10px;
+  padding-left: 5px;
+}
+
+.estilosFichaInputsHue {
+  min-height: 30px;
+  border: none;
+  border-radius: 8px;
+  padding-left: 5px;
+}
+
+.estiloBtnFormReservas {
+  margin-top: 20px;
+  min-height: 37px;
+  font-weight: 600;
+  border: 2px solid;
+  border-radius: 10px;
+  padding: 0 20px;
+}
+
+.estiloBtnCleanReservas {
+  color: #313131;
+  border: 3px solid #fff27a;
+  background-color: #fff8b9;
+}
+
+.estiloBtnCancelReservas {
+  color: #fff;
+  border: 3px solid #296dac;
+  background-color: #3785ce;
+}
+
+.estiloBtnConfirmReservas {
+  color: #ffffff;
+  border: 3px solid #0a2f3d;
+  background-color: #0e4153;
+}
+
+.btnsFormReservasbloque {
+  display: flex; /* Convierte el contenedor en un contenedor flex */
+  justify-content: flex-end; /* Alinea los ítems (botones) al final del eje principal (derecha en este caso) */
+  gap: 10px; /* Opcional: Para añadir espacio entre los botones */
+  width: 100%;
+}
+
+.fichaInfoHuesped {
+  max-width: 375px;
+  margin-top: 20px;
+}
+
+.fichaInfoHuespedNew {
+  max-width: 400px;
+}
+
+.conjuntoBtnAtrasTitulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 30px 0;
+}
+
+.contenedorBusquedaHue fieldset {
+  display: flex;
+  gap: 20px;
+  margin: 10px;
+  border: none;
+  flex-wrap: wrap;
+}
+
+.barComposicionEstilo {
+  display: flex;
+  border: none;
+}
+
+.estilobarBusquedaReservas {
+  height: 40px;
+  border: none;
+  padding: 0 15px;
+}
+
+#iconoLupa {
+  padding: 0;
+}
+
+#buscarHuesped {
+  border-radius: 20px 0 0 20px;
+}
+
+#btnBuscarHuesped {
+  border-radius: 0 20px 20px 0;
+  background-color: #53a6c4;
+}
+
+#registrarHuesped {
+  background-color: #0e4153;
+  color: #fff;
+  border-radius: 20px;
+}
+
+#btnGenerarReserva {
+  min-height: 50px;
+  font-weight: 600;
+  font-size: 18px;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 30px;
+  background-color: #296dac;
+  color: #fff;
+}
+
+.fichaFormHuesped {
+  background-color: #0e4153;
+  color: #fff;
+  margin-top: 20px;
+  padding: 20px;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+.fichaInfoHuespedExist,
+.fichaInfoHuesped {
+  background-color: #0e4153;
+  color: #fff;
+  padding: 40px;
+  margin: 20px 20px 0 20px;
+  border-radius: 10px;
+}
+
+.fichaInfoHuespedExist h3,
+.fichaInfoHuesped h3 {
+  color: #fff;
+}
+
+.fichaInfoHuespedExist p,
+.fichaInfoHuesped p {
+  margin: 20px 0 0 0;
+}
+
+.labelArriba {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start; /* O 'space-between' o 'center' */
+  align-items: flex-start; /* Alinea los *grupos* label-input por arriba */
+  flex-wrap: wrap; /* Importante para responsividad */
+}
+
+.labelArriba label {
+  display: flex; /* Convierte el label en un contenedor flex */
+  flex-direction: column; /* Apila el texto del label y el input/select verticalmente */
+  gap: 5px; /* Espacio entre el texto del label y el input/select */
+  flex-grow: 1; /* Permite que crezca para llenar el espacio disponible */
+  min-width: 150px;
+  max-width: 170px; /* Ancho mínimo para cada grupo label-input */
+}
+
+.espacioInputleft {
+  margin-left: 10px; /* Espacio entre el label y el input/select */
+}
+
+.especialestilosFichaInputsHue {
+  width: 100%;
+}
+
+.especialestilosFichaInputsInfoHue {
+  width: 350px;
+}
+
+.contenedorformsAlign{
+  align-items: start; /* Alinea los elementos al centro verticalmente */
+}
+
+#campo7Exist,
+#campo7,
+#campoCanPersonasEdit {
+  display: flex;
+  justify-content: center;
+}
+
+.estiloInputNumPersonas {
+  width: 50px;
+  margin-right: 10px;
+}
+
+.estiloInputHabitacionReserva {
+  width: 100px;
+  margin-right: 10px;
+}
 
 .reservasModal {
   display: none;
   /* Oculto por defecto */
   position: fixed;
-  z-index: 1;
+  z-index: 1050;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.5);
+}
+
+.contenidoReservasModal {
+  background-color: #DBEEFF;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 650px;
+  margin: 60px auto;
+}
+
+.contenidoReservasModal h2 {
+  font-size: 25px;
+  color: #ffffff;
+}
+
+.contenidoReservasModal h3 {
+  margin-bottom: 15px;
+  font-size: 20px;
+  color: #0E4153;
+}
+
+.informacionDiv1Modal,
+.InformacionDiv2Modal,
+.InformacionDiv3Modal,
+.InformacionDiv4Modal {
+  padding: 20px;
+  color: #0E4153;
+}
+
+.InformacionDiv4Modal {
+  padding-top: 0;
+}
+
+.informacionDiv1Modal {
+  background-color: #296DAC;
+  padding: 5px 20px;
+  color: #fff;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bloqueInfoHuesped,
+.bloqueInfoReserva {
+  display: flex;
+  gap: 30px;
+  padding-left: 20px;
+  flex-wrap: wrap;
+}
+
+.espacioParrafos {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.InformacionDiv2Modal {
+  background-color: #EFFAFF;
+}
+
+.bloquesCanPersonas,
+.contenedorPersonas {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  gap: 40px;
+}
+
+.espacioBloquePersonas {
+  margin: auto;
+}
+
+#separacionTextoNumPersonas {
+  margin-bottom: 20px;
+}
+
+.espacioBloquesCanPersonas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.contenedorPersonas {
+  border-radius: 5px;
+  width: 40px;
+  height: 35px;
+  background: #fff;
+}
+
+.contenedorInfoAdicional {
+  width: 90%;
+  height: 100px;
+  background: #fff;
+  color: #000;
+  border-radius: 10px;
+  padding: 10px 20px;
+  margin: 20px auto;
+  overflow-y: auto;
+}
+
+/*css menusito desplegable*/
+
+.menuDesplegableContenedor {
+  position: relative;
+  /* Importante: para posicionar el menú relativo al botón */
+  display: inline-block;
+  /* Para que el contenedor no ocupe todo el ancho */
+}
+
+.accionMenuDesplegableBtn {
+  background-color: #296DAC;
+  border: none;
+  cursor: pointer;
+  width: 55px;
+  height: 50px;
+  display: flex;
+  border-radius: 5px;
+  justify-content: center;
+  align-items: center;
+}
+
+.accionMenuDesplegableBtn img {
+  width: 45px;
+  display: block;
+}
+
+.accionMenuDesplegableBtn:hover {
+  background-color: #205383;
+}
+
+.BtonMenuDesplegable{
+    display: none;/* Oculto por defecto */
+    position: absolute; /* Posiciona el menú relativo a .menu-container */
+    background-color: #f9f9f9;
+    min-width: 170px; /* Ancho mínimo del menú */
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); /* Sombra para efecto 3D */
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+    border-radius: 5px;
+    top: 100%; /* Coloca el menú justo debajo del botón */
+    right: 0; /* Alinea el menú a la izquierda del botón */
+    margin-top: 5px; /* Pequeño espacio entre botón y menú */
+}
+
+.BtonMenuDesplegable ul {
+  list-style: none; /* Elimina los puntos de la lista */
+  padding: 0; /* Elimina el padding */
+  margin: 0; /* Elimina el margin */
+}
+
+.BtonMenuDesplegable li {
+  padding: 0; /* Espaciado interno */
+  cursor: pointer; /* Cambia el cursor al pasar por encima */
+}
+
+.btonsOpcionesMiniMenu{
+  background-color: transparent;
+  font-weight: 600;
+  font-size: 15px;
+  color: #0E4153;
+  border: none;
+  padding: 10px;
+  width: 100%;
+}
+
+.BtonMenuDesplegable li:hover {
+  background-color: #dfdfdf;
+   /* Cambia el color de fondo al pasar el ratón */
+}
+
+/* Clase para mostrar el menú (se añade/quita con JS) */
+.showModalOpciones {
+    display: block;
+}
+
+/* --- Estilos Generales del Contenedor de DataTables --- */
+div.dataTables_wrapper {
+    font-family: "Verdana", sans-serif;
+    color: #0E4153;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Estilos de la Tabla en Sí (thead, tbody, tr, td) --- */
+#listadoReservasRead { /* Usa el ID de tu tabla */
+    width: 100% !important; /* Asegura que la tabla ocupe todo el ancho disponible */
+    border-collapse: collapse;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#listadoReservasRead thead th { /* Usa el ID */
+    background-color: #296dac;
+    color: white;
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 2px solid #1a4e7e;
+}
+
+#listadoReservasRead tbody td { /* Usa el ID */
+    padding: 10px 15px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
+}
+/* Estilos de filas alternas (striped) */
+#listadoReservasRead.stripe tbody tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+#listadoReservasRead.hover tbody tr:hover {
+    background-color: #e0e0e0;
+    cursor: pointer;
+}
+/* --- Estilos del Input de Búsqueda (Search) --- */
+.dataTables_filter label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+.dataTables_filter input {
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    border-radius: 5px;
+    width: 250px; /* Ancho del input de búsqueda */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s;
+}
+.dataTables_filter input:focus {
+    border-color: #296dac;
+    outline: none;
+}
+
+/* --- Estilos de la Información de Filas (Showing X of Y entries) --- */
+.dataTables_info {
+    font-size: 0.9em;
+    color: #555;
+    margin-top: 10px;
+}
+
+/* --- Estilos de la Paginación --- */
+.dataTables_paginate {
+    text-align: right; /* Alinea los botones de paginación a la derecha */
+    margin-top: 15px;
+}
+
+.paginate_button {
+    background-color: #eee;
+    border: 1px solid #ccc;
+    color: #333;
+    padding: 8px 12px;
+    margin-left: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    font-size: 0.9em;
+}
+.paginate_button:hover {
+    background-color: #ddd;
+    color: #000;
+}
+.paginate_button.current {
+    background-color: #296dac; /* Botón de página actual */
+    color: white;
+    border-color: #296dac;
+}
+.paginate_button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #f0f0f0;
+    color: #777;
+}
+
+/* --- Estilos de las flechas de ordenación (sorting) --- */
+#listadoReservasRead thead .sorting,
+#listadoReservasRead thead .sorting_asc,
+#listadoReservasRead thead .sorting_desc { /* Usa el ID */
+    cursor: pointer;
+    position: relative;
+    padding-right: 25px;
+}
+/* Iconos de flechas personalizados (ejemplo, puedes usar Font Awesome o SVG) */
+#listadoReservasRead thead .sorting:after { /* Usa el ID */
+    content: " \2195";
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8em;
+    color: #bbb;
+}
+#listadoReservasRead thead .sorting_asc:after { /* Usa el ID */
+    content: " \2191";
+    color: white;
+}
+#listadoReservasRead thead .sorting_desc:after { /* Usa el ID */
+    content: " \2193";
+    color: white;
 }

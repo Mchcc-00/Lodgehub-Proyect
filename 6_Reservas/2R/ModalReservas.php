@@ -27,7 +27,7 @@ while ($fila = $resultado->fetch(PDO::FETCH_ASSOC)) {
             <div class="informacionDiv1Modal">
                 <h2>Reserva N°<?php echo $fila['id']; ?></h2>
                 <div class="menuDesplegableContenedor">
-                    <button id="MenuDesplegableBtn_<?php echo $fila['id']; ?>" class="accionMenuDesplegableBtn">
+                    <button class="editIconEstilo accionMenuDesplegableBtn" id="MenuDesplegableBtn_<?php echo $fila['id']; ?>">
                         <img src="../../public/img/modificarIcon.png" alt="Opciones de Reserva Menu">
                     </button>
                     <div id="dropdownMenu_<?php echo $fila['id']; ?>" class="BtonMenuDesplegable">
@@ -39,7 +39,7 @@ while ($fila = $resultado->fetch(PDO::FETCH_ASSOC)) {
                                 </form>
                             </li>
                             <li>
-                                <form action="eliminarReserva.php" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar esta reserva?');">
+                                <form action="../4D/eliminarReserva.php" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar esta reserva?');">
                                     <input type="hidden" name="idReserva" value="<?php echo $fila['id']; ?>">
                                     <button type="submit" id="btnEliminarReserva" class="btonsOpcionesMiniMenu" style="cursor:pointer;">Eliminar Reserva</button>
                                 </form>

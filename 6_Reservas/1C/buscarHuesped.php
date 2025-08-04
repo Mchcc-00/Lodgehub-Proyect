@@ -20,8 +20,8 @@ if (isset($_GET['buscarHuesped'])) {
     if ($huesped) {
         // Muestra la información del huésped y el botón para generar reserva
         ?>
-        <div class="mostrarInfoHuesped">
-            <div class="tablaInfoHuesped">
+        <div class="contenedorformsFlex contenedorinfoBuscador">
+            <div class="fichaInfoHuesped">
                 <h3>INFORMACIÓN DEL HUÉSPED</h3>
                 <p><strong> Nombres: </strong><?php echo htmlspecialchars($huesped['nombres']);?></p>
                 <p><strong> Apellidos: </strong><?php echo htmlspecialchars($huesped['apellidos']);?></p>

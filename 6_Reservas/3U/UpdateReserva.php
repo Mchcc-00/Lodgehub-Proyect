@@ -81,65 +81,53 @@ if (isset($_POST['idReserva'])) {
         </div>
     </nav>
 
-    <style>
-        .container-fluid {
-            background: #437bafff;
-            padding: 20px;
-        }
-
-        #lodgebub-dropdown {
-            color: #ffffffff;
-            margin: 0;
-            padding: 0;
-            list-style: none;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-    </style>
-
     <div class="contenedorReservas">
-        <h2>Modificar Reserva</h2>
-        <form class="" id="FormModificacionReserva" action="proceUpdateReserva.php" method="POST">
-            <input type="hidden" name="idReserva" value="<?php echo htmlspecialchars($idReserva); ?>">
-            <div class="FormEditReserva">
-                <h3>INFORMACIÓN DE HOSPEDAJE</h3>
-                <fieldset id="campoFechaEdit">
-                    <label for="fechaInicioModif">Fecha inicio<input id="fechaInicioModif" type="date" name="fechaInicioModif" value="<?php echo htmlspecialchars($fechaInicioReserva ?? ''); ?>" required></label>
-                    <label for="fechaFinModif">Fecha salida<input id="fechaFinModif" type="date" name="fechaFinModif" value="<?php echo htmlspecialchars($fechaFinReserva ?? ''); ?>" required></label>
-                </fieldset>
-                <fieldset id="campoHabEdit">
-                    <legend>Habitación</legend>
-                    <label for="numHabitacionModif">Nº<input id="numHabitacionModif" type="text" name="numHabitacionModif" value="<?php echo htmlspecialchars($habitacionReserva ?? ''); ?>" maxlength="3" placeholder="Numero de habitacion" required></label>
-                </fieldset>
-                <fieldset id="campoCanPersonasEdit">
-                    <legend>Número de personas</legend>
-                    <label for="numAdultosModif">Adultos<input id="numAdultosModif" type="number" name="numAdultosModif" value="<?php echo htmlspecialchars($canAdultosReserva ?? ''); ?>" min="1" max="10"></label>
-                    <label for="numNinosModif">Niños<input id="numNinosModif" type="number" name="numNinosModif" value="<?php echo htmlspecialchars($canNinosReserva ?? ''); ?>" min="1" max="10"></label>
-                    <label for="numDiscapacitadosModif">Discapacitados<input id="numDiscapacitadosModif" type="number" name="numDiscapacitadosModif" value="<?php echo htmlspecialchars($canDiscapacidadReserva ?? ''); ?>" min="1" max="10"></label>
-                </fieldset>
-                <fieldset id="campoInfoAdicionalEdit">
-                    <legend>Información adicional</legend>
-                    <textarea name="infoAdicionalReservaModif" id="infoAdicionalModif" rows="7" value="<?php echo htmlspecialchars($$infoAdicionalReserva ?? ''); ?>" placeholder="Información necesaria a tener en cuenta o sugerencias"></textarea>
-                </fieldset>
-                <fieldset id="campoEstadoReservaEdit">
-                    <label for="estadoReservaModif">
-                        Estado de la reserva
-                        <select name="estadoReservaModif" id="estadoReservaModif" value="<?php echo htmlspecialchars($estadoReserva ?? ''); ?>" required>
-                            <option value="" disabled selected>Seleccione</option>
-                            <option value="1">Activo</option>
-                            <option value="5">Pendiente</option>
-                            <option value="4">Finalizado</option>
-                            <option value="6">Cancelado</option>
-                        </select>
-                    </label>
-                    <label for="totalPagoModif">Total a pagar<input id="totalPagoModif" type="text" name="totalPagoModif" value="<?php echo htmlspecialchars($costoReserva ?? ''); ?>" required></label>
-                </fieldset>
-                <div id="btnFormModifReserva">
-                    <button type="button" id="btnCancelarModifReserva">Cancelar</button>
-                    <button type="submit" id="btnModificarReserva">Modificar</button>
+        <div class="subContenedorModifReservas">
+            <h2>Modificar Reserva</h2>
+            <form class="" id="FormModificacionReserva" action="proceUpdateReserva.php" method="POST">
+                <input type="hidden" name="idReserva" value="<?php echo htmlspecialchars($idReserva); ?>">
+                <div class="FormMarginReserva">
+                    <h3>INFORMACIÓN DE HOSPEDAJE</h3>
+                    <div class="lineaEncuadre" id="lineModif"></div>
+                    <fieldset class="estiloFieldsetReservas labelArriba" id="campoFechaEdit">
+                        <label for="fechaInicioModif">Fecha inicio<input class="estiloDefaultInput" id="fechaInicioModif" type="date" name="fechaInicioModif" value="<?php echo htmlspecialchars($fechaInicioReserva ?? ''); ?>" required></label>
+                        <label for="fechaFinModif">Fecha salida<input class="estiloDefaultInput" id="fechaFinModif" type="date" name="fechaFinModif" value="<?php echo htmlspecialchars($fechaFinReserva ?? ''); ?>" required></label>
+                    </fieldset>
+                    <fieldset class="estiloFieldsetReservas" id="campoHabEdit">
+                        <legend>Habitación</legend>
+                        <label for="numHabitacionModif">Nº<input class="estiloDefaultInput espacioInputleft estiloInputHabitacionReserva" id="numHabitacionModif" type="text" name="numHabitacionModif" value="<?php echo htmlspecialchars($habitacionReserva ?? ''); ?>" maxlength="3" placeholder="Numero de habitacion" required></label>
+                    </fieldset>
+                    <fieldset class="estiloFieldsetReservas" id="campoCanPersonasEdit">
+                        <legend>Número de personas</legend>
+                        <label for="numAdultosModif">Adultos<input class="estiloDefaultInput estiloInputNumPersonas espacioInputleft" id="numAdultosModif" type="number" name="numAdultosModif" value="<?php echo htmlspecialchars($canAdultosReserva ?? ''); ?>" min="1" max="10"></label>
+                        <label for="numNinosModif">Niños<input class="estiloDefaultInput estiloInputNumPersonas espacioInputleft" id="numNinosModif" type="number" name="numNinosModif" value="<?php echo htmlspecialchars($canNinosReserva ?? ''); ?>" min="1" max="10"></label>
+                        <label for="numDiscapacitadosModif">Discapacitados<input class="estiloDefaultInput estiloInputNumPersonas espacioInputleft" id="numDiscapacitadosModif" type="number" name="numDiscapacitadosModif" value="<?php echo htmlspecialchars($canDiscapacidadReserva ?? ''); ?>" min="1" max="10"></label>
+                    </fieldset>
+                    <fieldset class="estiloFieldsetReservas" id="campoInfoAdicionalEdit">
+                        <legend>Información adicional</legend>
+                        <textarea class="estiloDefaultInput especialestilosFichaInputsHue" name="infoAdicionalReservaModif" id="infoAdicionalModif" rows="4" value="<?php echo htmlspecialchars($$infoAdicionalReserva ?? ''); ?>" placeholder="Información necesaria a tener en cuenta o sugerencias"></textarea>
+                    </fieldset>
+                    <fieldset class="estiloFieldsetReservas" id="campoEstadoReservaEdit">
+                        <label for="estadoReservaModif">
+                            Estado de la reserva
+                            <select class="estiloDefaultInput espacioInputleft" name="estadoReservaModif" id="estadoReservaModif" value="<?php echo htmlspecialchars($estadoReserva ?? ''); ?>" required>
+                                <option value="" disabled selected>Seleccione</option>
+                                <option value="1">Activo</option>
+                                <option value="5">Pendiente</option>
+                                <option value="4">Finalizado</option>
+                                <option value="6">Cancelado</option>
+                            </select>
+                        </label>
+                        <label for="totalPagoModif">Total a pagar<input class="estiloDefaultInput espacioInputleft" id="totalPagoModif" type="text" name="totalPagoModif" value="<?php echo htmlspecialchars($costoReserva ?? ''); ?>" required></label>
+                    </fieldset>
+                    <div class="lineaEncuadre" id="line2Modif"></div>
+                    <div class="btnsFormReservasbloque" id="btnsFormModifReserva">
+                        <button class="estiloBtnFormReservas estiloBtnCancelReservas" type="button" id="btnCancelarModifReserva">Cancelar</button>
+                        <button class="estiloBtnFormReservas estiloBtnConfirmReservas" type="submit" id="btnModificarReserva">Modificar</button>
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
