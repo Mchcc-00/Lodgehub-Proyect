@@ -1,15 +1,57 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Formulario PQRS</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr"
+        crossorigin="anonymous">
+  
+  <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Estilos personalizados -->
   <link rel="stylesheet" href="../../../public/assets/css/stylesPQRS.css">
-</head>
+</head> 
 
 <body>
-  <!-- Topbar -->
+
+  <!-- NAVBAR (debe ir primero dentro del <body>) -->
+  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item dropdown">
+            <a id="lodgebub-dropdown" class="nav-link dropdown-toggle" href="#" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+              LODGEHUB
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="../../views/login/login.php">Home</a></li>
+              <li><a class="dropdown-item active" href="mainReservas.php">Reservas</a></li>
+              <li><a class="dropdown-item" href="../../../HABITACIONES/views/dashboard.php">Habitaciones</a></li>
+              <li><a class="dropdown-item" href="../../../MANTENIMIENTO/views/dashboard.php">Mantenimiento</a></li>
+              <li><a class="dropdown-item active" href="index.php">PQRS</a></li>
+            </ul>
+          </li>
+        </ul>
+        <form class="d-flex" role="perfil">
+          <a href="../../app/views/homepage/cerrarSesion.php" class="btn btn-danger">Cerrar sesión</a>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Topbar
   <header class="topbar">
     <div class="topbar-left">
       <i class="fas fa-arrow-left"></i>
@@ -20,10 +62,10 @@
     </div>
   </header>
 
-  <!-- Layout principal -->
-  <div class="layout">
+  Layout principal -->
+  <!-- <div class="layout"> -->
     <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar">
+    <!-- <aside id="sidebar" class="sidebar">
       <nav class="nav-links">
         <a href="#">RESERVAS</a>
         <a href="#">HABITACIONES</a>
@@ -37,7 +79,7 @@
           <img src="../../../public/img/tuercaAjustes.png" alt="LogoConfi" class="logoConfi">
         </button>
       </div>
-    </aside>
+    </aside> -->
 
     <!-- Contenido principal con el formulario PQRS -->
     <main class="main-content">
@@ -136,7 +178,7 @@
     </main>
   </div>
 
-  <!-- VALIDACIÓN  -->
+  <!-- VALIDACIÓN -->
   <script>
     function validarFormulario() {
       const numeroDocumento = document.getElementById('numero_documento').value;
@@ -158,7 +200,11 @@
       return true;
     }
   </script>
+
+  <!-- Bootstrap JS (AL FINAL del body como se indicó) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+          crossorigin="anonymous"></script>
 </body>
 </html>
-
 

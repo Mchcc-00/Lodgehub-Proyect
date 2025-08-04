@@ -2,80 +2,6 @@
    BARRA SUPERIOR (TOPBAR)
 ----------------------------------- */
 .topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #2b2b2b;        /* Gris oscuro */
-  padding: 0.5rem 1rem;             /* Espaciado vertical y horizontal */
-  border-bottom: 4px solid #a8d9f0; /* Línea amarilla gruesa */ 
-    padding: 20px 30px; 
-}
-
-
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
-}
-
-.topbar-left i {
-  font-size: 1.5rem; /* Tamaño de la flechaa */
-  color: #ffffff; 
-}
-
-.topbar-title {
-  font-weight: bold;
-  font-size: 2rem;   /* Ajusta aquí el tamaño de la letra */
-  color: #FFC107;
-}
-
-.topbar-right {
-  font-size: 1.8rem; /* Tamaño más acorde al diseño */
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo-img {
-  width: 40px;       /* Ajusta el tamaño según diseño */
-  height: 40px; 
-  object-fit: cover;
-}
-
-.logoSoporte{
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  right: 4px;
-}
-
-.logoConfi{
-   width: 50px;
-  height: 50px;
-  object-fit: cover;
-  right: 4px;
-
-}
-
-
-
-/* RESET BÁSICO */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* CONTENEDOR PRINCIPAL */
-.container {
-  display: flex;
-  height: 100vh;
-  background-color: #1f1f1f;
-}
-
-/* ========== TOPBAR ========== */
-.topbar {
   position: fixed;
   top: 0;
   left: 0;
@@ -115,22 +41,54 @@
   padding: 0.3rem;
 }
 
+.logo-img, .logoSoporte, .logoConfi {
+  object-fit: cover;
+}
+
+.logo-img {
+  width: 40px;
+  height: 40px;
+}
+
+.logoSoporte, .logoConfi {
+  width: 50px;
+  height: 50px;
+  right: 4px;
+}
+
+/* RESET BÁSICO */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* CONTENEDOR PRINCIPAL */
+.container {
+  display: flex;
+  height: 100vh;
+  background-color: #1f1f1f;
+}
+
 /* ========== SIDEBAR ========== */
 .sidebar {
+  position: fixed;
+  top: 56px;
+  bottom: 0;
+  left: 0;
   width: 200px;
-  padding-top: 15px;            /* Para quedar debajo del topbar */
-  background-color: #8f8f8f;
+  background-color: #a8d9f0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   border-right: 3px solid #a8d9f0;
+  z-index: 5;
 }
 
 .nav-links {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding-top: -1rem;
 }
 
 .nav-links a {
@@ -139,19 +97,19 @@
   color: #fff;
   font-weight: 500;
   text-align: center;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 .nav-links a:hover {
   background-color: #2c6fab;
   color: #fff;
-   transition: background 0.3s ease;
 }
 
 .sidebar-footer {
   display: flex;
-  justify-content: space-around;
-  padding: 1rem 0;
+  justify-content: flex-end;
+  gap: 15px;
+  padding-right: 10px;
   border-top: 3px solid #fff;
 }
 
@@ -164,40 +122,16 @@
 
 /* ========== MAIN CONTENT ========== */
 .main-content {
-  flex: 1;
-  margin-left: 25px;   /* Ancho de la sidebar */
-  padding-top: 56px;    /* Altura de la topbar */
-  overflow-y: auto;
-}
-
-
-
-/* --------- SIDEBAR FIJA --------- */
-.sidebar {
-  position: fixed;
-  top: 56px;           /* Igual a la altura de .topbar */
-  bottom: 0;           /* Se extiende hasta abajo */
-  left: 0;
-  width: 200px;
-  background-color: #a8d9f0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  z-index: 5;          /* Por encima de main-content */
-}
-
-/* Ajusta el main-content para que no quede detrás */
-.main-content {
-  margin-left: 200px;  /* Igual al ancho de la sidebar */
-  margin-top: 56px;    /* Igual a la altura de la topbar */
+  margin-left: 200px;
+  margin-top: 56px;
   padding: 1rem;
   overflow-y: auto;
-  height: calc(100vh - 56px); /* Para que haga scroll dentro */
+  height: calc(100vh - 56px);
 }
 
 /* formulario */
 body {
-  background-color:#d4edfc;
+  background-color: #d4edfc;
   font-family: Arial, sans-serif;
   color: #0bda72;
   padding: 20px;
@@ -237,7 +171,7 @@ label {
 input, select, textarea {
   padding: 8px;
   border-radius: 5px;
-    border: 2px solid #2c6fab;
+  border: 2px solid #2c6fab;
   width: 100%;
   box-sizing: border-box;
   background-color: #fff;
@@ -267,38 +201,25 @@ textarea {
 }
 
 .btn-cancel {
-  font-weight: bold;
-  padding: 8px 20px;
-  border-radius: 12px;
-  border: 2px solid;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background-color: #e65c5c;   /* rojo suave */
+  background-color: #e65c5c;
   color: white;
-  border-color: #a82626;       /* borde rojo más oscuro */
+  border: 2px solid #a82626;
 }
 
 .btn-submit {
-  font-weight: bold;
-  padding: 8px 20px;
-  border-radius: 12px;
-  border: 2px solid;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
- background-color: #4cf14c;   /* verde vivo */
+  background-color: #4cf14c;
   color: black;
-  border-color: #248f24;       /* borde verde más oscuro */
+  border: 2px solid #248f24;
 }
 
+/* Sección ID */
 .id-section {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  gap:30px;
+  gap: 30px;
   margin-bottom: 40px;
-  border-radius: 999px
+  border-radius: 999px;
 }
 
 .id-section span {
@@ -317,9 +238,7 @@ textarea {
   line-height: 30px;
 }
 
-
 /* --- Formulario PQRS --- */
-/* Contenedor principal del formulario */
 .form-container {
   position: relative;
   border-radius: 50px;
@@ -328,7 +247,6 @@ textarea {
   box-shadow: 0 0 10px rgba(3, 126, 228, 0.384);
 }
 
-/* Título */
 .form-container h2 {
   color: #2c6fab;
   margin-bottom: 40px;
@@ -337,22 +255,19 @@ textarea {
   border-bottom: 6px solid #2c6fab;
 }
 
-/* ID y botón de cierre */
 .form-header {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  gap: 30px; 
+  gap: 30px;
   margin-bottom: 40px;
-  border-radius: 999px
+  border-radius: 999px;
 }
-
 
 .form-id {
   font-weight: bold;
   font-size: 25px;
   color: #2c6fab;
-
 }
 
 .close-btn {
@@ -365,7 +280,6 @@ textarea {
   cursor: pointer;
 }
 
-/* Estructura de filas */
 .form-row {
   display: flex;
   flex-wrap: wrap;
@@ -379,7 +293,6 @@ label {
   font-weight: bold;
 }
 
-/* Campos de entrada y select */
 input[type="text"],
 input[type="date"],
 select,
@@ -388,7 +301,7 @@ textarea {
   padding: 8px;
   background-color: #ffffff;
   color: #242323;
-  border: 2 px solid #2c6fab;
+  border: 2px solid #2c6fab;
   border-radius: 6px;
 }
 
@@ -402,7 +315,6 @@ textarea {
   border-radius: 8px;
 }
 
-/* Botones */
 .form-buttons {
   display: flex;
   justify-content: flex-end;
@@ -428,37 +340,45 @@ textarea {
   color: white;
 }
 
-
-.boton-info{
-  background-color: transparent; /* Elimina el fondo blanco */
-  border: none;                  /* Opcional: elimina borde */
-  padding: 0;                    /* Opcional: quita espacio alrededor */
-  cursor: pointer;              /* Muestra la manito al pasar el mouse */
-}
-
-.boton-info:hover {
-  background-color: #ba52ff;/* Azul suave translúcido */
-  border-radius: 8px; /* Opcional: bordes redondeados en el hover */
-}
-
+.boton-info,
 .logoButton {
-background-color: transparent; /* Elimina el fondo blanco */
-  border: none;                  /* Opcional: elimina borde */
-  padding: 0;                    /* Opcional: quita espacio alrededor */
-  cursor: pointer;              /* Muestra la manito al pasar el mouse */
-
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 
-.logoButton:hover{
-   background-color: #ba52ff;/* Azul suave translúcido */
-  border-radius: 8px; /* Opcional: bordes redondeados en el hover */
+.boton-info:hover,
+.logoButton:hover {
+  background-color: #ba52ff;
+  border-radius: 8px;
 }
 
-.sidebar-footer{
-  display: flex;
-  justify-content: flex-end;  /* Alinear a la derecha */
-  gap: 15px;                  /* Separación entre botones */
-  padding-right: 10px;        /* Espacio del borde derecho */
-}
+
+.container-fluid {
+    background: #437bafff;
+    padding: 20px;
+  }
+
+  #lodgebub-dropdown {
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  /* Opcional: mejorar visibilidad de los enlaces en el dropdown */
+  .dropdown-menu .dropdown-item {
+    color: #000000;
+    font-weight: 500;
+  }
+
+  .dropdown-menu .dropdown-item.active,
+  .dropdown-menu .dropdown-item:active {
+    background-color: #0056b3;
+    color: #ffffff;
+  }
 
 

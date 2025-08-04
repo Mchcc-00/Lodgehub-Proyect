@@ -12,7 +12,7 @@
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="../homepage/homepage.php">Home</a></li>
             <li><a class="dropdown-item" href="../../../6_Reservas/2R/mainReservas.php">Reservas</a></li>
-            <li><a class="dropdown-item" href="../../../app/views/Habitaciones/dashboardHab.php">Habitaciones</a></li>
+            <li><a class="dropdown-item" href="../../../HABITACIONES/views/Habitaciones/dashboardHab.php">Habitaciones</a></li>
             <li><a class="dropdown-item" href="../../../MANTENIMIENTO/views/dashboard.php">Mantenimiento</a></li>
             <li><a class="dropdown-item" href="../../../PQRS/views/dashboard.php">PQRS</a></li>
             <li><a class="dropdown-item" href="../../../app/views/Usuarios/lista.php">Usuarios</a></li>

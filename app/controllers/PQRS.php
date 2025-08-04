@@ -1,19 +1,22 @@
 <?php
 header('Content-Type: text/html; charset=UTF-8');
 
-// Datos de conexión
-$host = "localhost";
-$usuario = "root";
-$contrasena = "";
-$base_datos = "formulario_pqrs";
-
-// Crear conexión
-$conn = new mysqli($host, $usuario, $contrasena, $base_datos);
-
-// Verificar conexión
-if ($conn->connect_error) {
-    die("Conexión fallida: " . $conn->connect_error);
+// Función de conexión PDO
+function conexionDB() {
+    try {
+        $dsn = "mysql:host=localhost;dbname=Lodgehub;charset=utf8";
+        $db = new PDO($dsn, 'root', '');
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        return $db;
+    } catch (PDOException $e) {
+        echo "Error de conexión: " . $e->getMessage();
+        exit("No se ha podido realizar la conexión.");
+    }
 }
+
+// Conectar a la base de datos
+$conn = conexionDB();
+
 // Recibir y validar los datos
 $id                = isset($_POST['id']) ? intval($_POST['id']) : 0;
 $fecha             = $_POST['fecha'] ?? '';
@@ -36,110 +39,117 @@ if (
     die("Por favor, completa todos los campos requeridos.");
 }
 
-// Consulta SQL
+// Consulta SQL con placeholders
 $sql = "INSERT INTO pqrs (
     id, fecha, tipo_pqrs, urgencia, categoria, descripcion,
     nombre, apellido, empleado, tipo_documento, numero_documento
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+) VALUES (
+    :id, :fecha, :tipo_pqrs, :urgencia, :categoria, :descripcion,
+    :nombre, :apellido, :empleado, :tipo_documento, :numero_documento
+)";
 
-// Preparar la sentencia
-$stmt = $conn->prepare($sql);
+try {
+    $stmt = $conn->prepare($sql);
+    $ejecutado = $stmt->execute([
+        ':id' => $id,
+        ':fecha' => $fecha,
+        ':tipo_pqrs' => $tipo_pqrs,
+        ':urgencia' => $urgencia,
+        ':categoria' => $categoria,
+        ':descripcion' => $descripcion,
+        ':nombre' => $nombre,
+        ':apellido' => $apellido,
+        ':empleado' => $empleado,
+        ':tipo_documento' => $tipo_documento,
+        ':numero_documento' => $numero_documento
+    ]);
 
+    if ($ejecutado) {
+        ?>
+        <style>
+        body {
+            background-color: #a8d9f0;
+            margin: 0;
+            padding: 0;
+        }
+        .mensaje-exito {
+            display: flex;
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #a8d9f0;
+            border: 2px solid #2c6fab;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(44, 111, 171, 0.4);
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            color: #000000ff;
+        }
+        .mensaje-icono {
+            background-color: #2c6fab;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+        }
+        .mensaje-icono img {
+            width: 60px;
+            height: 60px;
+        }
+        .mensaje-contenido {
+            padding: 20px;
+            flex: 1;
+        }
+        .mensaje-contenido h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #2c6fab;
+        }
+        .mensaje-contenido p {
+            font-size: 15px;
+            margin: 10px 0;
+            color: #000;
+        }
+        .mensaje-contenido a.boton {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #00c853;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .mensaje-contenido a.boton:hover {
+            background-color: #009624;
+        }
+        </style>
 
-if (!$stmt) {
-    die("Error al preparar la consulta: " . $conn->error);
-}
-
-// Vincular parámetros
-$stmt->bind_param(
-    "isssssssssi",
-    $id, $fecha, $tipo_pqrs, $urgencia, $categoria,
-    $descripcion, $nombre, $apellido, $empleado,
-    $tipo_documento, $numero_documento
-);
-
-if ($stmt->execute()) {
-    echo '
-    <style>
-    body {
-        background-color: #a8d9f0;
-        margin: 0;
-        padding: 0;
-    }
-    .mensaje-exito {
-        display: flex;
-        max-width: 600px;
-        margin: 40px auto;
-        background-color: #a8d9f0;
-        border: 2px solid #2c6fab;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px #2c6fab(255, 0, 0, 0.4);
-        overflow: hidden;
-        font-family: Arial, sans-serif;
-        color: #000000ff;
-    }
-    .mensaje-icono {
-        background-color: #2c6fab;
-        padding: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 120px;
-    }
-    .mensaje-icono img {
-        width: 60px;
-        height: 60px;
-    }
-    .mensaje-contenido {
-        padding: 20px;
-        flex: 1;
-    }
-    .mensaje-contenido h2 {
-        margin: 0;
-        font-size: 20px;
-        color: #2c6fab;
-    }
-    .mensaje-contenido p {
-        font-size: 15px;
-        margin: 10px 0;
-        color: #000;
-    }
-    .mensaje-contenido a.boton {
-        display: inline-block;
-        padding: 8px 16px;
-        background-color: #00c853;
-        color: #fff;
-        text-decoration: none;
-        border-radius: 5px;
-        margin-top: 10px;
-    }
-    .mensaje-contenido a.boton:hover {
-        background-color: #009624;
-    }
-    </style>
-
-    <div class="mensaje-exito">
-        <div class="mensaje-icono">
-            <img src="../../public/img/flecha flechita_claro.png" alt="Flechaclara" class="logo-img">
+        <div class="mensaje-exito">
+            <div class="mensaje-icono">
+                <img src="../../public/img/flecha flechita_claro.png" alt="Flechaclara" class="logo-img">
+            </div>
+            <div class="mensaje-contenido">
+                <h2>REGISTRO EXITOSO</h2>
+                <p>Tu solicitud fue registrada correctamente. Serás redirigido en unos segundos...</p>
+                <a class="boton" href="/lodgehub-proyect/app/views/PQRS/crud.php">Volver al formulario</a>
+            </div>
         </div>
-        <div class="mensaje-contenido">
-            <h2>REGISTRO EXITOSO</h2>
-            <p>Tu solicitud fue registrada correctamente. Serás redirigido en unos segundos...</p>
-            <a class="boton" href="/lodgehub-proyect/app/views/PQRS/crud.php" >Volver al formulario</a>
-        </div>
-    </div>
-    
-    <script>
-        setTimeout(function() {
-            window.location.href = "/lodgehub-proyect/app/views/PQRS/crud.php"
-        }, 4000); // 4000 ms = 4 segundos
-    </script>
-    ';
-} else {
-    echo "<p style='color:white;'>Error al guardar: " . htmlspecialchars($stmt->error) . "</p>";
-}
 
-$stmt->close();
-$conn->close();
+        <script>
+            setTimeout(function() {
+                window.location.href = "/lodgehub-proyect/app/views/PQRS/crud.php"
+            }, 4000);
+        </script>
+        <?php
+    } else {
+        echo "<p style='color:red;'>Error al guardar: " . htmlspecialchars($stmt->errorInfo()[2]) . "</p>";
+    }
+
+    $stmt->closeCursor();
+    $conn = null;
+
+} catch (PDOException $e) {
+    die("Error al ejecutar la consulta: " . $e->getMessage());
+}
+ 
 ?>
-
