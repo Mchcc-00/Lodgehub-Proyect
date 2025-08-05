@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Editar Habitación</title>
+    <title>Editar Habitaciónes</title>
     <link rel="stylesheet" href="/LODGEHUB/public/assets/css/dashboardHab.css">
     <link rel="stylesheet" href="/LODGEHUB/public/assets/css/editarHab.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
