@@ -13,7 +13,7 @@ try {
         exit;
     }
 
-    $sql = "SELECT id, fecha, urgencia, categoria, tipo_pqrs, CONCAT(nombre, ' ', apellido) AS solicitante, empleado, estado, fecha_cierre FROM pqrs";
+    $sql = "SELECT id, fecha, urgencia, categoria, tipo_pqrs, solicitante, empleado, estado, fecha_cierre FROM pqrs";
     $stmt = $conn->query($sql);
     $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

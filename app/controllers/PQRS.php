@@ -9,8 +9,7 @@ function conexionDB() {
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return $db;
     } catch (PDOException $e) {
-        echo "Error de conexión: " . $e->getMessage();
-        exit("No se ha podido realizar la conexión.");
+        die("Error de conexión: " . $e->getMessage());
     }
 }
 
@@ -30,22 +29,25 @@ $empleado          = $_POST['empleado'] ?? '';
 $tipo_documento    = $_POST['tipo_documento'] ?? '';
 $numero_documento  = $_POST['numero_documento'] ?? '';
 
+// Unificar nombre y apellido en "solicitante"
+$solicitante = trim($nombre . ' ' . $apellido);
+
 // Validación básica
 if (
     empty($fecha) || empty($tipo_pqrs) || empty($urgencia) || empty($categoria) ||
-    empty($descripcion) || empty($nombre) || empty($apellido) || empty($empleado) ||
+    empty($descripcion) || empty($solicitante) || empty($empleado) ||
     empty($tipo_documento) || empty($numero_documento)
 ) {
     die("Por favor, completa todos los campos requeridos.");
 }
 
-// Consulta SQL con placeholders
+// Consulta SQL
 $sql = "INSERT INTO pqrs (
     id, fecha, tipo_pqrs, urgencia, categoria, descripcion,
-    nombre, apellido, empleado, tipo_documento, numero_documento
+    solicitante, empleado, tipo_documento, numero_documento
 ) VALUES (
     :id, :fecha, :tipo_pqrs, :urgencia, :categoria, :descripcion,
-    :nombre, :apellido, :empleado, :tipo_documento, :numero_documento
+    :solicitante, :empleado, :tipo_documento, :numero_documento
 )";
 
 try {
@@ -57,8 +59,7 @@ try {
         ':urgencia' => $urgencia,
         ':categoria' => $categoria,
         ':descripcion' => $descripcion,
-        ':nombre' => $nombre,
-        ':apellido' => $apellido,
+        ':solicitante' => $solicitante,
         ':empleado' => $empleado,
         ':tipo_documento' => $tipo_documento,
         ':numero_documento' => $numero_documento
@@ -82,7 +83,7 @@ try {
             box-shadow: 0 4px 8px rgba(44, 111, 171, 0.4);
             overflow: hidden;
             font-family: Arial, sans-serif;
-            color: #000000ff;
+            color: #000;
         }
         .mensaje-icono {
             background-color: #2c6fab;
@@ -126,7 +127,7 @@ try {
 
         <div class="mensaje-exito">
             <div class="mensaje-icono">
-                <img src="../../public/img/flecha flechita_claro.png" alt="Flechaclara" class="logo-img">
+                <img src="../../public/img/flecha flechita_claro.png" alt="Flechaclara">
             </div>
             <div class="mensaje-contenido">
                 <h2>REGISTRO EXITOSO</h2>
@@ -137,7 +138,7 @@ try {
 
         <script>
             setTimeout(function() {
-                window.location.href = "/lodgehub-proyect/app/views/PQRS/crud.php"
+                window.location.href = "/lodgehub-proyect/app/views/PQRS/crud.php";
             }, 4000);
         </script>
         <?php
@@ -151,5 +152,5 @@ try {
 } catch (PDOException $e) {
     die("Error al ejecutar la consulta: " . $e->getMessage());
 }
- 
 ?>
+

@@ -3,6 +3,32 @@ require_once('../../../config/conexionGlobal.php');
 
 $pdo = conexionDB();
 
+// Arrays para traducir valores numéricos
+$urgencias = [
+    1 => 'Alta',
+    2 => 'Media',
+    3 => 'Baja'
+];
+
+$categorias = [
+    1 => 'Mantenimiento',
+    2 => 'Servicio',
+    3 => 'Otro'
+];
+
+$tipos = [
+    1 => 'Petición',
+    2 => 'Queja',
+    3 => 'Reclamo',
+    4 => 'Sugerencia'
+];
+
+$estados = [
+    1 => 'Pendiente',
+    2 => 'Solucionado',
+    3 => 'En Proceso'
+];
+
 try {
     $stmt = $pdo->query("
         SELECT 
@@ -11,7 +37,7 @@ try {
             urgencia, 
             categoria, 
             tipo_pqrs, 
-            CONCAT(nombre, ' ', apellido) AS solicitante, 
+            solicitante, 
             empleado, 
             estado
         FROM pqrs
@@ -52,13 +78,16 @@ try {
 
             <select id="categoria-filter">
                 <option>Categoría</option>
-                <option>Habitación</option>
+                <option>Mantenimiento</option>
                 <option>Servicio</option>
+                <option>Otro</option>
             </select>
 
             <select id="tipo-filter">
                 <option>Tipo</option>
+                <option>Petición</option>
                 <option>Queja</option>
+                <option>Reclamo</option>
                 <option>Sugerencia</option>
             </select>
 
@@ -81,35 +110,35 @@ try {
             </thead>
 
             <tbody id="tabla-pqrs">
-    <?php if (is_array($pqrs) && !empty($pqrs)): ?>
-        <?php foreach ($pqrs as $item): ?>
-            <tr>
-                <td><?= $item['id'] ?></td>
-                <td><?= date('d/m/Y', strtotime($item['fecha'])) ?></td>
-                <td><?= $item['urgencia'] ?></td>
-                <td><?= $item['categoria'] ?></td>
-                <td><?= $item['tipo_pqrs'] ?></td>
-                <td><?= $item['solicitante'] ?></td>
-                <td><?= $item['empleado'] ?></td>
-                <td class="<?= $item['estado'] === 'Solucionado' ? 'estado-s' : '' ?>">
-                    <?= $item['estado'] ?>
-                </td>
-                <td>
-                    <a href="editar.php?id=<?= $item['id'] ?>" class="btn-crud btn-editar" title="Editar">
-                        <i class="fas fa-pencil-alt"></i>
-                    </a>
-                    <a href="eliminar.php?id=<?= $item['id'] ?>" class="btn-crud btn-eliminar" title="Eliminar">
-                        <i class="fas fa-trash-alt"></i>
-                    </a>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <tr>
-            <td colspan="9" style="text-align: center;">No hay registros de PQRS.</td>
-        </tr>
-    <?php endif; ?>
-</tbody>
+                <?php if (is_array($pqrs) && !empty($pqrs)): ?>
+                    <?php foreach ($pqrs as $item): ?>
+                        <tr>
+                            <td><?= $item['id'] ?></td>
+                            <td><?= date('d/m/Y', strtotime($item['fecha'])) ?></td>
+                            <td><?= $urgencias[$item['urgencia']] ?? 'Desconocido' ?></td>
+                            <td><?= $categorias[$item['categoria']] ?? 'Desconocido' ?></td>
+                            <td><?= $tipos[$item['tipo_pqrs']] ?? 'Desconocido' ?></td>
+                            <td><?= htmlspecialchars($item['solicitante']) ?></td>
+                            <td><?= htmlspecialchars($item['empleado']) ?></td>
+                            <td style="color: <?= $item['estado'] == 2 ? 'red' : 'inherit' ?>;">
+                                <?= $estados[$item['estado']] ?? 'Desconocido' ?>
+                            </td>
+                            <td>
+                                <a href="editar.php?id=<?= $item['id'] ?>" class="btn-crud btn-editar" title="Editar">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+                                <a href="eliminar.php?id=<?= $item['id'] ?>" class="btn-crud btn-eliminar" title="Eliminar" onclick="return confirm('¿Deseas eliminar este registro?')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="9" style="text-align: center;">No hay registros de PQRS.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
         </table>
     </div>
 </body>

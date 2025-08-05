@@ -86,16 +86,15 @@
         <h2>Nuevo PQRS</h2>
         <form id="pqrsForm" onsubmit="return validarFormulario()" method="post" action="../../controllers/PQRS.php">
 
-          <div class="id-section">
-            <label for="id">ID:</label>
-            <input type="number" name="id" id="id" min="0" max="99999999" required />
-            <button class="close-btn" type="button">×</button>
-          </div>
-
+       <div class="id-section">
+  <label for="id">ID:</label>
+  <input type="number" name="id" id="id" min="0" max="9999999" disabled />
+  <button class="close-btn" type="button">×</button>
+</div>
           <div class="form-row">
             <div class="form-group">
               <label for="fecha">Fecha de registro</label>
-              <input type="date" id="fecha" name="fecha" required>
+              <input type="date" name="fecha" name="fecha" required>
             </div>
             <div class="form-group">
               <label for="tipo_pqrs">Tipo PQRS</label>
@@ -146,6 +145,7 @@
               <label for="apellido">Apellido del solicitante</label>
               <input type="text" id="apellido" name="apellido" required>
             </div>
+            
             <div class="form-group">
               <label for="empleado">Empleado que registra</label>
               <input type="text" id="empleado" name="empleado" required>
@@ -178,27 +178,42 @@
   </div>
 
   <!-- VALIDACIÓN -->
-  <script>
-    function validarFormulario() {
-      const numeroDocumento = document.getElementById('numero_documento').value;
-      const textoSinNumeros = ['nombre', 'apellido', 'empleado'];
-      
-      for (let campo of textoSinNumeros) {
-        const valor = document.getElementById(campo).value;
-        if (/\d/.test(valor)) {
-          alert(`El campo "${campo}" no debe contener números.`);
-          return false;
-        }
-      }
+<script>
+  function validarFormulario() {
+    const numeroDocumento = document.getElementById('numero_documento').value.trim();
+    const camposTexto = ['nombre', 'apellido', 'empleado'];
 
-      if (!/^\d+$/.test(numeroDocumento)) {
-        alert("El número de documento debe contener solo números.");
+    for (let campo of camposTexto) {
+      const valor = document.getElementById(campo).value.trim();
+      if (/\d/.test(valor)) {
+        alert(`El campo "${campo}" no debe contener números.`);
+        document.getElementById(campo).focus();
         return false;
       }
 
-      return true;
+      if (valor === "") {
+        alert(`El campo "${campo}" no puede estar vacío.`);
+        document.getElementById(campo).focus();
+        return false;
+      }
     }
-  </script>
+
+    if (!/^\d+$/.test(numeroDocumento)) {
+      alert("El número de documento debe contener solo números.");
+      document.getElementById('numero_documento').focus();
+      return false;
+    }
+
+    if (numeroDocumento === "") {
+      alert("El número de documento es obligatorio.");
+      document.getElementById('numero_documento').focus();
+      return false;
+    }
+
+    // Si todo está bien
+    return true;
+  }
+</script>
 
   <!-- Bootstrap JS (AL FINAL del body como se indicó) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"

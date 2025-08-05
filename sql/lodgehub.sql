@@ -148,8 +148,9 @@ CREATE TABLE IF NOT EXISTS td_prioridad (id INT (3) AUTO_INCREMENT NOT NULL,
 
 CREATE TABLE IF NOT EXISTS tp_pqrs (id INT (10) AUTO_INCREMENT NOT NULL,
                                     fechaRegistro DATE NOT NULL,
-                                    descripcion VARCHAR (200) NOT NULL,
-                                    fechaCierre DATE,
+                                    tipo_pqrs VARCHAR (20) NOT NULL,
+                                    urgencia VARCHAR (20) NOT NULL,
+                                    descripcion TEXT NOT NULL,
                                     hue_numdocumento VARCHAR (15) NOT NULL,
                                     prioridad INT (3) NOT NULL,
                                     categoria INT(3) NOT  NULL,
@@ -171,8 +172,7 @@ CREATE TABLE pqrs                   (id INT AUTO_INCREMENT PRIMARY KEY,
                                     urgencia VARCHAR(20) NOT NULL,
                                     categoria VARCHAR(50) NOT NULL,
                                     descripcion TEXT NOT NULL,
-                                    nombre VARCHAR(100) NOT NULL,
-                                    apellido VARCHAR(100) NOT NULL,
+                                    solicitante VARCHAR(200) NOT NULL, -- Unificado nombre y apellido
                                     empleado VARCHAR(100) NOT NULL,
                                     tipo_documento VARCHAR(10) NOT NULL,
                                     numero_documento VARCHAR(20) NOT NULL,
@@ -421,7 +421,7 @@ insert into tp_habitaciones values
 (405, 290000.00, 2, 2, 2, 1);
 
 
-INSERT INTO pqrs (fecha, tipo_pqrs, urgencia, categoria, descripcion, nombre, apellido, empleado, tipo_documento, numero_documento, estado)
+INSERT INTO pqrs (fecha, tipo_pqrs, urgencia, categoria, descripcion,solicitante, empleado, tipo_documento, numero_documento, estado)
 VALUES
 ('2024-10-18', 'Reclamo', 'Alta', 'Servicios generales', 'El huésped reporta que la habitación no contaba con servicio de agua.', 'Juan', 'Pérez', 'Luis Gómez', 'CC', '1011234567', 'Pendiente'),
 ('2024-03-12', 'Queja', 'Media', 'Aseo', 'Se reporta que las cobijas de la cama se encuentran en mal estado (sucias y manchadas), no hicieron el debido aseo en la habitación 73.', 'María', 'López', 'Sandra Torres', 'CC', '1098785643', 'Solucionado'),
