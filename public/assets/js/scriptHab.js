@@ -40,7 +40,7 @@ function renderRooms(roomsToRender = rooms) {
             <span class="estado-label">Estado: ${statusText[room.status]}</span>
             <div class="room-actions" style="display:flex;gap:8px;margin-top:10px;">
                 <button class="edit-room-btn" data-room-id="${room.id}">Editar</button>
-                <button class="delete-room-btn" data-room-id="${room.id}" style="background:#c82333;color:#fff;">Eliminar</button>
+                <button class="delete-room-btn" data-room-id="${room.id}">Eliminar</button>
             </div>
         `;
         roomsGrid.appendChild(roomCard);

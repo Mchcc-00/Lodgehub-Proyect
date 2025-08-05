@@ -51,7 +51,7 @@ if (!isset($habitaciones)) {
             <button class="filter-btn" data-filter="precio">Precio <span class="dropdown-arrow">▼</span></button>
             <div style="flex:1;"></div>
             <button class="add-btn custom-add-btn" aria-label="Agregar habitación" onclick="window.location.href='/LODGEHUB/app/views/Habitaciones/formHab.php'">
-                <img src="/LODGEHUB/public/img/BotonAgregar.png" alt="Agregar" style="width:38px;height:38px;display:block;margin:auto;pointer-events:none;" />
+                <img src="/LODGEHUB/public/img/BotonAgregarTW.png" alt="Agregar" style="width:38px;height:38px;display:block;margin:auto;pointer-events:none;" />
             </button>
         </div>
 
