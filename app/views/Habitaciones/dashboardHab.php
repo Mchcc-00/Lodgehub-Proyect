@@ -1,6 +1,6 @@
 <?php
 if (!isset($habitaciones)) {
-    header('Location: ../../controllers/habitacionController.php?accion=listar');
+    header('Location: /LODGEHUB/app/controllers/habitacionController.php?accion=listar');
     exit;
 }
 ?>

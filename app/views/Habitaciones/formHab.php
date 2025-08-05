@@ -32,7 +32,7 @@ session_start();
 <div class="form-container">
     <div class="titulo">Nueva habitación</div>
     <hr>
-    <form action="../../controllers/habitacionController.php" method="POST" autocomplete="off">
+    <form action="/LODGEHUB/app/controllers/habitacionController.php" method="POST" autocomplete="off">
         <input type="hidden" name="accion" value="crear">
         <div class="formulario__grupos">
             <div class="formulario__grupo">

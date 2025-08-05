@@ -14,7 +14,7 @@
 
 
     <h2>Editar Habitación N° <?php echo htmlspecialchars($habitacion['numero']); ?></h2>
-    <form action="../../controllers/habitacionController.php" method="POST" autocomplete="off">
+    <form action="/LODGEHUB/app/controllers/habitacionController.php" method="POST" autocomplete="off">
         <input type="hidden" name="accion" value="actualizar">
         <input type="hidden" name="numero_original" value="<?php echo htmlspecialchars($habitacion['numero']); ?>">
         <div class="formulario__grupos">

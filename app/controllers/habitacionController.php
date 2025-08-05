@@ -79,6 +79,9 @@ switch ($accion) {
             $capacidad = filter_input(INPUT_POST, 'capacidad', FILTER_VALIDATE_INT);
             $estado = filter_input(INPUT_POST, 'estado', FILTER_VALIDATE_INT);
             $informacionAdicional = filter_input(INPUT_POST, 'informacionAdicional', FILTER_SANITIZE_STRING);
+            if ($informacionAdicional === null || $informacionAdicional === false) {
+                $informacionAdicional = filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_STRING);
+            }
 
             // Validación básica
             $errores = [];
@@ -91,7 +94,7 @@ switch ($accion) {
 
             if (count($errores) > 0) {
                 $_SESSION['errores'] = $errores;
-                header("Location: ../views/Habitaciones/editarHab.php?numero=" . urlencode($numero_original));
+                header("Location: " . $_SERVER['PHP_SELF'] . "?accion=editar&numero=" . urlencode($numero_original));
                 exit;
             }
 
