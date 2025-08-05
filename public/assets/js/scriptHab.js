@@ -35,7 +35,7 @@ function renderRooms(roomsToRender = rooms) {
         roomCard.className = `room-card ${estadoClass}`;
         roomCard.innerHTML = `
             <h3>Habitación N° ${room.number}</h3>
-            <div class="room-img"><img src='../public/img/iconCama.png' alt='Cama' style='width:60px;height:auto;display:block;margin:auto;'></div>
+            <div class="room-img"><img src='/LODGEHUB/public/img/iconCamas.png' alt='Cama' style='width:60px;height:auto;display:block;margin:auto;'></div>
             <div class="room-type">Tipo: ${room.type}</div>
             <span class="estado-label">Estado: ${statusText[room.status]}</span>
             <div class="room-actions" style="display:flex;gap:8px;margin-top:10px;">
@@ -253,7 +253,7 @@ function showRoomDetails(room) {
     imgDiv.style.display = 'flex';
     imgDiv.style.alignItems = 'center';
     imgDiv.style.justifyContent = 'center';
-    imgDiv.innerHTML = `<img src='../public/img/previaHabitacion.png' alt='Cama' style='width:100%;max-width:420px;max-height:350px;border-radius:0 0 0 18px;'>`;
+    imgDiv.innerHTML = `<img src='/LODGEHUB/public/img/previaHabitaciones.png' alt='Cama' style='width:100%;max-width:420px;max-height:350px;border-radius:0 0 0 18px;'>`;
 
     // Info
     const infoDiv = document.createElement('div');
