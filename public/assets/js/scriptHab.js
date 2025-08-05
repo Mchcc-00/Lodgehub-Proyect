@@ -38,21 +38,37 @@ function renderRooms(roomsToRender = rooms) {
             <div class="room-img"><img src='../public/img/iconCama.png' alt='Cama' style='width:60px;height:auto;display:block;margin:auto;'></div>
             <div class="room-type">Tipo: ${room.type}</div>
             <span class="estado-label">Estado: ${statusText[room.status]}</span>
-            <button class="edit-room-btn" data-room-id="${room.id}">Editar</button>
+            <div class="room-actions" style="display:flex;gap:8px;margin-top:10px;">
+                <button class="edit-room-btn" data-room-id="${room.id}">Editar</button>
+                <button class="delete-room-btn" data-room-id="${room.id}" style="background:#c82333;color:#fff;">Eliminar</button>
+            </div>
         `;
         roomsGrid.appendChild(roomCard);
 
         // Event listener para el botón editar
-        roomCard.querySelector('.edit-room-btn').addEventListener('click', function() {
+        roomCard.querySelector('.edit-room-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
             editarHabitacion(room);
         });
 
+        // Event listener para el botón eliminar
+        roomCard.querySelector('.delete-room-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            eliminarHabitacion(room);
+        });
+
         roomCard.addEventListener('click', function(e) {
-            // Evitar que el click en el botón editar dispare el modal de detalles
-            if (e.target.classList.contains('edit-room-btn')) return;
+            // Evitar que el click en los botones dispare el modal de detalles
+            if (e.target.classList.contains('edit-room-btn') || e.target.classList.contains('delete-room-btn')) return;
             showRoomDetails(room);
         });
     });
+// Función para eliminar habitación
+function eliminarHabitacion(room) {
+    if (confirm(`¿Seguro que deseas eliminar la habitación N° ${room.number}?`)) {
+        window.location.href = `../controllers/habitacionController.php?accion=eliminar&numero=${room.number}`;
+    }
+}
 }
 
 
