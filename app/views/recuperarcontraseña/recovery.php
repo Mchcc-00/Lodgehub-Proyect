@@ -36,8 +36,8 @@ try {
     $mail->isSMTP();
     $mail->Host       = 'smtp.gmail.com';
     $mail->SMTPAuth   = true;
-    $mail->Username   = 'brayan06.pulido@gmail.com';
-    $mail->Password   = 'gcrteilbzxtpyqiz';
+    $mail->Username   = 'lodgehub3@gmail.com';
+    $mail->Password   = 'myid grtr grcu fjab';
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port       = 587;
 
@@ -50,13 +50,13 @@ try {
         ]
     ];
 
-    $mail->setFrom('brayan06.pulido@gmail.com', 'LODGEHUB');
+    $mail->setFrom('lodgehub3@gmail.com', 'LODGEHUB');
     $mail->addAddress($correo);
 
     $mail->isHTML(true);
     $mail->Subject = 'Recuperar contrasena';
 $id = isset($row['id']) ? $row['id'] : '';
-$mail->Body = 'Hola buen dia, este es un mensaje de recuperacion de contrasena, por favor ingrese al siguiente enlace para continuar con el proceso de recuperacion de su contrasena: <a href="http://localhost/lodgehub/app/views/recuperarcontraseña/Contraseña.php?id='.$id.'">Recuperar Contrasena</a>';
+$mail->Body ='Hola buen dia, este es un mensaje de recuperacion de contrasena, por favor ingrese al siguiente enlace para continuar con el proceso de recuperacion de su contrasena: <a href="http://localhost/lodgehub/app/views/recuperarcontraseña/Contraseña.php?id='.$id.'">Recuperar Contrasena</a>';
     $mail->AltBody = 'Este es el mensaje de recuperación de contraseña en texto plano.';
 
     $mail->send();
