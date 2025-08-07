@@ -33,6 +33,7 @@
 
                         <!-- Campo visible para número de documento -->
                         <div class="input-group">
+                            <label for="username">Numero de documento</label>
                             <input type="text" 
                                    id="numDocumento" 
                                    name="numDocumento" 

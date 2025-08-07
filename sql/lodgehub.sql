@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS tp_empleados(numDocumento VARCHAR (15) NOT NULL,
                                 foto varchar (255),
                                 solicitarContraseña ENUM('0','1') ,
                                 tokenPassword varchar (100) ,
-                                sesionCaducada INT (1) ,
+                                sesionCaducada ENUM('Activo','Inactivo') NOT NULL DEFAULT 'Activo',
                                 sexo INT (3) NOT NULL,
                                 tipoDocumento INT (3) NOT NULL,
                                 roles INT (3) NOT NULL,
@@ -165,20 +165,6 @@ CREATE TABLE IF NOT EXISTS tp_pqrs (id INT (10) AUTO_INCREMENT NOT NULL,
                                       FOREIGN KEY (estado) REFERENCES td_estado (id),
                                       FOREIGN KEY (tipo) REFERENCES td_tipoPqrs (id)
                                       ) ENGINE=INNODB;
-
-CREATE TABLE pqrs                   (id INT AUTO_INCREMENT PRIMARY KEY,
-                                    fecha DATETIME NOT NULL,
-                                    tipo_pqrs VARCHAR(50) NOT NULL,
-                                    urgencia VARCHAR(20) NOT NULL,
-                                    categoria VARCHAR(50) NOT NULL,
-                                    descripcion TEXT NOT NULL,
-                                    solicitante VARCHAR(200) NOT NULL, -- Unificado nombre y apellido
-                                    empleado VARCHAR(100) NOT NULL,
-                                    tipo_documento VARCHAR(10) NOT NULL,
-                                    numero_documento VARCHAR(20) NOT NULL,
-                                    estado VARCHAR(20) NOT NULL DEFAULT 'Solucionado'
-                                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
 
 
 
@@ -421,14 +407,6 @@ insert into tp_habitaciones values
 (405, 290000.00, 2, 2, 2, 1);
 
 
-INSERT INTO pqrs (fecha, tipo_pqrs, urgencia, categoria, descripcion,solicitante, empleado, tipo_documento, numero_documento, estado)
-VALUES
-('2024-10-18', 'Reclamo', 'Alta', 'Servicios generales', 'El huésped reporta que la habitación no contaba con servicio de agua.', 'Juan', 'Pérez', 'Luis Gómez', 'CC', '1011234567', 'Pendiente'),
-('2024-03-12', 'Queja', 'Media', 'Aseo', 'Se reporta que las cobijas de la cama se encuentran en mal estado (sucias y manchadas), no hicieron el debido aseo en la habitación 73.', 'María', 'López', 'Sandra Torres', 'CC', '1098785643', 'Solucionado'),
-('2024-11-26', 'Reclamo', 'Alta', 'Mantenimiento', 'Se reporta una fuga de agua en la habitación 666.', 'Pedro', 'Mejía', 'Laura Ríos', 'TI', '1000289068', 'En proceso'),
-('2022-04-25', 'Queja', 'Media', 'Ambiente', 'Se reporta un extraño olor en el pasillo.', 'Carlos', 'Díaz', 'Alejandra Ruiz', 'CE', '1000289068', 'Pendiente'),
-('2023-09-01', 'Sugerencia', 'Baja', 'Recepción', 'El huésped sugiere colocar revistas en la sala de espera.', 'Ana', 'Martínez', 'Luis Vargas', 'CC', '1000289068', 'Solucionado'),
-('2024-09-16', 'Reclamo', 'Media', 'Dotación', 'Se reporta la falta de materiales de aseo personal (jabón) en la habitación 819.', 'Felipe', 'Rojas', 'Diana Herrera', 'CC', '1000289068', 'Pendiente');
 
 insert into tp_historialmantenimiento values
 (null,'Bombillos defectuosos, próximos a dañarse','Reemplazo de bombillos',20220505,20211001,'No aplica', 1, 819,1014596349,2),
@@ -459,11 +437,6 @@ INSERT INTO tp_reservas VALUES
 (NULL, 900000.00, '2025-11-15', '2025-11-19', 4, 0, 0, 2, '73', 1, 'Pago anticipado.', '1001001004', 1, '1014567890', '2025-08-19 09:20:00'),
 (NULL, 1200000.00, '2025-11-20', '2025-11-24', 5, 0, 1, 3, '18', 2, NULL, '1001001006', 2, '1015678901', '2025-08-20 11:55:00');
 
-
-INSERT INTO ti_responder VALUES
-(NULL, '¡Gracias por tu comentario! Lamentamos que hayas tenido una mala experiencia en el hotel Chimbanadas. Tu comentario nos ayuda a mejorar día a día.', 20240916, 1, 1014596349),
-(NULL, '¡Gracias por tu comentario! Lamentamos que hayas tenido una mala experiencia en el hotel Patroclín. Tu comentario nos ayuda a mejorar nuestros servicios día a día.', 20241018, 2, 1019987917),
-(NULL, '¡Gracias por tu sugerencia! Tus comentarios nos ayudan a mejorar nuestros servicios. Atte: Hotel Bondiola', 20230515, 3, 1000289068);
 
 
 
@@ -508,16 +481,6 @@ FROM tp_huespedes h
 INNER JOIN td_tipodocumento d ON h.tipoDocumento = d.id
 INNER JOIN td_sexo s ON h.sexo = s.id
 INNER JOIN td_estadocivil c ON h.estadoCivil = c.id;
-
-
-create view vista_pqrs AS
-select p.id as id, p.fechaRegistro as Fecha_Registro, p.descripcion as Descripcion, p.fechaCierre as Fecha_Cierre, h.nombres as Reporta_Huesped, h.apellidos as Reporta_Apellidos, pr.descripcion as Prioridad, c.descripcion as Categoria, e.descripcion as Estado, t.descripcion as Tipo
-from tp_pqrs p
-inner join tp_huespedes h on p.hue_numdocumento = h.numDocumento
-inner join td_prioridad pr on p.prioridad = pr.id
-inner join td_categoria c on p.categoria = c.id
-inner join td_estado e on p.estado = e.id
-inner join td_tipopqrs t on p.tipo = t.id;
 
 
 CREATE VIEW vista_respuestas AS

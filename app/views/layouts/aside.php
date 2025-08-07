@@ -21,7 +21,7 @@
     <nav class="sidebar-nav">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link active" href="../../views/homepage/homepage.php">
+                <a class="nav-link active" href="../homepage/homepage.php">
                     <i class="fas fa-home"></i>
                     <span>Home</span>
                 </a>
