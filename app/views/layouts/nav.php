@@ -1,14 +1,3 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LODGEHUB - Vista Completa</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-</head>
-<body>
-
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg" id="navbar">
     <div class="container-fluid">
@@ -36,7 +25,7 @@
             <nav aria-label="breadcrumb" class="mx-auto d-none d-lg-block">
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="#" class="text-white-50">Inicio</a></li>
-                    <li class="breadcrumb-item active text-white" aria-current="page">Usuarios</li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">Dashboard</li>
                 </ol>
             </nav>
             
@@ -103,7 +92,7 @@
     <nav class="sidebar-nav">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link" href="../../views/homepage/homepage.php">
+                <a class="nav-link active" href="../../views/homepage/homepage.php">
                     <i class="fas fa-home"></i>
                     <span>Home</span>
                 </a>
@@ -124,7 +113,7 @@
             </li>
             
             <li class="nav-item">
-                <a class="nav-link active" href="../../../app/views/Usuarios/lista.php">
+                <a class="nav-link" href="../../../app/views/Usuarios/lista.php">
                     <i class="fas fa-users"></i>
                     <span>Usuarios</span>
                 </a>
@@ -165,210 +154,255 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h2 class="page-title">
-                        <i class="fas fa-users text-primary me-2"></i>
-                        Gestión de Usuarios
+                        <i class="fas fa-tachometer-alt text-primary me-2"></i>
+                        Dashboard Principal
                     </h2>
-                    <p class="page-subtitle text-muted">Administra los usuarios del sistema</p>
+                    <p class="page-subtitle text-muted">Resumen general del sistema LODGEHUB</p>
                 </div>
-                <button class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>
-                    Nuevo Usuario
-                </button>
-            </div>
-        </div>
-        
-        <!-- Stats Cards -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="stats-card">
-                    <div class="stats-icon bg-primary">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="stats-content">
-                        <h3>248</h3>
-                        <p>Total Usuarios</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stats-card">
-                    <div class="stats-icon bg-success">
-                        <i class="fas fa-user-check"></i>
-                    </div>
-                    <div class="stats-content">
-                        <h3>195</h3>
-                        <p>Activos</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stats-card">
-                    <div class="stats-icon bg-warning">
-                        <i class="fas fa-user-clock"></i>
-                    </div>
-                    <div class="stats-content">
-                        <h3>28</h3>
-                        <p>Pendientes</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stats-card">
-                    <div class="stats-icon bg-danger">
-                        <i class="fas fa-user-times"></i>
-                    </div>
-                    <div class="stats-content">
-                        <h3>25</h3>
-                        <p>Bloqueados</p>
-                    </div>
+                <div class="date-display">
+                    <i class="fas fa-calendar-day me-2"></i>
+                    <span id="currentDate"></span>
                 </div>
             </div>
         </div>
-        
-        <!-- Tabla de usuarios -->
-        <div class="card">
-            <div class="card-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">Lista de Usuarios</h5>
-                    <div class="d-flex gap-2">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" class="form-control" placeholder="Buscar usuarios...">
+
+        <!-- Dashboard Sections -->
+        <div class="dashboard-sections">
+            <!-- Sección Reservas -->
+            <section class="dashboard-section reservas-section">
+                <h3 class="section-title">
+                    <span class="icon">📅</span>
+                    Reservas
+                </h3>
+                <div class="cards-grid">
+                    <div class="stats-card card-info" onclick="redirectTo('#reservas-hoy-inician')">
+                        <div class="stats-icon bg-primary">
+                            <i class="fas fa-calendar-plus"></i>
                         </div>
-                        <select class="form-select" style="width: auto;">
-                            <option>Todos</option>
-                            <option>Activos</option>
-                            <option>Inactivos</option>
-                        </select>
+                        <div class="stats-content">
+                            <h3>12</h3>
+                            <p>Inician Hoy</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card card-warning" onclick="redirectTo('#reservas-hoy-terminan')">
+                        <div class="stats-icon bg-warning">
+                            <i class="fas fa-calendar-minus"></i>
+                        </div>
+                        <div class="stats-content">
+                            <h3>8</h3>
+                            <p>Terminan Hoy</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card card-success" onclick="redirectTo('#reservas-activas')">
+                        <div class="stats-icon bg-success">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stats-content">
+                            <h3>45</h3>
+                            <p>Activas</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card card-pending" onclick="redirectTo('#reservas-pendientes')">
+                        <div class="stats-icon bg-secondary">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stats-content">
+                            <h3>23</h3>
+                            <p>Pendientes</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card card-inactive" onclick="redirectTo('#reservas-inactivas')">
+                        <div class="stats-icon bg-danger">
+                            <i class="fas fa-calendar-times"></i>
+                        </div>
+                        <div class="stats-content">
+                            <h3>7</h3>
+                            <p>Inactivas</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Usuario</th>
-                                <th>Email</th>
-                                <th>Rol</th>
-                                <th>Estado</th>
-                                <th>Último acceso</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar bg-primary">JD</div>
-                                        <div class="ms-3">
-                                            <h6 class="mb-0">Juan Pérez</h6>
-                                            <small class="text-muted">ID: #001</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>juan.perez@lodgehub.com</td>
-                                <td><span class="badge bg-success">Administrador</span></td>
-                                <td><span class="badge bg-success">Activo</span></td>
-                                <td>Hace 2 horas</td>
-                                <td>
-                                    <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-outline-primary" title="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn btn-outline-info" title="Ver">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-outline-danger" title="Eliminar">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar bg-info">MG</div>
-                                        <div class="ms-3">
-                                            <h6 class="mb-0">María García</h6>
-                                            <small class="text-muted">ID: #002</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>maria.garcia@lodgehub.com</td>
-                                <td><span class="badge bg-info">Recepcionista</span></td>
-                                <td><span class="badge bg-success">Activo</span></td>
-                                <td>Hace 1 día</td>
-                                <td>
-                                    <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-outline-primary" title="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn btn-outline-info" title="Ver">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-outline-danger" title="Eliminar">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar bg-warning">AL</div>
-                                        <div class="ms-3">
-                                            <h6 class="mb-0">Ana López</h6>
-                                            <small class="text-muted">ID: #003</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>ana.lopez@lodgehub.com</td>
-                                <td><span class="badge bg-secondary">Usuario</span></td>
-                                <td><span class="badge bg-warning">Pendiente</span></td>
-                                <td>Hace 3 días</td>
-                                <td>
-                                    <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-outline-primary" title="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn btn-outline-info" title="Ver">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-outline-danger" title="Eliminar">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            </section>
+
+            <!-- Sección Mantenimiento -->
+            <section class="dashboard-section mantenimiento-section">
+                <h3 class="section-title">
+                    <span class="icon">🔧</span>
+                    Mantenimiento
+                </h3>
+                <div class="cards-grid maintenance-grid">
+                    <div class="stats-card card-danger" onclick="redirectTo('#mantenimiento-pendientes')">
+                        <div class="stats-icon bg-danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stats-content">
+                            <h3>15</h3>
+                            <p>Pendientes</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card card-process" onclick="redirectTo('#mantenimiento-proceso')">
+                        <div class="stats-icon bg-warning">
+                            <i class="fas fa-cog fa-spin"></i>
+                        </div>
+                        <div class="stats-content">
+                            <h3>6</h3>
+                            <p>En Proceso</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card card-completed" onclick="redirectTo('#mantenimiento-finalizados')">
+                        <div class="stats-icon bg-success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stats-content">
+                            <h3>28</h3>
+                            <p>Finalizados</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección PQRS -->
+            <section class="dashboard-section pqrs-section">
+                <h3 class="section-title">
+                    <span class="icon">📞</span>
+                    PQRS
+                </h3>
+                <div class="cards-grid pqrs-grid">
+                    <div class="stats-card pqrs-high" onclick="redirectTo('#pqrs-alta')">
+                        <div class="stats-icon bg-danger">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="stats-content">
+                            <h3>3</h3>
+                            <p>Gravedad Alta</p>
+                            <small class="text-muted">Sin responder</small>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card pqrs-medium" onclick="redirectTo('#pqrs-media')">
+                        <div class="stats-icon bg-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stats-content">
+                            <h3>7</h3>
+                            <p>Gravedad Media</p>
+                            <small class="text-muted">Sin responder</small>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card pqrs-low" onclick="redirectTo('#pqrs-baja')">
+                        <div class="stats-icon bg-info">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="stats-content">
+                            <h3>12</h3>
+                            <p>Gravedad Baja</p>
+                            <small class="text-muted">Sin responder</small>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card pqrs-answered" onclick="redirectTo('#pqrs-respondidos')">
+                        <div class="stats-icon bg-success">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <div class="stats-content">
+                            <h3>156</h3>
+                            <p>Respondidos</p>
+                            <small class="text-muted">Total resueltos</small>
+                        </div>
+                    </div>
                 </div>
                 
-                <!-- Paginación -->
-                <nav class="mt-4">
-                    <ul class="pagination pagination-sm justify-content-center">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#">Anterior</a>
-                        </li>
-                        <li class="page-item active">
-                            <a class="page-link" href="#">1</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">2</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">3</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Siguiente</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+                <div class="pqrs-actions">
+                    <button class="btn btn-primary btn-lg" onclick="redirectTo('/pqrs/todos')">
+                        <i class="fas fa-list me-2"></i>
+                        Ver Todos los PQRS
+                    </button>
+                </div>
+            </section>
         </div>
     </div>
 </main>
+
+<script>
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const body = document.body;
+    
+    sidebar.classList.toggle('show');
+    body.classList.toggle('sidebar-open');
+    
+    // Solo mostrar overlay en móvil
+    if (window.innerWidth < 992) {
+        overlay.classList.toggle('show');
+    }
+    
+    // Cambiar el ícono del botón collapse
+    const collapseBtn = document.querySelector('.btn-collapse-sidebar i');
+    if (collapseBtn) {
+        if (sidebar.classList.contains('show')) {
+            collapseBtn.className = 'fas fa-chevron-left';
+        } else {
+            collapseBtn.className = 'fas fa-chevron-right';
+        }
+    }
+}
+
+// Función para redireccionar
+function redirectTo(url) {
+    console.log('Redirigiendo a:', url);
+    // Aquí puedes cambiar por window.location.href = url; cuando tengas las URLs reales
+    alert('Redirigiendo a: ' + url);
+}
+
+// Mostrar fecha actual
+function updateDate() {
+    const now = new Date();
+    const options = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    };
+    const dateElement = document.getElementById('currentDate');
+    if (dateElement) {
+        dateElement.textContent = now.toLocaleDateString('es-ES', options);
+    }
+}
+
+// Cerrar sidebar al hacer clic en un enlace solo en móvil
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebarLinks = document.querySelectorAll('.sidebar-nav .nav-link');
+    
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            if (window.innerWidth < 992) {
+                toggleSidebar();
+            }
+        });
+    });
+    
+    // Manejar resize de ventana
+    window.addEventListener('resize', function() {
+        const overlay = document.getElementById('sidebarOverlay');
+        
+        if (window.innerWidth >= 992) {
+            overlay.classList.remove('show');
+        }
+    });
+    
+    // Inicializar fecha
+    updateDate();
+    // Actualizar fecha cada minuto
+    setInterval(updateDate, 60000);
+});
+</script>
 
 <style>
 /* Variables CSS */
@@ -600,20 +634,20 @@ body {
 }
 
 .content-wrapper {
-    padding: 2rem;
+    padding: 1.5rem;
 }
 
 /* PAGE HEADER */
 .page-header {
     background: white;
     border-radius: 15px;
-    padding: 2rem;
-    margin-bottom: 2rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
     box-shadow: 0 2px 20px rgba(0,0,0,0.05);
 }
 
 .page-title {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 600;
     color: #333;
     margin: 0;
@@ -621,40 +655,94 @@ body {
 
 .page-subtitle {
     margin: 0;
-    font-size: 1rem;
+    font-size: 0.95rem;
+}
+
+.date-display {
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* DASHBOARD SECTIONS */
+.dashboard-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.dashboard-section {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+}
+
+.section-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.icon {
+    font-size: 1.5rem;
+}
+
+/* CARDS GRID */
+.cards-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.reservas-section .cards-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.maintenance-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.pqrs-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
 
 /* STATS CARDS */
 .stats-card {
     background: white;
-    border-radius: 15px;
-    padding: 1.5rem;
+    border-radius: 12px;
+    padding: 1.2rem;
     display: flex;
     align-items: center;
-    box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 15px rgba(0,0,0,0.08);
     transition: all 0.3s ease;
-    margin-bottom: 1rem;
+    cursor: pointer;
+    border: 1px solid #f0f0f0;
 }
 
 .stats-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
 }
 
 .stats-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 15px;
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     margin-right: 1rem;
+    flex-shrink: 0;
 }
 
 .stats-content h3 {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 700;
     margin: 0;
     color: #333;
@@ -663,70 +751,48 @@ body {
 .stats-content p {
     margin: 0;
     color: #666;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 500;
 }
 
-/* CARD STYLES */
-.card {
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 2px 20px rgba(0,0,0,0.05);
-    overflow: hidden;
-}
-
-.card-header {
-    background: white;
-    border-bottom: 1px solid #eee;
-    padding: 1.5rem;
-}
-
-.search-box {
-    position: relative;
-}
-
-.search-box i {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
+.stats-content small {
+    font-size: 0.75rem;
     color: #999;
 }
 
-.search-box input {
-    padding-left: 2.5rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+/* PQRS Colors */
+.pqrs-high {
+    border-left: 4px solid #dc3545;
 }
 
-/* TABLE STYLES */
-.table {
-    margin: 0;
+.pqrs-medium {
+    border-left: 4px solid #fd7e14;
 }
 
-.table th {
-    border-top: none;
-    border-bottom: 2px solid #eee;
+.pqrs-low {
+    border-left: 4px solid #0dcaf0;
+}
+
+.pqrs-answered {
+    border-left: 4px solid #198754;
+}
+
+/* PQRS Actions */
+.pqrs-actions {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.pqrs-actions .btn {
+    padding: 0.8rem 2rem;
+    border-radius: 25px;
     font-weight: 600;
-    color: #333;
-    padding: 1rem;
+    transition: all 0.3s ease;
 }
 
-.table td {
-    padding: 1rem;
-    vertical-align: middle;
-    border-top: 1px solid #f0f0f0;
-}
-
-.avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
-    font-size: 0.9rem;
+.pqrs-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 /* DROPDOWN STYLES */
@@ -787,86 +853,61 @@ body {
     }
     
     .page-header {
-        padding: 1.5rem;
+        padding: 1.2rem;
+    }
+    
+    .dashboard-section {
+        padding: 1.2rem;
     }
     
     .stats-card {
-        text-align: center;
         flex-direction: column;
+        text-align: center;
+        padding: 1rem;
     }
     
     .stats-icon {
         margin-right: 0;
-        margin-bottom: 1rem;
+        margin-bottom: 0.8rem;
     }
     
-    .d-flex.justify-content-between.align-items-center {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: stretch !important;
+    .cards-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     }
 }
 
 @media (max-width: 767.98px) {
-    .table-responsive {
-        font-size: 0.9rem;
+    .page-header .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1rem;
     }
     
-    .btn-group-sm .btn {
-        padding: 0.25rem 0.4rem;
+    .cards-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.8rem;
+    }
+    
+    .stats-card {
+        padding: 0.8rem;
+    }
+    
+    .stats-content h3 {
+        font-size: 1.4rem;
+    }
+    
+    .section-title {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .reservas-section .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 </style>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    const body = document.body;
-    
-    sidebar.classList.toggle('show');
-    body.classList.toggle('sidebar-open');
-    
-    // Solo mostrar overlay en móvil
-    if (window.innerWidth < 992) {
-        overlay.classList.toggle('show');
-    }
-    
-    // Cambiar el ícono del botón collapse
-    const collapseBtn = document.querySelector('.btn-collapse-sidebar i');
-    if (collapseBtn) {
-        if (sidebar.classList.contains('show')) {
-            collapseBtn.className = 'fas fa-chevron-left';
-        } else {
-            collapseBtn.className = 'fas fa-chevron-right';
-        }
-    }
-}
-
-// Cerrar sidebar al hacer clic en un enlace solo en móvil
-document.addEventListener('DOMContentLoaded', function() {
-    const sidebarLinks = document.querySelectorAll('.sidebar-nav .nav-link');
-    
-    sidebarLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            if (window.innerWidth < 992) {
-                toggleSidebar();
-            }
-        });
-    });
-    
-    // Manejar resize de ventana
-    window.addEventListener('resize', function() {
-        const overlay = document.getElementById('sidebarOverlay');
-        
-        if (window.innerWidth >= 992) {
-            overlay.classList.remove('show');
-        }
-    });
-});
-</script>
-
-</body>
-</html>

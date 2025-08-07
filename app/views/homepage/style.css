@@ -1,0 +1,341 @@
+/* Reset y configuración base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right, #BED8FF);
+    min-height: 100vh;
+    color: #333;
+}
+
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 5px;
+    background: linear-gradient(135deg, #000000);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.date {
+    font-size: 1rem;
+    color: #7f8c8d;
+    font-weight: 500;
+}
+
+/* Dashboard */
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Secciones */
+.section {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.icon {
+    font-size: 1.6rem;
+}
+
+/* Grids de tarjetas */
+.cards-grid {
+    display: grid;
+    gap: 15px;
+}
+
+/* Grid específico para reservas (5 columnas) */
+.reservas-section .cards-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+/* Grid específico para mantenimiento (3 columnas) */
+.maintenance-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* Grid específico para PQRS (4 columnas) */
+.pqrs-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+/* Tarjetas */
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    border-left: 4px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+}
+
+.card:hover::before {
+    transform: translateX(100%);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.card-header h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.card-icon {
+    font-size: 1.2rem;
+}
+
+.card-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.card-subtitle {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    font-weight: 500;
+}
+
+/* Estilos específicos por tipo de tarjeta */
+
+/* Reservas */
+.card-info {
+    border-left-color: #3498db;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.card-warning {
+    border-left-color: #f39c12;
+    background: linear-gradient(135deg, #ffffff 0%, #fffbf7 100%);
+}
+
+.card-success {
+    border-left-color: #27ae60;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fff9 100%);
+}
+
+.card-pending {
+    border-left-color: #9b59b6;
+    background: linear-gradient(135deg, #ffffff 0%, #fbf9ff 100%);
+}
+
+.card-inactive {
+    border-left-color: #e74c3c;
+    background: linear-gradient(135deg, #ffffff 0%, #fff8f8 100%);
+}
+
+/* Mantenimiento */
+.card-danger {
+    border-left-color: #e74c3c;
+    background: linear-gradient(135deg, #ffffff 0%, #fff8f8 100%);
+}
+
+.card-process {
+    border-left-color: #f39c12;
+    background: linear-gradient(135deg, #ffffff 0%, #fffbf7 100%);
+}
+
+.card-completed {
+    border-left-color: #27ae60;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fff9 100%);
+}
+
+/* PQRS */
+.pqrs-high {
+    border-left-color: #e74c3c;
+    background: linear-gradient(135deg, #ffffff 0%, #fff5f5 100%);
+}
+
+.pqrs-high:hover {
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+}
+
+.pqrs-medium {
+    border-left-color: #f39c12;
+    background: linear-gradient(135deg, #ffffff 0%, #fff9f0 100%);
+}
+
+.pqrs-medium:hover {
+    background: linear-gradient(135deg, #fff9f0 0%, #ffeedd 100%);
+}
+
+.pqrs-low {
+    border-left-color: #3498db;
+    background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
+}
+
+.pqrs-low:hover {
+    background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
+}
+
+.pqrs-answered {
+    border-left-color: #27ae60;
+    background: linear-gradient(135deg, #ffffff 0%, #f0fff4 100%);
+}
+
+.pqrs-answered:hover {
+    background: linear-gradient(135deg, #f0fff4 0%, #e8fced 100%);
+}
+
+/* Acciones PQRS */
+.pqrs-actions {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn-icon {
+    transition: transform 0.3s ease;
+}
+
+.btn-primary:hover .btn-icon {
+    transform: translateX(5px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .header {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .section {
+        padding: 15px;
+    }
+    
+    .section-title {
+        font-size: 1.3rem;
+    }
+    
+    .cards-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    
+    .card {
+        padding: 12px;
+    }
+    
+    .card-number {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .date {
+        font-size: 0.9rem;
+    }
+    
+    .section-title {
+        font-size: 1.2rem;
+        gap: 8px;
+    }
+    
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+}
