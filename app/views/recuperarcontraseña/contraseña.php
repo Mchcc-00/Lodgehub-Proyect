@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - LodgeHub</title>
-    <link rel="stylesheet" href="../../../public/assets/css/loginStyles.css"> <!-- Enlaza el archivo CSS -->
+    <link rel="stylesheet" href="../../../public/assets/css/loginStyles.css">
 </head>
 
 <body>
@@ -19,21 +19,50 @@
                 <div class="circle circle-3"></div>
                 <div class="circle circle-4"></div>
 
-                <form action="validarNuevaPassword.php" method="post">
+                <div class="recuperarcontraseña">
+                    <form action="validarNuevaPassword.php" method="post" id="passwordForm">
 
-                    <h4>Recupera tu contraseña</h4> 
+                        <h4>Recupera tu contraseña</h4> 
 
-                    <div class="input-group">
-                        <input type="password" id="password" name="new_password" placeholder="Nueva contraseña" required>
-                        <input type="hidden" name="id" value="<?php echo $_GET['id']; ?>" >
-                    </div>
-                    
-                    <button type="submit" class="recuperarcontraseña-button">Cambiar contraseña</button>
-                </form>
+                        <!-- Mostrar mensaje si existe -->
+                        <?php if (isset($_GET['mensaje'])): ?>
+                            <div class="alert">
+                                <?php echo htmlspecialchars($_GET['mensaje']); ?>
+                            </div>
+                        <?php endif; ?>
 
-                <?php
-                ?>
+                        <!-- Campo visible para número de documento -->
+                        <div class="input-group">
+                            <input type="text" 
+                                   id="numDocumento" 
+                                   name="numDocumento" 
+                                   placeholder="Número de documento" 
+                                   required 
+                                   maxlength="15"
+                                   value="<?php echo htmlspecialchars($_GET['id'] ?? $_GET['numDocumento'] ?? ''); ?>">
+                        </div>
 
+                        <div class="input-group">
+                            <input type="password" 
+                                   id="new_password" 
+                                   name="new_password" 
+                                   placeholder="Nueva contraseña" 
+                                   required 
+                                   minlength="6">
+                        </div>
+
+                        <div class="input-group">
+                            <input type="password" 
+                                   id="confirm_password" 
+                                   name="confirm_password" 
+                                   placeholder="Confirmar nueva contraseña" 
+                                   required 
+                                   minlength="6">
+                        </div>
+                        
+                        <button type="submit" class="recuperarcontraseña-button">Cambiar contraseña</button>
+                    </form>
+                </div>
 
             </div>
             <div class ="degrade-container"></div>
@@ -42,8 +71,34 @@
                 <h6>lodgehubgroup © 2025</h6>
             </div>
 
-
-            
         </div>
     </div>
+
+    <script>
+        document.getElementById('passwordForm').addEventListener('submit', function(e) {
+            const newPassword = document.getElementById('new_password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            const numDocumento = document.getElementById('numDocumento').value.trim();
+            
+            if (!numDocumento) {
+                e.preventDefault();
+                alert('Por favor ingresa tu número de documento.');
+                return false;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                e.preventDefault();
+                alert('Las contraseñas no coinciden.');
+                return false;
+            }
+            
+            if (newPassword.length < 6) {
+                e.preventDefault();
+                alert('La contraseña debe tener al menos 6 caracteres.');
+                return false;
+            }
+        });
+    </script>
+
 </body>
+</html>

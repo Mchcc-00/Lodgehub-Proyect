@@ -29,7 +29,7 @@
         <div id="primercuadro" class="cuadro-principal">
             <!-- Primer cuadro -->
             
-            <h4>NUEVOS | diarios</h4>
+            <h4>NUEVOS | diarioss</h4>
             <div class="row mt-1">
                 <div class="col--4">
                     <div id="reservas" class="item">RESERVAS</div>
