@@ -17,8 +17,8 @@ class Usuario
     //  @return bool Devuelve true si tuvo éxito, false si falló.
     public function crear(array $datos)
     {
-        $sql = "INSERT INTO tp_empleados
-                (numDocumento, nombres, apellidos, direccion, fechaNacimiento, numTelefono, telEmergencia, password, correo, rnt, nit, sexo, tipoDocumento, roles)
+        $sql = "INSERT INTO tp_usuarios
+                (numDocumento, tipoDocumento, nombres, apellidos, numTelefono, correo, sexo, fechaNacimiento, password, foto, tokenPassword, sesionCaducada, roles)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
@@ -26,18 +26,17 @@ class Usuario
             // El execute devuelve true o false directamente
             return $stmt->execute([
                 $datos['numDocumento'],
+                $datos['tipoDocumento'],
                 $datos['nombres'],
                 $datos['apellidos'],
-                $datos['direccion'],
-                $datos['fechaNacimiento'], 
                 $datos['numTelefono'],
-                $datos['telEmergencia'], 
-                $datos['password'], // El controlador le pasa el hash
                 $datos['correo'],
-                $datos['rnt'],
-                $datos['nit'],
                 $datos['sexo'],
-                $datos['tipoDocumento'],
+                $datos['fechaNacimiento'],
+                $datos['password'], // El controlador le pasa el hash 
+                $datos['foto'],
+                $datos['tokenPassword'],
+                $datos['sesionCaducada'],
                 $datos['roles']
             ]);
         } catch (PDOException $e) {
@@ -50,7 +49,7 @@ class Usuario
     //
     public function obtenerPorId($numDocumento)
     {
-        $sql = "SELECT * FROM tp_empleados WHERE numDocumento = ?";
+        $sql = "SELECT * FROM tp_usuarios WHERE numDocumento = ?";
         try {
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$numDocumento]);
@@ -65,12 +64,12 @@ class Usuario
     public function actualizar($id, array $datos)
     {
         // La consulta incluye todos los campos que queremos poder editar
-        $sql = "UPDATE tp_empleados SET 
-                numTelefono = ?, 
-                telEmergencia = ?, 
-                sexo = ?, 
-                correo = ?, 
-                direccion = ? 
+        $sql = "UPDATE tp_usuarios SET 
+                numTelefono = ?,
+                correo = ?,
+                password = ?,
+                foto = ?, 
+            
             WHERE numDocumento = ?";
 
         try {
@@ -79,10 +78,10 @@ class Usuario
             // El array de execute debe tener los valores en el mismo orden que los '?'
             return $stmt->execute([
                 $datos['numTelefono'],
-                $datos['telEmergencia'],
-                $datos['sexo'],
                 $datos['correo'],
-                $datos['direccion'],
+                $datos['correo'],
+                $datos['password'],
+                $datos['foto'],
                 $id // Aquí usamos el ID del usuario que queremos actualizar
             ]);
         } catch (PDOException $e) {
@@ -95,7 +94,7 @@ class Usuario
     //@return bool Devuelve true si tuvo éxito, false si falló.
     public function eliminar($numDocumento)
     {
-        $sql = "DELETE FROM tp_empleados WHERE numDocumento = ?";
+        $sql = "DELETE FROM tp_usuarios WHERE numDocumento = ?";
 
         try {
             $stmt = $this->db->prepare($sql);

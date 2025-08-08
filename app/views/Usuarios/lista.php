@@ -28,7 +28,7 @@ $currentPage = "usuarios";
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     
     <!-- Estilos de los layouts (nav y sidebar) -->
-    <link href="../../../public/assets/css/layoutStyles.css" rel="stylesheet">
+    <link href="../../../public/assets/css/styleNav.css" rel="stylesheet">
     <!-- Estilos originales de la vista -->
     <link rel="stylesheet" href="../../../public/assets/css/styles.css">
     

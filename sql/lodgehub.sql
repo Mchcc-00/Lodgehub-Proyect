@@ -98,6 +98,7 @@ create table if not exists tp_hotel (id INT (3) AUTO_INCREMENT NOT NULL,
                                     numDocumento VARCHAR(15) NOT NULL,  -- Referencia al administrador del hotel
                                     telefono VARCHAR(15),
                                     correo VARCHAR(100),
+                                    foto varchar (255),
 
                                     PRIMARY KEY (id),
                                     FOREIGN KEY (numDocumento) REFERENCES tp_usuarios (numDocumento)
