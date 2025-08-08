@@ -1,0 +1,67 @@
+:root {
+    --primary-color: #437baf;
+    --primary-dark: #2c5282;
+    --sidebar-width: 280px;
+    --navbar-height: 70px;
+}
+
+* {
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f8f9fa;
+}
+
+/* NAVBAR STYLES */
+#navbar {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)) !important;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+    border: none;
+    padding: 0;
+    position: fixed;
+    top: 5px; /* Separación superior - CAMBIO AQUÍ */
+    left: 5px; /* Separación izquierda - CAMBIO AQUÍ */
+    right: 5px; /* Separación derecha - CAMBIO AQUÍ */
+    z-index: 1050;
+    height: var(--navbar-height);
+    border-radius: 20px; /* Border radius en todos los lados del navbar */
+}
+
+.navbar .container-fluid {
+    border-radius: 20px; /* Mantener consistencia con el navbar */
+    padding: 0.8rem 1.5rem;
+    height: 100%;
+}
+
+
+.navbar-brand {
+    color: white !important;
+    font-weight: 700;
+    font-size: 1.3rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.breadcrumb {
+    background: none;
+    padding: 0;
+}
+
+.btn-user {
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-user:hover {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    transform: translateY(-2px);
+}
