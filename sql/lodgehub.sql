@@ -154,33 +154,25 @@ INSERT INTO td_tipoHabitacion (descripcion, cantidad) VALUES
 
 INSERT INTO tp_habitaciones (numero, costo, capacidad, tipoHabitacion, foto, descripcion, estado, descripcionMantenimiento, estadoMantenimiento) VALUES
 ('101', 80000.00, 1, 1, 'hab_101.jpg', 'Habitación individual con vista al jardín, incluye TV, WiFi y baño privado', 'Disponible', NULL, 'Activo'),
-
 ('201', 120000.00, 2, 2, 'hab_201.jpg', 'Habitación doble con balcón, aire acondicionado, TV LCD y minibar', 'Ocupado', NULL, 'Activo'),
-
 ('301', 250000.00, 4, 3, 'hab_301.jpg', 'Suite presidencial con sala, comedor, jacuzzi y vista panorámica', 'Mantenimiento', 'Reparación del sistema de aire acondicionado', 'Activo');
 
 
 INSERT INTO tp_pqrs (tipo, descripcion, numdocumento, prioridad, categoria, estado, fechaFinalizacion, respuesta) VALUES
 ('Quejas', 'El aire acondicionado de la habitación 201 no funciona correctamente, hace mucho ruido durante la noche', '5555666677', 'Alto', 'Habitación', 'Pendiente', NULL, NULL),
-
 ('Sugerencias', 'Sería excelente si pudieran incluir un servicio de desayuno buffet en el restaurante del hotel', '5555666677', 'Bajo', 'Servicio', 'Finalizado', '2025-01-10 14:30:00', 'Gracias por su sugerencia. La implementaremos en el próximo trimestre.'),
-
 ('Peticiones', 'Solicito información sobre tarifas especiales para empresas y descuentos por estadías prolongadas', '5555666677', 'Bajo', 'Servicio', 'Finalizado', '2025-01-08 10:15:00', 'Le enviamos la información a su correo electrónico.');
 
 
 INSERT INTO tp_hotel (nit, nombre, direccion, numDocumento, telefono, correo) VALUES
 ('900123456-1', 'LodgeHub Plaza Hotel', 'Carrera 15 #85-23, Zona Rosa, Bogotá', '1234567890', '6015551234', 'info@lodgehubplaza.com'),
-
 ('900789123-4', 'LodgeHub Business Center', 'Avenida 68 #45-67, Centro Internacional, Bogotá', '1234567890', '6017891234', 'reservas@lodgehubbusiness.com'),
-
 ('900456789-7', 'LodgeHub Garden Resort', 'Km 5 Vía La Calera, Cundinamarca', '9876543210', '6014567890', 'contacto@lodgehubgarden.com');
 
 
 INSERT INTO tp_reservas (pagoFinal, fechainicio, fechaFin, cantidadAdultos, cantidadNinos, cantidadDiscapacitados, motivoReserva, numeroHabitacion, metodoPago, informacionAdicional, us_numDocumento, hue_numDocumento, estado) VALUES
 (240000.00, '2025-02-15', '2025-02-18', 2, 0, 0, 'Personal', '201', 'Tarjeta', 'Solicitan habitación en piso alto con vista. Celebración de aniversario.', '9876543210', '1111222233', 'Activa'),
-
 (160000.00, '2025-02-20', '2025-02-22', 1, 0, 0, 'Negocios', '101', 'PSE', 'Requiere facturación a nombre de la empresa. Check-in tardío.', '5555666677', '4444555566', 'Pendiente'),
-
 (500000.00, '2025-03-01', '2025-03-03', 2, 1, 0, 'Familiar', '301', 'Efectivo', 'Viaje familiar con niño de 8 años. Solicitan cuna adicional.', '1234567890', '7777888899', 'Activa');
 
 
@@ -192,9 +184,7 @@ INSERT INTO td_factura (infoReserva, infoHotel, total) VALUES
 
 INSERT INTO tp_mantenimiento (numeroHabitacion, tipo, problemaDescripcion, frecuencia, cantFrecuencia, prioridad, numDocumento, estado) VALUES
 ('301', 'Eléctrico', 'Aire acondicionado no enciende correctamente', 'No', 'Diario', 'Alto', '9876543210', 'Pendiente'),
-
 ('101', 'Limpieza', 'Limpieza profunda de alfombras y cortinas', 'Sí', 'Mensual', 'Bajo', '9876543210', 'Finalizado'),
-
 ('201', 'Estructura', 'Revisión de grietas en el techo del baño', 'No', 'Diario', 'Alto', '1234567890', 'Pendiente');
 
 
