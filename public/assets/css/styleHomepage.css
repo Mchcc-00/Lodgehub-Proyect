@@ -262,7 +262,7 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 6px 20px rgba(234, 102, 102, 0.3);
 }
 
 .btn-primary:hover {

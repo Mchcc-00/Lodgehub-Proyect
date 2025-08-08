@@ -64,7 +64,62 @@ if($filas > 0){
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Recuperación de Contraseña - LodgeHub</title>
-            <style>
+        </head>
+        <body>
+            <div class="email-container">
+                <!-- Header -->
+                <div class="header">
+                    <div class="logo">';
+        
+        // Usar icono de candado mejorado
+        $htmlBody .= '<svg viewBox="0 0 24 24" fill="white" width="50" height="50">
+                        <path d="M6 10h1V7c0-2.76 2.24-5 5-5s5 2.24 5 5v3h1c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2zm3-3c0-1.66 1.34-3 3-3s3 1.34 3 3v3H9V7zm3 9c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+                      </svg>';
+        
+        $htmlBody .= '</div>
+                    <div class="brand-name">LodgeHub</div>
+                    <div class="header-subtitle">Sistema de Gestión Hotelera</div>
+                </div>
+                
+                <!-- Content -->
+                <div class="content">
+                    <h1 class="title">Recuperación de Contraseña</h1>
+                    
+                    <p class="message">
+                        ¡Hola! Recibimos una solicitud para restablecer tu contraseña. 
+                        Haz clic en el botón de abajo para continuar con el proceso de recuperación.
+                    </p>
+                    
+                    <a href="http://localhost/lodgehub/app/views/recuperarcontraseña/Contraseña.php?id='.$numDocumento.'" class="cta-button">
+                        Recuperar Contraseña
+                    </a>
+                    
+                    <div class="security-info">
+                        <div class="security-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2L2 7v10c0 5.55 3.84 9.739 9 11 5.16-1.261 9-5.45 9-11V7l-10-5z"/>
+                            </svg>
+                            Información de Seguridad
+                        </div>
+                        <div class="security-text">
+                            Este enlace es válido por 24 horas. Si no solicitaste este cambio, 
+                            puedes ignorar este correo de forma segura. Tu contraseña actual 
+                            permanecerá sin cambios.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="footer">
+                    <div class="footer-text">
+                        Este es un mensaje automático de <strong>LodgeHub</strong><br>
+                        Si tienes problemas, contacta a nuestro 
+                        <a href="mailto:soporte@lodgehub.com" class="footer-link">equipo de soporte</a>
+                    </div>
+                </div>
+            </div>
+        </body>
+                    <style>
                 * {
                     margin: 0;
                     padding: 0;
@@ -277,62 +332,8 @@ if($filas > 0){
                     }
                 }
             </style>
-        </head>
-        <body>
-            <div class="email-container">
-                <!-- Header -->
-                <div class="header">
-                    <div class="logo">';
-        
-        // Usar icono de candado mejorado
-        $htmlBody .= '<svg viewBox="0 0 24 24" fill="white" width="50" height="50">
-                        <path d="M6 10h1V7c0-2.76 2.24-5 5-5s5 2.24 5 5v3h1c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2zm3-3c0-1.66 1.34-3 3-3s3 1.34 3 3v3H9V7zm3 9c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
-                      </svg>';
-        
-        $htmlBody .= '</div>
-                    <div class="brand-name">LodgeHub</div>
-                    <div class="header-subtitle">Sistema de Gestión Hotelera</div>
-                </div>
-                
-                <!-- Content -->
-                <div class="content">
-                    <h1 class="title">Recuperación de Contraseña</h1>
-                    
-                    <p class="message">
-                        ¡Hola! Recibimos una solicitud para restablecer tu contraseña. 
-                        Haz clic en el botón de abajo para continuar con el proceso de recuperación.
-                    </p>
-                    
-                    <a href="http://localhost/lodgehub/app/views/recuperarcontraseña/Contraseña.php?id='.$numDocumento.'" class="cta-button">
-                        Recuperar Contraseña
-                    </a>
-                    
-                    <div class="security-info">
-                        <div class="security-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2L2 7v10c0 5.55 3.84 9.739 9 11 5.16-1.261 9-5.45 9-11V7l-10-5z"/>
-                            </svg>
-                            Información de Seguridad
-                        </div>
-                        <div class="security-text">
-                            Este enlace es válido por 24 horas. Si no solicitaste este cambio, 
-                            puedes ignorar este correo de forma segura. Tu contraseña actual 
-                            permanecerá sin cambios.
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Footer -->
-                <div class="footer">
-                    <div class="footer-text">
-                        Este es un mensaje automático de <strong>LodgeHub</strong><br>
-                        Si tienes problemas, contacta a nuestro 
-                        <a href="mailto:soporte@lodgehub.com" class="footer-link">equipo de soporte</a>
-                    </div>
-                </div>
-            </div>
-        </body>
-        </html>';
+        </html>'
+        ;
 
         $mail->Body = $htmlBody;
         $mail->AltBody = 'Hola, este es un mensaje de recuperación de contraseña. Por favor visita: http://localhost/lodgehub/app/views/recuperarcontraseña/Contraseña.php?id='.$numDocumento;
