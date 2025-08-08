@@ -6,7 +6,6 @@
 }
 
 * {
-    margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
@@ -16,118 +15,7 @@ body {
     background: #f8f9fa;
 }
 
-/* NAVBAR STYLES */
-#navbar {
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)) !important;
-    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-    border: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1050;
-    height: var(--navbar-height);
-}
 
-.navbar .container-fluid {
-    padding: 0.8rem 1.5rem;
-    height: 100%;
-}
-
-.btn-sidebar-toggle {
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    padding: 0.5rem 0.8rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.btn-sidebar-toggle:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    transform: scale(1.05);
-}
-
-.navbar-brand {
-    color: white !important;
-    font-weight: 700;
-    font-size: 1.3rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-/* SIDEBAR STYLES */
-.sidebar {
-    position: fixed;
-    top: var(--navbar-height);
-    left: 0;
-    width: var(--sidebar-width);
-    height: calc(100vh - var(--navbar-height));
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-    color: white;
-    transition: transform 0.3s ease;
-    z-index: 1040;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-    transform: translateX(-100%);
-}
-
-.sidebar.show {
-    transform: translateX(0);
-}
-
-.sidebar-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.sidebar-nav .nav-link {
-    color: rgba(255, 255, 255, 0.8);
-    padding: 1rem 1.5rem;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.sidebar-nav .nav-link:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    transform: translateX(5px);
-}
-
-.sidebar-nav .nav-link.active {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
-    border-right: 3px solid white;
-}
-
-.sidebar-nav .nav-link i {
-    width: 20px;
-    margin-right: 1rem;
-    text-align: center;
-    font-size: 1.1rem;
-}
-
-.sidebar-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1035;
-    display: none;
-}
-
-.sidebar-overlay.show {
-    display: block;
-}
 
 /* MAIN CONTENT STYLES */
 .main-content {
