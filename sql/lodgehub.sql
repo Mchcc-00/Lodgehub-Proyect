@@ -103,7 +103,7 @@ create table if not exists tp_hotel (id INT (3) AUTO_INCREMENT NOT NULL,
                                     FOREIGN KEY (numDocumento) REFERENCES tp_usuarios (numDocumento)
                                     )ENGINE=INNODB;                                        
                                       
-CREATE TABLE IF NOT EXISTS td_factura (id INT (3) AUTO_INCREMENT NOT NULL,
+CREATE TABLE IF NOT EXISTS tp_factura (id INT (3) AUTO_INCREMENT NOT NULL,
                                       infoReserva INT (3) NOT NULL,
                                       fechaFactura DATETIME DEFAULT CURRENT_TIMESTAMP,
                                       infoHotel INT (3) NOT NULL,
@@ -134,7 +134,7 @@ CREATE TABLE IF NOT EXISTS tp_mantenimiento (id INT (4) AUTO_INCREMENT NOT NULL,
 /*inserts*/
 
 INSERT INTO tp_usuarios (numDocumento, tipoDocumento, nombres, apellidos, numTelefono, correo, sexo, fechaNacimiento, password, foto, tokenPassword, sesionCaducada, roles) VALUES
-('1000289068', 'Cédula de Ciudadanía', 'Favian Alejandro', 'Machuca Pedraza', '3116182673', 'bleachowl98@gmail.com', 'Hombre', '15-10-2003', '123456789', 'foto_favian',)
+('1000289068', 'Cédula de Ciudadanía', 'Favian Alejandro', 'Machuca Pedraza', '3116182673', 'bleachowl98@gmail.com', 'Hombre', '15-10-2003', '123456789', 'foto_favian', NULL, 'Activo', 'Colaborador'),
 ('1234567890', 'Cédula de Ciudadanía', 'Juan Carlos', 'Pérez García', '3001234567', 'juan.perez@lodgehub.com', 'Hombre', '1985-03-15', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'foto_juan.jpg', NULL, 'Activo', 'Administrador'),
 ('9876543210', 'Cédula de Ciudadanía', 'María Fernanda', 'González López', '3109876543', 'maria.gonzalez@lodgehub.com', 'Mujer', '1990-07-22', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'foto_maria.jpg', NULL, 'Activo', 'Colaborador'),
 ('5555666677', 'Cédula de Ciudadanía', 'Carlos Eduardo', 'Ramírez Silva', '3205556666', 'carlos.ramirez@lodgehub.com', 'Hombre', '1988-11-10', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'foto_carlos.jpg', NULL, 'Activo', 'Usuario'),
@@ -177,7 +177,7 @@ INSERT INTO tp_reservas (pagoFinal, fechainicio, fechaFin, cantidadAdultos, cant
 (500000.00, '2025-03-01', '2025-03-03', 2, 1, 0, 'Familiar', '301', 'Efectivo', 'Viaje familiar con niño de 8 años. Solicitan cuna adicional.', '1234567890', '7777888899', 'Activa');
 
 
-INSERT INTO td_factura (infoReserva, infoHotel, total) VALUES
+INSERT INTO tp_factura (infoReserva, infoHotel, total) VALUES
 (1, 1, 240000.00),
 (2, 1, 160000.00),
 (3, 2, 500000.00);
@@ -389,7 +389,7 @@ SELECT
         WHEN f.total < r.pagoFinal THEN 'PARCIAL'
         ELSE 'EXCEDIDO'
     END AS tipoFacturacion
-FROM td_factura f
+FROM tp_factura f
     INNER JOIN tp_reservas r ON f.infoReserva = r.id
     INNER JOIN tp_huespedes h ON r.hue_numDocumento = h.numDocumento
     INNER JOIN tp_habitaciones hab ON r.numeroHabitacion = hab.numero
@@ -437,7 +437,7 @@ FROM tp_hotel h
     INNER JOIN tp_usuarios u ON h.numDocumento = u.numDocumento
     LEFT JOIN tp_habitaciones hab ON 1=1  -- Todas las habitaciones (asumiendo un solo hotel)
     LEFT JOIN tp_reservas r ON hab.numero = r.numeroHabitacion
-    LEFT JOIN td_factura f ON h.id = f.infoHotel
+    LEFT JOIN tp_factura f ON h.id = f.infoHotel
 GROUP BY h.id;
 
 -- 8. VISTA_PQRS
@@ -504,7 +504,7 @@ CREATE INDEX idx_mantenimiento_habitacion ON tp_mantenimiento(numeroHabitacion);
 CREATE INDEX idx_mantenimiento_usuario ON tp_mantenimiento(numDocumento);
 CREATE INDEX idx_pqrs_usuario ON tp_pqrs(numdocumento);
 CREATE INDEX idx_habitaciones_tipo ON tp_habitaciones(tipoHabitacion);
-CREATE INDEX idx_factura_reserva ON td_factura(infoReserva);
-CREATE INDEX idx_factura_hotel ON td_factura(infoHotel);
+CREATE INDEX idx_factura_reserva ON tp_factura(infoReserva);
+CREATE INDEX idx_factura_hotel ON tp_factura(infoHotel);
 
 
