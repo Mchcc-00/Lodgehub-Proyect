@@ -1,522 +1,515 @@
 CREATE DATABASE IF NOT EXISTS Lodgehub;
 USE Lodgehub;
 
-
-
-CREATE TABLE IF NOT EXISTS td_tipoDocumento(id INT (3) AUTO_INCREMENT NOT NULL,
-                                            descripcion VARCHAR (30) NOT NULL,
-
-                                            PRIMARY KEY (id)
-                                            );
-
-
-
-CREATE TABLE IF NOT EXISTS td_sexo (id INT (3) AUTO_INCREMENT NOT NULL,
-                                    descripcion VARCHAR (20) NOT NULL,
-
-                                    PRIMARY KEY (id)
-                                    );
-
-
-
-CREATE TABLE IF NOT EXISTS td_estadoCivil (id INT (3) AUTO_INCREMENT NOT NULL,
-                                            descripcion VARCHAR (20) NOT NULL,
-
-                                            PRIMARY KEY (id)
-                                            );
-
-
+CREATE TABLE IF NOT EXISTS tp_usuarios (numDocumento VARCHAR(15) NOT NULL,
+                                        tipoDocumento ENUM ('Cédula de Ciudadanía','Tarjeta de Identidad','Cedula de Extranjeria','Pasaporte','Registro Civil') NOT NULL, 
+                                        nombres VARCHAR(50) NOT NULL,
+                                        apellidos VARCHAR(50) NOT NULL,
+                                        numTelefono VARCHAR (15) NOT NULL,
+                                        correo VARCHAR(30) NOT NULL,
+                                        sexo ENUM ('Hombre','Mujer','Otro','Prefiero no decirlo') NOT NULL,
+                                        fechaNacimiento DATE NOT NULL,
+                                        password varchar (255) NOT NULL,
+                                        foto varchar (255),
+                                        tokenPassword varchar (100) ,
+                                        sesionCaducada ENUM('Activo','Inactivo') NOT NULL DEFAULT 'Activo',
+                                        roles ENUM ('Administrador','Colaborador','Usuario') NOT NULL,
+                                        
+                                        PRIMARY KEY (numdocumento)          
+                                                )ENGINE=INNODB;
 
 CREATE TABLE IF NOT EXISTS tp_huespedes (numDocumento VARCHAR(15) NOT NULL,
                                         numTelefono VARCHAR (15) NOT NULL,
                                         correo VARCHAR(30) NOT NULL,
                                         nombres VARCHAR(50) NOT NULL,
                                         apellidos VARCHAR(50) NOT NULL,
-                                        tipoDocumento INT(3) NOT NULL,
-                                        sexo INT(3) NOT NULL,
-                                        estadoCivil INT (3) NOT NULL,
+                                        tipoDocumento ENUM ('Cédula de Ciudadanía','Tarjeta de Identidad','Cedula de Extranjeria','Pasaporte','Registro Civil') NOT NULL,
+                                        sexo ENUM ('Hombre','Mujer','Otro','Prefiero no decirlo') NOT NULL,
 
 
-                                        PRIMARY KEY (numDocumento),
-                                        FOREIGN KEY (tipoDocumento) REFERENCES td_tipodocumento (id),
-                                        FOREIGN KEY (sexo) REFERENCES td_sexo (id),
-                                        FOREIGN KEY (estadoCivil) REFERENCES td_estadocivil (id)
+                                        PRIMARY KEY (numDocumento)
                                         )ENGINE=INNODB;
-
-
 
                                             
 CREATE TABLE IF NOT EXISTS td_tipoHabitacion (id INT (3) AUTO_INCREMENT NOT NULL,
                                             descripcion VARCHAR (20) NOT NULL,
+                                            cantidad INT (3) NOT NULL DEFAULT 0,
 
                                             PRIMARY KEY (id)
                                             )ENGINE=INNODB;
-
-
-
-CREATE TABLE IF NOT EXISTS td_tamano (id INT (3) AUTO_INCREMENT NOT NULL,
-                                    descripcion VARCHAR (20) NOT NULL,
-
-                                    PRIMARY KEY (id)
-                                    )ENGINE=INNODB;
-
-
-
-CREATE TABLE IF NOT EXISTS td_estado (id INT (3) AUTO_INCREMENT NOT NULL,
-                                          descripcion VARCHAR (20) NOT NULL,
-                                          
-                                          PRIMARY KEY (id)
-                                          )ENGINE=INNODB;
-
-
 
 CREATE TABLE IF NOT EXISTS tp_habitaciones (numero VARCHAR (5) NOT NULL,
-                                            costo DECIMAL (10,2) NOT NULL,
+                                            costo DECIMAL (10,2) NOT NULL, 
                                             capacidad INT (3) NOT NULL,
                                             tipoHabitacion INT (3) NOT NULL,
-                                            tamano INT (3) NOT NULL,
-                                            estado INT (3) NOT NULL,
-
+                                            foto VARCHAR (255) DEFAULT NULL,
+                                            descripcion TEXT DEFAULT NULL,
+                                            estado ENUM ('Disponible','Ocupado', 'Mantenimiento') NOT NULL,
+                                            descripcionMantenimiento TEXT DEFAULT NULL,
+                                            estadoMantenimiento ENUM ('Activo','Inactivo') NOT NULL DEFAULT 'Activo',
 
                                             PRIMARY KEY (numero),
-                                            FOREIGN KEY (tipoHabitacion) REFERENCES td_tipohabitacion (id),
-                                            FOREIGN KEY (tamano) REFERENCES td_tamano (id),
-                                            FOREIGN KEY (estado) REFERENCES td_estado (id)
+                                            FOREIGN KEY (tipoHabitacion) REFERENCES td_tipohabitacion (id)
                                             )ENGINE=INNODB;
 
-
-
-CREATE TABLE IF NOT EXISTS td_roles (id INT (3) AUTO_INCREMENT NOT NULL,
-                                    descripcion VARCHAR (20) NOT NULL,
-
-                                    PRIMARY KEY (id)
-                                    )ENGINE=INNODB;
-
-
-
-CREATE TABLE IF NOT EXISTS tp_empleados(numDocumento VARCHAR (15) NOT NULL,
-                                nombres VARCHAR (40) NOT NULL,
-                                apellidos VARCHAR (40) NOT NULL,
-                                direccion VARCHAR (30) NOT NULL,
-                                fechaNacimiento DATE NOT NULL,
-                                numTelefono VARCHAR (15) NOT NULL,
-                                telEmergencia VARCHAR (15) NOT NULL,
-                                password varchar (255) NOT NULL,
-                                correo VARCHAR (250) NOT NULL,
-                                rnt int (10) ,
-                                nit int (10) ,
-                                foto varchar (255),
-                                tokenPassword varchar (100) ,
-                                sesionCaducada ENUM('Activo','Inactivo') NOT NULL DEFAULT 'Activo',
-                                sexo INT (3) NOT NULL,
-                                tipoDocumento INT (3) NOT NULL,
-                                roles INT (3) NOT NULL,
-                                
-
-                                PRIMARY KEY (numdocumento),
-                                FOREIGN KEY (sexo) REFERENCES td_sexo (id),
-                                FOREIGN KEY (tipoDocumento) REFERENCES td_tipodocumento (id),
-                                FOREIGN KEY (roles) REFERENCES td_roles (id)
-                                )ENGINE=INNODB;
-
-
-
-CREATE TABLE IF NOT EXISTS td_tipoPqrs (id INT (3) AUTO_INCREMENT NOT NULL,
-                                      descripcion VARCHAR (30) NOT NULL,
-
-                                      PRIMARY KEY (id)
-                                      )ENGINE=INNODB;
-
-
-
-CREATE TABLE IF NOT EXISTS td_categoria (id INT (3) AUTO_INCREMENT NOT NULL,
-                                        descripcion VARCHAR (20) NOT NULL,
-
-                                        PRIMARY KEY (id)
-                                        )ENGINE=INNODB;
-
-
-
-CREATE TABLE IF NOT EXISTS td_prioridad (id INT (3) AUTO_INCREMENT NOT NULL,
-                                        descripcion VARCHAR (20) NOT NULL,
-
-                                        PRIMARY KEY (id)
-                                        ) ENGINE=INNODB;
-
-
-
 CREATE TABLE IF NOT EXISTS tp_pqrs (id INT (10) AUTO_INCREMENT NOT NULL,
-                                    fechaRegistro DATE NOT NULL,
-                                    tipo_pqrs VARCHAR (20) NOT NULL,
-                                    urgencia VARCHAR (20) NOT NULL,
+                                    fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                    fechaLimite  DATE DEFAULT (DATE_ADD(CURRENT_DATE, INTERVAL 5 DAY)),
+                                    tipo ENUM ('Peticiones','Quejas','Reclamos','Sugerencias','Felicitaciones') NOT NULL,
                                     descripcion TEXT NOT NULL,
-                                    hue_numdocumento VARCHAR (15) NOT NULL,
-                                    prioridad INT (3) NOT NULL,
-                                    categoria INT(3) NOT  NULL,
-                                    estado INT (3) NOT NULL,
-                                    tipo INT(3) NOT NULL,
+                                    numdocumento VARCHAR (15) NOT NULL,
+                                    prioridad ENUM ('Bajo','Alto') NOT NULL,
+                                    categoria ENUM ('Servicio','Habitación','Atención','Otro') NOT  NULL,
+                                    estado ENUM ('Pendiente', 'Finalizado') NOT NULL,
+                                    fechaFinalizacion DATETIME DEFAULT NULL,
+                                    respuesta TEXT DEFAULT NULL,
 
-
-                                      PRIMARY KEY (id),
-                                      FOREIGN KEY (hue_numdocumento) REFERENCES tp_huespedes (numDocumento),
-                                      FOREIGN KEY (prioridad) REFERENCES td_prioridad (id),
-                                      FOREIGN KEY (categoria) REFERENCES td_categoria (id),
-                                      FOREIGN KEY (estado) REFERENCES td_estado (id),
-                                      FOREIGN KEY (tipo) REFERENCES td_tipoPqrs (id)
-                                      ) ENGINE=INNODB;
-
-
-
-CREATE TABLE IF NOT EXISTS td_motivoReserva (id INT (3) AUTO_INCREMENT NOT NULL,
-                                            descripcion VARCHAR (20) NOT NULL,
-
-                                            PRIMARY KEY (id)
-                                            ) ENGINE=INNODB;
-
-
-
-CREATE TABLE IF NOT EXISTS td_metodoPago (id INT (3) AUTO_INCREMENT NOT NULL,
-                                        descripcion VARCHAR (30) NOT NULL,
-
-                                        PRIMARY KEY (id)
-                                        )ENGINE=INNODB;
-
-
+                                    PRIMARY KEY (id),
+                                    FOREIGN KEY (numdocumento) REFERENCES tp_usuarios (numDocumento)
+                                    ) ENGINE=INNODB;
 
 CREATE TABLE IF NOT EXISTS tp_reservas (id INT (3) AUTO_INCREMENT NOT NULL,
-                                        costo DECIMAL(10,2) NOT NULL,
+                                        pagoFinal DECIMAL(30,2) NOT NULL, -- se multiplica la habitación por la cantidad de días
                                         fechainicio DATE NOT NULL,
                                         fechaFin DATE NOT NULL,
-                                        cantidadAdultos INT (2) NULL,
-                                        cantidadNinos INT (2) NULL,
-                                        cantidadDiscapacitados INT (2) NULL,
-                                        motivoReserva INT (3) NOT NULL,
-                                        numeroHabitacion VARCHAR (5) NOT NULL,
-                                        metodoPago int (3) NOT NULL,
+                                        cantidadAdultos INT (2),
+                                        cantidadNinos INT (2),
+                                        cantidadDiscapacitados INT (2), 
+                                        motivoReserva ENUM ('Negocios','Personal','Viaje','Familiar', 'Otro') NOT NULL,
+                                        numeroHabitacion VARCHAR (10) NOT NULL,
+                                        metodoPago ENUM ('Tarjeta','Efectivo','PSE') NOT NULL,
                                         informacionAdicional TEXT,
-                                        emp_numdocumento VARCHAR (15) NOT NULL,
-                                        estado INT (3) NOT NULL,
-                                        hue_numdocumento VARCHAR (15) NOT NULL,
+                                        us_numDocumento VARCHAR (15) NOT NULL,
+                                        hue_numDocumento VARCHAR (15) NOT NULL,
+                                        estado ENUM ('Activa', 'Cancelada', 'Finalizada', 'Pendiente') NOT NULL,
                                         fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
 
 
                                         PRIMARY KEY (id),
-                                        FOREIGN KEY (motivoReserva) REFERENCES td_motivoreserva (id),
                                         FOREIGN KEY (numeroHabitacion) REFERENCES tp_habitaciones (numero),
-                                        FOREIGN KEY (emp_numdocumento) REFERENCES tp_empleados (numDocumento),
-                                        FOREIGN KEY (estado) REFERENCES td_estado(id),
-                                        FOREIGN KEY (hue_numdocumento) REFERENCES tp_huespedes (numDocumento),
-                                        FOREIGN KEY (metodoPago) REFERENCES td_metodopago (id)
+                                        FOREIGN KEY (us_numdocumento) REFERENCES tp_usuarios (numDocumento),
+                                        FOREIGN KEY (hue_numdocumento) REFERENCES tp_huespedes (numDocumento)
                                         )ENGINE=INNODB;
 
+create table if not exists tp_hotel (id INT (3) AUTO_INCREMENT NOT NULL,
+                                    nit VARCHAR(20) UNIQUE NOT NULL,    -- NIT único pero no PK
+                                    nombre VARCHAR(100) NOT NULL,
+                                    direccion VARCHAR(200),
+                                    numDocumento VARCHAR(15) NOT NULL,  -- Referencia al administrador del hotel
+                                    telefono VARCHAR(15),
+                                    correo VARCHAR(100),
 
+                                    PRIMARY KEY (id),
+                                    FOREIGN KEY (numDocumento) REFERENCES tp_usuarios (numDocumento)
+                                    )ENGINE=INNODB;                                        
+                                      
+CREATE TABLE IF NOT EXISTS td_factura (id INT (3) AUTO_INCREMENT NOT NULL,
+                                      infoReserva INT (3) NOT NULL,
+                                      fechaFactura DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                      infoHotel INT (3) NOT NULL,
+                                      total DECIMAL (30,2) NOT NULL,
 
-CREATE TABLE IF NOT EXISTS tp_historialMantenimiento (id INT (4) AUTO_INCREMENT NOT NULL,
-                                                      problemaDescripcion VARCHAR (50) NOT NULL,
-                                                      accion VARCHAR (50) NOT NULL,
-                                                      fechaRegistro DATE NOT NULL,
-                                                      ultimaActualizacion DATE NOT NULL,
-                                                      frecuencia VARCHAR (50) NOT NULL,
-                                                      prioridad INT (3) NOT NULL,
-                                                      numeroHabitacion VARCHAR (5) NOT NULL,
-                                                      emp_numDocumento VARCHAR (15) NOT NULL,
-                                                      estado INT (3) NOT NULL,
+                                      PRIMARY KEY (id),
+                                      FOREIGN KEY (infoReserva) REFERENCES tp_reservas (id),
+                                      FOREIGN KEY (infoHotel) REFERENCES tp_hotel (id)
+                                      )ENGINE=INNODB;
 
+CREATE TABLE IF NOT EXISTS tp_mantenimiento (id INT (4) AUTO_INCREMENT NOT NULL,
+                                            numeroHabitacion VARCHAR (5) NOT NULL,
+                                            tipo ENUM ('Limpieza','Estructura','Eléctrico','Otro') NOT NULL,
+                                            problemaDescripcion VARCHAR (50) NOT NULL,
+                                            fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                            ultimaActualizacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                            frecuencia ENUM ('Sí', 'No') NOT NULL,
+                                            cantFrecuencia ENUM ('Diario', 'Semanal', 'Quincenal', 'Mensual') NOT NULL,
+                                            prioridad ENUM ('Bajo', 'Alto') NOT NULL,
+                                            numDocumento VARCHAR (15) NOT NULL,
+                                            estado ENUM ('Pendiente','Finalizado') NOT NULL DEFAULT 'Pendiente',
 
-                                                      PRIMARY KEY (id),
-                                                      FOREIGN KEY (prioridad) REFERENCES td_prioridad (id),
-                                                      FOREIGN KEY (numeroHabitacion) REFERENCES tp_habitaciones (numero),
-                                                      FOREIGN KEY (emp_numDocumento) REFERENCES tp_empleados (numDocumento),
-                                                      FOREIGN KEY (estado) REFERENCES td_estado (id)
-                                                      )ENGINE=INNODB;
-
-
-
-CREATE TABLE IF NOT EXISTS ti_responder (id INT (3) AUTO_INCREMENT NOT NULL,
-                                        descripcion VARCHAR (50) NOT NULL,
-                                        fechaRespuesta DATE NOT NULL,
-                                        pqr_id INT (3) NOT NULL,
-                                        emp_numDocumento VARCHAR (15) NOT NULL,
-
-
-                                        PRIMARY KEY (id),
-                                        FOREIGN KEY (pqr_id) REFERENCES tp_pqrs (id),
-                                        FOREIGN KEY (emp_numDocumento) REFERENCES tp_empleados (numDocumento)
-                                        )ENGINE=INNODB;
-
+                                            PRIMARY KEY (id),
+                                            FOREIGN KEY (numeroHabitacion) REFERENCES tp_habitaciones (numero),
+                                            FOREIGN KEY (numDocumento) REFERENCES tp_usuarios (numDocumento)
+                                            )ENGINE=INNODB;
 
 /*inserts*/
 
-insert into td_motivoreserva values
-(null,'Negocios'),
-(null,'Personal'),
-(null,'Viaje'),
-(null,'Familiar');
+INSERT INTO tp_usuarios (numDocumento, tipoDocumento, nombres, apellidos, numTelefono, correo, sexo, fechaNacimiento, password, foto, tokenPassword, sesionCaducada, roles) VALUES
+('1234567890', 'Cédula de Ciudadanía', 'Juan Carlos', 'Pérez García', '3001234567', 'juan.perez@lodgehub.com', 'Hombre', '1985-03-15', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'foto_juan.jpg', NULL, 'Activo', 'Administrador'),
+('9876543210', 'Cédula de Ciudadanía', 'María Fernanda', 'González López', '3109876543', 'maria.gonzalez@lodgehub.com', 'Mujer', '1990-07-22', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'foto_maria.jpg', NULL, 'Activo', 'Colaborador'),
+('5555666677', 'Cédula de Ciudadanía', 'Carlos Eduardo', 'Ramírez Silva', '3205556666', 'carlos.ramirez@lodgehub.com', 'Hombre', '1988-11-10', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'foto_carlos.jpg', NULL, 'Activo', 'Usuario');
+
+INSERT INTO tp_huespedes (numDocumento, numTelefono, correo, nombres, apellidos, tipoDocumento, sexo) VALUES
+('1111222233', '3111111111', 'ana.martinez@gmail.com', 'Ana Patricia', 'Martínez Rojas', 'Cédula de Ciudadanía', 'Mujer'),
+('4444555566', '3144444444', 'pedro.lopez@hotmail.com', 'Pedro Antonio', 'López Hernández', 'Cédula de Ciudadanía', 'Hombre'),
+('7777888899', '3177777777', 'sofia.torres@yahoo.com', 'Sofía Elena', 'Torres Mendoza', 'Pasaporte', 'Mujer');
+
+INSERT INTO td_tipoHabitacion (descripcion, cantidad) VALUES
+('Individual', 10),
+('Doble', 15),
+('Suite', 5);
+
+INSERT INTO tp_habitaciones (numero, costo, capacidad, tipoHabitacion, foto, descripcion, estado, descripcionMantenimiento, estadoMantenimiento) VALUES
+('101', 80000.00, 1, 1, 'hab_101.jpg', 'Habitación individual con vista al jardín, incluye TV, WiFi y baño privado', 'Disponible', NULL, 'Activo'),
+
+('201', 120000.00, 2, 2, 'hab_201.jpg', 'Habitación doble con balcón, aire acondicionado, TV LCD y minibar', 'Ocupado', NULL, 'Activo'),
+
+('301', 250000.00, 4, 3, 'hab_301.jpg', 'Suite presidencial con sala, comedor, jacuzzi y vista panorámica', 'Mantenimiento', 'Reparación del sistema de aire acondicionado', 'Activo');
 
 
-insert into td_estado values
-(null,'Activo'),
-(null,'Inactivo'),
-(null,'En uso'),
-(null,'Finalizado'),
-(null,'Pendiente'),
-(null,'Cancelado');
+INSERT INTO tp_pqrs (tipo, descripcion, numdocumento, prioridad, categoria, estado, fechaFinalizacion, respuesta) VALUES
+('Quejas', 'El aire acondicionado de la habitación 201 no funciona correctamente, hace mucho ruido durante la noche', '5555666677', 'Alto', 'Habitación', 'Pendiente', NULL, NULL),
+
+('Sugerencias', 'Sería excelente si pudieran incluir un servicio de desayuno buffet en el restaurante del hotel', '5555666677', 'Bajo', 'Servicio', 'Finalizado', '2025-01-10 14:30:00', 'Gracias por su sugerencia. La implementaremos en el próximo trimestre.'),
+
+('Peticiones', 'Solicito información sobre tarifas especiales para empresas y descuentos por estadías prolongadas', '5555666677', 'Bajo', 'Servicio', 'Finalizado', '2025-01-08 10:15:00', 'Le enviamos la información a su correo electrónico.');
 
 
-insert into td_estadocivil values
-(null, 'Soltero/a'),
-(null,'Casado/a'),
-(null,'Viudo/a'),
-(null, 'Unión libre');
+INSERT INTO tp_hotel (nit, nombre, direccion, numDocumento, telefono, correo) VALUES
+('900123456-1', 'LodgeHub Plaza Hotel', 'Carrera 15 #85-23, Zona Rosa, Bogotá', '1234567890', '6015551234', 'info@lodgehubplaza.com'),
+
+('900789123-4', 'LodgeHub Business Center', 'Avenida 68 #45-67, Centro Internacional, Bogotá', '1234567890', '6017891234', 'reservas@lodgehubbusiness.com'),
+
+('900456789-7', 'LodgeHub Garden Resort', 'Km 5 Vía La Calera, Cundinamarca', '9876543210', '6014567890', 'contacto@lodgehubgarden.com');
 
 
-insert into td_sexo values
-(null,'Hombre'),
-(null,'Mujer'),
-(null,'Otro'),
-(null,'Prefiero no decirlo');
+INSERT INTO tp_reservas (pagoFinal, fechainicio, fechaFin, cantidadAdultos, cantidadNinos, cantidadDiscapacitados, motivoReserva, numeroHabitacion, metodoPago, informacionAdicional, us_numDocumento, hue_numDocumento, estado) VALUES
+(240000.00, '2025-02-15', '2025-02-18', 2, 0, 0, 'Personal', '201', 'Tarjeta', 'Solicitan habitación en piso alto con vista. Celebración de aniversario.', '9876543210', '1111222233', 'Activa'),
+
+(160000.00, '2025-02-20', '2025-02-22', 1, 0, 0, 'Negocios', '101', 'PSE', 'Requiere facturación a nombre de la empresa. Check-in tardío.', '5555666677', '4444555566', 'Pendiente'),
+
+(500000.00, '2025-03-01', '2025-03-03', 2, 1, 0, 'Familiar', '301', 'Efectivo', 'Viaje familiar con niño de 8 años. Solicitan cuna adicional.', '1234567890', '7777888899', 'Activa');
 
 
-insert into td_tipodocumento values
-(null,'Cedula de Ciudadanía'),
-(null,'Tarjeta de Identidad'),
-(null,'Cedula de Extranjeria'),
-(null,'Pasaporte'),
-(null,'Registro Civil');
+INSERT INTO td_factura (infoReserva, infoHotel, total) VALUES
+(1, 1, 240000.00),
+(2, 1, 160000.00),
+(3, 2, 500000.00);
 
 
-INSERT INTO td_tipohabitacion VALUES
-(NULL, 'Individual'),
-(NULL, 'Doble'),
-(NULL, 'Triple'),
-(NULL, 'Suite'),
-(NULL, 'Confort');
+INSERT INTO tp_mantenimiento (numeroHabitacion, tipo, problemaDescripcion, frecuencia, cantFrecuencia, prioridad, numDocumento, estado) VALUES
+('301', 'Eléctrico', 'Aire acondicionado no enciende correctamente', 'No', 'Diario', 'Alto', '9876543210', 'Pendiente'),
 
+('101', 'Limpieza', 'Limpieza profunda de alfombras y cortinas', 'Sí', 'Mensual', 'Bajo', '9876543210', 'Finalizado'),
 
-INSERT INTO td_tamano VALUES
-(NULL, 'Pequeño'),
-(NULL, 'Medio'),
-(NULL, 'Grande'),
-(NULL, 'Extra Grande');
-
-
-INSERT INTO td_tipopqrs VALUES
-(NULL, 'Peticiones'),
-(NULL, 'Quejas'),
-(NULL, 'Reclamos'),
-(NULL, 'Sugerencias'),
-(NULL, 'Felicitaciones');
-
-
-insert into td_prioridad values
-(null,'Bajo'),
-(null,'Medio'),
-(null,'Alto');
-
-
-insert into td_categoria values
-(null,'Servicio'),
-(null,'Habitacion'),
-(null,'Atencion'),
-(null,'Otro');
-
-
-INSERT INTO td_roles VALUES
-(NULL, 'Administrador'),
-(NULL, 'Recepcionista'),
-(NULL, 'Atención al Cliente');
-
-
-insert into td_metodoPago values
-(null,'Tarjeta'),
-(null,'Efectivo'),
-(null,'PSE');
-
-
-INSERT INTO tp_huespedes VALUES
-(1000289068, 3116182673, 'Bleachowl98@gmail.com', 'Favian Alejandro', 'Machuca Pedraza', 1, 1, 4),
-(1019987917, 3014053025, 'camiloagycr321@gmail.com', 'Camilo Andrés', 'Guerrero Yanquen', 1, 1, 1),
-(1098785643, 3214566786, 'Jhonny@gmail.com', 'Jonathan David', 'Fernández López', 1, 1, 1),
-(1014596349, 3172509298, 'brayan06.pulido@gmail.com', 'Brayan Felipe', 'Pulido López', 1, 1, 3),
-(1012099089, 302099086, 'Willy@gmail.com', 'William Steven', 'Daza Delgado', 1, 1, 2),
-(1001234567, 3101234567, 'juan.perez@gmail.com', 'Juan', 'Pérez García', 1, 1, 2),
-(1002345678, 3122345678, 'maria.gomez@gmail.com', 'María', 'Gómez Rodríguez', 1, 1, 1),
-(1003456789, 3133456789, 'carlos.sanchez@gmail.com', 'Carlos', 'Sánchez Martínez', 1, 1, 3),
-(1004567890, 3144567890, 'ana.lopez@gmail.com', 'Ana', 'López Fernández', 1, 1, 4),
-(1005678901, 3155678901, 'pedro.ramirez@gmail.com', 'Pedro', 'Ramírez Díaz', 1, 1, 1),
-(1006789012, 3166789012, 'laura.torres@gmail.com', 'Laura', 'Torres Vargas', 1, 1, 2),
-(1007890123, 3177890123, 'david.ruiz@gmail.com', 'David', 'Ruiz Castro', 1, 1, 3),
-(1008901234, 3188901234, 'sofia.morales@gmail.com', 'Sofía', 'Morales Herrera', 1, 1, 4),
-(1009012345, 3199012345, 'daniel.jimenez@gmail.com', 'Daniel', 'Jiménez Navarro', 1, 1, 1),
-(1010123456, 3200123456, 'valeria.gil@gmail.com', 'Valeria', 'Gil Ortega', 1, 1, 2),
-(1011234567, 3211234567, 'andres.rojas@gmail.com', 'Andrés', 'Rojas Soto', 1, 1, 3),
-(1012345678, 3222345678, 'camila.vega@gmail.com', 'Camila', 'Vega Pardo', 1, 1, 4),
-(1013456789, 3233456789, 'ricardo.cruz@gmail.com', 'Ricardo', 'Cruz Mendoza', 1, 1, 1),
-(1014567890, 3244567890, 'paula.guerrero@gmail.com', 'Paula', 'Guerrero Bravo', 1, 1, 2),
-(1015678901, 3255678901, 'jorge.serrano@gmail.com', 'Jorge', 'Serrano Castillo', 1, 1, 3);
-
-
-insert into tp_empleados values
-(1000289068,'Favian Alejandro','Machuca Pedraza','Calle 73 D#8C', "2003-02-15", 3116182673,3028732645, '1234567485','Bleachowl98@gmail.com', NULL, NULL, NULL,'0','hola', '0', 1, 1, 1),
-(1014596349, 'Brayan Felipe', 'Pulido López', 'calle 47 sur numero 1 f 20 este', '2006-03-03', 3172509298, 3126354874, '123456789', 'brayan06.pulido@gmail.com', '4987432145', '8765219854', 'asdasdasdasdqwrewf', '0', 'hola','1', 1, 1, 1),
-(1019987917, 'Camilo Andrés', 'Guerrero Yanquen', 'calle 61 30', '2025-07-29', 3216848548, 3014053025, '987654321', 'camiloagycr321@gmail.com', NULL, NULL, NULL, '0', NULL, '1', 1, 1, 1),
-(1001001001,'Ana María','López García','Carrera 10 #20-30', "1990-01-01", 3101112233,3001001001, '1112223334','ana.lopez@example.com', NULL, NULL, NULL,'0','Primer contacto', '0', 1, 1, 1),
-(1001001002,'Luis Alberto','Ramírez Díaz','Avenida Siempre Viva 123', "1985-05-10", 3112223344,3012012012, '2223334445','luis.ramirez@example.com', '1234567890', NULL, NULL, '0', 'Cliente potencial','1', 1, 1, 1),
-(1001001003,'Sofía Valentina','Martínez Castro','Calle 5 #45-67', "1992-11-20", 3123334455,3023023023, '3334445556','sofia.martinez@example.com', NULL, NULL, 'Nota importante','0','Información enviada', '0', 1, 1, 1),
-(1001001004,'Diego Fernando','Sánchez Pardo','Transversal 80 #15-90', "1978-03-25", 3134445566,3034034034, '4445556667','diego.sanchez@example.com', '0987654321', '1122334455', NULL, '0', NULL, '1', 1, 1, 1),
-(1001001005,'Laura Camila','Gómez Vargas','Diagonal 20 #30-40 Sur', "2000-07-12", 3145556677,3045045045, '5556667778','laura.gomez@example.com', NULL, NULL, NULL,'0','Seguimiento pendiente', '0', 1, 1, 1),
-(1001001006,'Carlos Eduardo','Fernández Rojas','Carrera 50 #100-10', "1995-09-01", 3156667788,3056056056, '6667778889','carlos.fernandez@example.com', '6789012345', NULL, 'Comentario','0', 'Revisión agendada','1', 1, 1, 1),
-(1001001007,'Isabella Nicole','Torres Herrera','Calle 10 #5-20', "1998-02-28", 3167778899,3067067067, '7778889990','isabella.torres@example.com', NULL, NULL, NULL,'0','Sin novedades', '0', 1, 1, 1),
-(1001001008,'Javier Andrés','Ruiz Morales','Avenida El Dorado #80-100', "1982-12-05", 3178889900,3078078078, '8889990001','javier.ruiz@example.com', '2345678901', '9876543210', NULL, '0', 'Propuesta enviada', '1', 1, 1, 1),
-(1001001009,'Valentina Sofía','Jiménez Ortega','Transversal 70 #1-50 Este', "2001-04-18", 3189990011,3089089089, '9990001112','valentina.jimenez@example.com', NULL, NULL, 'Recuerdo','0','Llamar en una semana', '0', 1, 1, 1),
-(1001001010,'Felipe Andrés','Vega Pardo','Calle 90 #1-1 Este', "1993-06-30", 3190001122,3090909090, '0001112223','felipe.vega@example.com', '3456789012', NULL, NULL, '0', NULL, '1', 1, 1, 1),
-(1001001011,'Mariana José','Cruz Mendoza','Carrera 40 #70-20', "1987-10-03", 3201112233,3101010101, '1112223334','mariana.cruz@example.com', NULL, NULL, 'Otro comentario','0','Reunión programada', '0', 1, 1, 1),
-(1001001012,'Sebastián Camilo','Guerrero Bravo','Calle 20 #1-10 Oeste', "1999-01-08", 3212223344,3112112112, '2223334445','sebastian.guerrero@example.com', '4567890123', '0123456789', NULL, '0', 'En espera de respuesta', '1', 1, 1, 1),
-(1001001013,'Andrea Carolina','Serrano Castillo','Avenida 68 #40-50', "1980-04-15", 3223334455,3123123123, '3334445556','andrea.serrano@example.com', NULL, NULL, NULL,'0','Nota adicional', '0', 1, 1, 1),
-(1001001014,'Miguel Ángel','Díaz Gallardo','Diagonal 70 #10-20', "1994-08-07", 3234445566,3134134134, '4445556667','miguel.diaz@example.com', '5678901234', NULL, NULL, '0', 'Información actualizada','1', 1, 1, 1),
-(1001001015,'Natalia Alejandra','Prieto Salas','Transversal 30 #5-15', "1989-11-22", 3245556677,3145145145, '5556667778','natalia.prieto@example.com', NULL, NULL, 'Ultima nota','0','Contacto realizado', '0', 1, 1, 1),
-(1001001016,'Ricardo José','Ramos Núñez','Calle 80 #60-30', "1975-02-01", 3256667788,3156156156, '6667778889','ricardo.ramos@example.com', '6789012345', '7890123456', NULL, '0', 'Nuevo requerimiento', '1', 1, 1, 1),
-(1001001020,'Gabriela Alejandra','Muñoz López','Diagonal 120 #30-40', "1996-12-01", 3290001122,3190190190, '0001112223','gabriela.munoz@example.com', '8901234567', '4321098765', NULL, '0', 'Listo para siguiente fase', '1', 1, 1, 1);
-
-insert into tp_habitaciones values
-(666,280000,1,1,1,2),
-(819, 500000,2,2,3,1),
-(10,300000,1,1,3,1),
-(73,900000,4,4,3,3),
-(18,1200000,5,5,4,2),
-(101, 250000.00, 2, 2, 2, 1),
-(102, 250000.00, 2, 2, 2, 1),
-(103, 180000.00, 1, 1, 1, 1),
-(104, 350000.00, 3, 3, 2, 1),
-(105, 420000.00, 4, 4, 3, 1),
-(201, 280000.00, 2, 2, 2, 1),
-(202, 190000.00, 1, 1, 1, 1),
-(203, 400000.00, 3, 3, 3, 1),
-(204, 550000.00, 5, 5, 4, 1),
-(205, 260000.00, 2, 2, 2, 1),
-(301, 300000.00, 2, 2, 2, 1),
-(302, 200000.00, 1, 1, 1, 1),
-(303, 450000.00, 4, 4, 3, 1),
-(304, 600000.00, 5, 5, 4, 1),
-(305, 320000.00, 3, 3, 2, 1),
-(401, 380000.00, 3, 3, 3, 1),
-(402, 220000.00, 1, 1, 1, 1),
-(403, 500000.00, 4, 4, 3, 1),
-(404, 700000.00, 5, 5, 4, 1),
-(405, 290000.00, 2, 2, 2, 1);
-
-
-
-insert into tp_historialmantenimiento values
-(null,'Bombillos defectuosos, próximos a dañarse','Reemplazo de bombillos',20220505,20211001,'No aplica', 1, 819,1014596349,2),
-(null,'Cortinas rasgadas','Reemplazo de cortinas',20230413,20230413,'No aplica',1,666,1019987917,2),
-(null,'Gotera en la llave del lavamanos','Revisar y reparar la fuga de la llave de agua',20241126,20220617,'No aplica',1,18,1000289068,1);
-
-
-INSERT INTO tp_reservas VALUES
-(NULL, 350000.00, 20240624, 20240626, 1, 0, 0, 1, 10, 1, NULL,1014596349,1, 1000289068, '20240624 10:00:00'),
-(NULL, 280000.00, '2025-08-10', '2025-08-12', 2, 0, 0, 2, '666', 1, NULL, '1001001001', 1, '1000289068', '2025-08-01 10:00:00'),
-(NULL, 500000.00, '2025-08-15', '2025-08-19', 3, 1, 0, 1, '819', 2, 'Incluye cena especial.', '1019987917', 2, '1019987917', '2025-08-02 11:30:00'),
-(NULL, 300000.00, '2025-08-20', '2025-08-23', 1, 0, 1, 3, '10', 3, NULL, '1014596349', 1, '1098785643', '2025-08-03 09:00:00'),
-(NULL, 900000.00, '2025-08-25', '2025-08-28', 4, 2, 0, 4, '73', 1, 'Reserva familiar, se requiere camas adicionales.', '1001001004', 2, '1014596349', '2025-08-04 14:00:00'),
-(NULL, 1200000.00, '2025-09-01', '2025-09-05', 5, 3, 0, 1, '18', 2, NULL, '1001001006', 1, '1012099089', '2025-08-05 16:00:00'),
-(NULL, 280000.00, '2025-09-08', '2025-09-10', 2, 0, 0, 2, '666', 3, NULL, '1019987917', 2, '1001234567', '2025-08-06 09:30:00'),
-(NULL, 500000.00, '2025-09-12', '2025-09-16', 3, 0, 0, 1, '819', 1, 'Solicita vista a la ciudad.', '1001001001', 1, '1002345678', '2025-08-07 10:45:00'),
-(NULL, 300000.00, '2025-09-18', '2025-09-20', 1, 1, 0, 3, '10', 2, NULL, '1014596349', 2, '1003456789', '2025-08-08 13:00:00'),
-(NULL, 900000.00, '2025-09-22', '2025-09-26', 4, 0, 1, 4, '73', 3, 'Necesita acceso para silla de ruedas.', '1001001004', 1, '1004567890', '2025-08-09 15:15:00'),
-(NULL, 1200000.00, '2025-09-28', '2025-10-02', 5, 0, 0, 1, '18', 1, NULL, '1001001006', 2, '1005678901', '2025-08-10 17:00:00'),
-(NULL, 280000.00, '2025-10-05', '2025-10-07', 2, 1, 0, 2, '666', 2, NULL, '1019987917', 1, '1006789012', '2025-08-11 09:00:00'),
-(NULL, 500000.00, '2025-10-10', '2025-10-14', 3, 0, 0, 3, '819', 3, 'Reserva para delegación.', '1001001001', 2, '1007890123', '2025-08-12 11:00:00'),
-(NULL, 300000.00, '2025-10-16', '2025-10-18', 1, 0, 0, 4, '10', 1, NULL, '1014596349', 1, '1008901234', '2025-08-13 14:00:00'),
-(NULL, 900000.00, '2025-10-20', '2025-10-24', 4, 1, 0, 1, '73', 2, 'Necesita Early Check-in.', '1001001004', 2, '1009012345', '2025-08-14 16:30:00'),
-(NULL, 1200000.00, '2025-10-26', '2025-10-30', 5, 0, 0, 2, '18', 3, NULL, '1001001006', 1, '1010123456', '2025-08-15 08:00:00'),
-(NULL, 280000.00, '2025-11-01', '2025-11-03', 2, 0, 0, 3, '666', 1, NULL, '1019987917', 2, '1011234567', '2025-08-16 10:10:00'),
-(NULL, 500000.00, '2025-11-05', '2025-11-09', 3, 2, 0, 4, '819', 2, 'Reserva de último minuto.', '1001001001', 1, '1012345678', '2025-08-17 12:40:00'),
-(NULL, 300000.00, '2025-11-11', '2025-11-13', 1, 0, 0, 1, '10', 3, NULL, '1014596349', 2, '1013456789', '2025-08-18 15:00:00'),
-(NULL, 900000.00, '2025-11-15', '2025-11-19', 4, 0, 0, 2, '73', 1, 'Pago anticipado.', '1001001004', 1, '1014567890', '2025-08-19 09:20:00'),
-(NULL, 1200000.00, '2025-11-20', '2025-11-24', 5, 0, 1, 3, '18', 2, NULL, '1001001006', 2, '1015678901', '2025-08-20 11:55:00');
+('201', 'Estructura', 'Revisión de grietas en el techo del baño', 'No', 'Diario', 'Alto', '1234567890', 'Pendiente');
 
 
 
 
 /*vistas*/
 
-create view vista_empleados as
-select d.descripcion as Tipo_Documento, 
-e.numDocumento as Documento, 
-e.nombres as Nombres, 
-e.apellidos as Apellidos, 
-e.direccion as Direccion, 
-e.numTelefono as Telefono, 
-e.telEmergencia as Telefono_Emergencia, 
-e.correo as Correo, 
-s.descripcion as Sexo,  
-r.descripcion as Rol
-from tp_empleados e
-inner join td_sexo s on  e.sexo = s.id 
-inner join td_tipodocumento d on e.tipoDocumento = d.id
-inner join td_roles r on e.roles = r.id;
 
+CREATE OR REPLACE VIEW Vista_usuarios AS
+SELECT 
+    u.numDocumento,
+    u.tipoDocumento,
+    u.nombres,
+    u.apellidos,
+    CONCAT(u.nombres, ' ', u.apellidos) AS nombreCompleto,
+    u.numTelefono,
+    u.correo,
+    u.sexo,
+    u.fechaNacimiento,
+    TIMESTAMPDIFF(YEAR, u.fechaNacimiento, CURDATE()) AS edad,
+    u.foto,
+    u.sesionCaducada AS estadoSesion,
+    u.roles,
+    -- Contar reservas del usuario
+    COUNT(DISTINCT r.id) AS totalReservas,
+    -- Contar PQRS del usuario
+    COUNT(DISTINCT p.id) AS totalPQRS,
+    -- Contar mantenimientos registrados por el usuario
+    COUNT(DISTINCT m.id) AS mantenimientosRegistrados
+FROM tp_usuarios u
+    LEFT JOIN tp_reservas r ON u.numDocumento = r.us_numDocumento
+    LEFT JOIN tp_pqrs p ON u.numDocumento = p.numdocumento
+    LEFT JOIN tp_mantenimiento m ON u.numDocumento = m.numDocumento
+GROUP BY u.numDocumento;
 
-CREATE VIEW vista_habitaciones AS
-SELECT h.numero as Numero_Habitacion, h.costo as Costo, h.capacidad as Capacidad_Personas, t.descripcion as Tipo_Habitacion, ta.descripcion as Tamaño_Habitacion, e.descripcion as Estado_Habitacion
-FROM tp_habitaciones h
-INNER JOIN td_tipohabitacion t ON  h.tipoHabitacion = t.id
-INNER JOIN td_tamano ta ON h.tamano = ta.id
-INNER JOIN td_estado e ON h.estado = e.id;
-
-
-create view vista_historialMantenimeinto as
-select h.id as id, h.problemaDescripcion as Problema, h.accion as Accion, h.fechaRegistro as Fecha_Registro, h.ultimaActualizacion as Ultima_Actualización, p.descripcion as Prioridad, h.frecuencia as Frecuencia, h.numeroHabitacion as Numero_Habitacion, e.nombres as Reporta_Empleado, e.apellidos as Reporta_Apellidos, es.descripcion as Estado
-from tp_historialmantenimiento h
-inner JOIN td_prioridad p on h.prioridad = p.id
-inner join tp_empleados e on h.emp_numDocumento = e.numDocumento
-inner join td_estado es on h.estado = es.id;
-
-
-CREATE VIEW vista_huespedes AS
-SELECT h.numDocumento as Documento, h.numTelefono as Telefono, h.correo as Correo, h.nombres as Nombres, h.apellidos as Apellidos, d.descripcion as Tipo_Documento, s.descripcion as Sexo, c.descripcion as Estado_Civil
-FROM tp_huespedes h
-INNER JOIN td_tipodocumento d ON h.tipoDocumento = d.id
-INNER JOIN td_sexo s ON h.sexo = s.id
-INNER JOIN td_estadocivil c ON h.estadoCivil = c.id;
-
-
-CREATE VIEW vista_respuestas AS
-SELECT r.id AS id,
-r.descripcion AS Respuesta,
-r.fechaRespuesta AS Fecha_respuesta,
-p.descripcion AS Descripcion_pqrs,
-e.nombres AS Nombres_empleado,
-e.apellidos AS Apellidos_empleado
-FROM ti_responder r
-INNER JOIN tp_pqrs p ON r.pqr_id = p.id
-INNER JOIN tp_empleados e ON r.emp_numDocumento = e.numDocumento;
-
-
-CREATE VIEW vista_reservas AS
-SELECT r.id AS id,
-r.costo AS Costo,
-r.fechainicio AS Inicio_reserva,
-r.fechaFin AS Fin_reserva,
-r.cantidadAdultos AS Cantidad_Adultos,
-r.cantidadNinos AS Cantidad_Niños,
-r.cantidadDiscapacitados AS Cantidad_Discapacitados,
-m.descripcion AS Motivo_reserva, 
-hab.numero AS Número_habitación,
-t.descripcion AS Tipo_habitación,
-r.informacionAdicional AS Información_Adicional,
-es.descripcion AS Estado_reserva,
-h.nombres AS Nombres_huesped,
-h.apellidos AS Apellidos_huesped,
-e.nombres AS Nombres_empleado, 
-e.apellidos AS Apellidos_empleado
+-- 2. VISTA_RESERVAS
+-- Muestra información completa de reservas con datos relacionados
+CREATE OR REPLACE VIEW Vista_reservas AS
+SELECT 
+    r.id AS reservaId,
+    r.pagoFinal,
+    r.fechainicio,
+    r.fechaFin,
+    DATEDIFF(r.fechaFin, r.fechainicio) AS diasEstadia,
+    r.cantidadAdultos,
+    r.cantidadNinos,
+    r.cantidadDiscapacitados,
+    (r.cantidadAdultos + r.cantidadNinos + r.cantidadDiscapacitados) AS totalPersonas,
+    r.motivoReserva,
+    r.metodoPago,
+    r.informacionAdicional,
+    r.estado AS estadoReserva,
+    r.fechaRegistro,
+    -- Datos del usuario que hizo la reserva
+    u.nombres AS usuarioNombres,
+    u.apellidos AS usuarioApellidos,
+    CONCAT(u.nombres, ' ', u.apellidos) AS usuarioCompleto,
+    u.correo AS usuarioCorreo,
+    u.numTelefono AS usuarioTelefono,
+    -- Datos del huésped
+    h.nombres AS huespedNombres,
+    h.apellidos AS huespedApellidos,
+    CONCAT(h.nombres, ' ', h.apellidos) AS huespedCompleto,
+    h.correo AS huespedCorreo,
+    h.numTelefono AS huespedTelefono,
+    h.tipoDocumento AS huespedTipoDoc,
+    -- Datos de la habitación
+    hab.numero AS numeroHabitacion,
+    hab.costo AS costoHabitacion,
+    hab.capacidad,
+    hab.estado AS estadoHabitacion,
+    th.descripcion AS tipoHabitacion,
+    -- Cálculo del costo por día
+    ROUND(r.pagoFinal / DATEDIFF(r.fechaFin, r.fechainicio), 2) AS costoPorDia
 FROM tp_reservas r
-INNER JOIN td_motivoreserva m ON r.motivoReserva = m.id
-INNER JOIN tp_empleados e ON r.emp_numdocumento = e.numDocumento
-INNER JOIN td_estado es ON r.estado = es.id
-INNER JOIN tp_huespedes h ON r.hue_numdocumento = h.numDocumento
-INNER JOIN tp_habitaciones hab ON hab.numero = r.numeroHabitacion
-INNER JOIN td_tipohabitacion t ON hab.tipoHabitacion = t.id;
+    INNER JOIN tp_usuarios u ON r.us_numDocumento = u.numDocumento
+    INNER JOIN tp_huespedes h ON r.hue_numDocumento = h.numDocumento
+    INNER JOIN tp_habitaciones hab ON r.numeroHabitacion = hab.numero
+    INNER JOIN td_tipoHabitacion th ON hab.tipoHabitacion = th.id;
+
+-- 3. VISTA_HABITACIONES
+-- Muestra información completa de habitaciones
+CREATE OR REPLACE VIEW Vista_habitaciones AS
+SELECT 
+    h.numero,
+    h.costo,
+    h.capacidad,
+    h.foto,
+    h.descripcion,
+    h.estado,
+    h.descripcionMantenimiento,
+    h.estadoMantenimiento,
+    -- Información del tipo de habitación
+    th.id AS tipoHabitacionId,
+    th.descripcion AS tipoHabitacion,
+    th.cantidad AS cantidadTipoDisponible,
+    -- Estadísticas de reservas
+    COUNT(DISTINCT r.id) AS totalReservas,
+    COUNT(CASE WHEN r.estado = 'Activa' THEN 1 END) AS reservasActivas,
+    COUNT(CASE WHEN r.estado = 'Pendiente' THEN 1 END) AS reservasPendientes,
+    -- Ingresos generados
+    SUM(CASE WHEN r.estado != 'Cancelada' THEN r.pagoFinal ELSE 0 END) AS ingresosTotales,
+    -- Promedio de ingresos por reserva
+    AVG(CASE WHEN r.estado != 'Cancelada' THEN r.pagoFinal ELSE NULL END) AS promedioIngresos,
+    -- Información de mantenimiento
+    COUNT(DISTINCT m.id) AS totalMantenimientos,
+    COUNT(CASE WHEN m.estado = 'Pendiente' THEN 1 END) AS mantenimientosPendientes,
+    MAX(m.fechaRegistro) AS ultimoMantenimiento,
+    -- Última reserva
+    MAX(r.fechaRegistro) AS ultimaReserva,
+    -- Próxima reserva
+    MIN(CASE WHEN r.fechainicio > CURDATE() AND r.estado IN ('Activa', 'Pendiente') 
+             THEN r.fechainicio ELSE NULL END) AS proximaReserva
+FROM tp_habitaciones h
+    INNER JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
+    LEFT JOIN tp_reservas r ON h.numero = r.numeroHabitacion
+    LEFT JOIN tp_mantenimiento m ON h.numero = m.numeroHabitacion
+GROUP BY h.numero;
+
+-- 5. VISTA_MANTENIMIENTO
+-- Muestra información completa de mantenimientos
+CREATE OR REPLACE VIEW Vista_mantenimiento AS
+SELECT 
+    m.id AS mantenimientoId,
+    m.tipo,
+    m.problemaDescripcion,
+    m.fechaRegistro,
+    m.ultimaActualizacion,
+    m.frecuencia,
+    m.cantFrecuencia,
+    m.prioridad,
+    m.estado,
+    -- Días transcurridos desde el registro
+    DATEDIFF(CURDATE(), DATE(m.fechaRegistro)) AS diasTranscurridos,
+    -- Información de la habitación
+    h.numero AS numeroHabitacion,
+    h.estado AS estadoHabitacion,
+    h.descripcionMantenimiento,
+    th.descripcion AS tipoHabitacion,
+    h.costo AS costoHabitacion,
+    -- Información del usuario que registró
+    u.nombres AS responsableNombres,
+    u.apellidos AS responsableApellidos,
+    CONCAT(u.nombres, ' ', u.apellidos) AS responsableCompleto,
+    u.roles AS rolResponsable,
+    u.numTelefono AS telefonoResponsable,
+    -- Estado crítico (más de 7 días pendiente con prioridad alta)
+    CASE 
+        WHEN m.estado = 'Pendiente' AND m.prioridad = 'Alto' 
+             AND DATEDIFF(CURDATE(), DATE(m.fechaRegistro)) > 7 
+        THEN 'CRÍTICO'
+        WHEN m.estado = 'Pendiente' AND DATEDIFF(CURDATE(), DATE(m.fechaRegistro)) > 15 
+        THEN 'URGENTE'
+        ELSE 'NORMAL'
+    END AS nivelUrgencia
+FROM tp_mantenimiento m
+    INNER JOIN tp_habitaciones h ON m.numeroHabitacion = h.numero
+    INNER JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
+    INNER JOIN tp_usuarios u ON m.numDocumento = u.numDocumento;
+
+-- 6. VISTA_FACTURA
+-- Muestra información completa de facturas
+CREATE OR REPLACE VIEW Vista_factura AS
+SELECT 
+    f.id AS facturaId,
+    f.fechaFactura,
+    f.total,
+    -- Información de la reserva
+    r.id AS reservaId,
+    r.fechainicio,
+    r.fechaFin,
+    DATEDIFF(r.fechaFin, r.fechainicio) AS diasEstadia,
+    r.pagoFinal,
+    r.estado AS estadoReserva,
+    r.metodoPago,
+    -- Información del huésped
+    h.nombres AS huespedNombres,
+    h.apellidos AS huespedApellidos,
+    CONCAT(h.nombres, ' ', h.apellidos) AS huespedCompleto,
+    h.numDocumento AS huespedDocumento,
+    h.correo AS huespedCorreo,
+    -- Información de la habitación
+    hab.numero AS numeroHabitacion,
+    th.descripcion AS tipoHabitacion,
+    hab.costo AS costoHabitacion,
+    -- Información del hotel
+    hotel.id AS hotelId,
+    hotel.nit AS hotelNit,
+    hotel.nombre AS hotelNombre,
+    hotel.direccion AS hotelDireccion,
+    hotel.telefono AS hotelTelefono,
+    hotel.correo AS hotelCorreo,
+    -- Información del administrador del hotel
+    admin.nombres AS adminNombres,
+    admin.apellidos AS adminApellidos,
+    CONCAT(admin.nombres, ' ', admin.apellidos) AS adminCompleto,
+    -- Cálculos
+    ROUND(f.total / DATEDIFF(r.fechaFin, r.fechainicio), 2) AS costoPorDia,
+    CASE 
+        WHEN f.total = r.pagoFinal THEN 'COMPLETO'
+        WHEN f.total < r.pagoFinal THEN 'PARCIAL'
+        ELSE 'EXCEDIDO'
+    END AS tipoFacturacion
+FROM td_factura f
+    INNER JOIN tp_reservas r ON f.infoReserva = r.id
+    INNER JOIN tp_huespedes h ON r.hue_numDocumento = h.numDocumento
+    INNER JOIN tp_habitaciones hab ON r.numeroHabitacion = hab.numero
+    INNER JOIN td_tipoHabitacion th ON hab.tipoHabitacion = th.id
+    INNER JOIN tp_hotel hotel ON f.infoHotel = hotel.id
+    INNER JOIN tp_usuarios admin ON hotel.numDocumento = admin.numDocumento;
+
+-- 7. VISTA_HOTEL
+-- Muestra información completa de hoteles
+CREATE OR REPLACE VIEW Vista_hotel AS
+SELECT 
+    h.id AS hotelId,
+    h.nit,
+    h.nombre,
+    h.direccion,
+    h.telefono,
+    h.correo,
+    -- Información del administrador
+    u.nombres AS adminNombres,
+    u.apellidos AS adminApellidos,
+    CONCAT(u.nombres, ' ', u.apellidos) AS adminCompleto,
+    u.numDocumento AS adminDocumento,
+    u.numTelefono AS adminTelefono,
+    u.correo AS adminCorreo,
+    -- Estadísticas de habitaciones
+    COUNT(DISTINCT hab.numero) AS totalHabitaciones,
+    COUNT(CASE WHEN hab.estado = 'Disponible' THEN 1 END) AS habitacionesDisponibles,
+    COUNT(CASE WHEN hab.estado = 'Ocupado' THEN 1 END) AS habitacionesOcupadas,
+    COUNT(CASE WHEN hab.estado = 'Mantenimiento' THEN 1 END) AS habitacionesMantenimiento,
+    -- Estadísticas de reservas
+    COUNT(DISTINCT r.id) AS totalReservas,
+    COUNT(CASE WHEN r.estado = 'Activa' THEN 1 END) AS reservasActivas,
+    COUNT(CASE WHEN r.estado = 'Pendiente' THEN 1 END) AS reservasPendientes,
+    -- Estadísticas financieras
+    SUM(CASE WHEN r.estado != 'Cancelada' THEN r.pagoFinal ELSE 0 END) AS ingresosTotales,
+    COUNT(DISTINCT f.id) AS totalFacturas,
+    SUM(f.total) AS montoFacturado,
+    -- Promedio de ocupación
+    ROUND((COUNT(CASE WHEN hab.estado = 'Ocupado' THEN 1 END) * 100.0 / 
+           NULLIF(COUNT(DISTINCT hab.numero), 0)), 2) AS porcentajeOcupacion,
+    -- Información de capacidad
+    SUM(hab.capacidad) AS capacidadTotal,
+    AVG(hab.costo) AS costoPromedio
+FROM tp_hotel h
+    INNER JOIN tp_usuarios u ON h.numDocumento = u.numDocumento
+    LEFT JOIN tp_habitaciones hab ON 1=1  -- Todas las habitaciones (asumiendo un solo hotel)
+    LEFT JOIN tp_reservas r ON hab.numero = r.numeroHabitacion
+    LEFT JOIN td_factura f ON h.id = f.infoHotel
+GROUP BY h.id;
+
+-- 8. VISTA_PQRS
+-- Muestra información completa de PQRS
+CREATE OR REPLACE VIEW Vista_pqrs AS
+SELECT 
+    p.id AS pqrsId,
+    p.fechaRegistro,
+    p.fechaLimite,
+    p.tipo,
+    p.descripcion,
+    p.prioridad,
+    p.categoria,
+    p.estado,
+    p.fechaFinalizacion,
+    p.respuesta,
+    -- Días transcurridos
+    DATEDIFF(CURDATE(), DATE(p.fechaRegistro)) AS diasTranscurridos,
+    -- Días para vencer
+    DATEDIFF(p.fechaLimite, CURDATE()) AS diasParaVencer,
+    -- Estado de tiempo
+    CASE 
+        WHEN p.estado = 'Finalizado' THEN 'FINALIZADO'
+        WHEN CURDATE() > p.fechaLimite THEN 'VENCIDO'
+        WHEN DATEDIFF(p.fechaLimite, CURDATE()) <= 1 THEN 'POR_VENCER'
+        ELSE 'EN_TIEMPO'
+    END AS estadoTiempo,
+    -- Información del usuario
+    u.nombres AS usuarioNombres,
+    u.apellidos AS usuarioApellidos,
+    CONCAT(u.nombres, ' ', u.apellidos) AS usuarioCompleto,
+    u.numDocumento AS usuarioDocumento,
+    u.correo AS usuarioCorreo,
+    u.numTelefono AS usuarioTelefono,
+    u.roles AS usuarioRol,
+    -- Tiempo de respuesta (si está finalizado)
+    CASE 
+        WHEN p.estado = 'Finalizado' AND p.fechaFinalizacion IS NOT NULL
+        THEN DATEDIFF(p.fechaFinalizacion, p.fechaRegistro)
+        ELSE NULL
+    END AS tiempoRespuestaDias,
+    -- Clasificación por urgencia
+    CASE 
+        WHEN p.estado = 'Pendiente' AND p.prioridad = 'Alto' 
+             AND CURDATE() > p.fechaLimite THEN 'CRÍTICO'
+        WHEN p.estado = 'Pendiente' AND DATEDIFF(p.fechaLimite, CURDATE()) <= 1 
+             THEN 'URGENTE'
+        WHEN p.estado = 'Pendiente' AND p.prioridad = 'Alto' THEN 'IMPORTANTE'
+        ELSE 'NORMAL'
+    END AS nivelUrgencia
+FROM tp_pqrs p
+    INNER JOIN tp_usuarios u ON p.numdocumento = u.numDocumento;
+
+-- ============================================
+-- ÍNDICES RECOMENDADOS PARA OPTIMIZAR LAS VISTAS
+-- ============================================
+
+-- Índices para mejorar el rendimiento de las vistas
+CREATE INDEX idx_reservas_usuario ON tp_reservas(us_numDocumento);
+CREATE INDEX idx_reservas_huesped ON tp_reservas(hue_numDocumento);
+CREATE INDEX idx_reservas_habitacion ON tp_reservas(numeroHabitacion);
+CREATE INDEX idx_reservas_fechas ON tp_reservas(fechainicio, fechaFin);
+CREATE INDEX idx_mantenimiento_habitacion ON tp_mantenimiento(numeroHabitacion);
+CREATE INDEX idx_mantenimiento_usuario ON tp_mantenimiento(numDocumento);
+CREATE INDEX idx_pqrs_usuario ON tp_pqrs(numdocumento);
+CREATE INDEX idx_habitaciones_tipo ON tp_habitaciones(tipoHabitacion);
+CREATE INDEX idx_factura_reserva ON td_factura(infoReserva);
+CREATE INDEX idx_factura_hotel ON td_factura(infoHotel);
 
 
