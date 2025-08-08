@@ -17,57 +17,87 @@ if (empty($numDocumento) || empty($new_password)) {
     exit;
 }
 
-// Conectar a la base de datos
-$conexion = mysqli_connect("localhost", "root", "", "lodgehub");
-
-if (!$conexion) {
-    header("location: ../login/login.php?mensaje=Error: No se pudo conectar a la base de datos");
+// Validar longitud mínima de contraseña
+if (strlen($new_password) < 6) {
+    header("location: ../login/login.php?mensaje=Error: La contraseña debe tener al menos 6 caracteres");
     exit;
 }
 
-// Verificar que el usuario existe
-$numDocumento_escaped = mysqli_real_escape_string($conexion, $numDocumento);
-$consulta_verificar = "SELECT numDocumento FROM tp_empleados WHERE numDocumento = '$numDocumento_escaped'";
-$resultado_verificar = mysqli_query($conexion, $consulta_verificar);
+// Usar la conexión del archivo global si existe, si no, crear una nueva
+if (isset($conexion) && $conexion) {
+    $conn = $conexion;
+} else {
+    $conn = mysqli_connect("localhost", "root", "", "lodgehub");
+    if (!$conn) {
+        header("location: ../login/login.php?mensaje=Error: No se pudo conectar a la base de datos");
+        exit;
+    }
+}
 
-if (!$resultado_verificar) {
-    mysqli_close($conexion);
-    header("location: ../login/login.php?mensaje=Error en la consulta: " . mysqli_error($conexion));
+// Verificar que el usuario existe usando prepared statement
+$consulta_verificar = "SELECT numDocumento, nombres, apellidos FROM tp_usuarios WHERE numDocumento = ?";
+$stmt_verificar = mysqli_prepare($conn, $consulta_verificar);
+
+if (!$stmt_verificar) {
+    if (!isset($conexion)) mysqli_close($conn);
+    header("location: ../login/login.php?mensaje=Error: No se pudo preparar la consulta de verificación");
     exit;
 }
 
-if (mysqli_num_rows($resultado_verificar) == 0) {
-    mysqli_close($conexion);
+mysqli_stmt_bind_param($stmt_verificar, "s", $numDocumento);
+mysqli_stmt_execute($stmt_verificar);
+$resultado_verificar = mysqli_stmt_get_result($stmt_verificar);
+
+if (!$resultado_verificar || mysqli_num_rows($resultado_verificar) == 0) {
+    mysqli_stmt_close($stmt_verificar);
+    if (!isset($conexion)) mysqli_close($conn);
     header("location: ../login/login.php?mensaje=Error: No se encontró un usuario con ese número de documento");
     exit;
 }
 
+// Usuario encontrado, proceder con la actualización
+$usuario = mysqli_fetch_assoc($resultado_verificar);
+mysqli_stmt_close($stmt_verificar);
+
 // Encriptar la nueva contraseña
 $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
-$password_escaped = mysqli_real_escape_string($conexion, $password_hash);
 
-// Actualizar la contraseña
-$consulta_update = "UPDATE tp_empleados SET password = '$password_escaped', solicitarContraseña = '0' WHERE numDocumento = '$numDocumento_escaped'";
+// Actualizar la contraseña - sin el campo solicitarContraseña que no existe
+$consulta_update = "UPDATE tp_usuarios SET password = ? WHERE numDocumento = ?";
+$stmt_update = mysqli_prepare($conn, $consulta_update);
 
-// EJECUTAR la consulta (esto faltaba en tu código original)
-$resultado_update = mysqli_query($conexion, $consulta_update);
+if (!$stmt_update) {
+    if (!isset($conexion)) mysqli_close($conn);
+    header("location: ../login/login.php?mensaje=Error: No se pudo preparar la consulta de actualización");
+    exit;
+}
+
+// Vincular parámetros y ejecutar
+mysqli_stmt_bind_param($stmt_update, "ss", $password_hash, $numDocumento);
+$resultado_update = mysqli_stmt_execute($stmt_update);
 
 if (!$resultado_update) {
-    mysqli_close($conexion);
-    header("location: ../login/login.php?mensaje=Error al actualizar: " . mysqli_error($conexion));
+    $error_mensaje = mysqli_stmt_error($stmt_update);
+    mysqli_stmt_close($stmt_update);
+    if (!isset($conexion)) mysqli_close($conn);
+    header("location: ../login/login.php?mensaje=Error al actualizar la contraseña: " . $error_mensaje);
     exit;
 }
 
 // Verificar si se actualizó alguna fila
-$filas_afectadas = mysqli_affected_rows($conexion);
+$filas_afectadas = mysqli_stmt_affected_rows($stmt_update);
+mysqli_stmt_close($stmt_update);
+
+// Cerrar conexión solo si la creamos nosotros
+if (!isset($conexion)) {
+    mysqli_close($conn);
+}
 
 if ($filas_afectadas > 0) {
-    mysqli_close($conexion);
     header("location: ../login/login.php?mensaje=Contraseña actualizada correctamente");
     exit;
 } else {
-    mysqli_close($conexion);
-    header("location: ../login/login.php?mensaje=Error: No se pudo actualizar la contraseña");
+    header("location: ../login/login.php?mensaje=Error: No se pudo actualizar la contraseña - Ninguna fila afectada");
     exit;
 }
 ?>

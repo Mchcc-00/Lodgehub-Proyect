@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - LodgeHub</title>
-    <link rel="stylesheet" href="../../../public/assets/css/loginStyles.css">
+    <title>Nueva Contraseña - LodgeHub</title>
+    <link rel="stylesheet" href="../../../public/assets/css/stylesLogin.css">
 </head>
 
 <body>
@@ -61,7 +61,7 @@
                                    minlength="6">
                         </div>
                         
-                        <button type="submit" class="recuperarcontraseña-button">Cambiar contraseña</button>
+                        <button type="submit" class="login-button">Cambiar Contraseña</button>
                     </form>
                 </div>
 

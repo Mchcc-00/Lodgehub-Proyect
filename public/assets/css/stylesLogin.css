@@ -115,6 +115,17 @@ h1 {
     background-clip: text;
 }
 
+h4 {
+    text-align: center;
+    color: #000000;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+
+}
+
+
+
 /* Grupos de inputs */
 .input-group {
     margin-bottom: 1.5rem;
@@ -195,7 +206,7 @@ h1 {
 
 /* Alertas de mensajes */
 .alert {
-    background: linear-gradient(135deg, #dc2626, #ef4444);
+    background: linear-gradient(135deg, #267bdc, #44b9ef);
     color: white;
     padding: 1rem;
     border-radius: 8px;
@@ -203,7 +214,7 @@ h1 {
     text-align: center;
     font-size: 0.9rem;
     font-weight: 500;
-    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+    box-shadow: 0 4px 15px rgba(38, 117, 220, 0.3);
     animation: slideIn 0.5s ease;
 }
 
@@ -219,31 +230,7 @@ h1 {
 }
 
 /* Contenedor del degradado lateral - ahora para el logo */
-.degrade-container {
-    width: 350px;
-    height: 500px;
-    background: linear-gradient(135deg, rgba(30, 58, 138, 0.8), rgba(59, 130, 246, 0.8));
-    border-radius: 15px;
-    margin-right: 2rem;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    order: -1;
-    flex-direction: column;
-}
 
-.degrade-container::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: conic-gradient(transparent, rgba(255, 255, 255, 0.3), transparent);
-    animation: rotate 4s linear infinite;
-}
 
 @keyframes rotate {
     100% { transform: rotate(360deg); }

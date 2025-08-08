@@ -115,7 +115,7 @@ $_SESSION['correo']=$correo;
 
 $conexion=mysqli_connect("localhost","root","","lodgehub");
 
-$consulta="SELECT*FROM tp_empleados where correo= '$correo' and password= '$password' and sesionCaducada = 1";
+$consulta="SELECT*FROM tp_usuarios where correo= '$correo' and password= '$password' and sesionCaducada = 1";
 $resultado=mysqli_query($conexion,$consulta);
 
 $filas=mysqli_num_rows($resultado);

@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS tp_usuarios (numDocumento VARCHAR(15) NOT NULL,
                                         fechaNacimiento DATE NOT NULL,
                                         password varchar (255) NOT NULL,
                                         foto varchar (255),
+                                        solicitarContraseña ENUM('0','1') DEFAULT '0';
                                         tokenPassword varchar (100) ,
                                         sesionCaducada ENUM('Activo','Inactivo') NOT NULL DEFAULT 'Activo',
                                         roles ENUM ('Administrador','Colaborador','Usuario') NOT NULL,
@@ -133,11 +134,11 @@ CREATE TABLE IF NOT EXISTS tp_mantenimiento (id INT (4) AUTO_INCREMENT NOT NULL,
 
 /*inserts*/
 
-INSERT INTO tp_usuarios (numDocumento, tipoDocumento, nombres, apellidos, numTelefono, correo, sexo, fechaNacimiento, password, foto, tokenPassword, sesionCaducada, roles) VALUES
-('1234567890', 'Cédula de Ciudadanía', 'Juan Carlos', 'Pérez García', '3001234567', 'juan.perez@lodgehub.com', 'Hombre', '1985-03-15', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'foto_juan.jpg', NULL, 'Activo', 'Administrador'),
-('9876543210', 'Cédula de Ciudadanía', 'María Fernanda', 'González López', '3109876543', 'maria.gonzalez@lodgehub.com', 'Mujer', '1990-07-22', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'foto_maria.jpg', NULL, 'Activo', 'Colaborador'),
-('5555666677', 'Cédula de Ciudadanía', 'Carlos Eduardo', 'Ramírez Silva', '3205556666', 'carlos.ramirez@lodgehub.com', 'Hombre', '1988-11-10', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'foto_carlos.jpg', NULL, 'Activo', 'Usuario'),
-('1014596349', 'Cédula de Ciudadanía', 'Brayan Felipe', 'Pulido Lopez', '3172509298', 'brayan06.pulido@gmail.com', 'Hombre', '2006-03-03', '123456789', 'foto_brayan.jpg', NULL, 'Activo', 'Administrador');
+INSERT INTO tp_usuarios (numDocumento, tipoDocumento, nombres, apellidos, numTelefono, correo, sexo, fechaNacimiento, password, foto, solicitarContraseña, tokenPassword, sesionCaducada, roles) VALUES
+('1234567890', 'Cédula de Ciudadanía', 'Juan Carlos', 'Pérez García', '3001234567', 'juan.perez@lodgehub.com', 'Hombre', '1985-03-15', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'foto_juan.jpg', '0', NULL, 'Activo', 'Administrador'),
+('9876543210', 'Cédula de Ciudadanía', 'María Fernanda', 'González López', '3109876543', 'maria.gonzalez@lodgehub.com', 'Mujer', '1990-07-22', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'foto_maria.jpg', '0'. NULL, 'Activo', 'Colaborador'),
+('5555666677', 'Cédula de Ciudadanía', 'Carlos Eduardo', 'Ramírez Silva', '3205556666', 'carlos.ramirez@lodgehub.com', 'Hombre', '1988-11-10', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'foto_carlos.jpg', '0', NULL, 'Activo', 'Usuario'),
+('1014596349', 'Cédula de Ciudadanía', 'Brayan Felipe', 'Pulido Lopez', '3172509298', 'brayan06.pulido@gmail.com', 'Hombre', '2006-03-03', '123456789', 'foto_brayan.jpg', '0'. NULL, 'Activo', 'Administrador');
 
 
 

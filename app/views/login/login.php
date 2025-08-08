@@ -49,6 +49,9 @@
                 case 'Correo o contraseña incorrectos':
                     echo "El correo o la contraseña son incorrectos. Por favor, inténtalo de nuevo.";
                     break;
+                case 'Contraseña actualizada correctamente':
+                    echo "Contraseña actualizada correctamente.";
+                    break;
 
                 // default:
                 //     echo "Hubo un error al enviar el correo, o el usuario no existe.";

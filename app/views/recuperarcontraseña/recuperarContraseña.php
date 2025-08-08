@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - LodgeHub</title>
-    <link rel="stylesheet" href="../../../public/assets/css/loginStyles.css"> <!-- Enlaza el archivo CSS -->
+    <title>Verificación Correo - LodgeHub</title>
+    <link rel="stylesheet" href="../../../public/assets/css/stylesLogin.css"> <!-- Enlaza el archivo CSS -->
 </head>
 
 <body>
@@ -27,7 +27,7 @@
                         <input type="text" id="correo" name="correo" placeholder="Ingresa tu correo electronico" required>
                     </div>
                     
-                    <button type="submit" class="recuperarcontraseña-button">Recuperar contraseña</button>
+                    <button type="submit" class="login-button">Recuperar Contraseña</button>
                 </form>
 
                 <?php
