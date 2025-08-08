@@ -61,7 +61,7 @@
                             <span class="d-none d-md-inline"><?php echo isset($userName) ? $userName : 'Admin'; ?></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="../layouts/miPerfil.php">
+                            <li><a class="dropdown-item" href="../Usuarios/miPerfil.php">
                                 <i class="fas fa-user me-2"></i>Mi Perfil
                             </a></li>
                             <li><a class="dropdown-item" href="#">

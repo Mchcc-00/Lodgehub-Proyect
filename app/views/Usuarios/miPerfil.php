@@ -4,73 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Perfil - LODGEHUB</title>
-    <link rel="stylesheet" href="styleMiPerfil.css">
+    <link rel="stylesheet" href="../../../public/assets/css/stylesNav.css">
+    <link rel="stylesheet" href="../../../public/assets/css/stylesMiPerfil.css">
     <!-- Bootstrap CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
 
 </head>
+
+    <?php
+        include "../layouts/sidebar.php";
+        include "../layouts/navbar.php";
+    ?>
+
 <body>
-
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg" id="navbar">
-    <div class="container-fluid">
-        <button class="btn-sidebar-toggle me-3" onclick="toggleSidebar()">
-            <i class="fas fa-bars"></i>
-        </button>
-        
-        <div class="navbar-brand-container">
-            <span class="navbar-brand">
-                <i class="fas fa-hotel me-2"></i>
-                LODGEHUB
-            </span>
-        </div>
-        
-        <nav aria-label="breadcrumb" class="mx-auto d-none d-lg-block">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="#" class="text-white-50">Inicio</a></li>
-                <li class="breadcrumb-item active text-white">Mi Perfil</li>
-            </ol>
-        </nav>
-        
-        <button class="btn btn-outline-light" onclick="window.history.back()">
-            <i class="fas fa-arrow-left me-2"></i>
-            Volver
-        </button>
-    </div>
-</nav>
-
-<!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-        <h4>LODGEHUB</h4>
-        <button class="btn-collapse-sidebar" onclick="toggleSidebar()">
-            <i class="fas fa-chevron-right"></i>
-        </button>
-    </div>
-    
-    <nav class="sidebar-nav">
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link" href="/dashboard">
-                    <i class="fas fa-home"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" href="/perfil">
-                    <i class="fas fa-user"></i>
-                    <span>Mi Perfil</span>
-                </a>
-            </li>
-            <!-- Agregar más enlaces según sea necesario -->
-        </ul>
-    </nav>
-</aside>
-
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
 <!-- MAIN CONTENT -->
 <main class="main-content">
@@ -226,7 +175,7 @@
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 // Datos simulados del usuario (reemplazar con datos reales de la base de datos)
@@ -387,31 +336,7 @@ function uploadImage() {
         alert('Foto actualizada correctamente');
     }, 1500);
     
-    /*
-    // Código real para enviar al servidor (descomenta y modifica según tu backend)
-    fetch('actualizar_foto.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            userData.foto = data.fotoUrl;
-            loadUserProfile();
-            
-            const modal = bootstrap.Modal.getInstance(document.getElementById('imageModal'));
-            modal.hide();
-            
-            alert('Foto actualizada correctamente');
-        } else {
-            alert('Error al actualizar la foto: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error al actualizar la foto');
-    });
-    */
+    
 }
 
 function editProfile() {
@@ -437,6 +362,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
 
 </body>
 </html>
