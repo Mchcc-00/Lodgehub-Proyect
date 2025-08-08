@@ -30,7 +30,7 @@ $correo_escaped = mysqli_real_escape_string($conexion, $correo);
 
 // Primero obtenemos los datos del usuario
 $consulta = "SELECT numDocumento, correo, password, nombres, apellidos, roles 
-             FROM tp_empleados 
+             FROM tp_usuarios
              WHERE correo = '$correo_escaped' AND sesionCaducada = 1";
 
 $resultado = mysqli_query($conexion, $consulta);
@@ -65,7 +65,7 @@ if ($filas > 0) {
             $nueva_hash_escaped = mysqli_real_escape_string($conexion, $nueva_hash);
             $numDoc_escaped = mysqli_real_escape_string($conexion, $usuario['numDocumento']);
             
-            $actualizar = "UPDATE tp_empleados SET password = '$nueva_hash_escaped' WHERE numDocumento = '$numDoc_escaped'";
+            $actualizar = "UPDATE tp_usuarios SET password = '$nueva_hash_escaped' WHERE numDocumento = '$numDoc_escaped'";
             mysqli_query($conexion, $actualizar);
         }
     }
