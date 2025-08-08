@@ -3,8 +3,8 @@
 session_start();
 
 // --- LÓGICA PARA OBTENER DATOS ---
-require_once __DIR__ . '/../../../app/Models/Usuario.php';
-require_once __DIR__ . '/../../../config/conexionGlobal.php';
+require_once __DIR__ . '../../Models/Usuario.php';
+require_once __DIR__ . '../../../config/conexionGlobal.php';
 
 $db = conexionDB();
 $usuarioModel = new Usuario($db);
@@ -21,24 +21,24 @@ $currentPage = "usuarios";
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LODGEHUB - Lista de Usuarios</title>
+    <title>Mis Colaboradores</title>
     
     <!-- Bootstrap y Font Awesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     
     <!-- Estilos de los layouts (nav y sidebar) -->
-    <link href="../../../public/assets/css/styleNav.css" rel="stylesheet">
+    <link href="../../public/assets/css/stylesNav.css" rel="stylesheet">
     <!-- Estilos originales de la vista -->
-    <link rel="stylesheet" href="../../../public/assets/css/styles.css">
+    <link rel="stylesheet" href="../../public/assets/css/styles.css">
     
 </head>
 <body>
 
 <?php 
 // Incluir las plantillas de navegación
-include '../Layouts/sidebar.php';
-include '../Layouts/navbar.php'; 
+include 'Layouts/sidebar.php';
+include 'Layouts/navbar.php'; 
 ?>
 
 <!-- CONTENIDO PRINCIPAL -->
@@ -70,10 +70,10 @@ include '../Layouts/navbar.php';
         <div class="user-header">
             <h2 class="form-title">
                 <i class="fas fa-users text-primary me-2"></i>
-                Lista de Usuarios
+                Mis colaboradores
             </h2>
-            <a href="crear.php" class="btn-add" title="Agregar Usuario">
-                Agregar Usuario
+            <a href="crearUsuarios.php" class="btn-add" title="Agregar Usuario">
+                Agregar colaborador
             </a>
         </div>
         
@@ -96,7 +96,7 @@ include '../Layouts/navbar.php';
                     <tr>
                         <td colspan="9" style="text-align: center;">
                             <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                            <p class="text-muted">No hay usuarios registrados.</p>
+                            <p class="text-muted">No se han registrado colaboradores.</p>
                         </td>
                     </tr>
                 <?php else: ?>
@@ -131,11 +131,11 @@ include '../Layouts/navbar.php';
                                 </span>
                             </td>
                             <td class="action-links">
-                                <a href="editar.php?id=<?php echo htmlspecialchars($usuario['numDocumento']); ?>" 
+                                <a href="editarUsuario.php?id=<?php echo htmlspecialchars($usuario['numDocumento']); ?>" 
                                    class="btn-edit" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="eliminar.php?id=<?php echo htmlspecialchars($usuario['numDocumento']); ?>" 
+                                <a href="eliminarUsuario.php?id=<?php echo htmlspecialchars($usuario['numDocumento']); ?>" 
                                    class="btn-delete" title="Eliminar" 
                                    onclick="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">
                                     <i class="fas fa-trash-alt"></i>
