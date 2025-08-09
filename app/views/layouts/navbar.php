@@ -61,14 +61,14 @@
                             <span class="d-none d-md-inline"><?php echo isset($userName) ? $userName : 'Admin'; ?></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="../Usuarios/miPerfil.php">
+                            <li><a class="dropdown-item" href="miPerfil.php">
                                 <i class="fas fa-user me-2"></i>Mi Perfil
                             </a></li>
                             <li><a class="dropdown-item" href="#">
                                 <i class="fas fa-cog me-2"></i>Configuración
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="../homepage/cerrarSesion.php">
+                            <li><a class="dropdown-item text-danger" href="cerrarSesion.php">
                                 <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
                             </a></li>
                         </ul>

@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS tp_usuarios (numDocumento VARCHAR(15) NOT NULL,
                                         fechaNacimiento DATE NOT NULL,
                                         password varchar (255) NOT NULL,
                                         foto varchar (255),
-                                        solicitarContraseña ENUM('0','1') DEFAULT '0';
+                                        solicitarContraseña ENUM('0','1') DEFAULT '0',
                                         tokenPassword varchar (100) ,
                                         sesionCaducada ENUM('Activo','Inactivo') NOT NULL DEFAULT 'Activo',
                                         roles ENUM ('Administrador','Colaborador','Usuario') NOT NULL,
@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS tp_mantenimiento (id INT (4) AUTO_INCREMENT NOT NULL,
 
 /*inserts*/
 
-INSERT INTO tp_usuarios (numDocumento, tipoDocumento, nombres, apellidos, numTelefono, correo, sexo, fechaNacimiento, password, foto, tokenPassword, sesionCaducada, roles) VALUES
+INSERT INTO tp_usuarios (numDocumento, tipoDocumento, nombres, apellidos, numTelefono, correo, sexo, fechaNacimiento, password, foto, solicitarContraseña, tokenPassword, sesionCaducada, roles) VALUES
 ('1000289068', 'Cédula de Ciudadanía', 'Favian Alejandro', 'Machuca Pedraza', '3116182673', 'bleachowl98@gmail.com', 'Hombre', '15-10-2003', '123456789', 'foto_favian', '0', NULL, 'Activo', 'Colaborador'),
 ('1234567890', 'Cédula de Ciudadanía', 'Juan Carlos', 'Pérez García', '3001234567', 'juan.perez@lodgehub.com', 'Hombre', '1985-03-15', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'foto_juan.jpg', '0', NULL, 'Activo', 'Administrador'),
 ('9876543210', 'Cédula de Ciudadanía', 'María Fernanda', 'González López', '3109876543', 'maria.gonzalez@lodgehub.com', 'Mujer', '1990-07-22', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'foto_maria.jpg', '0', NULL, 'Activo', 'Colaborador'),
@@ -170,7 +170,13 @@ INSERT INTO tp_pqrs (tipo, descripcion, numdocumento, prioridad, categoria, esta
 INSERT INTO tp_hotel (nit, nombre, direccion, numDocumento, telefono, correo) VALUES
 ('900123456-1', 'LodgeHub Plaza Hotel', 'Carrera 15 #85-23, Zona Rosa, Bogotá', '1234567890', '6015551234', 'info@lodgehubplaza.com'),
 ('900789123-4', 'LodgeHub Business Center', 'Avenida 68 #45-67, Centro Internacional, Bogotá', '1234567890', '6017891234', 'reservas@lodgehubbusiness.com'),
-('900456789-7', 'LodgeHub Garden Resort', 'Km 5 Vía La Calera, Cundinamarca', '9876543210', '6014567890', 'contacto@lodgehubgarden.com');
+('900456789-7', 'LodgeHub Garden Resort', 'Km 5 Vía La Calera, Cundinamarca', '9876543210', '6014567890', 'contacto@lodgehubgarden.com'),
+('900234567-2', 'LodgeHub Beach Resort', 'Kilómetro 12 Vía Santa Marta, Rodadero', '1000289068', '6054321890', 'reservas@lodgehubbeach.com'),
+('900345678-3', 'LodgeHub Mountain Lodge', 'Vereda El Chico, Vía La Vega', '1014596349', '6018765432', 'info@lodgehubmountain.com'),
+('900567890-5', 'LodgeHub City Suites', 'Calle 53 #45-25, El Poblado, Medellín', '5555666677', '6043216547', 'contacto@lodgehubcity.com'),
+('900678901-6', 'LodgeHub Colonial Inn', 'Carrera 3 #18-56, Centro Histórico, Cartagena', '1234567890', '6057654321', 'reservas@lodgehubcolonial.com'),
+('900789012-8', 'LodgeHub Eco Retreat', 'Vía Parque Tayrona, Magdalena', '9876543210', '6056543210', 'info@lodgehubeco.com'),
+('900890123-9', 'LodgeHub Executive Tower', 'Avenida Boyacá #15-30, Chapinero Alto, Bogotá', '1014596349', '6019876543', 'reservas@lodgehubexecutive.com');
 
 
 INSERT INTO tp_reservas (pagoFinal, fechainicio, fechaFin, cantidadAdultos, cantidadNinos, cantidadDiscapacitados, motivoReserva, numeroHabitacion, metodoPago, informacionAdicional, us_numDocumento, hue_numDocumento, estado) VALUES
