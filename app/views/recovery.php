@@ -305,7 +305,7 @@ if($filas > 0){
                         Haz clic en el botón de abajo para continuar con el proceso de recuperación.
                     </p>
                     
-                    <a href="http://localhost/lodgehub/app/views/recuperarcontraseña/Contraseña.php?id='.$numDocumento.'" class="cta-button">
+                    <a href="http://localhost/lodgehub/app/views/Contraseña.php?id='.$numDocumento.'" class="cta-button">
                         Recuperar Contraseña
                     </a>
                     

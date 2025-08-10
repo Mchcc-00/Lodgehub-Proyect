@@ -6,8 +6,9 @@
     <title>Mi Perfil - LODGEHUB</title>
     <link rel="stylesheet" href="../../public/assets/css/stylesNav.css">
     <link rel="stylesheet" href="../../public/assets/css/stylesMiPerfil.css">
+
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <!-- Font Awesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
@@ -104,14 +105,6 @@
                     <div class="info-label">Teléfono</div>
                     <div class="info-value" id="infoTelefono">-</div>
                 </div>
-                <div class="info-item">
-                    <div class="info-label">Teléfono de Emergencia</div>
-                    <div class="info-value" id="infoTelEmergencia">-</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Dirección</div>
-                    <div class="info-value" id="infoDireccion">-</div>
-                </div>
             </div>
         </div>
 
@@ -129,14 +122,6 @@
                 <div class="info-item">
                     <div class="info-label">Estado de Sesión</div>
                     <div class="info-value" id="infoSesion">-</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">RNT</div>
-                    <div class="info-value" id="infoRNT">-</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">NIT</div>
-                    <div class="info-value" id="infoNIT">-</div>
                 </div>
             </div>
         </div>
@@ -178,22 +163,21 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-// Datos simulados del usuario (reemplazar con datos reales de la base de datos)
+// Datos del usuario basados en el ejemplo proporcionado
 const userData = {
-    numDocumento: '12345678',
-    nombres: 'Juan Carlos',
-    apellidos: 'Pérez González',
-    direccion: 'Calle 123 #45-67',
-    fechaNacimiento: '1985-06-15',
-    numTelefono: '3001234567',
-    telEmergencia: '3007654321',
-    correo: 'juan.perez@lodgehub.com',
-    rnt: '12345',
-    nit: '67890',
-    foto: null, // URL de la foto o null si no tiene
+    numDocumento: '1014596349',
+    tipoDocumento: 'Cédula de Ciudadanía', 
+    nombres: 'Brayan Felipe',
+    apellidos: 'Pulido Lopez',
+    numTelefono: '3172509298',
+    correo: 'brayan06.pulido@gmail.com',
+    sexo: 'Hombre',
+    fechaNacimiento: '2006-03-03',
+    password: '123456789', // En producción esto no debería mostrarse
+    foto: 'foto_brayan.jpg', // Nombre de la foto
+    intentosFallidos: '0',
+    fechaUltimoIntento: null,
     sesionCaducada: 'Activo',
-    sexo: 'Masculino',
-    tipoDocumento: 'Cédula de Ciudadanía',
     roles: 'Administrador'
 };
 
@@ -224,9 +208,10 @@ function loadUserProfile() {
     
     // Configurar avatar
     const avatar = document.getElementById('profileAvatar');
-    if (userData.foto && userData.foto !== '') {
-        // Si tiene foto, mostrar la imagen
-        avatar.innerHTML = `<img src="${userData.foto}" alt="Foto de perfil" onerror="showInitials()">`;
+    if (userData.foto && userData.foto !== '' && userData.foto !== null) {
+        // Si tiene foto, intentar mostrar la imagen (ruta relativa o completa)
+        const imagePath = userData.foto.startsWith('http') ? userData.foto : `../../uploads/profiles/${userData.foto}`;
+        avatar.innerHTML = `<img src="${imagePath}" alt="Foto de perfil" onerror="showInitials()">`;
     } else {
         // Si no tiene foto, mostrar iniciales
         showInitials();
@@ -251,12 +236,9 @@ function loadUserProfile() {
     document.getElementById('infoSexo').textContent = userData.sexo;
     document.getElementById('infoCorreo').textContent = userData.correo;
     document.getElementById('infoTelefono').textContent = userData.numTelefono;
-    document.getElementById('infoTelEmergencia').textContent = userData.telEmergencia;
-    document.getElementById('infoDireccion').textContent = userData.direccion;
     document.getElementById('infoRol').textContent = userData.roles;
     document.getElementById('infoSesion').textContent = userData.sesionCaducada;
-    document.getElementById('infoRNT').textContent = userData.rnt || 'No aplica';
-    document.getElementById('infoNIT').textContent = userData.nit || 'No aplica';
+    document.getElementById('infoPassword').textContent = '••••••••'; // No mostrar la contraseña real
 }
 
 function showInitials() {
@@ -335,8 +317,6 @@ function uploadImage() {
         
         alert('Foto actualizada correctamente');
     }, 1500);
-    
-    
 }
 
 function editProfile() {
@@ -362,7 +342,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
 
 </body>
 </html>

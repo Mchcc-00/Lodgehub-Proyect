@@ -7,11 +7,10 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(to right, #BED8FF);
+    background: linear-gradient(to right, #7da2db)!important;
     min-height: 100vh;
     color: #333;
 }
-
 
 .container {
     max-width: 1400px;
@@ -99,19 +98,19 @@ body {
 }
 
 /* Tarjetas */
-.card {
+.card, .stats-card {
     background: white;
     border-radius: 12px;
     padding: 15px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
-    border-left: 4px solid transparent;
+    border-left: 5px solid transparent; /* Aumentamos el grosor a 5px para todas las tarjetas */
     position: relative;
     overflow: hidden;
 }
 
-.card::before {
+.card::before, .stats-card::before {
     content: '';
     position: absolute;
     top: 0;
@@ -123,11 +122,11 @@ body {
     transition: transform 0.6s;
 }
 
-.card:hover::before {
+.card:hover::before, .stats-card:hover::before {
     transform: translateX(100%);
 }
 
-.card:hover {
+.card:hover, .stats-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
 }
@@ -165,81 +164,113 @@ body {
 /* Estilos específicos por tipo de tarjeta */
 
 /* Reservas */
-.card-info {
+.card-info, .stats-card.card-info {
     border-left-color: #3498db;
     background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
 }
 
-.card-warning {
+.card-info:hover, .stats-card.card-info:hover {
+    background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
+}
+
+.card-warning, .stats-card.card-warning {
     border-left-color: #f39c12;
     background: linear-gradient(135deg, #ffffff 0%, #fffbf7 100%);
 }
 
-.card-success {
+.card-warning:hover, .stats-card.card-warning:hover {
+    background: linear-gradient(135deg, #fffbf7 0%, #ffeedd 100%);
+}
+
+.card-success, .stats-card.card-success {
     border-left-color: #27ae60;
     background: linear-gradient(135deg, #ffffff 0%, #f8fff9 100%);
 }
 
-.card-pending {
+.card-success:hover, .stats-card.card-success:hover {
+    background: linear-gradient(135deg, #f0fff4 0%, #e8fced 100%);
+}
+
+.card-pending, .stats-card.card-pending {
     border-left-color: #9b59b6;
     background: linear-gradient(135deg, #ffffff 0%, #fbf9ff 100%);
 }
 
-.card-inactive {
+.card-pending:hover, .stats-card.card-pending:hover {
+    background: linear-gradient(135deg, #f8f5ff 0%, #f0ebff 100%);
+}
+
+.card-inactive, .stats-card.card-inactive {
     border-left-color: #e74c3c;
     background: linear-gradient(135deg, #ffffff 0%, #fff8f8 100%);
+}
+
+.card-inactive:hover, .stats-card.card-inactive:hover {
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
 }
 
 /* Mantenimiento */
-.card-danger {
+.card-danger, .stats-card.card-danger {
     border-left-color: #e74c3c;
     background: linear-gradient(135deg, #ffffff 0%, #fff8f8 100%);
 }
 
-.card-process {
+.card-danger:hover, .stats-card.card-danger:hover {
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+}
+
+.card-process, .stats-card.card-process {
     border-left-color: #f39c12;
     background: linear-gradient(135deg, #ffffff 0%, #fffbf7 100%);
 }
 
-.card-completed {
+.card-process:hover, .stats-card.card-process:hover {
+    background: linear-gradient(135deg, #fff9f0 0%, #ffeedd 100%);
+}
+
+.card-completed, .stats-card.card-completed {
     border-left-color: #27ae60;
     background: linear-gradient(135deg, #ffffff 0%, #f8fff9 100%);
 }
 
+.card-completed:hover, .stats-card.card-completed:hover {
+    background: linear-gradient(135deg, #f0fff4 0%, #e8fced 100%);
+}
+
 /* PQRS */
-.pqrs-high {
+.pqrs-high, .stats-card.pqrs-high {
     border-left-color: #e74c3c;
     background: linear-gradient(135deg, #ffffff 0%, #fff5f5 100%);
 }
 
-.pqrs-high:hover {
+.pqrs-high:hover, .stats-card.pqrs-high:hover {
     background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
 }
 
-.pqrs-medium {
+.pqrs-medium, .stats-card.pqrs-medium {
     border-left-color: #f39c12;
     background: linear-gradient(135deg, #ffffff 0%, #fff9f0 100%);
 }
 
-.pqrs-medium:hover {
+.pqrs-medium:hover, .stats-card.pqrs-medium:hover {
     background: linear-gradient(135deg, #fff9f0 0%, #ffeedd 100%);
 }
 
-.pqrs-low {
+.pqrs-low, .stats-card.pqrs-low {
     border-left-color: #3498db;
     background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
 }
 
-.pqrs-low:hover {
+.pqrs-low:hover, .stats-card.pqrs-low:hover {
     background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
 }
 
-.pqrs-answered {
+.pqrs-answered, .stats-card.pqrs-answered {
     border-left-color: #27ae60;
     background: linear-gradient(135deg, #ffffff 0%, #f0fff4 100%);
 }
 
-.pqrs-answered:hover {
+.pqrs-answered:hover, .stats-card.pqrs-answered:hover {
     background: linear-gradient(135deg, #f0fff4 0%, #e8fced 100%);
 }
 
@@ -250,7 +281,7 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
     color: white;
     border: none;
     padding: 12px 25px;
@@ -262,7 +293,7 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    box-shadow: 0 6px 20px rgba(234, 102, 102, 0.3);
+    box-shadow: 0 6px 20px rgba(102, 148, 234, 0.3);
 }
 
 .btn-primary:hover {
@@ -306,7 +337,7 @@ body {
         gap: 10px;
     }
     
-    .card {
+    .card, .stats-card {
         padding: 12px;
     }
     

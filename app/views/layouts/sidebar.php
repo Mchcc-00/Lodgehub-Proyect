@@ -17,7 +17,7 @@
             </li>
             
             <li class="nav-item">
-                <a class="nav-link <?php echo (isset($currentPage) && $currentPage == 'reservas') ? 'active' : ''; ?>" href="../../6_Reservas/2R/mainReservas.php">
+                <a class="nav-link <?php echo (isset($currentPage) && $currentPage == 'reservas') ? 'active' : ''; ?>" href="../6_Reservas/2R/mainReservas.php">
                     <i class="fas fa-calendar-check"></i>
                     <span>Reservas</span>
                 </a>
@@ -54,7 +54,7 @@
     </nav>
     
     <div class="sidebar-footer">
-        <a href="../homepage/cerrarSesion.php" class="btn btn-danger w-100">
+        <a href="cerrarSesion.php" class="btn btn-danger w-100">
             <i class="fas fa-sign-out-alt"></i>
             Cerrar sesión
         </a>
