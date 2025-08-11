@@ -68,7 +68,7 @@
             </div>
             <div class ="degrade-container"></div>
             <div class="logo-container">
-                <img src="../../../public/img/LogoClaroLH.png" alt="">
+                <img src="../../public/img/LogoClaroLH.png" alt="">
                 <h6>lodgehubgroup © 2025</h6>
             </div>
 

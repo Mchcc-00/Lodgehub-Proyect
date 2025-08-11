@@ -1,10 +1,10 @@
 <?php
-require_once ('../../../config/conexionGlobal.php');
+require_once ('../../config/conexionGlobal.php');
 session_start();
 
 // Verificar que los datos lleguen por POST
 if (!isset($_POST['numDocumento']) || !isset($_POST['new_password'])) {
-    header("location: ../login/login.php?mensaje=Error: Datos no recibidos");
+    header("location: login.php?mensaje=Error: Datos no recibidos");
     exit;
 }
 
@@ -13,13 +13,13 @@ $new_password = trim($_POST['new_password']);
 
 // Validar que no estén vacíos
 if (empty($numDocumento) || empty($new_password)) {
-    header("location: ../login/login.php?mensaje=Error: Número de documento y contraseña son obligatorios");
+    header("location: login.php?mensaje=Error: Número de documento y contraseña son obligatorios");
     exit;
 }
 
 // Validar longitud mínima de contraseña
 if (strlen($new_password) < 6) {
-    header("location: ../login/login.php?mensaje=Error: La contraseña debe tener al menos 6 caracteres");
+    header("location: login.php?mensaje=Error: La contraseña debe tener al menos 6 caracteres");
     exit;
 }
 
@@ -29,7 +29,7 @@ if (isset($conexion) && $conexion) {
 } else {
     $conn = mysqli_connect("localhost", "root", "", "lodgehub");
     if (!$conn) {
-        header("location: ../login/login.php?mensaje=Error: No se pudo conectar a la base de datos");
+        header("location: login.php?mensaje=Error: No se pudo conectar a la base de datos");
         exit;
     }
 }
@@ -40,7 +40,7 @@ $stmt_verificar = mysqli_prepare($conn, $consulta_verificar);
 
 if (!$stmt_verificar) {
     if (!isset($conexion)) mysqli_close($conn);
-    header("location: ../login/login.php?mensaje=Error: No se pudo preparar la consulta de verificación");
+    header("location: login.php?mensaje=Error: No se pudo preparar la consulta de verificación");
     exit;
 }
 
@@ -51,7 +51,7 @@ $resultado_verificar = mysqli_stmt_get_result($stmt_verificar);
 if (!$resultado_verificar || mysqli_num_rows($resultado_verificar) == 0) {
     mysqli_stmt_close($stmt_verificar);
     if (!isset($conexion)) mysqli_close($conn);
-    header("location: ../login/login.php?mensaje=Error: No se encontró un usuario con ese número de documento");
+    header("location: login.php?mensaje=Error: No se encontró un usuario con ese número de documento");
     exit;
 }
 
@@ -68,7 +68,7 @@ $stmt_update = mysqli_prepare($conn, $consulta_update);
 
 if (!$stmt_update) {
     if (!isset($conexion)) mysqli_close($conn);
-    header("location: ../login/login.php?mensaje=Error: No se pudo preparar la consulta de actualización");
+    header("location: login.php?mensaje=Error: No se pudo preparar la consulta de actualización");
     exit;
 }
 
@@ -80,7 +80,7 @@ if (!$resultado_update) {
     $error_mensaje = mysqli_stmt_error($stmt_update);
     mysqli_stmt_close($stmt_update);
     if (!isset($conexion)) mysqli_close($conn);
-    header("location: ../login/login.php?mensaje=Error al actualizar la contraseña: " . $error_mensaje);
+    header("location: login.php?mensaje=Error al actualizar la contraseña: " . $error_mensaje);
     exit;
 }
 
@@ -94,10 +94,10 @@ if (!isset($conexion)) {
 }
 
 if ($filas_afectadas > 0) {
-    header("location: ../login/login.php?mensaje=Contraseña actualizada correctamente");
+    header("location: login.php?mensaje=Contraseña actualizada correctamente");
     exit;
 } else {
-    header("location: ../login/login.php?mensaje=Error: No se pudo actualizar la contraseña - Ninguna fila afectada");
+    header("location: login.php?mensaje=Error: No se pudo actualizar la contraseña - Ninguna fila afectada");
     exit;
 }
 ?>

@@ -4,11 +4,13 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\SMTP;
 
-require '../../../PHPMailer/Exception.php';
-require '../../../PHPMailer/PHPMailer.php';
-require '../../../PHPMailer/SMTP.php';
+require '../../PHPMailer/Exception.php';
+require '../../PHPMailer/PHPMailer.php';
+require '../../PHPMailer/SMTP.php';
 
-require_once ('../../../config/conexionGlobal.php');
+
+
+require_once ('../../config/conexionGlobal.php');
 $db = conexionDB();
 
 $correo = $_POST['correo'];
@@ -303,7 +305,7 @@ if($filas > 0){
                         Haz clic en el botón de abajo para continuar con el proceso de recuperación.
                     </p>
                     
-                    <a href="http://localhost/lodgehub/app/views/recuperarcontraseña/Contraseña.php?id='.$numDocumento.'" class="cta-button">
+                    <a href="http://localhost/lodgehub/app/views/Contraseña.php?id='.$numDocumento.'" class="cta-button">
                         Recuperar Contraseña
                     </a>
                     
@@ -337,16 +339,16 @@ if($filas > 0){
         ;
 
         $mail->Body = $htmlBody;
-        $mail->AltBody = 'Hola, este es un mensaje de recuperación de contraseña. Por favor visita: http://localhost/lodgehub/app/views/recuperarcontraseña/Contraseña.php?id='.$numDocumento;
+        $mail->AltBody = 'Hola, este es un mensaje de recuperación de contraseña. Por favor visita: http://localhost/lodgehub/app/views/Contraseña.php?id='.$numDocumento;
 
         $mail->send();
-        header("location: ../login/login.php?mensaje=Correo enviado correctamente");
+        header("location: login.php?mensaje=Correo enviado correctamente");
     } catch (Exception $e) {
-        header("location: ../login/login.php?mensaje=Error al enviar el correo: {$mail->ErrorInfo}");
+        header("location: login.php?mensaje=Error al enviar el correo: {$mail->ErrorInfo}");
     }
 
 } else {
-    header("location: ../login/login.php?mensaje=El correo no existe o no es válido");
+    header("location: login.php?mensaje=El correo no existe o no es válido");
 }
 
 mysqli_free_result($resultado);

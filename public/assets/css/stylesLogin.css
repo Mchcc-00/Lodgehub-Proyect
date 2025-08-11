@@ -265,9 +265,8 @@ h4 {
 }
 
 .logo-container h6 {
-    font-size: 1rem;
     opacity: 0.9;
-    font-weight: 400;
+    font-weight: 00 !important;
     letter-spacing: 2px;
     text-transform: uppercase;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);

@@ -844,5 +844,3 @@ function toggleSidebar() {
     }
 }
 
-// Función para actualizar estadísticas
-function update

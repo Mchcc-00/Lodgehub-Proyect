@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verificación Correo - LodgeHub</title>
-    <link rel="stylesheet" href="../../../public/assets/css/stylesLogin.css"> <!-- Enlaza el archivo CSS -->
+    <link rel="stylesheet" href="../../public/assets/css/stylesLogin.css"> <!-- Enlaza el archivo CSS -->
 </head>
 
 <body>
@@ -37,7 +37,7 @@
             </div>
             <div class ="degrade-container"></div>
             <div class="logo-container">
-                <img src="../../../public/img/LogoClaroLH.png" alt="">
+                <img src="../../public/img/LogoClaroLH.png" alt="">
                 <h6>lodgehubgroup © 2025</h6>
             </div>
 

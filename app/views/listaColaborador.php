@@ -37,8 +37,8 @@ $currentPage = "usuarios";
 
 <?php 
 // Incluir las plantillas de navegación
-include 'Layouts/sidebar.php';
-include 'Layouts/navbar.php'; 
+include 'sidebar.php';
+include 'navbar.php'; 
 ?>
 
 <!-- CONTENIDO PRINCIPAL -->

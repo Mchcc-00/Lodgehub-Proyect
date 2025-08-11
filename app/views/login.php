@@ -19,7 +19,7 @@
                 <div class="circle circle-3"></div>
                 <div class="circle circle-4"></div>
 
-                <form action="validar.php" method="post">
+                <form action="validarLogin.php" method="post">
 
                     <h1>¡BIENVENIDO A LODGEHUB!</h1> <!-- Título -->
                     
@@ -65,8 +65,8 @@
 
 
 
-                    <a href="../recuperarcontraseña/recuperarContraseña.php" class="account-link">¿Olvidaste tu contraseña?</a>
-                    <a href=" ../Usuarios/crearUsuariologin.php" class="account-link">¿No tienes una cuenta? ¡Crea una!</a>
+                    <a href="recuperarContraseña.php" class="account-link">¿Olvidaste tu contraseña?</a>
+                    <a href="crearUsuariologin.php" class="account-link">¿No tienes una cuenta? ¡Crea una!</a>
 
                     <button type="submit" class="login-button">Ingresar</button>
 

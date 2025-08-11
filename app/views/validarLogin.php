@@ -1,5 +1,5 @@
 <?php
-require_once ('../../../config/conexionGlobal.php');
+require_once ('../../config/conexionGlobal.php');
 $db = conexionDB();
 
 if (!isset($_POST['correo']) || !isset($_POST['password'])) {
@@ -82,7 +82,7 @@ if ($filas > 0) {
         mysqli_free_result($resultado);
         mysqli_close($conexion);
         
-        header("location: ../homepage/homepage.php");
+        header("location: homepage.php");
         exit;
     } else {
         // Contraseña incorrecta
@@ -99,41 +99,3 @@ if ($filas > 0) {
     exit;
 }
 ?>
-
-<!-- <?php
-// codigo antiguo
-// require_once '../../config/conexionGlobal.php';
-// $db = conexionDB();
-
-
-$correo=$_POST['correo'];
-$password=$_POST['password'];
-session_start();
-$_SESSION['correo']=$correo;
-
-
-
-$conexion=mysqli_connect("localhost","root","","lodgehub");
-
-$consulta="SELECT*FROM tp_usuarios where correo= '$correo' and password= '$password' and sesionCaducada = 1";
-$resultado=mysqli_query($conexion,$consulta);
-
-$filas=mysqli_num_rows($resultado);
-
-if($filas){
-
-    session_start();
-    $_SESSION['user'] = $correo;
-    
-    header("location: ../homepage/homepage.php");
-
-}else {
-    header("location: login.php");
-    ?>
-    <?php
-}
-
-mysqli_free_result($resultado);
-mysqli_close($conexion);
-
-?> -->

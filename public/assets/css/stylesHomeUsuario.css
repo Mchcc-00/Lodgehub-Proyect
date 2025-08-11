@@ -1,67 +1,184 @@
-:root {
-    --primary-color: #437baf;
-    --primary-dark: #2c5282;
-    --sidebar-width: 280px;
-    --navbar-height: 70px;
-}
-
 * {
+    margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f8f9fa;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    min-height: 100vh;
+    color: #333;
 }
 
-/* NAVBAR STYLES */
-#navbar {
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)) !important;
-    box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-    border: none;
-    padding: 0;
-    position: fixed;
-    top: 5px; /* Separación superior - CAMBIO AQUÍ */
-    left: 5px; /* Separación izquierda - CAMBIO AQUÍ */
-    right: 5px; /* Separación derecha - CAMBIO AQUÍ */
-    z-index: 1050;
-    height: var(--navbar-height);
-    border-radius: 20px; /* Border radius en todos los lados del navbar */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
 }
 
-.navbar .container-fluid {
-    border-radius: 20px; /* Mantener consistencia con el navbar */
-    padding: 0.8rem 1.5rem;
-    height: 100%;
+.header {
+    text-align: center;
+    margin-bottom: 3rem;
 }
 
-
-.navbar-brand {
-    color: white !important;
-    font-weight: 700;
-    font-size: 1.3rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+.img{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
 }
 
-.breadcrumb {
-    background: none;
-    padding: 0;
+.header img {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 10px 38px rgba(118, 75, 162, 0.18);
+    background: #ffffff;
+    padding: 6px;
+    transition: transform 0.3s;
+    
+    
+}
+.header img:hover {
+    transform: scale(1.08) rotate(-4deg);
+    box-shadow: 0 8px 32px rgba(118, 75, 162, 0.22);
 }
 
-.btn-user {
-    background: rgba(255,255,255,0.1);
-    border: 2px solid rgba(255,255,255,0.2);
+.header h1 {
+    font-size: 3rem;
+
+    margin-left: 20px;
+    margin-bottom: 1rem;
     color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    font-weight: 500;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    
+}
+
+.header p {
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 2rem;
+}
+
+.search-container {
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 50px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    outline: none;
+    transition: transform 0.3s ease;
+}
+
+.search-input:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.hotels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.hotel-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
 }
 
-.btn-user:hover {
-    background: rgba(255,255,255,0.2);
+.hotel-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.hotel-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.hotel-info {
+    padding: 1.5rem;
+}
+
+.hotel-name {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.hotel-address {
+    color: #666;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.hotel-contact {
+    margin-bottom: 1.5rem;
+}
+
+.contact-item {
+    color: #555;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+.view-info-btn {
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
     color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.view-info-btn:hover {
     transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.no-results {
+    text-align: center;
+    color: white;
+    font-size: 1.2rem;
+    margin-top: 3rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.hidden {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .header h1 {
+        font-size: 2.5rem;
+    }
+
+    .hotels-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
 }
