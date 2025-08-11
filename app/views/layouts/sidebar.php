@@ -15,36 +15,36 @@ if ($userRole === 'Administrador') {
             'submenu' => [
                 [
                     'page' => 'Mi hotel',
-                    'href' => 'infohotel.php',
+                    'href' => 'homepage.php',
                     'icon' => 'fas fa-info-circle',
                     'text' => 'Info Hotel'
                 ],
                 [
-                    'page' => 'reservas',
+                    'page' => 'Reservas',
                     'href' => '../6_Reservas/2R/mainReservas.php',
                     'icon' => 'fas fa-calendar-check',
                     'text' => 'Reservas'
                 ],
                 [
-                    'page' => 'huespedes',
+                    'page' => 'Huéspedes',
                     'href' => '../huespedes/dashboard.php',
                     'icon' => 'fas fa-user-friends',
                     'text' => 'Huéspedes'
                 ],
                 [
-                    'page' => 'habitaciones',
-                    'href' => '../../../app/views/Habitaciones/dashboardHab.php',
+                    'page' => 'Habitaciones',
+                    'href' => 'verHabitaciones.php',
                     'icon' => 'fas fa-bed',
                     'text' => 'Habitaciones'
                 ],
                 [
-                    'page' => 'colaboradores',
-                    'href' => '../../app/views/listaColaborador.php',
+                    'page' => 'Colaboradores',
+                    'href' => 'verColaboradores.php',
                     'icon' => 'fas fa-users',
                     'text' => 'Mis Colaboradores'
                 ],
                 [
-                    'page' => 'mantenimiento',
+                    'page' => 'Mantenimiento',
                     'href' => '../../../MANTENIMIENTO/views/dashboard.php',
                     'icon' => 'fas fa-tools',
                     'text' => 'Mantenimiento'
@@ -68,8 +68,8 @@ if ($userRole === 'Administrador') {
             'hasSubmenu' => true,
             'submenu' => [
                 [
-                    'page' => 'infohotel',
-                    'href' => 'infohotel.php',
+                    'page' => 'info Hotel',
+                    'href' => 'homepage.php',
                     'icon' => 'fas fa-info-circle',
                     'text' => 'Info Hotel'
                 ],
@@ -80,8 +80,8 @@ if ($userRole === 'Administrador') {
                     'text' => 'Reservas'
                 ],
                 [
-                    'page' => 'habitaciones',
-                    'href' => '../../../app/views/Habitaciones/dashboardHab.php',
+                    'page' => 'Habitaciones',
+                    'href' => 'verHabitaciones.php',
                     'icon' => 'fas fa-bed',
                     'text' => 'Habitaciones'
                 ]

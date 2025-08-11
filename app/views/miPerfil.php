@@ -59,6 +59,7 @@ function calcularEdad($fechaNacimiento) {
         include "layouts/sidebar.php";
         include "layouts/navbar.php";
     ?>
+    <script src="../../public/assets/js/sidebar.js"></script>
 
 
 <body>
