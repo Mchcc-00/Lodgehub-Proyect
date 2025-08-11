@@ -20,14 +20,15 @@
     include "layouts/sidebar.php";
     include "layouts/navbar.php";
     ?>
+    <script src="../../public/assets/js/sidebar.js"></script>
 
 
     <div class="contenedorCrearHab">
-
+        <div class="headerFormCrearHab">
+            <h1>Agregar Habitación</h1>
+        </div>
         <div class="contenidoFormCrearHab">
-            <div class="headerFormCrearHab">
-                <h1>Agregar Habitación</h1>
-            </div>
+
             <h2 class="formTitleCrearHab">
                 Nueva Habitación
             </h2>
@@ -42,7 +43,7 @@
                 <div id="error-text" style="margin-top: 5px; font-size: 0.9rem;"></div>
             </div> -->
 
-            <form id="habitacionFormCrear" action="guardarHabitacion.php" method="post" enctype="multipart/form-data">
+            <form id="habitacionFormCrear" action="../models/guardarHabitacion.php" method="POST" enctype="multipart/form-data">
                 <div class="formGrid">
                     <div class="formGroupHab">
                         <label for="numeroNewHab">Número de Habitación <span class="required">*</span><input type="text" id="numeroNewHab" name="numeroNewHab" required placeholder="Ej: 101, 201A"></label>
@@ -68,41 +69,30 @@
                     </div>
 
                     <div class="formGroupHab">
-                        <label for="estadoNewHab">Estado <span class="required">*</span>
-                            <select id="estadoNewHab" name="estadoNewHab" required>
-                                <option value="" disabled selected>Seleccione</option>
-                                <option value="Disponible">Disponible</option>
-                                <option value="Ocupado">Ocupado</option>
-                                <option value="Mantenimiento">Mantenimiento</option>
-                            </select>
-                        </label>
-                    </div>
-
-                    <div class="formGroupHab">
-                        <label for="foto">Foto de la Habitación</label>
-                        <div class="file-upload-wrapper">
-                            <input type="file" id="foto" name="foto" class="file-upload-input" accept="image/*">
-                            <div class="file-upload-button" id="file-upload-button">
+                        <label for="fotoNewHab">Foto de la Habitación</label>
+                        <div class="fileUploadContenedor">
+                            <input type="file" id="fotoNewHab" name="fotoNewHab" class="fileUploadInputNewHab" accept="image/*">
+                            <div class="fileUploadBtn" id="fileUploadBtnNewHab">
                                 📷 Seleccionar imagen
                             </div>
                         </div>
-                        <div class="image-preview" id="image-preview">
-                            <img id="preview-img" src="" alt="Vista previa">
-                            <button type="button" class="remove-image" id="remove-image">Eliminar imagen</button>
+                        <div class="imagenPreview" id="imagenPreviewNewHab">
+                            <img id="previewImgNewHab" src="" alt="Vista previa">
+                            <button type="button" class="removeImage" id="removeImageNewHab">Eliminar imagen</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="formGroupHab">
-                    <label for="descripcion">Descripción</label>
-                    <textarea id="descripcion" name="descripcion" rows="3" placeholder="Descripción detallada de la habitación, servicios incluidos, etc."></textarea>
+                    <label for="descripcionNewHab">Descripción</label>
+                    <textarea id="descripcionNewHab" name="descripcionNewHab" rows="3" placeholder="Descripción detallada de la habitación, servicios incluidos, etc."></textarea>
                 </div>
 
                 <div style="display: flex; gap: 15px; margin-top: 25px;">
                     <button type="submit" class="btn btn-primary">
                         Guardar Habitación
                     </button>
-                    <button type="button" class="btn btn-secondary" id="reset-btn">
+                    <button type="button" class="btn btn-secondary" id="resetBtnFormNewHab">
                         Limpiar Formulario
                     </button>
                 </div>
@@ -110,7 +100,7 @@
         </div>
     </div>
 
-    <!-- <script>
+    <script>
         // Base de datos simulada para verificar duplicados
         let habitacionesExistentes = ['101', '201', '301']; // Simula números ya existentes
 
@@ -131,11 +121,11 @@
         const previewContent = document.getElementById('preview-content');
 
         // Referencias para manejo de archivos
-        const fileInput = document.getElementById('foto');
-        const fileUploadButton = document.getElementById('file-upload-button');
-        const imagePreview = document.getElementById('image-preview');
-        const previewImg = document.getElementById('preview-img');
-        const removeImageBtn = document.getElementById('remove-image');
+        const fileInput = document.getElementById('fotoNewHab');
+        const fileUploadButton = document.getElementById('fileUploadBtnNewHab');
+        const imagePreview = document.getElementById('imagenPreviewNewHab');
+        const previewImg = document.getElementById('previewImgNewHab');
+        const removeImageBtn = document.getElementById('removeImageNewHab');
 
         let currentImageFile = null;
 
@@ -182,76 +172,6 @@
             updatePreview();
         });
 
-        // Mostrar/ocultar campo de mantenimiento
-        estadoSelect.addEventListener('change', function() {
-            if (this.value === 'Mantenimiento') {
-                mantenimientoGroup.style.display = 'block';
-            } else {
-                mantenimientoGroup.style.display = 'none';
-                document.getElementById('descripcionMantenimiento').value = '';
-            }
-            updatePreview();
-        });
-
-        // Actualizar preview en tiempo real
-        form.addEventListener('input', updatePreview);
-        form.addEventListener('change', updatePreview);
-
-        function updatePreview() {
-            const formData = new FormData(form);
-            const numero = formData.get('numero');
-            const costo = formData.get('costo');
-            const capacidad = formData.get('capacidad');
-            const tipoHabitacion = formData.get('tipoHabitacion');
-            const estado = formData.get('estado');
-            const descripcion = formData.get('descripcion');
-
-            if (numero || costo || capacidad || tipoHabitacion || estado) {
-                habitacionPreview.style.display = 'block';
-                
-                let previewHTML = `
-                    <div class="preview-item">
-                        <div class="preview-label">Número:</div>
-                        <div class="preview-value">${numero || 'Sin especificar'}</div>
-                    </div>
-                    <div class="preview-item">
-                        <div class="preview-label">Tipo:</div>
-                        <div class="preview-value">${tipoHabitacion ? tiposHabitacion[tipoHabitacion] : 'Sin especificar'}</div>
-                    </div>
-                    <div class="preview-item">
-                        <div class="preview-label">Costo:</div>
-                        <div class="preview-value">${costo ? '$' + parseFloat(costo).toLocaleString('es-CO') : 'Sin especificar'}</div>
-                    </div>
-                    <div class="preview-item">
-                        <div class="preview-label">Capacidad:</div>
-                        <div class="preview-value">${capacidad ? capacidad + ' persona' + (capacidad != 1 ? 's' : '') : 'Sin especificar'}</div>
-                    </div>
-                    <div class="preview-item">
-                        <div class="preview-label">Estado:</div>
-                        <div class="preview-value">${estado || 'Sin especificar'}</div>
-                    </div>
-                    <div class="preview-item">
-                        <div class="preview-label">Descripción:</div>
-                        <div class="preview-value">${descripcion || 'Sin descripción'}</div>
-                    </div>
-                `;
-
-                // Agregar imagen si existe
-                if (currentImageFile && previewImg.src) {
-                    previewHTML += `
-                        <div class="preview-item preview-image">
-                            <div class="preview-label">Imagen:</div>
-                            <img src="${previewImg.src}" alt="Vista previa de la habitación">
-                        </div>
-                    `;
-                }
-
-                previewContent.innerHTML = previewHTML;
-            } else {
-                habitacionPreview.style.display = 'none';
-            }
-        }
-
         // Manejar envío del formulario
         form.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -272,24 +192,6 @@
                 showError('Por favor complete todos los campos obligatorios (*)');
                 return;
             }
-
-            // Simular guardado exitoso
-            setTimeout(() => {
-                // Agregar a la lista de existentes
-                habitacionesExistentes.push(numero);
-                
-                // Mostrar éxito
-                showSuccess();
-                
-                // Limpiar formulario y resetear imagen
-                form.reset();
-                resetImageUpload();
-                habitacionPreview.style.display = 'none';
-                mantenimientoGroup.style.display = 'none';
-                
-                // Scroll al mensaje de éxito
-                successMessage.scrollIntoView({ behavior: 'smooth' });
-            }, 500);
         });
 
         // Función para resetear la carga de imagen
@@ -301,7 +203,7 @@
         }
 
         // Botón limpiar formulario
-        document.getElementById('reset-btn').addEventListener('click', function() {
+        document.getElementById('resetBtnFormNewHab').addEventListener('click', function() {
             form.reset();
             hideMessages();
             resetImageUpload();
@@ -341,7 +243,7 @@
             originalShowSuccess();
             autoHideSuccess();
         };
-    </script> -->
+    </script>
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
