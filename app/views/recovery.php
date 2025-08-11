@@ -105,7 +105,7 @@ if($filas > 0){
                 }
                 
                 .header {
-                    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
                     padding: 40px 30px;
                     text-align: center;
                     position: relative;
@@ -156,7 +156,7 @@ if($filas > 0){
                     font-size: 32px;
                     font-weight: 700;
                     margin-bottom: 20px;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
                     -webkit-background-clip: text;
                     -webkit-text-fill-color: transparent;
                     background-clip: text;
@@ -175,7 +175,7 @@ if($filas > 0){
                 .cta-button {
                     color: #ffffff !important;
                     display: inline-block;
-                    background: linear-gradient(135deg, #286aa779 0%, #205bc9ff 100%);
+                    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
                     text-decoration: none;
                     padding: 18px 40px;
                     border-radius: 50px;

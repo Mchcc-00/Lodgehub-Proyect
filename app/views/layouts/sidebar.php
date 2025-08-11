@@ -12,7 +12,7 @@
             <li class="nav-item">
                 <a class="nav-link <?php echo (isset($currentPage) && $currentPage == 'home') ? 'active' : ''; ?>" href="homepage.php">
                     <i class="fas fa-home"></i>
-                    <span>Mi</span>
+                    <span>Home</span>
                 </a>
             </li>
             

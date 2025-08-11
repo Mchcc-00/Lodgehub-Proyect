@@ -1,17 +1,57 @@
+<?php
+session_start();
+
+// Verificar si el usuario está logueado
+if (!isset($_SESSION['numDocumento']) || !isset($_SESSION['user'])) {
+    header('Location: login.php?mensaje=Sesión expirada');
+    exit();
+}
+
+// Incluir conexión a la base de datos
+require_once '../../config/conexionGlobal.php';
+
+try {
+    // Obtener información del usuario desde la base de datos
+    $db = conexionDB();
+    $stmt = $db->prepare("SELECT * FROM tp_usuarios WHERE numDocumento = ?");
+    $stmt->execute([$_SESSION['numDocumento']]);
+    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$usuario) {
+        throw new Exception("Usuario no encontrado en la base de datos");
+    }
+} catch (Exception $e) {
+    echo "Error al cargar el perfil: " . $e->getMessage();
+    exit();
+}
+
+// Función para formatear la fecha
+function formatearFecha($fecha) {
+    return date('d/m/Y', strtotime($fecha));
+}
+
+// Función para calcular la edad
+function calcularEdad($fechaNacimiento) {
+    $fecha_nacimiento = new DateTime($fechaNacimiento);
+    $hoy = new DateTime();
+    $edad = $hoy->diff($fecha_nacimiento);
+    return $edad->y;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Perfil - LODGEHUB</title>
-    <link rel="stylesheet" href="../../public/assets/css/stylesNav.css">
+    <title>Mi Perfil - <?php echo htmlspecialchars($usuario['nombres'] . ' ' . $usuario['apellidos']); ?></title>
     <link rel="stylesheet" href="../../public/assets/css/stylesMiPerfil.css">
-
+    <link rel="stylesheet" href="../../public/assets/css/stylesNav.css">
     <!-- Bootstrap CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<!-- Font Awesome -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
 
 </head>
 
@@ -20,167 +60,137 @@
         include "layouts/navbar.php";
     ?>
 
+
 <body>
-
-<!-- MAIN CONTENT -->
-<main class="main-content">
-    <div class="content-wrapper">
-        <!-- Profile Header -->
-        <div class="profile-header">
-            <div class="profile-content">
-                <div class="profile-avatar-container">
-                    <div class="profile-avatar" id="profileAvatar">
-                        <!-- Aquí se mostrará la imagen o las iniciales -->
+    <div class="main-content">
+        <div class="content-wrapper">
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <div class="profile-content">
+                    <div class="profile-avatar-container">
+                        <div class="profile-avatar">
+                            <?php if (!empty($usuario['foto']) && file_exists($usuario['foto'])): ?>
+                                <img src="<?php echo htmlspecialchars($usuario['foto']); ?>" alt="Foto de perfil">
+                            <?php else: ?>
+                                <i class="fas fa-user"></i>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                    <div class="avatar-upload" onclick="openImageModal()">
-                        <i class="fas fa-camera"></i>
+                    <h1 class="profile-name">
+                        <?php echo htmlspecialchars($usuario['nombres'] . ' ' . $usuario['apellidos']); ?>
+                    </h1>
+                    <p class="profile-role">
+                        <?php echo htmlspecialchars($usuario['roles']); ?>
+                    </p>
+                    <span class="profile-status <?php echo ($usuario['sesionCaducada'] == '1' || $usuario['sesionCaducada'] == 1) ? 'status-active' : 'status-inactive'; ?>">
+                        <?php echo ($usuario['sesionCaducada'] == '1' || $usuario['sesionCaducada'] == 1) ? 'Activo' : 'Inactivo'; ?>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Personal Information Section -->
+            <div class="profile-section">
+                <h2 class="section-title">
+                    <i class="fas fa-user-circle"></i>
+                    Información Personal
+                </h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Número de Documento</div>
+                        <div class="info-value"><?php echo htmlspecialchars($usuario['numDocumento']); ?></div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Tipo de Documento</div>
+                        <div class="info-value"><?php echo htmlspecialchars($usuario['tipoDocumento']); ?></div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Nombres</div>
+                        <div class="info-value"><?php echo htmlspecialchars($usuario['nombres']); ?></div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Apellidos</div>
+                        <div class="info-value"><?php echo htmlspecialchars($usuario['apellidos']); ?></div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Sexo</div>
+                        <div class="info-value"><?php echo htmlspecialchars($usuario['sexo']); ?></div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Fecha de Nacimiento</div>
+                        <div class="info-value">
+                            <?php echo formatearFecha($usuario['fechaNacimiento']); ?>
+                            <small style="color: #666; display: block; margin-top: 4px;">
+                                (<?php echo calcularEdad($usuario['fechaNacimiento']); ?> años)
+                            </small>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="text-center">
-                    <h1 class="profile-name" id="profileName">Cargando...</h1>
-                    <p class="profile-role" id="profileRole">Cargando...</p>
-                    <span class="profile-status status-active" id="profileStatus">Activo</span>
-                </div>
-                
-                <div class="text-center mt-3">
-                    <button class="btn btn-edit-profile me-2" onclick="editProfile()">
-                        <i class="fas fa-edit me-2"></i>
-                        Editar Perfil
-                    </button>
-                    <button class="btn btn-change-password" onclick="changePassword()">
-                        <i class="fas fa-key me-2"></i>
-                        Cambiar Contraseña
-                    </button>
+            </div>
+
+            <!-- Contact Information Section -->
+            <div class="profile-section">
+                <h2 class="section-title">
+                    <i class="fas fa-address-book"></i>
+                    Información de Contacto
+                </h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Correo Electrónico</div>
+                        <div class="info-value"><?php echo htmlspecialchars($usuario['correo']); ?></div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Número de Teléfono</div>
+                        <div class="info-value"><?php echo htmlspecialchars($usuario['numTelefono']); ?></div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Personal Information -->
-        <div class="profile-section">
-            <h2 class="section-title">
-                <i class="fas fa-user-circle"></i>
-                Información Personal
-            </h2>
-            <div class="info-grid">
-                <div class="info-item">
-                    <div class="info-label">Nombres</div>
-                    <div class="info-value" id="infoNombres">-</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Apellidos</div>
-                    <div class="info-value" id="infoApellidos">-</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Tipo de Documento</div>
-                    <div class="info-value" id="infoTipoDoc">-</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Número de Documento</div>
-                    <div class="info-value" id="infoNumDoc">-</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Fecha de Nacimiento</div>
-                    <div class="info-value" id="infoFechaNac">-</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Sexo</div>
-                    <div class="info-value" id="infoSexo">-</div>
+            <!-- System Information Section -->
+            <div class="profile-section">
+                <h2 class="section-title">
+                    <i class="fas fa-cog"></i>
+                    Información del Sistema
+                </h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Rol en el Sistema</div>
+                        <div class="info-value"><?php echo htmlspecialchars($usuario['roles']); ?></div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Estado de la Sesión</div>
+                        <div class="info-value">
+                            <span class="profile-status <?php echo ($usuario['sesionCaducada'] == '1' || $usuario['sesionCaducada'] == 1) ? 'status-active' : 'status-inactive'; ?>">
+                                <?php echo ($usuario['sesionCaducada'] == '1' || $usuario['sesionCaducada'] == 1) ? 'Activo' : 'Inactivo'; ?>
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Contact Information -->
-        <div class="profile-section">
-            <h2 class="section-title">
-                <i class="fas fa-address-book"></i>
-                Información de Contacto
-            </h2>
-            <div class="info-grid">
-                <div class="info-item">
-                    <div class="info-label">Correo Electrónico</div>
-                    <div class="info-value" id="infoCorreo">-</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Teléfono</div>
-                    <div class="info-value" id="infoTelefono">-</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Work Information -->
-        <div class="profile-section">
-            <h2 class="section-title">
-                <i class="fas fa-briefcase"></i>
-                Información Laboral
-            </h2>
-            <div class="info-grid">
-                <div class="info-item">
-                    <div class="info-label">Rol</div>
-                    <div class="info-value" id="infoRol">-</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Estado de Sesión</div>
-                    <div class="info-value" id="infoSesion">-</div>
-                </div>
+            <!-- Actions -->
+            <div class="actions">
+                <a href="editarPerfil.php" class="btn-edit-profile">
+                    <i class="fas fa-edit"></i> Editar Perfil
+                </a>
+                <a href="contraseña.php" class="btn-change-password">
+                    <i class="fas fa-key"></i> Cambiar Contraseña
+                </a>
+                <a href="cerrarSesion.php" class="btn-change-password">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
             </div>
         </div>
     </div>
-</main>
 
-<!-- Modal para cambiar foto -->
-<div class="modal fade" id="imageModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-camera me-2"></i>
-                    Cambiar Foto de Perfil
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label for="imageInput" class="form-label">Seleccionar nueva foto:</label>
-                    <input type="file" class="form-control" id="imageInput" accept="image/*" onchange="previewImage(this)">
-                    <div class="form-text">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 5MB</div>
-                </div>
-                <div class="text-center">
-                    <img id="imagePreview" style="display: none;" class="img-fluid">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="uploadImage()">
-                    <i class="fas fa-upload me-2"></i>
-                    Subir Foto
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-// Datos del usuario basados en el ejemplo proporcionado
-const userData = {
-    numDocumento: '1014596349',
-    tipoDocumento: 'Cédula de Ciudadanía', 
-    nombres: 'Brayan Felipe',
-    apellidos: 'Pulido Lopez',
-    numTelefono: '3172509298',
-    correo: 'brayan06.pulido@gmail.com',
-    sexo: 'Hombre',
-    fechaNacimiento: '2006-03-03',
-    password: '123456789', // En producción esto no debería mostrarse
-    foto: 'foto_brayan.jpg', // Nombre de la foto
-    intentosFallidos: '0',
-    fechaUltimoIntento: null,
-    sesionCaducada: 'Activo',
-    roles: 'Administrador'
-};
-
+    <script>
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
@@ -189,159 +199,72 @@ function toggleSidebar() {
     sidebar.classList.toggle('show');
     body.classList.toggle('sidebar-open');
     
+    // Solo mostrar overlay en móvil
     if (window.innerWidth < 992) {
         overlay.classList.toggle('show');
     }
-}
-
-function generateInitials(nombres, apellidos) {
-    const primerNombre = nombres.split(' ')[0] || '';
-    const segundoApellido = apellidos.split(' ')[1] || apellidos.split(' ')[0] || '';
     
-    return (primerNombre.charAt(0) + segundoApellido.charAt(0)).toUpperCase();
-}
-
-function loadUserProfile() {
-    // Cargar información básica
-    document.getElementById('profileName').textContent = `${userData.nombres} ${userData.apellidos}`;
-    document.getElementById('profileRole').textContent = userData.roles;
-    
-    // Configurar avatar
-    const avatar = document.getElementById('profileAvatar');
-    if (userData.foto && userData.foto !== '' && userData.foto !== null) {
-        // Si tiene foto, intentar mostrar la imagen (ruta relativa o completa)
-        const imagePath = userData.foto.startsWith('http') ? userData.foto : `../../uploads/profiles/${userData.foto}`;
-        avatar.innerHTML = `<img src="${imagePath}" alt="Foto de perfil" onerror="showInitials()">`;
-    } else {
-        // Si no tiene foto, mostrar iniciales
-        showInitials();
-    }
-    
-    // Estado
-    const statusElement = document.getElementById('profileStatus');
-    if (userData.sesionCaducada === 'Activo') {
-        statusElement.className = 'profile-status status-active';
-        statusElement.textContent = 'Activo';
-    } else {
-        statusElement.className = 'profile-status status-inactive';
-        statusElement.textContent = 'Inactivo';
-    }
-    
-    // Llenar información detallada
-    document.getElementById('infoNombres').textContent = userData.nombres;
-    document.getElementById('infoApellidos').textContent = userData.apellidos;
-    document.getElementById('infoTipoDoc').textContent = userData.tipoDocumento;
-    document.getElementById('infoNumDoc').textContent = userData.numDocumento;
-    document.getElementById('infoFechaNac').textContent = formatDate(userData.fechaNacimiento);
-    document.getElementById('infoSexo').textContent = userData.sexo;
-    document.getElementById('infoCorreo').textContent = userData.correo;
-    document.getElementById('infoTelefono').textContent = userData.numTelefono;
-    document.getElementById('infoRol').textContent = userData.roles;
-    document.getElementById('infoSesion').textContent = userData.sesionCaducada;
-    document.getElementById('infoPassword').textContent = '••••••••'; // No mostrar la contraseña real
-}
-
-function showInitials() {
-    const avatar = document.getElementById('profileAvatar');
-    const initials = generateInitials(userData.nombres, userData.apellidos);
-    avatar.innerHTML = initials;
-}
-
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
-}
-
-function openImageModal() {
-    const modal = new bootstrap.Modal(document.getElementById('imageModal'));
-    modal.show();
-}
-
-function previewImage(input) {
-    const preview = document.getElementById('imagePreview');
-    
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.style.display = 'block';
-        };
-        
-        reader.readAsDataURL(input.files[0]);
+    // Cambiar el ícono del botón collapse
+    const collapseBtn = document.querySelector('.btn-collapse-sidebar i');
+    if (collapseBtn) {
+        if (sidebar.classList.contains('show')) {
+            collapseBtn.className = 'fas fa-chevron-left';
+        } else {
+            collapseBtn.className = 'fas fa-chevron-right';
+        }
     }
 }
 
-function uploadImage() {
-    const input = document.getElementById('imageInput');
-    const file = input.files[0];
-    
-    if (!file) {
-        alert('Por favor selecciona una imagen');
-        return;
+// Función para redireccionar
+function redirectTo(url) {
+    console.log('Redirigiendo a:', url);
+    // Aquí puedes cambiar por window.location.href = url; cuando tengas las URLs reales
+    alert('Redirigiendo a: ' + url);
+}
+
+// Mostrar fecha actual
+function updateDate() {
+    const now = new Date();
+    const options = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    };
+    const dateElement = document.getElementById('currentDate');
+    if (dateElement) {
+        dateElement.textContent = now.toLocaleDateString('es-ES', options);
     }
-    
-    // Validar tamaño del archivo (5MB máximo)
-    if (file.size > 5 * 1024 * 1024) {
-        alert('La imagen es demasiado grande. El tamaño máximo es 5MB.');
-        return;
-    }
-    
-    // Aquí iría el código para subir la imagen al servidor
-    // Por ahora, simulamos la carga
-    const formData = new FormData();
-    formData.append('foto', file);
-    formData.append('numDocumento', userData.numDocumento);
-    
-    // Simular carga exitosa
-    setTimeout(() => {
-        // Actualizar la foto en la interfaz
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            userData.foto = e.target.result;
-            loadUserProfile();
-        };
-        reader.readAsDataURL(file);
-        
-        // Cerrar modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('imageModal'));
-        modal.hide();
-        
-        // Limpiar el input
-        input.value = '';
-        document.getElementById('imagePreview').style.display = 'none';
-        
-        alert('Foto actualizada correctamente');
-    }, 1500);
 }
 
-function editProfile() {
-    // Implementar edición de perfil
-    alert('Función de editar perfil en desarrollo');
-}
-
-function changePassword() {
-    // Implementar cambio de contraseña
-    alert('Función de cambiar contraseña en desarrollo');
-}
-
-// Cargar perfil cuando la página esté lista
+// Cerrar sidebar al hacer clic en un enlace solo en móvil
 document.addEventListener('DOMContentLoaded', function() {
-    loadUserProfile();
+    const sidebarLinks = document.querySelectorAll('.sidebar-nav .nav-link');
+    
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            if (window.innerWidth < 992) {
+                toggleSidebar();
+            }
+        });
+    });
     
     // Manejar resize de ventana
     window.addEventListener('resize', function() {
         const overlay = document.getElementById('sidebarOverlay');
+        
         if (window.innerWidth >= 992) {
             overlay.classList.remove('show');
         }
     });
+    
+    // Inicializar fecha
+    updateDate();
+    // Actualizar fecha cada minuto
+    setInterval(updateDate, 60000);
 });
 </script>
-
+        <!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
