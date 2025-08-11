@@ -1,35 +1,37 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agregar Habitación - LodgeHub</title>
-        <!-- Bootstrap y Font Awesome -->
+    <!-- Bootstrap y Font Awesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-    
+
     <!-- Estilos de los layouts (nav y sidebar) -->
     <link href="../../public/assets/css/stylesNav.css" rel="stylesheet">
     <link rel="stylesheet" href="../../public/assets/css/stylesHabitacion.css">
 </head>
+
 <body>
 
     <?php
-        include "layouts/sidebar.php";
-        include "layouts/navbar.php";
+    include "layouts/sidebar.php";
+    include "layouts/navbar.php";
     ?>
 
 
-    <div class="container">
-        <div class="header">
-            <h1>Agregar Habitación</h1>
-        </div>
+    <div class="contenedorCrearHab">
 
-        <div class="form-section">
-            <h2 class="form-title">
+        <div class="contenidoFormCrearHab">
+            <div class="headerFormCrearHab">
+                <h1>Agregar Habitación</h1>
+            </div>
+            <h2 class="formTitleCrearHab">
                 Nueva Habitación
             </h2>
-            <!-- Mensajes -->
+            <!-- Mensajes
             <div id="success-message" class="success-message">
                 ✅ <strong>¡Habitación creada exitosamente!</strong>
                 <div style="margin-top: 5px; font-size: 0.9rem;">La habitación ha sido registrada en el sistema.</div>
@@ -38,46 +40,45 @@
             <div id="error-message" class="error-message">
                 ❌ <strong>Error al crear la habitación</strong>
                 <div id="error-text" style="margin-top: 5px; font-size: 0.9rem;"></div>
-            </div>
+            </div> -->
 
-            <form id="habitacion-form">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="numero">Número de Habitación <span class="required">*</span></label>
-                        <input type="text" id="numero" name="numero" required placeholder="Ej: 101, 201A">
+            <form id="habitacionFormCrear" action="guardarHabitacion.php" method="post" enctype="multipart/form-data">
+                <div class="formGrid">
+                    <div class="formGroupHab">
+                        <label for="numeroNewHab">Número de Habitación <span class="required">*</span><input type="text" id="numeroNewHab" name="numeroNewHab" required placeholder="Ej: 101, 201A"></label>
                     </div>
 
-                    <div class="form-group">
-                        <label for="costo">Costo por Noche <span class="required">*</span></label>
-                        <input type="number" id="costo" name="costo" required step="0.01" min="0" placeholder="Ej: 80000.00">
+                    <div class="formGroupHab">
+                        <label for="costoNewHab">Costo por Noche <span class="required">*</span><input type="text" id="costoNewHab" name="costoNewHab" required min="1" placeholder="Ej: $500.000"></label>
                     </div>
 
-                    <div class="form-group">
-                        <label for="capacidad">Capacidad (Personas) <span class="required">*</span></label>
-                        <input type="number" id="capacidad" name="capacidad" required min="1" max="20" placeholder="Ej: 2">
+                    <div class="formGroupHab">
+                        <label for="capacidadPersonasNewHab">Capacidad (Personas) <span class="required">*</span><input type="number" id="capacidadPersonasNewHab" name="capacidadPersonasNewHab" required min="1" max="20" placeholder="Ej: 2"></label>
                     </div>
 
-                    <div class="form-group">
-                        <label for="tipoHabitacion">Tipo de Habitación <span class="required">*</span></label>
-                        <select id="tipoHabitacion" name="tipoHabitacion" required>
-                            <option value="">Seleccione un tipo</option>
-                            <option value="1">Individual</option>
-                            <option value="2">Doble</option>
-                            <option value="3">Suite</option>
-                        </select>
+                    <div class="formGroupHab">
+                        <label for="tipoNewHab">Tipo de Habitación <span class="required">*</span>
+                            <select id="tipoNewHab" name="tipoNewHab" required>
+                                <option value="" disabled selected>Seleccione</option>
+                                <option value="1">Individual</option>
+                                <option value="2">Doble</option>
+                                <option value="3">Suite</option>
+                            </select>
+                        </label>
                     </div>
 
-                    <div class="form-group">
-                        <label for="estado">Estado <span class="required">*</span></label>
-                        <select id="estado" name="estado" required>
-                            <option value="">Seleccione un estado</option>
-                            <option value="Disponible">Disponible</option>
-                            <option value="Ocupado">Ocupado</option>
-                            <option value="Mantenimiento">Mantenimiento</option>
-                        </select>
+                    <div class="formGroupHab">
+                        <label for="estadoNewHab">Estado <span class="required">*</span>
+                            <select id="estadoNewHab" name="estadoNewHab" required>
+                                <option value="" disabled selected>Seleccione</option>
+                                <option value="Disponible">Disponible</option>
+                                <option value="Ocupado">Ocupado</option>
+                                <option value="Mantenimiento">Mantenimiento</option>
+                            </select>
+                        </label>
                     </div>
 
-                    <div class="form-group">
+                    <div class="formGroupHab">
                         <label for="foto">Foto de la Habitación</label>
                         <div class="file-upload-wrapper">
                             <input type="file" id="foto" name="foto" class="file-upload-input" accept="image/*">
@@ -92,14 +93,9 @@
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="formGroupHab">
                     <label for="descripcion">Descripción</label>
                     <textarea id="descripcion" name="descripcion" rows="3" placeholder="Descripción detallada de la habitación, servicios incluidos, etc."></textarea>
-                </div>
-
-                <div class="form-group" id="mantenimiento-group" style="display: none;">
-                    <label for="descripcionMantenimiento">Descripción del Mantenimiento</label>
-                    <textarea id="descripcionMantenimiento" name="descripcionMantenimiento" rows="2" placeholder="Describa el problema o mantenimiento requerido"></textarea>
                 </div>
 
                 <div style="display: flex; gap: 15px; margin-top: 25px;">
@@ -111,16 +107,6 @@
                     </button>
                 </div>
             </form>
-
-            <!-- Preview de la habitación -->
-            <div class="habitacion-preview" id="habitacion-preview" style="display: none;">
-                <div class="preview-title">
-                    👁️ Vista previa de la habitación
-                </div>
-                <div class="preview-content" id="preview-content">
-                    <!-- El contenido se generará dinámicamente -->
-                </div>
-            </div>
         </div>
     </div>
 
@@ -356,54 +342,55 @@
             autoHideSuccess();
         };
     </script> -->
-        <!-- Bootstrap JavaScript -->
+    <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    const body = document.body;
-    
-    sidebar.classList.toggle('show');
-    body.classList.toggle('sidebar-open');
-    
-    // Solo mostrar overlay en móvil
-    if (window.innerWidth < 992) {
-        overlay.classList.toggle('show');
-    }
-    
-    // Cambiar el ícono del botón collapse
-    const collapseBtn = document.querySelector('.btn-collapse-sidebar i');
-    if (collapseBtn) {
-        if (sidebar.classList.contains('show')) {
-            collapseBtn.className = 'fas fa-chevron-left';
-        } else {
-            collapseBtn.className = 'fas fa-chevron-right';
-        }
-    }
-}
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const body = document.body;
 
-// Cerrar sidebar al hacer clic en un enlace solo en móvil
-document.addEventListener('DOMContentLoaded', function() {
-    const sidebarLinks = document.querySelectorAll('.sidebar-nav .nav-link');
-    
-    sidebarLinks.forEach(link => {
-        link.addEventListener('click', function() {
+            sidebar.classList.toggle('show');
+            body.classList.toggle('sidebar-open');
+
+            // Solo mostrar overlay en móvil
             if (window.innerWidth < 992) {
-                toggleSidebar();
+                overlay.classList.toggle('show');
             }
-        });
-    });
-    
-    // Manejar resize de ventana
-    window.addEventListener('resize', function() {
-        const overlay = document.getElementById('sidebarOverlay');
-        
-        if (window.innerWidth >= 992) {
-            overlay.classList.remove('show');
+
+            // Cambiar el ícono del botón collapse
+            const collapseBtn = document.querySelector('.btn-collapse-sidebar i');
+            if (collapseBtn) {
+                if (sidebar.classList.contains('show')) {
+                    collapseBtn.className = 'fas fa-chevron-left';
+                } else {
+                    collapseBtn.className = 'fas fa-chevron-right';
+                }
+            }
         }
-    });
-});
-</script>
+
+        // Cerrar sidebar al hacer clic en un enlace solo en móvil
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarLinks = document.querySelectorAll('.sidebar-nav .nav-link');
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth < 992) {
+                        toggleSidebar();
+                    }
+                });
+            });
+
+            // Manejar resize de ventana
+            window.addEventListener('resize', function() {
+                const overlay = document.getElementById('sidebarOverlay');
+
+                if (window.innerWidth >= 992) {
+                    overlay.classList.remove('show');
+                }
+            });
+        });
+    </script>
 </body>
+
 </html>

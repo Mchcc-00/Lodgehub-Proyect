@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS tp_habitaciones (numero VARCHAR (5) NOT NULL,
                                             tipoHabitacion INT (3) NOT NULL,
                                             foto VARCHAR (255) DEFAULT NULL,
                                             descripcion TEXT DEFAULT NULL,
-                                            estado ENUM ('Disponible','Ocupado', 'Mantenimiento') NOT NULL,
+                                            estado ENUM ('Disponible', 'Reservada', 'Ocupada', 'Mantenimiento') NOT NULL,
                                             descripcionMantenimiento TEXT DEFAULT NULL,
                                             estadoMantenimiento ENUM ('Activo','Inactivo') NOT NULL DEFAULT 'Activo',
 
@@ -104,17 +104,17 @@ create table if not exists tp_hotel (id INT (3) AUTO_INCREMENT NOT NULL,
                                     PRIMARY KEY (id),
                                     FOREIGN KEY (numDocumento) REFERENCES tp_usuarios (numDocumento)
                                     )ENGINE=INNODB;                                        
-                                      
+                                    
 CREATE TABLE IF NOT EXISTS tp_factura (id INT (3) AUTO_INCREMENT NOT NULL,
-                                      infoReserva INT (3) NOT NULL,
-                                      fechaFactura DATETIME DEFAULT CURRENT_TIMESTAMP,
-                                      infoHotel INT (3) NOT NULL,
-                                      total DECIMAL (30,2) NOT NULL,
+                                    infoReserva INT (3) NOT NULL,
+                                    fechaFactura DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                    infoHotel INT (3) NOT NULL,
+                                    total DECIMAL (30,2) NOT NULL,
 
-                                      PRIMARY KEY (id),
-                                      FOREIGN KEY (infoReserva) REFERENCES tp_reservas (id),
-                                      FOREIGN KEY (infoHotel) REFERENCES tp_hotel (id)
-                                      )ENGINE=INNODB;
+                                    PRIMARY KEY (id),
+                                    FOREIGN KEY (infoReserva) REFERENCES tp_reservas (id),
+                                    FOREIGN KEY (infoHotel) REFERENCES tp_hotel (id)
+                                    )ENGINE=INNODB;
 
 CREATE TABLE IF NOT EXISTS tp_mantenimiento (id INT (4) AUTO_INCREMENT NOT NULL,
                                             numeroHabitacion VARCHAR (5) NOT NULL,
