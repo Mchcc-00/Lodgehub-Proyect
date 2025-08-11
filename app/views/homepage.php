@@ -21,6 +21,7 @@
         include "layouts/sidebar.php";
         include "layouts/navbar.php";
     ?>
+    <script src="../../public/assets/js/sidebar.js"></script>
 
 
 <body>
@@ -238,29 +239,7 @@
         setInterval(updateDate, 60000);
     </script>
     <script>
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    const body = document.body;
-    
-    sidebar.classList.toggle('show');
-    body.classList.toggle('sidebar-open');
-    
-    // Solo mostrar overlay en móvil
-    if (window.innerWidth < 992) {
-        overlay.classList.toggle('show');
-    }
-    
-    // Cambiar el ícono del botón collapse
-    const collapseBtn = document.querySelector('.btn-collapse-sidebar i');
-    if (collapseBtn) {
-        if (sidebar.classList.contains('show')) {
-            collapseBtn.className = 'fas fa-chevron-left';
-        } else {
-            collapseBtn.className = 'fas fa-chevron-right';
-        }
-    }
-}
+
 
 // Función para redireccionar
 function redirectTo(url) {
@@ -283,33 +262,13 @@ function updateDate() {
         dateElement.textContent = now.toLocaleDateString('es-ES', options);
     }
 }
-
-// Cerrar sidebar al hacer clic en un enlace solo en móvil
-document.addEventListener('DOMContentLoaded', function() {
-    const sidebarLinks = document.querySelectorAll('.sidebar-nav .nav-link');
-    
-    sidebarLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            if (window.innerWidth < 992) {
-                toggleSidebar();
-            }
-        });
-    });
-    
-    // Manejar resize de ventana
-    window.addEventListener('resize', function() {
-        const overlay = document.getElementById('sidebarOverlay');
-        
-        if (window.innerWidth >= 992) {
-            overlay.classList.remove('show');
-        }
-    });
-    
-    // Inicializar fecha
+// Inicializar fecha
     updateDate();
     // Actualizar fecha cada minuto
     setInterval(updateDate, 60000);
-});
+
+;
+
 </script>
 
     <!-- Bootstrap JavaScript -->

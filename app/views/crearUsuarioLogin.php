@@ -3,9 +3,12 @@
  * Este bloque de código solo se ejecuta cuando el formulario se envía (petición POST).
  */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    require_once __DIR__ . '/../../Controllers/UsuarioController.php';
+    require_once __DIR__ . '../../Controllers/UsuarioController.php';
     $controller = new UsuarioController();
     $controller->registrarPublico();
+    // Redirige a login.php con mensaje
+    header('Location: /lodgehub/app/views/login.php?mensaje=Usuario+registrado+correctamente');
+    exit();
     exit();
 }
 
@@ -208,114 +211,81 @@ $baseURL = '/lodgehub/public'; // Ajusta si el nombre de tu carpeta principal es
         </div>
     </div>
 
+    <!-- Scripts de validación y navegación -->
     <script src="<?php echo $baseURL; ?>/assets/js/form-validation.js"></script>
+    <script src="<?php echo $baseURL; ?>/assets/js/navigation.js"></script>
+    
+    <!-- Script para compatibilidad de validación de contraseñas  -->
     <script>
-        // JavaScript para navegación entre secciones
-        let currentSection = 1;
-        const totalSections = 4;
+        // Validación de contraseñas - Mantenido para compatibilidad
+        document.addEventListener('DOMContentLoaded', function() {
+            const confirmPasswordField = document.getElementById('confirmar_password');
+            if (confirmPasswordField) {
+                confirmPasswordField.addEventListener('input', function() {
+                    const password = document.getElementById('password').value;
+                    const confirmPassword = this.value;
+                    const indicator = document.querySelector('.password-match-indicator');
+                    
+                    if (indicator) {
+                        if (confirmPassword) {
+                            if (password === confirmPassword) {
+                                indicator.textContent = '✓ Las contraseñas coinciden';
+                                indicator.style.color = '#22c55e';
+                                indicator.className = 'password-match-indicator success';
+                            } else {
+                                indicator.textContent = '✗ Las contraseñas no coinciden';
+                                indicator.style.color = '#ef4444';
+                                indicator.className = 'password-match-indicator error';
+                            }
+                        } else {
+                            indicator.textContent = '';
+                            indicator.className = 'password-match-indicator';
+                        }
+                    }
+                });
+            }
 
-        function showSection(sectionNumber) {
-            // Ocultar todas las secciones
-            document.querySelectorAll('.form-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Mostrar la sección actual
-            document.getElementById(`section-${sectionNumber}`).classList.add('active');
-            
-            // Actualizar indicador de progreso
-            document.querySelectorAll('.step').forEach((step, index) => {
-                if (index + 1 <= sectionNumber) {
-                    step.classList.add('active');
-                } else {
-                    step.classList.remove('active');
-                }
-            });
-            
-            // Controlar botones de navegación
-            document.getElementById('prevBtn').style.display = sectionNumber > 1 ? 'inline-block' : 'none';
-            document.getElementById('nextBtn').style.display = sectionNumber < totalSections ? 'inline-block' : 'none';
-            document.getElementById('submitBtn').style.display = sectionNumber === totalSections ? 'inline-block' : 'none';
-        }
-
-        function validateCurrentSection() {
-            const currentSectionEl = document.getElementById(`section-${currentSection}`);
-            const requiredFields = currentSectionEl.querySelectorAll('[required]');
-            let isValid = true;
-            
-            requiredFields.forEach(field => {
-                if (!field.value.trim()) {
-                    field.classList.add('error');
-                    isValid = false;
-                } else {
-                    field.classList.remove('error');
-                }
-            });
-            
-            return isValid;
-        }
-
-        // Event listeners para navegación
-        document.getElementById('nextBtn').addEventListener('click', function() {
-            if (validateCurrentSection() && currentSection < totalSections) {
-                currentSection++;
-                showSection(currentSection);
+            // Preview de imagen - Mantenido para compatibilidad
+            const fotoField = document.getElementById('foto');
+            if (fotoField) {
+                fotoField.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    const preview = document.querySelector('.file-preview');
+                    const fileText = document.querySelector('.file-text');
+                    
+                    if (file) {
+                        if (file.size > 2 * 1024 * 1024) {
+                            alert('El archivo es muy grande. Máximo 2MB.');
+                            this.value = '';
+                            if (preview) preview.innerHTML = '';
+                            if (fileText) fileText.textContent = 'Seleccionar imagen';
+                            return;
+                        }
+                        
+                        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                        if (!allowedTypes.includes(file.type)) {
+                            alert('Solo se permiten archivos JPG, PNG y GIF.');
+                            this.value = '';
+                            if (preview) preview.innerHTML = '';
+                            if (fileText) fileText.textContent = 'Seleccionar imagen';
+                            return;
+                        }
+                        
+                        if (preview && fileText) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                preview.innerHTML = `<img src="${e.target.result}" style="max-width: 100px; max-height: 100px; border-radius: 8px; object-fit: cover;">`;
+                            };
+                            reader.readAsDataURL(file);
+                            fileText.textContent = file.name;
+                        }
+                    } else {
+                        if (preview) preview.innerHTML = '';
+                        if (fileText) fileText.textContent = 'Seleccionar imagen';
+                    }
+                });
             }
         });
-
-        document.getElementById('prevBtn').addEventListener('click', function() {
-            if (currentSection > 1) {
-                currentSection--;
-                showSection(currentSection);
-            }
-        });
-
-        // Validación de contraseñas
-        document.getElementById('confirmar_password').addEventListener('input', function() {
-            const password = document.getElementById('password').value;
-            const confirmPassword = this.value;
-            const indicator = document.querySelector('.password-match-indicator');
-            
-            if (confirmPassword) {
-                if (password === confirmPassword) {
-                    indicator.textContent = '✓ Las contraseñas coinciden';
-                    indicator.style.color = '#22c55e';
-                } else {
-                    indicator.textContent = '✗ Las contraseñas no coinciden';
-                    indicator.style.color = '#ef4444';
-                }
-            } else {
-                indicator.textContent = '';
-            }
-        });
-
-        // Preview de imagen
-        document.getElementById('foto').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            const preview = document.querySelector('.file-preview');
-            const fileText = document.querySelector('.file-text');
-            
-            if (file) {
-                if (file.size > 2 * 1024 * 1024) {
-                    alert('El archivo es muy grande. Máximo 2MB.');
-                    this.value = '';
-                    return;
-                }
-                
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.innerHTML = `<img src="${e.target.result}" style="max-width: 100px; max-height: 100px; border-radius: 8px;">`;
-                };
-                reader.readAsDataURL(file);
-                fileText.textContent = file.name;
-            } else {
-                preview.innerHTML = '';
-                fileText.textContent = 'Seleccionar imagen';
-            }
-        });
-
-        // Inicializar formulario
-        showSection(1);
     </script>
 </body>
 </html>

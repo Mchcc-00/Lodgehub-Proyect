@@ -510,3 +510,57 @@ body {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+/* Estilos adicionales para los submenús */
+.submenu {
+    display: none;
+    padding-left: 0;
+    margin-left: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 0 0 8px 8px;
+}
+
+.submenu-item {
+    padding-left: 3rem !important;
+    font-size: 0.9rem;
+    border-left: 3px solid transparent;
+}
+
+.submenu-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-left-color: #007bff;
+}
+
+.submenu-item.active {
+    background-color: rgba(0, 123, 255, 0.2);
+    border-left-color: #007bff;
+    color: #007bff !important;
+}
+
+.submenu-toggle {
+    position: relative;
+}
+
+.submenu-arrow {
+    position: absolute;
+    right: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.submenu-toggle:hover .submenu-arrow {
+    color: #007bff;
+}
+
+/* Animación suave para los submenús */
+.submenu {
+    transition: all 0.3s ease;
+}
+
+/* Estilos para cuando el sidebar está colapsado */
+.sidebar.collapsed .submenu {
+    display: none !important;
+}
+
+.sidebar.collapsed .submenu-arrow {
+    display: none;
+}
