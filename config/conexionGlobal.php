@@ -1,13 +1,13 @@
 <?php
 function conexionDB(){
     try {
-        $dsn = "mysql:host=localhost;dbname=Lodgehub";
-        $db = new PDO($dsn,'root','');
+        $dsn = "mysql:host=localhost;dbname=lodgehub;charset=utf8";
+        $db = new PDO($dsn, 'root', '');
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return $db;
     } catch (PDOException $PDOe) {
-        echo $PDOe->getMessage(). "<br>";
-        echo "No se ha podido realizar la conexion <br>";
-        exit();
+        error_log("Error de conexión PDO: " . $PDOe->getMessage());
+        return null;
     }
 }
 
