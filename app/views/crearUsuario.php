@@ -30,13 +30,13 @@ $currentPage = "Colaboradores";
     <!-- Estilos originales de la vista -->
     <link rel="stylesheet" href="../../public/assets/css/styles.css">
 </head>
-
-<body>
-   <?php 
+<?php 
 // Incluir las plantillas de navegación
 include 'Layouts/sidebar.php';
 include 'Layouts/navbar.php'; 
 ?>
+<body>
+   
     <h2 class="form-title">NUEVO USUARIO</h2>
 
     <form action="crear.php" method="post" enctype="multipart/form-data">
