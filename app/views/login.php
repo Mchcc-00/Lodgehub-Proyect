@@ -18,11 +18,12 @@
                 <div class="circle circle-2"></div>
                 <div class="circle circle-3"></div>
                 <div class="circle circle-4"></div>
+                
 
                 <form action="validarLogin.php" method="post">
 
                     <h1>¡BIENVENIDO A LODGEHUB!</h1> <!-- Título -->
-                    
+
 
                     <div class="input-group">
                         <label for="username">Correo</label>
@@ -33,35 +34,38 @@
                         <label for="password">Contraseña</label>
                         <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña" required>
                     </div>
-                        <?php
-    if (isset($_GET['mensaje'])) {
+                    <?php
+                    if (isset($_GET['mensaje'])) {
 
-    ?>
-        <div class="alert" role="alert">
-            <?php
-            switch ($_GET['mensaje']) {
-                case 'Correo enviado correctamente':
-                    echo "Se te envió un correo para restablecer tu contraseña.";
-                    break;
-                case 'Contraseña actualizada correctamente':
-                    echo "La contraseña se ha actualizado correctamente.";
-                    break;
-                case 'Correo o contraseña incorrectos':
-                    echo "El correo o la contraseña son incorrectos. Por favor, inténtalo de nuevo.";
-                    break;
-                case 'Contraseña actualizada correctamente':
-                    echo "Contraseña actualizada correctamente.";
-                    break;
+                    ?>
+                        <div class="alert" role="alert">
+                            <?php
+                            switch ($_GET['mensaje']) {
+                                case 'Correo enviado correctamente':
+                                    echo "Se te envió un correo para restablecer tu contraseña.";
+                                    break;
+                                case 'Contraseña actualizada correctamente':
+                                    echo "La contraseña se ha actualizado correctamente.";
+                                    break;
+                                case 'Correo o contraseña incorrectos':
+                                    echo "El correo o la contraseña son incorrectos. Por favor, inténtalo de nuevo.";
+                                    break;
+                                case 'Contraseña actualizada correctamente':
+                                    echo "Contraseña actualizada correctamente.";
+                                    break;
+                                case 'Registro exitoso. ¡Ya puedes iniciar sesión!':
+                                    echo "Registro exitoso. ¡Ya puedes iniciar sesión!";
+                                    break;
 
-                // default:
-                //     echo "Hubo un error al enviar el correo, o el usuario no existe.";
-            }
-            ?>
-        </div>
+                                    // default:
+                                    //     echo "Hubo un error al enviar el correo, o el usuario no existe.";
+                            }
+                            ?>
+                        </div>
 
-    <?php
-    }
-    ?>
+                    <?php
+                    }
+                    ?>
 
 
 
@@ -89,7 +93,7 @@
         </div>
     </div>
 
-    
+
 </body>
 
 </html>

@@ -540,3 +540,152 @@ h2 {
         margin: 0.25rem 0;
     }
 }
+/* Estilos adicionales para validaciones
+
+/* Estilos para campos con error */
+.form-group input.error,
+.form-group select.error {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1) !important;
+}
+
+/* Mensajes de error de campo */
+.field-error-message {
+    color: #ef4444;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+/* Indicador de coincidencia de contraseñas */
+.password-match-indicator {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    min-height: 1rem;
+    transition: all 0.3s ease;
+}
+
+.password-match-indicator.success {
+    color: #22c55e;
+}
+
+.password-match-indicator.error {
+    color: #ef4444;
+}
+
+/* Estilos para la barra de fortaleza de contraseña */
+.password-strength {
+    margin-top: 0.5rem;
+}
+
+.strength-bar {
+    height: 4px;
+    border-radius: 2px;
+    background-color: #e5e7eb;
+    transition: all 0.3s ease;
+    width: 0%;
+}
+
+.strength-bar.weak {
+    background-color: #ef4444;
+}
+
+.strength-bar.medium {
+    background-color: #f59e0b;
+}
+
+.strength-bar.strong {
+    background-color: #22c55e;
+}
+
+.strength-text {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+/* Alertas de validación general */
+.validation-error {
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.alert-error {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #ffffff;
+}
+
+.alert-success {
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #16a34a;
+}
+
+/* Mejorar el preview de imágenes */
+.file-preview {
+    margin-top: 0.5rem;
+}
+
+.file-preview img {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    object-fit: cover;
+    transition: border-color 0.3s ease;
+}
+
+.file-preview img:hover {
+    border-color: #3b82f6;
+}
+
+/* Estilos para campos válidos (opcional) */
+.form-group input:valid:not(:placeholder-shown),
+.form-group select:valid {
+    border-color: #22c55e;
+}
+
+/* Animaciones para transiciones */
+.form-section {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.form-section:not(.active) {
+    opacity: 0;
+    transform: translateX(20px);
+    pointer-events: none;
+}
+
+.form-section.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+/* Estilos para el progreso */
+.step.active {
+    background-color: #3b82f6;
+    color: white;
+    transform: scale(1.1);
+    transition: all 0.3s ease;
+}
+
+.step {
+    transition: all 0.3s ease;
+}
+
+/* Responsive para mensajes de error */
+@media (max-width: 768px) {
+    .field-error-message,
+    .password-match-indicator,
+    .strength-text {
+        font-size: 0.70rem;
+    }
+    
+    .validation-error {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+}

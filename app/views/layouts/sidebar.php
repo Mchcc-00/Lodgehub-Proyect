@@ -1,3 +1,114 @@
+<?php
+// Asumiendo que tienes el rol del usuario en una sesión o variable
+$userRole = $_SESSION['user_role'] ?? 'Colaborador'; // 'Administrador' o 'Colaborador'
+
+// Configurar los elementos del menú según el rol
+$menuItems = [];
+
+if ($userRole === 'Administrador') {
+    $menuItems = [
+        [
+            'page' => 'home',
+            'text' => 'Home',
+            'icon' => 'fas fa-home',
+            'hasSubmenu' => true,
+            'submenu' => [
+                [
+                    'page' => 'Mi hotel',
+                    'href' => 'infohotel.php',
+                    'icon' => 'fas fa-info-circle',
+                    'text' => 'Info Hotel'
+                ],
+                [
+                    'page' => 'reservas',
+                    'href' => '../6_Reservas/2R/mainReservas.php',
+                    'icon' => 'fas fa-calendar-check',
+                    'text' => 'Reservas'
+                ],
+                [
+                    'page' => 'huespedes',
+                    'href' => '../huespedes/dashboard.php',
+                    'icon' => 'fas fa-user-friends',
+                    'text' => 'Huéspedes'
+                ],
+                [
+                    'page' => 'habitaciones',
+                    'href' => '../../../app/views/Habitaciones/dashboardHab.php',
+                    'icon' => 'fas fa-bed',
+                    'text' => 'Habitaciones'
+                ],
+                [
+                    'page' => 'colaboradores',
+                    'href' => '../../app/views/listaColaborador.php',
+                    'icon' => 'fas fa-users',
+                    'text' => 'Mis Colaboradores'
+                ],
+                [
+                    'page' => 'mantenimiento',
+                    'href' => '../../../MANTENIMIENTO/views/dashboard.php',
+                    'icon' => 'fas fa-tools',
+                    'text' => 'Mantenimiento'
+                ]
+            ]
+        ],
+        [
+            'page' => 'pqrs',
+            'href' => '../PQRS/index.php',
+            'icon' => 'fas fa-comments',
+            'text' => 'PQRS',
+            'hasSubmenu' => false
+        ]
+    ];
+} else { // Colaborador
+    $menuItems = [
+        [
+            'page' => 'home',
+            'text' => 'Home',
+            'icon' => 'fas fa-home',
+            'hasSubmenu' => true,
+            'submenu' => [
+                [
+                    'page' => 'infohotel',
+                    'href' => 'infohotel.php',
+                    'icon' => 'fas fa-info-circle',
+                    'text' => 'Info Hotel'
+                ],
+                [
+                    'page' => 'reservas',
+                    'href' => '../6_Reservas/2R/mainReservas.php',
+                    'icon' => 'fas fa-calendar-check',
+                    'text' => 'Reservas'
+                ],
+                [
+                    'page' => 'habitaciones',
+                    'href' => '../../../app/views/Habitaciones/dashboardHab.php',
+                    'icon' => 'fas fa-bed',
+                    'text' => 'Habitaciones'
+                ]
+            ]
+        ],
+        [
+            'page' => 'pqrs',
+            'href' => '../PQRS/index.php',
+            'icon' => 'fas fa-comments',
+            'text' => 'PQRS',
+            'hasSubmenu' => false
+        ]
+    ];
+}
+
+// Función para verificar si algún submenú está activo
+function isSubmenuActive($submenu, $currentPage) {
+    if (!$submenu) return false;
+    foreach ($submenu as $item) {
+        if (isset($currentPage) && $currentPage == $item['page']) {
+            return true;
+        }
+    }
+    return false;
+}
+?>
+
 <!-- ASIDE/SIDEBAR -->
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
@@ -9,51 +120,49 @@
     
     <nav class="sidebar-nav">
         <ul class="nav flex-column">
+            <?php foreach ($menuItems as $item): ?>
             <li class="nav-item">
-                <a class="nav-link <?php echo (isset($currentPage) && $currentPage == 'home') ? 'active' : ''; ?>" href="homepage.php">
-                    <i class="fas fa-home"></i>
-                    <span>Mi</span>
-                </a>
+                <?php if ($item['hasSubmenu']): ?>
+                    <!-- Elemento con submenú -->
+                    <a class="nav-link submenu-toggle <?php echo isSubmenuActive($item['submenu'], $currentPage) ? 'active' : ''; ?>" 
+                       href="#" onclick="toggleSubmenu('<?php echo $item['page']; ?>')">
+                        <i class="<?php echo $item['icon']; ?>"></i>
+                        <span><?php echo $item['text']; ?></span>
+                        <i class="fas fa-chevron-down submenu-arrow"></i>
+                    </a>
+                    
+                    <!-- Submenú -->
+                    <ul class="submenu" id="submenu-<?php echo $item['page']; ?>">
+                        <?php foreach ($item['submenu'] as $subitem): ?>
+                        <li class="nav-item">
+                            <a class="nav-link submenu-item <?php echo (isset($currentPage) && $currentPage == $subitem['page']) ? 'active' : ''; ?>" 
+                               href="<?php echo $subitem['href']; ?>">
+                                <i class="<?php echo $subitem['icon']; ?>"></i>
+                                <span><?php echo $subitem['text']; ?></span>
+                            </a>
+                        </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php else: ?>
+                    <!-- Elemento sin submenú -->
+                    <a class="nav-link <?php echo (isset($currentPage) && $currentPage == $item['page']) ? 'active' : ''; ?>" 
+                       href="<?php echo $item['href']; ?>">
+                        <i class="<?php echo $item['icon']; ?>"></i>
+                        <span><?php echo $item['text']; ?></span>
+                    </a>
+                <?php endif; ?>
             </li>
-            
-            <li class="nav-item">
-                <a class="nav-link <?php echo (isset($currentPage) && $currentPage == 'reservas') ? 'active' : ''; ?>" href="../6_Reservas/2R/mainReservas.php">
-                    <i class="fas fa-calendar-check"></i>
-                    <span>Reservas</span>
-                </a>
-            </li>
-            
-            <li class="nav-item">
-                <a class="nav-link <?php echo (isset($currentPage) && $currentPage == 'habitaciones') ? 'active' : ''; ?>" href="../../../app/views/Habitaciones/dashboardHab.php">
-                    <i class="fas fa-bed"></i>
-                    <span>Habitaciones</span>
-                </a>
-            </li>
-            
-            <li class="nav-item">
-                <a class="nav-link <?php echo (isset($currentPage) && $currentPage == 'usuarios') ? 'active' : ''; ?>" href="../../app/views/listaColaborador.php">
-                    <i class="fas fa-users"></i>
-                    <span>Usuarios</span>
-                </a>
-            </li>
-            
-            <li class="nav-item">
-                <a class="nav-link <?php echo (isset($currentPage) && $currentPage == 'mantenimiento') ? 'active' : ''; ?>" href="../../../MANTENIMIENTO/views/dashboard.php">
-                    <i class="fas fa-tools"></i>
-                    <span>Mantenimiento</span>
-                </a>
-            </li>
-            
-            <li class="nav-item">
-                <a class="nav-link <?php echo (isset($currentPage) && $currentPage == 'pqrs') ? 'active' : ''; ?>" href="../PQRS/index.php">
-                    <i class="fas fa-comments"></i>
-                    <span>PQRS</span>
-                </a>
-            </li>
+            <?php endforeach; ?>
         </ul>
     </nav>
     
     <div class="sidebar-footer">
+        <div class="user-info">
+            <small class="text-muted">
+                <i class="fas fa-user"></i>
+                <?php echo ucfirst($userRole); ?>
+            </small>
+        </div>
         <a href="cerrarSesion.php" class="btn btn-danger w-100">
             <i class="fas fa-sign-out-alt"></i>
             Cerrar sesión
@@ -61,5 +170,5 @@
     </div>
 </aside>
 
-<!-- Overlay para móvil -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+</script>
+
