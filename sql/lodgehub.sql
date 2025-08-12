@@ -20,16 +20,19 @@ CREATE TABLE IF NOT EXISTS tp_usuarios (numDocumento VARCHAR(15) NOT NULL,
                                                 )ENGINE=INNODB;
 
 CREATE TABLE IF NOT EXISTS tp_huespedes (numDocumento VARCHAR(15) NOT NULL,
-                                        numTelefono VARCHAR (15) NOT NULL,
+                                        numTelefono VARCHAR(15) NOT NULL,
                                         correo VARCHAR(30) NOT NULL,
                                         nombres VARCHAR(50) NOT NULL,
                                         apellidos VARCHAR(50) NOT NULL,
-                                        tipoDocumento ENUM ('Cédula de Ciudadanía','Tarjeta de Identidad','Cedula de Extranjeria','Pasaporte','Registro Civil') NOT NULL,
+                                        tipoDocumento ENUM ('Cedula de Ciudadania','Tarjeta de Identidad','Cedula de Extranjeria','Pasaporte','Registro Civil') NOT NULL,
                                         sexo ENUM ('Hombre','Mujer','Otro','Prefiero no decirlo') NOT NULL,
-
-
-                                        PRIMARY KEY (numDocumento)
-                                        )ENGINE=INNODB;
+                                        -- NUEVO: Campos de auditoría
+                                        fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                        fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                        
+                                        PRIMARY KEY (numDocumento),
+                                        UNIQUE KEY uk_correo (correo)
+) ENGINE=INNODB;
 
                                             
 CREATE TABLE IF NOT EXISTS td_tipoHabitacion (id INT (3) AUTO_INCREMENT NOT NULL,

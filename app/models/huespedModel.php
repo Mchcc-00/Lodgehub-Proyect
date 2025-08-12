@@ -245,38 +245,5 @@ class HuespedModel {
             throw new Exception("Error al verificar el correo");
         }
     }
-
-    /**
-     * Obtener estadísticas de huéspedes
-     */
-    public function obtenerEstadisticas() {
-        try {
-            $estadisticas = [];
-            
-            // Total de huéspedes
-            $sql = "SELECT COUNT(*) as total FROM tp_huespedes";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute();
-            $estadisticas['total'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
-            
-            // Distribución por sexo
-            $sql = "SELECT sexo, COUNT(*) as cantidad FROM tp_huespedes GROUP BY sexo";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute();
-            $estadisticas['porSexo'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            // Distribución por tipo de documento
-            $sql = "SELECT tipoDocumento, COUNT(*) as cantidad FROM tp_huespedes GROUP BY tipoDocumento";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute();
-            $estadisticas['porTipoDocumento'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            return $estadisticas;
-
-        } catch (PDOException $e) {
-            error_log("Error al obtener estadísticas: " . $e->getMessage());
-            throw new Exception("Error al obtener estadísticas");
-        }
-    }
 }
 ?>
