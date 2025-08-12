@@ -20,16 +20,19 @@ CREATE TABLE IF NOT EXISTS tp_usuarios (numDocumento VARCHAR(15) NOT NULL,
                                                 )ENGINE=INNODB;
 
 CREATE TABLE IF NOT EXISTS tp_huespedes (numDocumento VARCHAR(15) NOT NULL,
-                                        numTelefono VARCHAR (15) NOT NULL,
+                                        numTelefono VARCHAR(15) NOT NULL,
                                         correo VARCHAR(30) NOT NULL,
                                         nombres VARCHAR(50) NOT NULL,
                                         apellidos VARCHAR(50) NOT NULL,
-                                        tipoDocumento ENUM ('Cédula de Ciudadanía','Tarjeta de Identidad','Cedula de Extranjeria','Pasaporte','Registro Civil') NOT NULL,
+                                        tipoDocumento ENUM ('Cedula de Ciudadania','Tarjeta de Identidad','Cedula de Extranjeria','Pasaporte','Registro Civil') NOT NULL,
                                         sexo ENUM ('Hombre','Mujer','Otro','Prefiero no decirlo') NOT NULL,
-
-
-                                        PRIMARY KEY (numDocumento)
-                                        )ENGINE=INNODB;
+                                        -- NUEVO: Campos de auditoría
+                                        fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                        fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                        
+                                        PRIMARY KEY (numDocumento),
+                                        UNIQUE KEY uk_correo (correo)
+) ENGINE=INNODB;
 
                                             
 CREATE TABLE IF NOT EXISTS td_tipoHabitacion (id INT (3) AUTO_INCREMENT NOT NULL,
@@ -145,11 +148,25 @@ INSERT INTO tp_usuarios (numDocumento, tipoDocumento, nombres, apellidos, numTel
 
 
 
-INSERT INTO tp_huespedes (numDocumento, numTelefono, correo, nombres, apellidos, tipoDocumento, sexo) VALUES
-('1111222233', '3111111111', 'ana.martinez@gmail.com', 'Ana Patricia', 'Martínez Rojas', 'Cédula de Ciudadanía', 'Mujer'),
-('4444555566', '3144444444', 'pedro.lopez@hotmail.com', 'Pedro Antonio', 'López Hernández', 'Cédula de Ciudadanía', 'Hombre'),
-('7777888899', '3177777777', 'sofia.torres@yahoo.com', 'Sofía Elena', 'Torres Mendoza', 'Pasaporte', 'Mujer'),
-('1014596349', '3172509298', 'brayan06.pulido@gmail.com', 'Brayan Felipe', 'Pulido Lopez', 'Cédula de Ciudadanía', 'Hombre');
+INSERT INTO tp_huespedes (
+    numDocumento, 
+    numTelefono, 
+    correo, 
+    nombres, 
+    apellidos, 
+    tipoDocumento, 
+    sexo
+) VALUES 
+('1234567890', '3001234567', 'juan.perez@email.com', 'Juan Carlos', 'Pérez García', 'Cedula de Ciudadania', 'Hombre'),
+('9876543210', '3109876543', 'maria.rodriguez@email.com', 'María Fernanda', 'Rodríguez López', 'Cedula de Ciudadania', 'Mujer'),
+('1122334455', '3201122334', 'carlos.martinez@email.com', 'Carlos Alberto', 'Martínez Silva', 'Cedula de Ciudadania', 'Hombre'),
+('5544332211', '3155544332', 'ana.gonzalez@email.com', 'Ana Sofía', 'González Herrera', 'Cedula de Ciudadania', 'Mujer'),
+('P123456789', '3207891234', 'john.smith@email.com', 'John Michael', 'Smith Johnson', 'Pasaporte', 'Hombre'),
+('E987654321', '3156789012', 'sophie.martin@email.com', 'Sophie Claire', 'Martin Dubois', 'Cedula de Extranjeria', 'Mujer'),
+('TI10203040', '3112030405', 'alejandro.ruiz@email.com', 'Alejandro José', 'Ruiz Morales', 'Tarjeta de Identidad', 'Hombre'),
+('1357924680', '3203579246', 'lucia.castro@email.com', 'Lucía Esperanza', 'Castro Vargas', 'Cedula de Ciudadania', 'Prefiero no decirlo'),
+('P456789123', '3154567891', 'david.lee@email.com', 'David Alexander', 'Lee Williams', 'Pasaporte', 'Otro'),
+('2468135790', '3122468135', 'isabella.torres@email.com', 'Isabella María', 'Torres Jiménez', 'Cedula de Ciudadania', 'Mujer');
 
 INSERT INTO td_tipoHabitacion (descripcion, cantidad) VALUES
 ('Individual', 10),

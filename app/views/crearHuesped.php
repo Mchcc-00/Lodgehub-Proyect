@@ -18,7 +18,8 @@
         include "layouts/sidebar.php";
         include "layouts/navbar.php";
     ?>
-
+    <script src="../../public/assets/js/sidebar.js"></script>
+    
     <div class="container">
         <div class="header">
             <h1>Agregar Huésped</h1>
@@ -48,7 +49,7 @@
                         <label for="tipoDocumento">Tipo de Documento <span class="required">*</span></label>
                         <select id="tipoDocumento" name="tipoDocumento" required>
                             <option value="">Seleccione un tipo</option>
-                            <option value="Cédula de Ciudadanía">Cédula de Ciudadanía</option>
+                            <option value="Cedula de Ciudadania">Cédula de Ciudadanía</option>
                             <option value="Tarjeta de Identidad">Tarjeta de Identidad</option>
                             <option value="Cedula de Extranjeria">Cédula de Extranjería</option>
                             <option value="Pasaporte">Pasaporte</option>
@@ -59,16 +60,19 @@
                     <div class="form-group">
                         <label for="numDocumento">Número de Documento <span class="required">*</span></label>
                         <input type="text" id="numDocumento" name="numDocumento" required maxlength="15" placeholder="Ej: 1234567890">
+                        <small class="form-text text-muted">Entre 5 y 15 caracteres, solo letras y números</small>
                     </div>
 
                     <div class="form-group">
                         <label for="nombres">Nombres <span class="required">*</span></label>
                         <input type="text" id="nombres" name="nombres" required maxlength="50" placeholder="Ej: Juan Carlos">
+                        <small class="form-text text-muted">Entre 2 y 50 caracteres</small>
                     </div>
 
                     <div class="form-group">
                         <label for="apellidos">Apellidos <span class="required">*</span></label>
                         <input type="text" id="apellidos" name="apellidos" required maxlength="50" placeholder="Ej: Pérez García">
+                        <small class="form-text text-muted">Entre 2 y 50 caracteres</small>
                     </div>
 
                     <div class="form-group">
@@ -85,11 +89,13 @@
                     <div class="form-group">
                         <label for="numTelefono">Número de Teléfono <span class="required">*</span></label>
                         <input type="tel" id="numTelefono" name="numTelefono" required maxlength="15" placeholder="Ej: 3001234567">
+                        <small class="form-text text-muted">Entre 7 y 15 caracteres</small>
                     </div>
 
                     <div class="form-group full-width">
                         <label for="correo">Correo Electrónico <span class="required">*</span></label>
                         <input type="email" id="correo" name="correo" required maxlength="30" placeholder="Ej: usuario@ejemplo.com">
+                        <small class="form-text text-muted">Máximo 30 caracteres</small>
                     </div>
                 </div>
 
@@ -104,7 +110,7 @@
                     </div>
                 </div>
 
-                <div style="display: flex; gap: 15px; margin-top: 25px;">
+                <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save"></i>
                         Guardar Huésped
@@ -117,6 +123,10 @@
                         <i class="fas fa-eye"></i>
                         Vista Previa
                     </button>
+                    <a href="listaHuesped.php" class="btn btn-outline-primary">
+                        <i class="fas fa-list"></i>
+                        Ver Huéspedes
+                    </a>
                 </div>
             </form>
         </div>
@@ -124,7 +134,7 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../public/assets/js/huesped.js"></script>
+    <script src="../../public/assets/js/huesped.js"></script>
 
 </body>
 </html>
