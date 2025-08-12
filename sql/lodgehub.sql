@@ -146,10 +146,8 @@ INSERT INTO tp_usuarios (numDocumento, tipoDocumento, nombres, apellidos, numTel
 
 
 INSERT INTO tp_huespedes (numDocumento, numTelefono, correo, nombres, apellidos, tipoDocumento, sexo) VALUES
-('1111222233', '3111111111', 'ana.martinez@gmail.com', 'Ana Patricia', 'Martínez Rojas', 'Cédula de Ciudadanía', 'Mujer'),
-('4444555566', '3144444444', 'pedro.lopez@hotmail.com', 'Pedro Antonio', 'López Hernández', 'Cédula de Ciudadanía', 'Hombre'),
-('7777888899', '3177777777', 'sofia.torres@yahoo.com', 'Sofía Elena', 'Torres Mendoza', 'Pasaporte', 'Mujer'),
-('1014596349', '3172509298', 'brayan06.pulido@gmail.com', 'Brayan Felipe', 'Pulido Lopez', 'Cédula de Ciudadanía', 'Hombre');
+('1014596349', '3172509298', 'brayan06.pulido@gmail.com', 'Brayan Felipe', 'Pulido Lopez', 'Cédula de Ciudadanía', 'Hombre'),
+('1000289068', '3116182673', 'Bleachowl98@gmail.com', 'Favian ALejandro', 'Machuca Pedraza', 'Cédula de Ciudadanía', 'Hombre');
 
 INSERT INTO td_tipoHabitacion (descripcion, cantidad) VALUES
 ('Individual', 10),
@@ -181,15 +179,13 @@ INSERT INTO tp_hotel (nit, nombre, direccion, numDocumento, telefono, correo) VA
 
 
 INSERT INTO tp_reservas (pagoFinal, fechainicio, fechaFin, cantidadAdultos, cantidadNinos, cantidadDiscapacitados, motivoReserva, numeroHabitacion, metodoPago, informacionAdicional, us_numDocumento, hue_numDocumento, estado) VALUES
-(240000.00, '2025-02-15', '2025-02-18', 2, 0, 0, 'Personal', '201', 'Tarjeta', 'Solicitan habitación en piso alto con vista. Celebración de aniversario.', '9876543210', '1111222233', 'Activa'),
-(160000.00, '2025-02-20', '2025-02-22', 1, 0, 0, 'Negocios', '101', 'PSE', 'Requiere facturación a nombre de la empresa. Check-in tardío.', '5555666677', '4444555566', 'Pendiente'),
-(500000.00, '2025-03-01', '2025-03-03', 2, 1, 0, 'Familiar', '301', 'Efectivo', 'Viaje familiar con niño de 8 años. Solicitan cuna adicional.', '1234567890', '7777888899', 'Activa');
+(240000.00, '2025-02-15', '2025-02-18', 2, 0, 0, 'Personal', '201', 'Tarjeta', 'Solicitan habitación en piso alto con vista. Celebración de aniversario.', '1000289068', '1014596349', 'Activa'),
+(160000.00, '2025-02-20', '2025-02-22', 1, 0, 0, 'Negocios', '101', 'PSE', 'Requiere facturación a nombre de la empresa. Check-in tardío.', '1014596349', '1000289068', 'Pendiente');
 
 
 INSERT INTO tp_factura (infoReserva, infoHotel, total) VALUES
 (1, 1, 240000.00),
-(2, 1, 160000.00),
-(3, 2, 500000.00);
+(2, 1, 160000.00);
 
 
 INSERT INTO tp_mantenimiento (numeroHabitacion, tipo, problemaDescripcion, frecuencia, cantFrecuencia, prioridad, numDocumento, estado) VALUES
