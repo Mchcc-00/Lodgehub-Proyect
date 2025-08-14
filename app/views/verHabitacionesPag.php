@@ -5,13 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Habitaciones - LodgeHub</title>
+
+        <link rel="stylesheet" href="../../public/assets/css/stylesHabitacionver.css">
+        
     <!-- Bootstrap y Font Awesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 
-    <!-- Estilos de los layouts (nav y sidebar) -->
-    <link href="../../public/assets/css/stylesNav.css" rel="stylesheet">
-    <link rel="stylesheet" href="../../public/assets/css/stylesHabitacionver.css">
 
     <style>
         /* Estilos para la paginación */
@@ -774,7 +774,7 @@
 
             filterRooms();
             closeModal();
-            alert(`Estado de la habitación ${room.numero} actualizado a: ${getStatusText(newStatus)}`);
+            
         }
 
         // Iniciar aplicación
