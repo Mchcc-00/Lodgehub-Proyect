@@ -78,7 +78,7 @@
     align-items: center;
     flex: 1;
     justify-content: flex-end;
-    padding: 30px;
+    padding-right: 30px;
 }
 
 .nav-link {

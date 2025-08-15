@@ -1,6 +1,7 @@
 <?php
+require_once 'validarSesion.php';
 // Asumiendo que tienes el rol del usuario en una sesión o variable
-$userRole = $_SESSION['user_role'] ?? 'Colaborador'; // 'Administrador' o 'Colaborador'
+$userRole = $_SESSION['roles'] ?? 'Colaborador'; // 'Administrador' o 'Colaborador'
 
 // Configurar los elementos del menú según el rol
 $menuItems = [];
