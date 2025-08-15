@@ -48,11 +48,12 @@ CREATE TABLE IF NOT EXISTS tp_habitaciones (numero VARCHAR (5) NOT NULL,
                                             tipoHabitacion INT (3) NOT NULL,
                                             foto VARCHAR (255) DEFAULT NULL,
                                             descripcion TEXT DEFAULT NULL,
-                                            estado ENUM ('Disponible', 'Reservada', 'Ocupada', 'Mantenimiento') NOT NULL,
+                                            estado ENUM ('Disponible', 'Reservada', 'Ocupada', 'Mantenimiento') NOT NULL DEFAULT 'Disponible',
                                             descripcionMantenimiento TEXT DEFAULT NULL,
                                             estadoMantenimiento ENUM ('Activo','Inactivo') NOT NULL DEFAULT 'Activo',
 
                                             PRIMARY KEY (numero),
+                                            UNIQUE KEY uk_numero (numero),
                                             FOREIGN KEY (tipoHabitacion) REFERENCES td_tipohabitacion (id)
                                             )ENGINE=INNODB;
 
@@ -141,16 +142,19 @@ CREATE TABLE IF NOT EXISTS tp_mantenimiento (id INT (4) AUTO_INCREMENT NOT NULL,
 
 INSERT INTO tp_usuarios (numDocumento, tipoDocumento, nombres, apellidos, numTelefono, correo, sexo, fechaNacimiento, password, foto, solicitarContraseña, tokenPassword, sesionCaducada, roles) VALUES
 ('1000289068', 'Cédula de Ciudadanía', 'Favian Alejandro', 'Machuca Pedraza', '3116182673', 'bleachowl98@gmail.com', 'Hombre', '2003-10-15', '123456789', 'foto_favian', '0', NULL, '1', 'Colaborador'),
+('1014596349', 'Cédula de Ciudadanía', 'Brayan Felipe', 'Pulido Lopez', '3172509298', 'brayan06.pulido@gmail.com', 'Hombre', '2006-03-03', '123456789', 'foto_brayan.jpg', '0', NULL, '1', 'Administrador'),
+('1019987917', 'Cédula de Ciudadanía', 'Camilo Andrés', 'Guerrero Yanquen', '3027644457', 'camiloagycr321@gmail.com', 'Hombre', '2006-02-15', '123456789', 'foto_camilo.jpg', '0', NULL, '1', 'Usuario'),
 ('1234567890', 'Cédula de Ciudadanía', 'Juan Carlos', 'Pérez García', '3001234567', 'juan.perez@lodgehub.com', 'Hombre', '1985-03-15', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'foto_juan.jpg', '0', NULL, '1', 'Administrador'),
 ('9876543210', 'Cédula de Ciudadanía', 'María Fernanda', 'González López', '3109876543', 'maria.gonzalez@lodgehub.com', 'Mujer', '1990-07-22', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'foto_maria.jpg', '0', NULL, '1', 'Colaborador'),
-('5555666677', 'Cédula de Ciudadanía', 'Carlos Eduardo', 'Ramírez Silva', '3205556666', 'carlos.ramirez@lodgehub.com', 'Hombre', '1988-11-10', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'foto_carlos.jpg', '0', NULL, '1', 'Usuario'),
-('1014596349', 'Cédula de Ciudadanía', 'Brayan Felipe', 'Pulido Lopez', '3172509298', 'brayan06.pulido@gmail.com', 'Hombre', '2006-03-03', '123456789', 'foto_brayan.jpg', '0', NULL, '1', 'Administrador');
+('5555666677', 'Cédula de Ciudadanía', 'Carlos Eduardo', 'Ramírez Silva', '3205556666', 'carlos.ramirez@lodgehub.com', 'Hombre', '1988-11-10', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'foto_carlos.jpg', '0', NULL, '1', 'Usuario');
+
 
 
 
 INSERT INTO tp_huespedes (numDocumento, numTelefono, correo, nombres, apellidos, tipoDocumento, sexo) VALUES
 ('1014596349', '3172509298', 'brayan06.pulido@gmail.com', 'Brayan Felipe', 'Pulido Lopez', 'Cédula de Ciudadanía', 'Hombre'),
-('1000289068', '3116182673', 'Bleachowl98@gmail.com', 'Favian ALejandro', 'Machuca Pedraza', 'Cédula de Ciudadanía', 'Hombre');
+('1000289068', '3116182673', 'Bleachowl98@gmail.com', 'Favian ALejandro', 'Machuca Pedraza', 'Cédula de Ciudadanía', 'Hombre'),
+('1019987917', '3027644457', 'camiloagycr321@gmail.com', 'Camilo Andrés', 'Guerrero Yanquen', 'Cédula de Ciudadanía', 'Hombre');
 
 INSERT INTO td_tipoHabitacion (descripcion, cantidad) VALUES
 ('Individual', 10),
