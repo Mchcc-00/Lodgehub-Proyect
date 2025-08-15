@@ -1,3 +1,24 @@
+<?php
+// config.php - Configuración de la base de datos
+$host = 'localhost';
+$dbname = 'lodgehub'; // Cambia por el nombre de tu base de datos
+$username = 'root';   // Usuario por defecto de XAMPP
+$password = '';       // Contraseña por defecto de XAMPP (vacía)
+
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+} catch(PDOException $e) {
+    die("Error de conexión: " . $e->getMessage());
+}
+
+
+?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -33,21 +54,21 @@
             font-size: 2.5rem;
             font-weight: 300;
             margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .header p {
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
             font-size: 1.1rem;
         }
 
         .form-container {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 40px;
-            border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
 
         .form-group {
@@ -70,9 +91,9 @@
         .form-control {
             width: 100%;
             padding: 12px 16px;
-            border: 2px solid rgba(255,255,255,0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 12px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             color: white;
             font-size: 1rem;
             transition: all 0.3s ease;
@@ -80,13 +101,13 @@
         }
 
         .form-control::placeholder {
-            color: rgba(255,255,255,0.6);
+            color: rgba(255, 255, 255, 0.6);
         }
 
         .form-control:focus {
             outline: none;
             border-color: #4CAF50;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
         }
 
@@ -97,6 +118,57 @@
 
         .form-control.valid {
             border-color: #4CAF50;
+        }
+
+        /* Estilos específicos para SELECT */
+        select.form-control {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        select.form-control:focus {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Estilos para las opciones del select */
+        select.form-control option {
+            background: #2c3e50;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+        }
+
+        select.form-control option:hover {
+            background: #34495e;
+        }
+
+        select.form-control option:checked,
+        select.form-control option:focus {
+            background: #4CAF50;
+            color: white;
+        }
+
+        /* Placeholder para select (opción vacía) */
+        select.form-control option[value=""] {
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+        }
+
+        /* Estado cuando no se ha seleccionado nada */
+        select.form-control:invalid {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Estado cuando se ha seleccionado algo */
+        select.form-control:valid {
+            color: white;
         }
 
         textarea.form-control {
@@ -132,6 +204,13 @@
             top: 38px;
             font-size: 1.2rem;
             display: none;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Ajustar posición del icono para selects */
+        .form-group:has(select) .validation-icon {
+            right: 45px;
         }
 
         .validation-icon.valid {
@@ -172,14 +251,14 @@
         }
 
         .btn-secondary {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             color: white;
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         .btn:disabled {
@@ -237,18 +316,18 @@
         .file-input-label {
             display: block;
             padding: 12px 16px;
-            border: 2px dashed rgba(255,255,255,0.3);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
             border-radius: 12px;
-            background: rgba(255,255,255,0.05);
-            color: rgba(255,255,255,0.8);
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.8);
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
         .file-input-label:hover {
-            border-color: rgba(255,255,255,0.5);
-            background: rgba(255,255,255,0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .file-selected {
@@ -257,17 +336,45 @@
             font-size: 0.9rem;
         }
 
+        /* Estilos para notificaciones */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ff6b6b, #ff5252);
+        }
+
         @media (max-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr;
                 gap: 0;
             }
-            
+
             .btn-group {
                 flex-direction: column;
                 align-items: center;
             }
-            
+
             .header h1 {
                 font-size: 2rem;
             }
@@ -289,7 +396,8 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .error-message.show, .success-message.show {
+        .error-message.show,
+        .success-message.show {
             display: block;
             animation: fadeIn 0.3s ease;
         }
@@ -312,8 +420,8 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="numero">Número de Habitación <span class="required">*</span></label>
-                        <input type="text" id="numero" name="numero" class="form-control" 
-                               placeholder="Ej: 101, A1, S01" maxlength="5" required>
+                        <input type="text" id="numero" name="numero" class="form-control"
+                            placeholder="Ej: 101, A1, S01" maxlength="5" required>
                         <div class="validation-icon"></div>
                         <div class="error-message" id="numero-error"></div>
                         <div class="success-message" id="numero-success">✅ Número válido</div>
@@ -321,8 +429,8 @@
 
                     <div class="form-group">
                         <label for="costo">Costo por Noche <span class="required">*</span></label>
-                        <input type="number" id="costo" name="costo" class="form-control" 
-                               placeholder="Ej: 150000" min="0" step="0.01" required>
+                        <input type="number" id="costo" name="costo" class="form-control"
+                            placeholder="Ej: 150000.00" min="0" step="0.01" max="99999999.99" required>
                         <div class="validation-icon"></div>
                         <div class="error-message" id="costo-error"></div>
                         <div class="success-message" id="costo-success">✅ Costo válido</div>
@@ -355,8 +463,6 @@
                             <option value="1">Individual</option>
                             <option value="2">Doble</option>
                             <option value="3">Suite</option>
-                            <option value="4">Familiar</option>
-                            <option value="5">Ejecutiva</option>
                         </select>
                         <div class="validation-icon"></div>
                         <div class="error-message" id="tipoHabitacion-error"></div>
@@ -379,9 +485,8 @@
 
                 <div class="form-group">
                     <label for="descripcion">Descripción</label>
-                    <textarea id="descripcion" name="descripcion" class="form-control" 
-                              placeholder="Descripción detallada de la habitación..." 
-                              maxlength="1000"></textarea>
+                    <textarea id="descripcion" name="descripcion" class="form-control"
+                        placeholder="Descripción detallada de la habitación..."></textarea>
                     <div class="validation-icon"></div>
                     <div class="error-message" id="descripcion-error"></div>
                     <div class="success-message" id="descripcion-success">✅ Descripción válida</div>
@@ -416,9 +521,8 @@
 
                 <div class="form-group" id="mantenimiento-group" style="display: none;">
                     <label for="descripcionMantenimiento">Descripción del Mantenimiento</label>
-                    <textarea id="descripcionMantenimiento" name="descripcionMantenimiento" class="form-control" 
-                              placeholder="Descripción detallada del mantenimiento requerido..." 
-                              maxlength="500"></textarea>
+                    <textarea id="descripcionMantenimiento" name="descripcionMantenimiento" class="form-control"
+                        placeholder="Descripción detallada del mantenimiento requerido..."></textarea>
                     <div class="validation-icon"></div>
                     <div class="error-message" id="descripcionMantenimiento-error"></div>
                     <div class="success-message" id="descripcionMantenimiento-success">✅ Descripción válida</div>
@@ -436,8 +540,11 @@
         </div>
     </div>
 
+    <!-- Notificación -->
+    <div id="notification" class="notification"></div>
+
     <script>
-        // Configuración de validaciones
+        // Configuración de validaciones actualizada para la BD
         const validationRules = {
             numero: {
                 required: true,
@@ -446,9 +553,9 @@
             },
             costo: {
                 required: true,
-                min: 1,
+                min: 0.01,
                 max: 99999999.99,
-                message: 'El costo debe estar entre $1 y $99,999,999.99'
+                message: 'El costo debe estar entre $0.01 y $99,999,999.99'
             },
             capacidad: {
                 required: true,
@@ -458,7 +565,8 @@
             },
             tipoHabitacion: {
                 required: true,
-                message: 'Debe seleccionar un tipo de habitación'
+                values: ['1', '2', '3'], // IDs de la tabla td_tipoHabitacion
+                message: 'Debe seleccionar un tipo de habitación válido'
             },
             foto: {
                 required: false,
@@ -468,8 +576,8 @@
             },
             descripcion: {
                 required: false,
-                maxLength: 1000,
-                message: 'La descripción no debe exceder 1000 caracteres'
+                maxLength: 65535, // TEXT field max length
+                message: 'La descripción es demasiado larga'
             },
             estado: {
                 required: true,
@@ -479,12 +587,12 @@
             estadoMantenimiento: {
                 required: true,
                 values: ['Activo', 'Inactivo'],
-                message: 'Debe seleccionar un estado de mantenimiento'
+                message: 'Debe seleccionar un estado de mantenimiento válido'
             },
             descripcionMantenimiento: {
                 required: false,
-                maxLength: 500,
-                message: 'La descripción de mantenimiento no debe exceder 500 caracteres'
+                maxLength: 65535, // TEXT field max length
+                message: 'La descripción de mantenimiento es demasiado larga'
             }
         };
 
@@ -497,6 +605,7 @@
         const mantenimientoGroup = document.getElementById('mantenimiento-group');
         const fotoInput = document.getElementById('foto');
         const fileSelected = document.getElementById('file-selected');
+        const notification = document.getElementById('notification');
 
         let validationErrors = {};
 
@@ -511,11 +620,21 @@
             if (field) {
                 field.addEventListener('blur', () => validateField(fieldName));
                 field.addEventListener('input', () => {
-                    // Limpiar error al empezar a escribir
                     clearFieldError(fieldName);
                 });
             }
         });
+
+        // Función para mostrar notificaciones
+        function showNotification(message, type = 'success') {
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
 
         // Validar campo individual
         function validateField(fieldName) {
@@ -523,7 +642,6 @@
             const rule = validationRules[fieldName];
             const value = field.value.trim();
 
-            // Limpiar errores previos
             clearFieldError(fieldName);
 
             let isValid = true;
@@ -541,9 +659,6 @@
                         if (!rule.pattern.test(value)) {
                             isValid = false;
                             errorMessage = rule.message;
-                        } else if (isRoomNumberDuplicated(value)) {
-                            isValid = false;
-                            errorMessage = 'Este número de habitación ya existe';
                         }
                         break;
 
@@ -566,7 +681,7 @@
                     case 'tipoHabitacion':
                     case 'estado':
                     case 'estadoMantenimiento':
-                        if (!rule.values.includes(value)) {
+                        if (rule.values && !rule.values.includes(value)) {
                             isValid = false;
                             errorMessage = rule.message;
                         }
@@ -578,10 +693,6 @@
                             isValid = false;
                             errorMessage = rule.message;
                         }
-                        break;
-
-                    case 'foto':
-                        // Validación de archivo se maneja en handleFileSelect
                         break;
                 }
             }
@@ -605,6 +716,25 @@
             return isValid;
         }
 
+        // Verificar duplicados en la base de datos
+        async function checkRoomNumberExists(numero) {
+            try {
+                const response = await fetch('check_room.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ numero: numero })
+                });
+                
+                const data = await response.json();
+                return data.exists;
+            } catch (error) {
+                console.error('Error verificando número de habitación:', error);
+                return false;
+            }
+        }
+
         // Mostrar error en campo
         function showFieldError(fieldName, message) {
             const field = document.getElementById(fieldName);
@@ -614,23 +744,22 @@
 
             field.classList.add('error');
             field.classList.remove('valid');
-            
+
             if (errorDiv) {
                 errorDiv.textContent = message;
                 errorDiv.classList.add('show');
             }
-            
+
             if (successDiv) {
                 successDiv.classList.remove('show');
             }
-            
+
             if (icon) {
                 icon.textContent = '❌';
                 icon.className = 'validation-icon error';
                 icon.style.display = 'block';
             }
 
-            // Animación de shake
             field.classList.add('shake');
             setTimeout(() => field.classList.remove('shake'), 600);
         }
@@ -644,15 +773,15 @@
 
             field.classList.add('valid');
             field.classList.remove('error');
-            
+
             if (errorDiv) {
                 errorDiv.classList.remove('show');
             }
-            
+
             if (successDiv) {
                 successDiv.classList.add('show');
             }
-            
+
             if (icon) {
                 icon.textContent = '✅';
                 icon.className = 'validation-icon valid';
@@ -668,15 +797,15 @@
             const icon = field.parentElement.querySelector('.validation-icon');
 
             field.classList.remove('error', 'valid');
-            
+
             if (errorDiv) {
                 errorDiv.classList.remove('show');
             }
-            
+
             if (successDiv) {
                 successDiv.classList.remove('show');
             }
-            
+
             if (icon) {
                 icon.style.display = 'none';
             }
@@ -685,7 +814,7 @@
         // Actualizar resumen de validación
         function updateValidationSummary() {
             const hasErrors = Object.keys(validationErrors).length > 0;
-            
+
             if (hasErrors) {
                 errorList.innerHTML = Object.values(validationErrors)
                     .map(error => `<li>${error}</li>`)
@@ -714,13 +843,6 @@
             return labels[fieldName] || fieldName;
         }
 
-        // Verificar si el número de habitación está duplicado
-        function isRoomNumberDuplicated(numero) {
-            // Aquí simularemos números existentes - en producción sería una consulta a BD
-            const existingRooms = ['101', '102', '103', '201', '202', 'A1', 'B2'];
-            return existingRooms.includes(numero);
-        }
-
         // Manejar selección de archivo
         function handleFileSelect(event) {
             const file = event.target.files[0];
@@ -730,13 +852,11 @@
                 let isValid = true;
                 let errorMessage = '';
 
-                // Validar tipo de archivo
                 if (!rule.types.includes(file.type)) {
                     isValid = false;
                     errorMessage = 'Solo se permiten archivos JPG, PNG y WEBP';
                 }
 
-                // Validar tamaño
                 if (file.size > rule.maxSize) {
                     isValid = false;
                     errorMessage = 'El archivo debe ser menor a 5MB';
@@ -766,7 +886,7 @@
         function toggleMantenimientoDescription() {
             const isMantenimiento = estadoSelect.value === 'Mantenimiento';
             mantenimientoGroup.style.display = isMantenimiento ? 'block' : 'none';
-            
+
             if (!isMantenimiento) {
                 const descripcionField = document.getElementById('descripcionMantenimiento');
                 descripcionField.value = '';
@@ -777,7 +897,7 @@
         }
 
         // Manejar envío del formulario
-        function handleSubmit(event) {
+        async function handleSubmit(event) {
             event.preventDefault();
 
             // Validar todos los campos
@@ -787,19 +907,48 @@
                 if (!fieldValid) isFormValid = false;
             });
 
+            // Verificar duplicados para número de habitación
+            const numeroField = document.getElementById('numero');
+            if (numeroField.value.trim()) {
+                const exists = await checkRoomNumberExists(numeroField.value.trim());
+                if (exists) {
+                    showFieldError('numero', 'Este número de habitación ya existe en la base de datos');
+                    validationErrors.numero = 'Este número de habitación ya existe en la base de datos';
+                    updateValidationSummary();
+                    isFormValid = false;
+                }
+            }
+
             if (isFormValid) {
-                // Simular envío exitoso
                 submitBtn.textContent = '⏳ Guardando...';
                 submitBtn.disabled = true;
 
-                setTimeout(() => {
-                    alert('✅ Habitación guardada exitosamente!');
-                    resetForm();
-                    submitBtn.textContent = '💾 Guardar Habitación';
-                    submitBtn.disabled = false;
-                }, 2000);
+                try {
+                    const formData = new FormData(form);
+                    
+                    // Enviar datos al servidor
+                    const response = await fetch('save_room.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showNotification('✅ Habitación guardada exitosamente!', 'success');
+                        resetForm();
+                    } else {
+                        showNotification(`❌ Error: ${result.message}`, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error enviando datos:', error);
+                    showNotification('❌ Error de conexión. Intente nuevamente.', 'error');
+                }
+
+                submitBtn.textContent = '💾 Guardar Habitación';
+                submitBtn.disabled = false;
             } else {
-                alert('❌ Por favor, corrija los errores antes de continuar');
+                showNotification('❌ Por favor, corrija los errores antes de continuar', 'error');
             }
         }
 
@@ -807,24 +956,21 @@
         function resetForm() {
             form.reset();
             validationErrors = {};
-            
-            // Limpiar estados visuales
+
             Object.keys(validationRules).forEach(fieldName => {
                 clearFieldError(fieldName);
             });
-            
+
             validationSummary.style.display = 'none';
             mantenimientoGroup.style.display = 'none';
             fileSelected.style.display = 'none';
             submitBtn.disabled = false;
-            
-            // Resetear estado de mantenimiento a "Activo"
+
             document.getElementById('estadoMantenimiento').value = 'Activo';
         }
 
         // Inicializar formulario
         function initializeForm() {
-            // Configurar estado inicial
             document.getElementById('estadoMantenimiento').value = 'Activo';
             updateValidationSummary();
         }

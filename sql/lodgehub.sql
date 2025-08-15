@@ -48,11 +48,12 @@ CREATE TABLE IF NOT EXISTS tp_habitaciones (numero VARCHAR (5) NOT NULL,
                                             tipoHabitacion INT (3) NOT NULL,
                                             foto VARCHAR (255) DEFAULT NULL,
                                             descripcion TEXT DEFAULT NULL,
-                                            estado ENUM ('Disponible', 'Reservada', 'Ocupada', 'Mantenimiento') NOT NULL,
+                                            estado ENUM ('Disponible', 'Reservada', 'Ocupada', 'Mantenimiento') NOT NULL DEFAULT 'Disponible',
                                             descripcionMantenimiento TEXT DEFAULT NULL,
                                             estadoMantenimiento ENUM ('Activo','Inactivo') NOT NULL DEFAULT 'Activo',
 
                                             PRIMARY KEY (numero),
+                                            UNIQUE KEY uk_numero (numero),
                                             FOREIGN KEY (tipoHabitacion) REFERENCES td_tipohabitacion (id)
                                             )ENGINE=INNODB;
 
