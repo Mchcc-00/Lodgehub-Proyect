@@ -34,7 +34,7 @@ if ($userRole === 'Administrador') {
                 ],
                 [
                     'page' => 'Habitaciones',
-                    'href' => 'verHabitaciones.php',
+                    'href' => 'verHabitacionesPag.php',
                     'icon' => 'fas fa-bed',
                     'text' => 'Habitaciones'
                 ],
