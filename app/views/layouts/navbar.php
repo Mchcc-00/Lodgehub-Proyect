@@ -20,13 +20,13 @@
                 </span>
             </div>
             
-            <!-- Breadcrumb -->
-            <nav aria-label="breadcrumb" class="mx-auto d-none d-lg-block">
-                <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="#" class="text-white-50">Inicio</a></li>
-                    <li class="breadcrumb-item active text-white" aria-current="page"><?php echo isset($pageTitle) ? $pageTitle : 'Página'; ?></li>
-                </ol>
-            </nav>
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="mx-auto d-none d-lg-block">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="#" class="text-white-50">Inicio</a></li>
+                        <li class="breadcrumb-item active text-white" aria-current="page"><?php echo isset($pageTitle) ? $pageTitle : 'Página'; ?></li>
+                    </ol>
+                </nav>
             
             <!-- Área de usuario -->
             <div class="navbar-user">

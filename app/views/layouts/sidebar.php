@@ -22,7 +22,7 @@ if ($userRole === 'Administrador') {
                 ],
                 [
                     'page' => 'Reservas',
-                    'href' => '../6_Reservas/2R/mainReservas.php',
+                    'href' => '../../6_Reservas/2R/mainReservas.php',
                     'icon' => 'fas fa-calendar-check',
                     'text' => 'Reservas'
                 ],
@@ -54,7 +54,7 @@ if ($userRole === 'Administrador') {
         ],
         [
             'page' => 'pqrs',
-            'href' => '../PQRS/index.php',
+            'href' => 'listaPQRS.php',
             'icon' => 'fas fa-comments',
             'text' => 'PQRS',
             'hasSubmenu' => false
