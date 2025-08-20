@@ -6,7 +6,7 @@
 }
 
 * {
-    padding: 0;
+    padding:0px;
     box-sizing: border-box;
 }
 
@@ -22,12 +22,11 @@ body {
     border: none;
     padding: 0;
     position: fixed;
-    top: 5px; /* Separación superior - CAMBIO AQUÍ */
-    left: 5px; /* Separación izquierda - CAMBIO AQUÍ */
-    right: 5px; /* Separación derecha - CAMBIO AQUÍ */
+    top: 0px; /* Separación superior - CAMBIO AQUÍ */
+    left: 0px; /* Separación izquierda - CAMBIO AQUÍ */
+    right: 0px; /* Separación derecha - CAMBIO AQUÍ */
     z-index: 1050;
     height: var(--navbar-height);
-    border-radius: 20px; /* Border radius en todos los lados del navbar */
 }
 
 .navbar .container-fluid {
@@ -67,7 +66,7 @@ body {
 .btn-notification {
     background: rgba(255,255,255,0.1);
     border: none;
-    color: white;
+    color: white !important;
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -86,7 +85,7 @@ body {
     top: -5px;
     right: -5px;
     background: #dc3545;
-    color: white;
+    color: white !important;
     font-size: 0.7rem;
     padding: 0.2rem 0.4rem;
     border-radius: 50%;
@@ -100,7 +99,7 @@ body {
 .btn-user {
     background: rgba(255,255,255,0.1);
     border: 2px solid rgba(255,255,255,0.2);
-    color: white;
+    color: white !important;
     padding: 0.5rem 1rem;
     border-radius: 25px;
     font-weight: 500;
@@ -116,8 +115,8 @@ body {
 /* SIDEBAR STYLES */
 .sidebar {
     position: fixed;
-    top: calc(var(--navbar-height) + 15px); /* Separación del navbar - CAMBIO AQUÍ */
-    left: 5px; /* Separación izquierda - CAMBIO AQUÍ */
+    top: calc(var(--navbar-height) + 10px); /* Separación del navbar - CAMBIO AQUÍ */
+    left: 10px; /* Separación izquierda - CAMBIO AQUÍ */
     width: calc(var(--sidebar-width) - 10px); /* Ajustar ancho por márgenes - CAMBIO AQUÍ */
     height: calc(100vh - var(--navbar-height) - 20px); /* Ajustar altura - CAMBIO AQUÍ */
     background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
@@ -224,7 +223,7 @@ body {
 
 /* AJUSTE PARA EL CONTENIDO PRINCIPAL */
 .main-content {
-    margin-top: calc(var(--navbar-height) + 20px); /* Compensar nueva posición del navbar - CAMBIO AQUÍ */
+    margin-top: var(--navbar-height); /* Compensar nueva posición del navbar - CAMBIO AQUÍ */
     margin-left: 10px; /* Compensar separaciones laterales - CAMBIO AQUÍ */
     margin-right: 10px; /* CAMBIO AQUÍ */
 }

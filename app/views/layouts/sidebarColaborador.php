@@ -24,7 +24,7 @@
             </li>
             
             <li class="nav-item">
-                <a class="nav-link <?php echo (isset($currentPage) && $currentPage == 'habitaciones') ? 'active' : ''; ?>" href="../../../app/views/Habitaciones/dashboardHab.php">
+                <a class="nav-link <?php echo (isset($currentPage) && $currentPage == 'habitaciones') ? 'active' : ''; ?>" href="../../../app/views/Habitaciones/verHabitacionesPag.php">
                     <i class="fas fa-bed"></i>
                     <span>Habitaciones</span>
                 </a>
