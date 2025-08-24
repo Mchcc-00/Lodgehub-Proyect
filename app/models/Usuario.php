@@ -21,7 +21,7 @@ class Usuario
     {
         $sql = "INSERT INTO tp_usuarios
                 (numDocumento, tipoDocumento, nombres, apellidos, numTelefono, correo, sexo, fechaNacimiento, password, foto, solicitarContraseña, tokenPassword, sesionCaducada, roles)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '0', NULL, 'Activo', ?)";
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '0', NULL, '1', ?)";
 
         try {
             $stmt = $this->db->prepare($sql);
