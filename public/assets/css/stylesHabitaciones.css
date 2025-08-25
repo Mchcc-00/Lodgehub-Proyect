@@ -1,0 +1,682 @@
+/* ============================================
+   ESTILOS PARA EL MÓDULO DE HABITACIONES
+   ============================================ */
+
+/* Variables CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #83b3fa 0%, #b7d0f7 100%) !important;
+    min-height: 100vh;
+    color: #333;
+    padding-top: 75px;
+}
+
+:root {
+    --habitaciones-primary: #0d6efd;
+    --habitaciones-success: #198754;
+    --habitaciones-danger: #dc3545;
+    --habitaciones-warning: #ffc107;
+    --habitaciones-info: #0dcaf0;
+    --habitaciones-light: #f8f9fa;
+    --habitaciones-dark: #212529;
+    --habitaciones-border: #dee2e6;
+    --habitaciones-border-radius: 8px;
+    --habitaciones-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    --habitaciones-shadow-hover: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* ============================================
+   CONTENEDOR PRINCIPAL
+   ============================================ */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ============================================
+   HEADER DE PÁGINAS
+   ============================================ */
+.header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, var(--habitaciones-primary), #4c84ff);
+    color: white;
+    border-radius: var(--habitaciones-border-radius);
+    box-shadow: var(--habitaciones-shadow);
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.header p {
+    font-size: 1.1rem;
+    margin: 0;
+    opacity: 0.9;
+}
+
+/* ============================================
+   SECCIÓN DE BÚSQUEDA Y FILTROS
+   ============================================ */
+.search-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--habitaciones-border-radius);
+    box-shadow: var(--habitaciones-shadow);
+    margin-bottom: 2rem;
+}
+
+.search-section .input-group {
+    margin-bottom: 1rem;
+}
+
+.search-section .btn-group .dropdown-menu {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* ============================================
+   FORMULARIO DE CREACIÓN
+   ============================================ */
+.form-section {
+    background: white;
+    border-radius: var(--habitaciones-border-radius);
+    box-shadow: var(--habitaciones-shadow);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.form-title {
+    background: linear-gradient(135deg, var(--habitaciones-success), #20c997);
+    color: white;
+    padding: 1.5rem 2rem;
+    margin: 0 0 2rem 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.form-title i {
+    font-size: 1.75rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 0 2rem;
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--habitaciones-dark);
+    font-size: 0.95rem;
+}
+
+.form-group .required {
+    color: var(--habitaciones-danger);
+    font-weight: 700;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 0.75rem;
+    border: 2px solid var(--habitaciones-border);
+    border-radius: var(--habitaciones-border-radius);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--habitaciones-primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.form-group input.valid,
+.form-group select.valid,
+.form-group textarea.valid {
+    border-color: var(--habitaciones-success);
+    background: #f8fff9;
+}
+
+.form-group input.invalid,
+.form-group select.invalid,
+.form-group textarea.invalid {
+    border-color: var(--habitaciones-danger);
+    background: #fff8f8;
+}
+
+.form-text {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    color: #6c757d;
+}
+
+/* ============================================
+   VISTA PREVIA
+   ============================================ */
+.habitacion-preview {
+    margin: 2rem;
+    margin-top: 0;
+    border: 2px solid var(--habitaciones-info);
+    border-radius: var(--habitaciones-border-radius);
+    background: #f0fdff;
+    overflow: hidden;
+}
+
+.preview-title {
+    background: var(--habitaciones-info);
+    color: var(--habitaciones-dark);
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.preview-content {
+    padding: 1.5rem;
+}
+
+.preview-item {
+    display: flex;
+    margin-bottom: 1rem;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.preview-item:last-child {
+    margin-bottom: 0;
+}
+
+.preview-label {
+    font-weight: 600;
+    min-width: 120px;
+    color: var(--habitaciones-dark);
+}
+
+.preview-value {
+    flex: 1;
+    word-break: break-word;
+}
+
+/* ============================================
+   BOTONES DE ACCIÓN
+   ============================================ */
+.form-actions {
+    padding: 2rem;
+    background: var(--habitaciones-light);
+    border-top: 1px solid var(--habitaciones-border);
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--habitaciones-border-radius);
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--habitaciones-shadow-hover);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+/* ============================================
+   GRID DE HABITACIONES
+   ============================================ */
+.habitaciones-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.habitacion-card {
+    background: white;
+    border-radius: var(--habitaciones-border-radius);
+    box-shadow: var(--habitaciones-shadow);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.habitacion-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--habitaciones-shadow-hover);
+}
+
+/* Estados de las habitaciones */
+.habitacion-card.disponible {
+    border-left: 4px solid var(--habitaciones-success);
+}
+
+.habitacion-card.reservada {
+    border-left: 4px solid var(--habitaciones-warning);
+}
+
+.habitacion-card.ocupada {
+    border-left: 4px solid var(--habitaciones-danger);
+}
+
+.habitacion-card.mantenimiento {
+    border-left: 4px solid #6c757d;
+    background: rgba(108, 117, 125, 0.05);
+}
+
+/* Imagen de la habitación */
+.habitacion-imagen {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.habitacion-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.habitacion-card:hover .habitacion-imagen img {
+    transform: scale(1.05);
+}
+
+.habitacion-imagen .placeholder {
+    color: #6c757d;
+    font-size: 3rem;
+    opacity: 0.3;
+}
+
+/* Badge de estado */
+.estado-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 0.25rem 0.5rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.estado-badge.disponible { background: var(--habitaciones-success); }
+.estado-badge.reservada { background: var(--habitaciones-warning); color: var(--habitaciones-dark); }
+.estado-badge.ocupada { background: var(--habitaciones-danger); }
+.estado-badge.mantenimiento { background: #6c757d; }
+
+/* Contenido de la card */
+.habitacion-info {
+    padding: 1.5rem;
+}
+
+.habitacion-numero {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--habitaciones-primary);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.habitacion-tipo {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.habitacion-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: var(--habitaciones-light);
+    border-radius: 6px;
+}
+
+.habitacion-capacidad {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--habitaciones-dark);
+}
+
+.habitacion-precio {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--habitaciones-success);
+}
+
+.habitacion-descripcion {
+    font-size: 0.9rem;
+    color: #6c757d;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+    max-height: 60px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+/* Acciones de la habitación */
+.habitacion-acciones {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0 1.5rem 1.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    flex: 1;
+    min-width: auto;
+}
+
+/* ============================================
+   MENSAJES
+   ============================================ */
+.success-message,
+.error-message {
+    padding: 1rem 1.5rem;
+    border-radius: var(--habitaciones-border-radius);
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    box-shadow: var(--habitaciones-shadow);
+    display: none;
+}
+
+.success-message {
+    background: linear-gradient(135deg, #d1edff, #e8f5e8);
+    border: 1px solid var(--habitaciones-success);
+    color: #155724;
+}
+
+.error-message {
+    background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+    border: 1px solid var(--habitaciones-danger);
+    color: #721c24;
+}
+
+/* ============================================
+   PAGINACIÓN
+   ============================================ */
+#paginacion-container {
+    background: white;
+    padding: 1rem;
+    border-radius: var(--habitaciones-border-radius);
+    box-shadow: var(--habitaciones-shadow);
+    display: flex;
+    justify-content: center;
+}
+
+.pagination .page-link {
+    color: var(--habitaciones-primary);
+    border: 1px solid var(--habitaciones-border);
+    padding: 0.5rem 0.75rem;
+    margin: 0 0.25rem;
+    border-radius: var(--habitaciones-border-radius);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.pagination .page-link:hover {
+    background: var(--habitaciones-primary);
+    color: white;
+    border-color: var(--habitaciones-primary);
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--habitaciones-primary);
+    border-color: var(--habitaciones-primary);
+    color: white;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    background: var(--habitaciones-light);
+}
+
+/* ============================================
+   MODALES
+   ============================================ */
+.modal-content {
+    border-radius: var(--habitaciones-border-radius);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: none;
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--habitaciones-border);
+    background: linear-gradient(135deg, var(--habitaciones-light), white);
+}
+
+.modal-title {
+    font-weight: 600;
+    color: var(--habitaciones-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--habitaciones-border);
+    background: var(--habitaciones-light);
+}
+
+/* ============================================
+   LOADING STATES
+   ============================================ */
+.habitaciones-loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--habitaciones-primary);
+    font-size: 1.1rem;
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    border: 0.25rem solid #f3f3f3;
+    border-top: 0.25rem solid var(--habitaciones-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .habitaciones-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+        padding: 0 1rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn {
+        justify-content: center;
+    }
+    
+    .search-section .row {
+        flex-direction: column;
+    }
+    
+    .search-section .col-md-4,
+    .search-section .col-md-8 {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    .habitacion-acciones {
+        flex-direction: column;
+    }
+    
+    .btn-sm {
+        flex: none;
+    }
+}
+
+/* ============================================
+   ANIMACIONES
+   ============================================ */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.container > * {
+    animation: fadeIn 0.6s ease forwards;
+}
+
+.success-message,
+.error-message {
+    animation: slideIn 0.4s ease forwards;
+}
+
+.habitacion-card {
+    animation: fadeIn 0.6s ease forwards;
+}
+
+/* ============================================
+   UTILIDADES ADICIONALES
+   ============================================ */
+.text-truncate-custom {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.shadow-sm {
+    box-shadow: var(--habitaciones-shadow) !important;
+}
+
+.shadow-hover:hover {
+    box-shadow: var(--habitaciones-shadow-hover) !important;
+}
+
+/* Estados de validación mejorados */
+.form-control.is-valid,
+.form-select.is-valid {
+    border-color: var(--habitaciones-success);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='m2.3 6.73.94-.94 1.94 1.94 4.08-4.08.94.94-5.02 5.02L2.3 6.73z'/%3e%3c/svg%3e");
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: var(--habitaciones-danger);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 4.6 2.4 2.4m0-2.4-2.4 2.4'/%3e%3c/svg%3e");
+}
+
+/* Mejoras visuales para botones */
+.btn-group .btn {
+    border-radius: 0;
+}
+
+.btn-group .btn:first-child {
+    border-top-left-radius: var(--habitaciones-border-radius);
+    border-bottom-left-radius: var(--habitaciones-border-radius);
+}
+
+.btn-group .btn:last-child {
+    border-top-right-radius: var(--habitaciones-border-radius);
+    border-bottom-right-radius: var(--habitaciones-border-radius);
+}
