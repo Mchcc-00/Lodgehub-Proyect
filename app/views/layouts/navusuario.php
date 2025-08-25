@@ -10,8 +10,8 @@
     </div>
 
     <div class="nav-right">
-        <button type="submit" class="profile-btn" onclick="handleProfileClick(); ">
+        <a href="login.php" class="profile-btn">
         👤 Perfil
-        </button>
+        </a>
     </div>
 </nav>

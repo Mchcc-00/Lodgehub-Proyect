@@ -6,14 +6,14 @@ CREATE TABLE IF NOT EXISTS tp_usuarios (numDocumento VARCHAR(15) NOT NULL,
                                         nombres VARCHAR(50) NOT NULL,
                                         apellidos VARCHAR(50) NOT NULL,
                                         numTelefono VARCHAR (15) NOT NULL,
-                                        correo VARCHAR(30) NOT NULL,
+                                        correo VARCHAR(255  ) NOT NULL,
                                         sexo ENUM ('Hombre','Mujer','Otro','Prefiero no decirlo') NOT NULL,
                                         fechaNacimiento DATE NOT NULL,
                                         password varchar (255) NOT NULL,
                                         foto varchar (255),
                                         solicitarContraseña ENUM('0','1') DEFAULT '0',
                                         tokenPassword varchar (100) ,
-                                        sesionCaducada ENUM('1','0') NOT NULL DEFAULT '1',
+                                        sesionCaducada ENUM('1','0') DEFAULT '1',
                                         roles ENUM ('Administrador','Colaborador','Usuario') NOT NULL,
                                         
                                         PRIMARY KEY (numdocumento)          
@@ -27,8 +27,8 @@ CREATE TABLE IF NOT EXISTS tp_huespedes (numDocumento VARCHAR(15) NOT NULL,
                                         tipoDocumento ENUM ('Cedula de Ciudadania','Tarjeta de Identidad','Cedula de Extranjeria','Pasaporte','Registro Civil') NOT NULL,
                                         sexo ENUM ('Hombre','Mujer','Otro','Prefiero no decirlo') NOT NULL,
                                         -- NUEVO: Campos de auditoría
-                                        fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                        fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                        fechaCreacion TIMESTAMPDEFAULT CURRENT_TIMESTAMP,
+                                        fechaActualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                                         
                                         PRIMARY KEY (numDocumento),
                                         UNIQUE KEY uk_correo (correo)

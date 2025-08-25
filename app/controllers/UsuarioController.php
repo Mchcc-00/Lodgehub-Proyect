@@ -148,8 +148,8 @@ class UsuarioController
             $errors[] = "El correo electrónico es obligatorio.";
         } elseif (!filter_var($datos['correo'], FILTER_VALIDATE_EMAIL)) {
             $errors[] = "El formato del correo electrónico no es válido.";
-        } elseif (strlen($datos['correo']) > 30) {
-            $errors[] = "El correo no puede tener más de 30 caracteres.";
+        } elseif (strlen($datos['correo']) > 255) {
+            $errors[] = "El correo no puede tener más de 255 caracteres.";
         }
 
         // Validar sexo
