@@ -34,19 +34,19 @@ if ($userRole === 'Administrador') {
                 ],
                 [
                     'page' => 'Habitaciones',
-                    'href' => 'verHabitacionesPag.php',
+                    'href' => 'listaHabitaciones.php',
                     'icon' => 'fas fa-bed',
                     'text' => 'Habitaciones'
                 ],
                 [
                     'page' => 'Colaboradores',
-                    'href' => 'verColaboradores.php',
+                    'href' => 'listaColaborador.php',
                     'icon' => 'fas fa-users',
                     'text' => 'Mis Colaboradores'
                 ],
                 [
                     'page' => 'Mantenimiento',
-                    'href' => '../../../MANTENIMIENTO/views/dashboard.php',
+                    'href' => 'listaMantenimiento.php',
                     'icon' => 'fas fa-tools',
                     'text' => 'Mantenimiento'
                 ]
