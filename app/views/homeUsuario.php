@@ -24,7 +24,7 @@
             <img src="/lodgehub/public/img/LogoClaroLHSinTitulo.png" alt="LODGEHUB">
             <h1>LodgeHub</h1>
             </div>
-            <p>Descubre los mejores hoteles para tu próxima estadía</p>
+            <p>¡Descubre los mejores hoteles para tu próxima estadía!</p>
             
             <div class="search-container">
                 <input 

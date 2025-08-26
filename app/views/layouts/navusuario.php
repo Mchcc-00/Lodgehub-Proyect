@@ -1,7 +1,9 @@
 <nav class="navbar">
     <div class="nav-left">
-        <img src="/lodgehub/public/img/LogoClaroLHSinTitulo.png" alt="LODGEHUB">
-        <div class="logo">LODGEHUB</div>
+        <a href="homeUsuario.php" class="nav-logo">
+            <img src="/lodgehub/public/img/LogoClaroLHSinTitulo.png" alt="LODGEHUB">
+            <div class="logo">LODGEHUB</div>
+        </a>
     </div>
 
     <div class="nav-center">
@@ -11,7 +13,7 @@
 
     <div class="nav-right">
         <a href="login.php" class="profile-btn">
-        👤 Perfil
+        👤 Iniciar sesión
         </a>
     </div>
 </nav>
