@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LodgeHub - Encuentra tu Hotel Perfecto</title>
-    <link rel="stylesheet" href="../../public/assets/css/stylesNavUsuario.css">
-    <link rel="stylesheet" href="../../public/assets/css/stylesHomeUsuario.css">
+    <link rel="stylesheet" href="public/assets/css/stylesNavUsuario.css">
+    <link rel="stylesheet" href="public/assets/css/stylesHomeUsuario.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
 </head>
 
     <?php
-        include "layouts/navusuario.php";
+        include "app/views/layouts/navusuario.php";
     ?>
 
 <body>
@@ -21,7 +21,7 @@
     <div class="container">
         <div class="header">
             <div class="img">
-            <img src="/lodgehub/public/img/LogoClaroLHSinTitulo.png" alt="LODGEHUB">
+            <img src="public/img/LogoClaroLHSinTitulo.png" alt="LODGEHUB">
             <h1>LodgeHub</h1>
             </div>
             <p>¡Descubre los mejores hoteles para tu próxima estadía!</p>

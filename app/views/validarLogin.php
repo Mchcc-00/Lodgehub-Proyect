@@ -106,7 +106,7 @@ if ($filas > 0) {
                 break;
                 
             case 'Usuario':
-                $destino = "homeUsuario.php";
+                $destino = "../../index.php";
                 $_SESSION['permisos'] = [
                     'leer', 'actualizar_perfil', 'ver_reservas',
                     'crear_reserva_propia', 'cancelar_reserva_propia'

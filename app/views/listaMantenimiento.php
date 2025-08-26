@@ -9,8 +9,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 
     <link rel="stylesheet" href="../../public/assets/css/stylesMantenimiento.css">
-    
-
     <link href="../../public/assets/css/stylesNav.css" rel="stylesheet">
 </head>
 <body>

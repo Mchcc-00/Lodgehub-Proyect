@@ -158,15 +158,9 @@ function isSubmenuActive($submenu, $currentPage) {
     </nav>
     
     <div class="sidebar-footer">
-        <div class="user-info">
-            <small class="text-muted">
-                <i class="fas fa-user"></i>
-                <?php echo ucfirst($userRole); ?>
-            </small>
-        </div>
-        <a href="cerrarSesion.php" class="btn btn-danger w-100">
+        <a href="../../index.php" class="btn btn-danger w-100">
             <i class="fas fa-sign-out-alt"></i>
-            Cerrar sesión
+            Volver al inicio
         </a>
     </div>
 </aside>
