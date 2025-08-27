@@ -62,18 +62,15 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Perfil - LodgeHub</title>
     <link rel="stylesheet" href="../../public/assets/css/stylesEditarPerfil.css">
-    <link rel="stylesheet" href="../../public/assets/css/stylesNav.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../public/assets/css/stylesNavUsuario.css">
 
 </head>
     <?php 
         $paginaActual = "Editar Perfil";
-        include 'layouts/navbar.php';
-        include 'layouts/sidebar.php';
+        include 'layouts/navusuario.php';
     ?>
-    <script src="../../public/assets/js/sidebar.js"></script>
 <body>
     <div class="container">
         <div class="header">
@@ -134,10 +131,9 @@ try {
 
                 <div class="actions">
                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    <a href="miPerfil.php" class="btn btn-secondary">Devolver</a>
+                    <a href="miPerfilMain.php" class="btn btn-secondary">Volver</a>
                 </div>
             </form>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>

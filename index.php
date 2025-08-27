@@ -12,6 +12,7 @@
 </head>
 
     <?php
+        $paginaActual = "Página Principal";
         include "app/views/layouts/navusuario.php";
     ?>
 

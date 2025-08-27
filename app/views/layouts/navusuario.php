@@ -1,6 +1,6 @@
 <nav class="navbar">
     <div class="nav-left">
-        <a href="index.php" class="nav-logo">
+        <a href="/lodgehub/index.php" class="nav-logo">
             <img src="/lodgehub/public/img/LogoClaroLHSinTitulo.png" alt="LODGEHUB">
             <div class="logo">LODGEHUB</div>
         </a>
@@ -11,7 +11,6 @@
         <a href="../plazaHotel.php" class="nav-link">Hotel</a>
     </div> -->
 
-    <?php $paginaActual = "Inicio"; ?>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item active" aria-current="page"><a href="homeUsuario.php"><?php echo $paginaActual; ?></a></li>
@@ -20,7 +19,9 @@
 
     <div class="nav-right">
         <?php
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         if (isset($_SESSION['nombres'])) {
         ?>
             <div class="dropdown">
@@ -29,7 +30,7 @@
                 </button>
                 <div id="dropdown-menu" class="dropdown-menu">
                     <li>
-                        <a class="dropdown-item" href="miPerfil.php">
+                        <a class="dropdown-item" href="app/views/miPerfilMain.php">
                             <i class="fas fa-user me-2"></i>Mi Perfil
                         </a>
                     </li>

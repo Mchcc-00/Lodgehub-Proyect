@@ -37,6 +37,7 @@ function calcularEdad($fechaNacimiento) {
     $edad = $hoy->diff($fecha_nacimiento);
     return $edad->y;
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -46,8 +47,7 @@ function calcularEdad($fechaNacimiento) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Perfil - <?php echo htmlspecialchars($usuario['nombres'] . ' ' . $usuario['apellidos']); ?></title>
     <link rel="stylesheet" href="../../public/assets/css/stylesMiPerfil.css">
-    <link rel="stylesheet" href="../../public/assets/css/stylesNav.css">
-    <link rel="stylesheet" href="../../public/assets/css/modals/modalStyles.css">
+    <link rel="stylesheet" href="../../public/assets/css/stylesNavUsuario.css">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -57,8 +57,9 @@ function calcularEdad($fechaNacimiento) {
 </head>
 
     <?php
-        include "layouts/sidebar.php";
-        include "layouts/navbar.php";
+        $paginaActual = "Mi Perfil"; 
+
+        include "layouts/navusuario.php";
     ?>
     <script src="../../public/assets/js/sidebar.js"></script>
 
@@ -178,9 +179,9 @@ function calcularEdad($fechaNacimiento) {
 
             <!-- Actions -->
             <div class="actions">
-                <button type="button" class="btn-edit-profile" onclick="abrirModalEditarPerfil()">
+                <a href="editarPerfilMain.php" class="btn-edit-profile">
                     <i class="fas fa-edit"></i> Editar Perfil
-                </button>
+                </a>
                 <a href="contraseña.php" class="btn-change-password">
                     <i class="fas fa-key"></i> Cambiar Contraseña
                 </a>
@@ -191,11 +192,7 @@ function calcularEdad($fechaNacimiento) {
         </div>
     </div>
 
-<!-- Bootstrap JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../../public/assets/js/modals/perfilModal.js"></script>
-<script src="../../public/assets/js/modals/modalManager.js"></script>
-<?php include '../../public/assets/modals/editarPerfilModal.php'; ?>
+
     <script>
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
@@ -270,7 +267,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(updateDate, 60000);
 });
 </script>
-
-        
+        <!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
