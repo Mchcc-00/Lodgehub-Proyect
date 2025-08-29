@@ -43,7 +43,7 @@
                         <hr class="dropdown-divider">
                     </li>
                     <li>
-                        <a class="dropdown-item text-danger" href="app/views/cerrarSesion.php">
+                        <a class="dropdown-item text-danger" href="/lodgehub/app/views/cerrarSesion.php">
                             <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
                         </a>
                     </li>

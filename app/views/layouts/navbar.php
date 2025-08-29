@@ -68,7 +68,7 @@
                                 <i class="fas fa-cog me-2"></i>Configuración
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="cerrarSesion.php">
+                            <li><a class="dropdown-item text-danger" href="/lodgehub/app/views/cerrarSesion.php">
                                 <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
                             </a></li>
                         </ul>

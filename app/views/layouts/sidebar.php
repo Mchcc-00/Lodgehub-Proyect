@@ -40,7 +40,7 @@ if ($userRole === 'Administrador') {
                 ],
                 [
                     'page' => 'Colaboradores',
-                    'href' => 'listaColaborador.php',
+                    'href' => 'listaMisColaboradores.php',
                     'icon' => 'fas fa-users',
                     'text' => 'Mis Colaboradores'
                 ],
