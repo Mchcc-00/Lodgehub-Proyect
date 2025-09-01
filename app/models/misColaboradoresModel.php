@@ -1,435 +1,865 @@
 <?php
-class Usuario {
+/**
+ * Modelo Colaborador - MEJORADO
+ * Maneja todas las operaciones CRUD para la tabla tp_usuarios
+ */
+
+require_once '../../config/conexionGlobal.php';
+
+class Colaborador {
     private $conexion;
-    private $tabla = "tp_usuarios";
-
-    // Propiedades del usuario
-    public $numDocumento;
-    public $tipoDocumento;
-    public $nombres;
-    public $apellidos;
-    public $numTelefono;
-    public $correo;
-    public $sexo;
-    public $fechaNacimiento;
-    public $password;
-    public $foto;
-    public $solicitarContraseña;
-    public $tokenPassword;
-    public $sesionCaducada;
-    public $roles;
-
-    public function __construct($db) {
-        $this->conexion = $db;
-    }
-
-    // Crear un nuevo usuario/colaborador
-    public function crear() {
-        $query = "INSERT INTO " . $this->tabla . " 
-                  (numDocumento, tipoDocumento, nombres, apellidos, numTelefono, correo, 
-                   sexo, fechaNacimiento, password, foto, solicitarContraseña, roles) 
-                  VALUES 
-                  (:numDocumento, :tipoDocumento, :nombres, :apellidos, :numTelefono, :correo, 
-                   :sexo, :fechaNacimiento, :password, :foto, :solicitarContraseña, :roles)";
-
-        $stmt = $this->conexion->prepare($query);
-
-        // Limpiar datos
-        $this->numDocumento = htmlspecialchars(strip_tags($this->numDocumento));
-        $this->tipoDocumento = htmlspecialchars(strip_tags($this->tipoDocumento));
-        $this->nombres = htmlspecialchars(strip_tags($this->nombres));
-        $this->apellidos = htmlspecialchars(strip_tags($this->apellidos));
-        $this->numTelefono = htmlspecialchars(strip_tags($this->numTelefono));
-        $this->correo = htmlspecialchars(strip_tags($this->correo));
-        $this->sexo = htmlspecialchars(strip_tags($this->sexo));
-        $this->fechaNacimiento = htmlspecialchars(strip_tags($this->fechaNacimiento));
-        $this->foto = htmlspecialchars(strip_tags($this->foto));
-        $this->roles = htmlspecialchars(strip_tags($this->roles));
-
-        // Encriptar contraseña
-        $passwordHash = password_hash($this->password, PASSWORD_DEFAULT);
-
-        // Bind de parámetros
-        $stmt->bindParam(':numDocumento', $this->numDocumento);
-        $stmt->bindParam(':tipoDocumento', $this->tipoDocumento);
-        $stmt->bindParam(':nombres', $this->nombres);
-        $stmt->bindParam(':apellidos', $this->apellidos);
-        $stmt->bindParam(':numTelefono', $this->numTelefono);
-        $stmt->bindParam(':correo', $this->correo);
-        $stmt->bindParam(':sexo', $this->sexo);
-        $stmt->bindParam(':fechaNacimiento', $this->fechaNacimiento);
-        $stmt->bindParam(':password', $passwordHash);
-        $stmt->bindParam(':foto', $this->foto);
-        $stmt->bindParam(':solicitarContraseña', $this->solicitarContraseña);
-        $stmt->bindParam(':roles', $this->roles);
-
-        return $stmt->execute();
-    }
-
-    // Leer todos los colaboradores con paginación y filtros
-    public function leer($offset = 0, $limit = 10, $busqueda = '', $filtro = 'all', $valorFiltro = '') {
-        $query = "SELECT numDocumento, tipoDocumento, nombres, apellidos, numTelefono, 
-                         correo, sexo, fechaNacimiento, foto, solicitarContraseña, roles,
-                         sesionCaducada
-                  FROM " . $this->tabla . " 
-                  WHERE 1=1";
-
-        $params = array();
-
-        // Aplicar búsqueda
-        if (!empty($busqueda)) {
-            $query .= " AND (numDocumento LIKE :busqueda 
-                            OR nombres LIKE :busqueda 
-                            OR apellidos LIKE :busqueda 
-                            OR correo LIKE :busqueda)";
-            $params[':busqueda'] = '%' . $busqueda . '%';
+    
+    public function __construct() {
+        global $conexion;
+        
+        if (!$conexion) {
+            throw new Exception('Error de conexión con la base de datos');
         }
-
-        // Aplicar filtros
-        if ($filtro !== 'all' && !empty($valorFiltro)) {
-            if ($filtro === 'roles') {
-                $query .= " AND roles = :valorFiltro";
-                $params[':valorFiltro'] = $valorFiltro;
-            } elseif ($filtro === 'tipoDocumento') {
-                $query .= " AND tipoDocumento = :valorFiltro";
-                $params[':valorFiltro'] = $valorFiltro;
-            } elseif ($filtro === 'sexo') {
-                $query .= " AND sexo = :valorFiltro";
-                $params[':valorFiltro'] = $valorFiltro;
+        
+        $this->conexion = $conexion;
+        
+        // Configurar charset para caracteres especiales
+        $this->conexion->set_charset("utf8");
+    }
+    
+    /**
+     * Verificar conexión a la base de datos
+     */
+    private function verificarConexion() {
+        if (!$this->conexion || $this->conexion->connect_error) {
+            throw new Exception('Conexión a la base de datos perdida');
+        }
+    }
+    
+    /**
+     * Crear un nuevo colaborador
+     */
+    public function crear($datos) {
+        try {
+            $this->verificarConexion();
+            
+            // Verificar si el documento ya existe
+            if ($this->existeDocumento($datos['numDocumento'])) {
+                return ['success' => false, 'message' => 'El número de documento ya está registrado'];
             }
-        }
-
-        $query .= " ORDER BY nombres ASC LIMIT :offset, :limit";
-
-        $stmt = $this->conexion->prepare($query);
-        
-        // Bind parámetros de búsqueda y filtro
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value);
-        }
-        
-        // Bind parámetros de paginación
-        $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
-        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
-
-        $stmt->execute();
-        return $stmt;
-    }
-
-    // Contar total de colaboradores (para paginación)
-    public function contarTotal($busqueda = '', $filtro = 'all', $valorFiltro = '') {
-        $query = "SELECT COUNT(*) as total FROM " . $this->tabla . " WHERE 1=1";
-        $params = array();
-
-        if (!empty($busqueda)) {
-            $query .= " AND (numDocumento LIKE :busqueda 
-                            OR nombres LIKE :busqueda 
-                            OR apellidos LIKE :busqueda 
-                            OR correo LIKE :busqueda)";
-            $params[':busqueda'] = '%' . $busqueda . '%';
-        }
-
-        if ($filtro !== 'all' && !empty($valorFiltro)) {
-            if ($filtro === 'roles') {
-                $query .= " AND roles = :valorFiltro";
-                $params[':valorFiltro'] = $valorFiltro;
-            } elseif ($filtro === 'tipoDocumento') {
-                $query .= " AND tipoDocumento = :valorFiltro";
-                $params[':valorFiltro'] = $valorFiltro;
-            } elseif ($filtro === 'sexo') {
-                $query .= " AND sexo = :valorFiltro";
-                $params[':valorFiltro'] = $valorFiltro;
+            
+            // Verificar si el correo ya existe
+            if ($this->existeCorreo($datos['correo'])) {
+                return ['success' => false, 'message' => 'El correo electrónico ya está registrado'];
             }
+            
+            // Validar edad mínima (18 años)
+            if (!$this->validarEdadMinima($datos['fechaNacimiento'])) {
+                return ['success' => false, 'message' => 'El colaborador debe ser mayor de 18 años'];
+            }
+            
+            // Preparar la consulta con manejo de transacciones
+            $this->conexion->begin_transaction();
+            
+            try {
+                $sql = "INSERT INTO tp_usuarios (
+                            numDocumento, tipoDocumento, nombres, apellidos, 
+                            numTelefono, correo, sexo, fechaNacimiento, 
+                            password, foto, solicitarContraseña, roles
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                
+                $stmt = $this->conexion->prepare($sql);
+                
+                if (!$stmt) {
+                    throw new Exception('Error al preparar la consulta: ' . $this->conexion->error);
+                }
+                
+                // Hash de la contraseña
+                $passwordHash = password_hash($datos['password'], PASSWORD_DEFAULT);
+                
+                // Manejar la foto (si existe)
+                $fotoPath = null;
+                if (isset($datos['foto']) && $datos['foto']['error'] === UPLOAD_ERR_OK) {
+                    $fotoPath = $this->guardarFoto($datos['foto'], $datos['numDocumento']);
+                    if (!$fotoPath) {
+                        throw new Exception('Error al guardar la foto');
+                    }
+                }
+                
+                $solicitarContraseña = isset($datos['solicitarContraseña']) && $datos['solicitarContraseña'] ? '1' : '0';
+                
+                $stmt->bind_param(
+                    "ssssssssssss",
+                    $datos['numDocumento'],
+                    $datos['tipoDocumento'],
+                    $datos['nombres'],
+                    $datos['apellidos'],
+                    $datos['numTelefono'],
+                    $datos['correo'],
+                    $datos['sexo'],
+                    $datos['fechaNacimiento'],
+                    $passwordHash,
+                    $fotoPath,
+                    $solicitarContraseña,
+                    $datos['roles']
+                );
+                
+                if (!$stmt->execute()) {
+                    throw new Exception('Error al ejecutar la consulta: ' . $stmt->error);
+                }
+                
+                $this->conexion->commit();
+                return ['success' => true, 'message' => 'Colaborador creado exitosamente'];
+                
+            } catch (Exception $e) {
+                $this->conexion->rollback();
+                throw $e;
+            }
+            
+        } catch (Exception $e) {
+            $this->logError('Error en crear(): ' . $e->getMessage());
+            return ['success' => false, 'message' => 'Error del sistema: ' . $e->getMessage()];
         }
-
-        $stmt = $this->conexion->prepare($query);
+    }
+    
+    /**
+     * Listar todos los colaboradores con filtros mejorados
+     */
+    public function listar($filtros = []) {
+        try {
+            $this->verificarConexion();
+            
+            $sql = "SELECT numDocumento, tipoDocumento, nombres, apellidos, 
+                           numTelefono, correo, sexo, fechaNacimiento, 
+                           foto, roles, solicitarContraseña
+                    FROM tp_usuarios";
+            
+            $condiciones = [];
+            $params = [];
+            $types = "";
+            
+            // Aplicar filtros con validación mejorada
+            if (!empty($filtros['busqueda'])) {
+                $busqueda = trim($filtros['busqueda']);
+                if (strlen($busqueda) >= 2) {
+                    $condiciones[] = "(numDocumento LIKE ? OR nombres LIKE ? OR apellidos LIKE ? OR correo LIKE ?)";
+                    $busquedaLike = "%" . $busqueda . "%";
+                    $params = array_merge($params, [$busquedaLike, $busquedaLike, $busquedaLike, $busquedaLike]);
+                    $types .= "ssss";
+                }
+            }
+            
+            if (!empty($filtros['rol']) && $filtros['rol'] !== 'all') {
+                $rolesValidos = ['Administrador', 'Colaborador', 'Usuario'];
+                if (in_array($filtros['rol'], $rolesValidos)) {
+                    $condiciones[] = "roles = ?";
+                    $params[] = $filtros['rol'];
+                    $types .= "s";
+                }
+            }
+            
+            if (!empty($filtros['tipoDocumento']) && $filtros['tipoDocumento'] !== 'all') {
+                $tiposValidos = ['Cédula de Ciudadanía', 'Tarjeta de Identidad', 'Cedula de Extranjeria', 'Pasaporte', 'Registro Civil'];
+                if (in_array($filtros['tipoDocumento'], $tiposValidos)) {
+                    $condiciones[] = "tipoDocumento = ?";
+                    $params[] = $filtros['tipoDocumento'];
+                    $types .= "s";
+                }
+            }
+            
+            if (!empty($filtros['sexo']) && $filtros['sexo'] !== 'all') {
+                $sexosValidos = ['Hombre', 'Mujer', 'Otro', 'Prefiero no decirlo'];
+                if (in_array($filtros['sexo'], $sexosValidos)) {
+                    $condiciones[] = "sexo = ?";
+                    $params[] = $filtros['sexo'];
+                    $types .= "s";
+                }
+            }
+            
+            if (!empty($condiciones)) {
+                $sql .= " WHERE " . implode(" AND ", $condiciones);
+            }
+            
+            $sql .= " ORDER BY nombres ASC, apellidos ASC";
+            
+            $stmt = $this->conexion->prepare($sql);
+            
+            if (!$stmt) {
+                throw new Exception('Error al preparar la consulta de listado: ' . $this->conexion->error);
+            }
+            
+            if (!empty($params)) {
+                $stmt->bind_param($types, ...$params);
+            }
+            
+            if (!$stmt->execute()) {
+                throw new Exception('Error al ejecutar consulta de listado: ' . $stmt->error);
+            }
+            
+            $resultado = $stmt->get_result();
+            
+            $colaboradores = [];
+            while ($row = $resultado->fetch_assoc()) {
+                $colaboradores[] = $row;
+            }
+            
+            return ['success' => true, 'data' => $colaboradores];
+            
+        } catch (Exception $e) {
+            $this->logError('Error en listar(): ' . $e->getMessage());
+            return ['success' => false, 'message' => 'Error al listar colaboradores: ' . $e->getMessage()];
+        }
+    }
+    
+    /**
+     * Obtener un colaborador por documento
+     */
+    public function obtenerPorDocumento($numDocumento) {
+        try {
+            $this->verificarConexion();
+            
+            if (empty($numDocumento)) {
+                return ['success' => false, 'message' => 'Número de documento requerido'];
+            }
+            
+            $sql = "SELECT * FROM tp_usuarios WHERE numDocumento = ?";
+            $stmt = $this->conexion->prepare($sql);
+            
+            if (!$stmt) {
+                throw new Exception('Error al preparar consulta: ' . $this->conexion->error);
+            }
+            
+            $stmt->bind_param("s", $numDocumento);
+            
+            if (!$stmt->execute()) {
+                throw new Exception('Error al ejecutar consulta: ' . $stmt->error);
+            }
+            
+            $resultado = $stmt->get_result();
+            $colaborador = $resultado->fetch_assoc();
+            
+            if ($colaborador) {
+                // No retornar información sensible
+                unset($colaborador['password']);
+                unset($colaborador['tokenPassword']);
+                return ['success' => true, 'data' => $colaborador];
+            } else {
+                return ['success' => false, 'message' => 'Colaborador no encontrado'];
+            }
+            
+        } catch (Exception $e) {
+            $this->logError('Error en obtenerPorDocumento(): ' . $e->getMessage());
+            return ['success' => false, 'message' => 'Error al obtener colaborador: ' . $e->getMessage()];
+        }
+    }
+    
+    /**
+     * Actualizar un colaborador
+     */
+    public function actualizar($numDocumentoOriginal, $datos) {
+        try {
+            $this->verificarConexion();
+            
+            // Verificar si el colaborador existe
+            $colaboradorExistente = $this->obtenerPorDocumento($numDocumentoOriginal);
+            if (!$colaboradorExistente['success']) {
+                return ['success' => false, 'message' => 'Colaborador no encontrado'];
+            }
+            
+            // Si se cambió el documento, verificar que el nuevo no exista
+            if ($datos['numDocumento'] !== $numDocumentoOriginal && $this->existeDocumento($datos['numDocumento'])) {
+                return ['success' => false, 'message' => 'El nuevo número de documento ya está registrado'];
+            }
+            
+            // Si se cambió el correo, verificar que el nuevo no exista
+            if ($datos['correo'] !== $colaboradorExistente['data']['correo'] && $this->existeCorreo($datos['correo'])) {
+                return ['success' => false, 'message' => 'El nuevo correo ya está registrado'];
+            }
+            
+            $this->conexion->begin_transaction();
+            
+            try {
+                // Preparar campos para actualizar
+                $campos = [
+                    'numDocumento = ?',
+                    'tipoDocumento = ?',
+                    'nombres = ?',
+                    'apellidos = ?',
+                    'numTelefono = ?',
+                    'correo = ?',
+                    'sexo = ?',
+                    'fechaNacimiento = ?',
+                    'roles = ?',
+                    'solicitarContraseña = ?'
+                ];
+                
+                $params = [
+                    $datos['numDocumento'],
+                    $datos['tipoDocumento'],
+                    $datos['nombres'],
+                    $datos['apellidos'],
+                    $datos['numTelefono'],
+                    $datos['correo'],
+                    $datos['sexo'],
+                    $datos['fechaNacimiento'],
+                    $datos['roles'],
+                    isset($datos['solicitarContraseña']) && $datos['solicitarContraseña'] ? '1' : '0'
+                ];
+                
+                $types = "ssssssssss";
+                
+                // Si se proporciona nueva contraseña
+                if (!empty($datos['password'])) {
+                    $campos[] = 'password = ?';
+                    $params[] = password_hash($datos['password'], PASSWORD_DEFAULT);
+                    $types .= "s";
+                }
+                
+                // Agregar documento original para WHERE
+                $params[] = $numDocumentoOriginal;
+                $types .= "s";
+                
+                $sql = "UPDATE tp_usuarios SET " . implode(", ", $campos) . " WHERE numDocumento = ?";
+                
+                $stmt = $this->conexion->prepare($sql);
+                
+                if (!$stmt) {
+                    throw new Exception('Error al preparar consulta de actualización: ' . $this->conexion->error);
+                }
+                
+                $stmt->bind_param($types, ...$params);
+                
+                if (!$stmt->execute()) {
+                    throw new Exception('Error al ejecutar actualización: ' . $stmt->error);
+                }
+                
+                $this->conexion->commit();
+                return ['success' => true, 'message' => 'Colaborador actualizado exitosamente'];
+                
+            } catch (Exception $e) {
+                $this->conexion->rollback();
+                throw $e;
+            }
+            
+        } catch (Exception $e) {
+            $this->logError('Error en actualizar(): ' . $e->getMessage());
+            return ['success' => false, 'message' => 'Error del sistema: ' . $e->getMessage()];
+        }
+    }
+    
+    /**
+     * Eliminar un colaborador
+     */
+    public function eliminar($numDocumento) {
+        try {
+            $this->verificarConexion();
+            
+            if (empty($numDocumento)) {
+                return ['success' => false, 'message' => 'Número de documento requerido'];
+            }
+            
+            // Verificar si el colaborador existe
+            $colaborador = $this->obtenerPorDocumento($numDocumento);
+            if (!$colaborador['success']) {
+                return ['success' => false, 'message' => 'Colaborador no encontrado'];
+            }
+            
+            $this->conexion->begin_transaction();
+            
+            try {
+                // Eliminar foto si existe
+                if (!empty($colaborador['data']['foto'])) {
+                    $this->eliminarFoto($colaborador['data']['foto']);
+                }
+                
+                $sql = "DELETE FROM tp_usuarios WHERE numDocumento = ?";
+                $stmt = $this->conexion->prepare($sql);
+                
+                if (!$stmt) {
+                    throw new Exception('Error al preparar consulta de eliminación: ' . $this->conexion->error);
+                }
+                
+                $stmt->bind_param("s", $numDocumento);
+                
+                if (!$stmt->execute()) {
+                    throw new Exception('Error al ejecutar eliminación: ' . $stmt->error);
+                }
+                
+                if ($stmt->affected_rows > 0) {
+                    $this->conexion->commit();
+                    return ['success' => true, 'message' => 'Colaborador eliminado exitosamente'];
+                } else {
+                    $this->conexion->rollback();
+                    return ['success' => false, 'message' => 'No se pudo eliminar el colaborador'];
+                }
+                
+            } catch (Exception $e) {
+                $this->conexion->rollback();
+                throw $e;
+            }
+            
+        } catch (Exception $e) {
+            $this->logError('Error en eliminar(): ' . $e->getMessage());
+            return ['success' => false, 'message' => 'Error del sistema: ' . $e->getMessage()];
+        }
+    }
+    
+    /**
+     * Cambiar contraseña de un colaborador
+     */
+    public function cambiarPassword($numDocumento, $nuevaPassword, $solicitarCambio = false) {
+        try {
+            $this->verificarConexion();
+            
+            if (empty($numDocumento) || empty($nuevaPassword)) {
+                return ['success' => false, 'message' => 'Documento y contraseña son requeridos'];
+            }
+            
+            if (strlen($nuevaPassword) < 6) {
+                return ['success' => false, 'message' => 'La contraseña debe tener al menos 6 caracteres'];
+            }
+            
+            $passwordHash = password_hash($nuevaPassword, PASSWORD_DEFAULT);
+            $solicitarContraseña = $solicitarCambio ? '1' : '0';
+            
+            $sql = "UPDATE tp_usuarios SET password = ?, solicitarContraseña = ? WHERE numDocumento = ?";
+            $stmt = $this->conexion->prepare($sql);
+            
+            if (!$stmt) {
+                throw new Exception('Error al preparar consulta: ' . $this->conexion->error);
+            }
+            
+            $stmt->bind_param("sss", $passwordHash, $solicitarContraseña, $numDocumento);
+            
+            if (!$stmt->execute()) {
+                throw new Exception('Error al cambiar contraseña: ' . $stmt->error);
+            }
+            
+            if ($stmt->affected_rows > 0) {
+                return ['success' => true, 'message' => 'Contraseña actualizada exitosamente'];
+            } else {
+                return ['success' => false, 'message' => 'No se encontró el colaborador'];
+            }
+            
+        } catch (Exception $e) {
+            $this->logError('Error en cambiarPassword(): ' . $e->getMessage());
+            return ['success' => false, 'message' => 'Error del sistema: ' . $e->getMessage()];
+        }
+    }
+    
+    /**
+     * Verificar si existe un documento - MEJORADO
+     */
+    public function existeDocumento($numDocumento) {
+        try {
+            $this->verificarConexion();
+            
+            if (empty($numDocumento)) {
+                return false;
+            }
+            
+            $sql = "SELECT COUNT(*) as count FROM tp_usuarios WHERE numDocumento = ?";
+            $stmt = $this->conexion->prepare($sql);
+            
+            if (!$stmt) {
+                $this->logError('Error al preparar consulta existeDocumento: ' . $this->conexion->error);
+                return false;
+            }
+            
+            $stmt->bind_param("s", $numDocumento);
+            
+            if (!$stmt->execute()) {
+                $this->logError('Error al ejecutar existeDocumento: ' . $stmt->error);
+                return false;
+            }
+            
+            $resultado = $stmt->get_result();
+            $row = $resultado->fetch_assoc();
+            
+            return $row['count'] > 0;
+            
+        } catch (Exception $e) {
+            $this->logError('Error en existeDocumento(): ' . $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Verificar si existe un correo - MEJORADO
+     */
+    public function existeCorreo($correo) {
+        try {
+            $this->verificarConexion();
+            
+            if (empty($correo) || !filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+                return false;
+            }
+            
+            $sql = "SELECT COUNT(*) as count FROM tp_usuarios WHERE correo = ?";
+            $stmt = $this->conexion->prepare($sql);
+            
+            if (!$stmt) {
+                $this->logError('Error al preparar consulta existeCorreo: ' . $this->conexion->error);
+                return false;
+            }
+            
+            $stmt->bind_param("s", $correo);
+            
+            if (!$stmt->execute()) {
+                $this->logError('Error al ejecutar existeCorreo: ' . $stmt->error);
+                return false;
+            }
+            
+            $resultado = $stmt->get_result();
+            $row = $resultado->fetch_assoc();
+            
+            return $row['count'] > 0;
+            
+        } catch (Exception $e) {
+            $this->logError('Error en existeCorreo(): ' . $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Validar edad mínima (18 años)
+     */
+    private function validarEdadMinima($fechaNacimiento) {
+        try {
+            if (empty($fechaNacimiento)) {
+                return false;
+            }
+            
+            $hoy = new DateTime();
+            $fechaNac = new DateTime($fechaNacimiento);
+            $edad = $hoy->diff($fechaNac)->y;
+            
+            return $edad >= 18;
+            
+        } catch (Exception $e) {
+            $this->logError('Error en validarEdadMinima(): ' . $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Guardar foto de perfil
+     */
+    private function guardarFoto($archivo, $documento) {
+        try {
+            // Validar el archivo
+            $tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!in_array($archivo['type'], $tiposPermitidos)) {
+                $this->logError('Tipo de archivo no permitido: ' . $archivo['type']);
+                return false;
+            }
+            
+            // Validar tamaño (2MB máximo)
+            if ($archivo['size'] > 2 * 1024 * 1024) {
+                $this->logError('Archivo demasiado grande: ' . $archivo['size'] . ' bytes');
+                return false;
+            }
+            
+            // Crear directorio si no existe
+            $directorioFotos = '../../public/assets/images/colaboradores/';
+            if (!file_exists($directorioFotos)) {
+                if (!mkdir($directorioFotos, 0755, true)) {
+                    $this->logError('No se pudo crear directorio de fotos');
+                    return false;
+                }
+            }
+            
+            // Generar nombre único y seguro
+            $extension = pathinfo($archivo['name'], PATHINFO_EXTENSION);
+            $extension = strtolower($extension);
+            $nombreArchivo = 'colaborador_' . preg_replace('/[^a-zA-Z0-9]/', '', $documento) . '_' . time() . '.' . $extension;
+            $rutaCompleta = $directorioFotos . $nombreArchivo;
+            
+            // Mover archivo
+            if (move_uploaded_file($archivo['tmp_name'], $rutaCompleta)) {
+                return 'assets/images/colaboradores/' . $nombreArchivo;
+            } else {
+                $this->logError('Error al mover archivo de foto');
+                return false;
+            }
+            
+        } catch (Exception $e) {
+            $this->logError('Error en guardarFoto(): ' . $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Eliminar foto de perfil
+     */
+    private function eliminarFoto($rutaFoto) {
+        try {
+            if (empty($rutaFoto)) return;
+            
+            $rutaCompleta = '../../public/' . $rutaFoto;
+            if (file_exists($rutaCompleta)) {
+                unlink($rutaCompleta);
+            }
+        } catch (Exception $e) {
+            $this->logError('Error al eliminar foto: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Obtener estadísticas de colaboradores
+     */
+    public function obtenerEstadisticas() {
+        try {
+            $this->verificarConexion();
+            
+            $sql = "SELECT 
+                        COUNT(*) as total,
+                        SUM(CASE WHEN roles = 'Administrador' THEN 1 ELSE 0 END) as administradores,
+                        SUM(CASE WHEN roles = 'Colaborador' THEN 1 ELSE 0 END) as colaboradores,
+                        SUM(CASE WHEN roles = 'Usuario' THEN 1 ELSE 0 END) as usuarios,
+                        SUM(CASE WHEN solicitarContraseña = '1' THEN 1 ELSE 0 END) as pendientes_password
+                    FROM tp_usuarios";
+            
+            $resultado = $this->conexion->query($sql);
+            
+            if (!$resultado) {
+                throw new Exception('Error al obtener estadísticas: ' . $this->conexion->error);
+            }
+            
+            $estadisticas = $resultado->fetch_assoc();
+            
+            return ['success' => true, 'data' => $estadisticas];
+            
+        } catch (Exception $e) {
+            $this->logError('Error en obtenerEstadisticas(): ' . $e->getMessage());
+            return ['success' => false, 'message' => 'Error al obtener estadísticas: ' . $e->getMessage()];
+        }
+    }
+    
+    /**
+     * Validar datos de entrada - MEJORADO
+     */
+    public function validarDatos($datos, $esActualizacion = false) {
+        $errores = [];
         
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value);
+        // Validar documento
+        if (empty($datos['numDocumento'])) {
+            $errores[] = 'El número de documento es requerido';
+        } elseif (strlen($datos['numDocumento']) < 6 || strlen($datos['numDocumento']) > 15) {
+            $errores[] = 'El documento debe tener entre 6 y 15 caracteres';
         }
-
-        $stmt->execute();
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row['total'];
-    }
-
-    // Leer un colaborador por documento
-    public function leerUno() {
-        $query = "SELECT * FROM " . $this->tabla . " WHERE numDocumento = :numDocumento LIMIT 0,1";
-        $stmt = $this->conexion->prepare($query);
-        $stmt->bindParam(':numDocumento', $this->numDocumento);
-        $stmt->execute();
-
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($row) {
-            $this->tipoDocumento = $row['tipoDocumento'];
-            $this->nombres = $row['nombres'];
-            $this->apellidos = $row['apellidos'];
-            $this->numTelefono = $row['numTelefono'];
-            $this->correo = $row['correo'];
-            $this->sexo = $row['sexo'];
-            $this->fechaNacimiento = $row['fechaNacimiento'];
-            $this->foto = $row['foto'];
-            $this->solicitarContraseña = $row['solicitarContraseña'];
-            $this->tokenPassword = $row['tokenPassword'];
-            $this->sesionCaducada = $row['sesionCaducada'];
-            $this->roles = $row['roles'];
-            return true;
-        }
-        return false;
-    }
-
-    // Actualizar colaborador
-    public function actualizar() {
-        $query = "UPDATE " . $this->tabla . " SET 
-                  tipoDocumento = :tipoDocumento,
-                  nombres = :nombres,
-                  apellidos = :apellidos,
-                  numTelefono = :numTelefono,
-                  correo = :correo,
-                  sexo = :sexo,
-                  fechaNacimiento = :fechaNacimiento,
-                  roles = :roles,
-                  solicitarContraseña = :solicitarContraseña";
-
-        // Si se proporciona una nueva contraseña, incluirla en la actualización
-        if (!empty($this->password)) {
-            $query .= ", password = :password";
-        }
-
-        // Si se proporciona una nueva foto, incluirla
-        if (!empty($this->foto)) {
-            $query .= ", foto = :foto";
-        }
-
-        $query .= " WHERE numDocumento = :numDocumento_original";
-
-        $stmt = $this->conexion->prepare($query);
-
-        // Limpiar datos
-        $this->tipoDocumento = htmlspecialchars(strip_tags($this->tipoDocumento));
-        $this->nombres = htmlspecialchars(strip_tags($this->nombres));
-        $this->apellidos = htmlspecialchars(strip_tags($this->apellidos));
-        $this->numTelefono = htmlspecialchars(strip_tags($this->numTelefono));
-        $this->correo = htmlspecialchars(strip_tags($this->correo));
-        $this->sexo = htmlspecialchars(strip_tags($this->sexo));
-        $this->fechaNacimiento = htmlspecialchars(strip_tags($this->fechaNacimiento));
-        $this->roles = htmlspecialchars(strip_tags($this->roles));
-
-        // Bind de parámetros básicos
-        $stmt->bindParam(':tipoDocumento', $this->tipoDocumento);
-        $stmt->bindParam(':nombres', $this->nombres);
-        $stmt->bindParam(':apellidos', $this->apellidos);
-        $stmt->bindParam(':numTelefono', $this->numTelefono);
-        $stmt->bindParam(':correo', $this->correo);
-        $stmt->bindParam(':sexo', $this->sexo);
-        $stmt->bindParam(':fechaNacimiento', $this->fechaNacimiento);
-        $stmt->bindParam(':roles', $this->roles);
-        $stmt->bindParam(':solicitarContraseña', $this->solicitarContraseña);
-        $stmt->bindParam(':numDocumento_original', $this->numDocumento);
-
-        // Bind condicional para contraseña
-        if (!empty($this->password)) {
-            $passwordHash = password_hash($this->password, PASSWORD_DEFAULT);
-            $stmt->bindParam(':password', $passwordHash);
-        }
-
-        // Bind condicional para foto
-        if (!empty($this->foto)) {
-            $stmt->bindParam(':foto', $this->foto);
-        }
-
-        return $stmt->execute();
-    }
-
-    // Eliminar colaborador
-    public function eliminar() {
-        $query = "DELETE FROM " . $this->tabla . " WHERE numDocumento = :numDocumento";
-        $stmt = $this->conexion->prepare($query);
-        $stmt->bindParam(':numDocumento', $this->numDocumento);
-        return $stmt->execute();
-    }
-
-    // Verificar si existe un documento
-    public function existeDocumento($documento, $documentoOriginal = null) {
-        $query = "SELECT COUNT(*) as total FROM " . $this->tabla . " WHERE numDocumento = :documento";
         
-        // Si estamos editando, excluir el documento original
-        if ($documentoOriginal !== null) {
-            $query .= " AND numDocumento != :documentoOriginal";
-        }
-
-        $stmt = $this->conexion->prepare($query);
-        $stmt->bindParam(':documento', $documento);
-        
-        if ($documentoOriginal !== null) {
-            $stmt->bindParam(':documentoOriginal', $documentoOriginal);
-        }
-
-        $stmt->execute();
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row['total'] > 0;
-    }
-
-    // Verificar si existe un correo
-    public function existeCorreo($correo, $documentoOriginal = null) {
-        $query = "SELECT COUNT(*) as total FROM " . $this->tabla . " WHERE correo = :correo";
-        
-        if ($documentoOriginal !== null) {
-            $query .= " AND numDocumento != :documentoOriginal";
-        }
-
-        $stmt = $this->conexion->prepare($query);
-        $stmt->bindParam(':correo', $correo);
-        
-        if ($documentoOriginal !== null) {
-            $stmt->bindParam(':documentoOriginal', $documentoOriginal);
-        }
-
-        $stmt->execute();
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row['total'] > 0;
-    }
-
-    // Cambiar contraseña específicamente
-    public function cambiarPassword() {
-        $query = "UPDATE " . $this->tabla . " SET 
-                  password = :password,
-                  solicitarContraseña = :solicitarContraseña
-                  WHERE numDocumento = :numDocumento";
-
-        $stmt = $this->conexion->prepare($query);
-
-        $passwordHash = password_hash($this->password, PASSWORD_DEFAULT);
-        
-        $stmt->bindParam(':password', $passwordHash);
-        $stmt->bindParam(':solicitarContraseña', $this->solicitarContraseña);
-        $stmt->bindParam(':numDocumento', $this->numDocumento);
-
-        return $stmt->execute();
-    }
-
-    // Validar datos del colaborador
-    public function validar() {
-        $errores = array();
-
-        // Validar número de documento
-        if (empty($this->numDocumento)) {
-            $errores[] = "El número de documento es obligatorio";
-        } elseif (strlen($this->numDocumento) > 15) {
-            $errores[] = "El número de documento no puede tener más de 15 caracteres";
-        }
-
         // Validar tipo de documento
         $tiposValidos = ['Cédula de Ciudadanía', 'Tarjeta de Identidad', 'Cedula de Extranjeria', 'Pasaporte', 'Registro Civil'];
-        if (empty($this->tipoDocumento) || !in_array($this->tipoDocumento, $tiposValidos)) {
-            $errores[] = "Debe seleccionar un tipo de documento válido";
+        if (empty($datos['tipoDocumento']) || !in_array($datos['tipoDocumento'], $tiposValidos)) {
+            $errores[] = 'Tipo de documento inválido';
         }
-
+        
         // Validar nombres
-        if (empty($this->nombres)) {
-            $errores[] = "Los nombres son obligatorios";
-        } elseif (strlen($this->nombres) > 50) {
-            $errores[] = "Los nombres no pueden tener más de 50 caracteres";
+        if (empty($datos['nombres'])) {
+            $errores[] = 'Los nombres son requeridos';
+        } elseif (strlen($datos['nombres']) > 50) {
+            $errores[] = 'Los nombres no pueden exceder 50 caracteres';
+        } elseif (!preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/', $datos['nombres'])) {
+            $errores[] = 'Los nombres solo pueden contener letras y espacios';
         }
-
+        
         // Validar apellidos
-        if (empty($this->apellidos)) {
-            $errores[] = "Los apellidos son obligatorios";
-        } elseif (strlen($this->apellidos) > 50) {
-            $errores[] = "Los apellidos no pueden tener más de 50 caracteres";
+        if (empty($datos['apellidos'])) {
+            $errores[] = 'Los apellidos son requeridos';
+        } elseif (strlen($datos['apellidos']) > 50) {
+            $errores[] = 'Los apellidos no pueden exceder 50 caracteres';
+        } elseif (!preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/', $datos['apellidos'])) {
+            $errores[] = 'Los apellidos solo pueden contener letras y espacios';
         }
-
-        // Validar teléfono
-        if (empty($this->numTelefono)) {
-            $errores[] = "El teléfono es obligatorio";
-        } elseif (strlen($this->numTelefono) > 15) {
-            $errores[] = "El teléfono no puede tener más de 15 caracteres";
-        }
-
+        
         // Validar correo
-        if (empty($this->correo)) {
-            $errores[] = "El correo electrónico es obligatorio";
-        } elseif (!filter_var($this->correo, FILTER_VALIDATE_EMAIL)) {
-            $errores[] = "El formato del correo electrónico no es válido";
-        } elseif (strlen($this->correo) > 255) {
-            $errores[] = "El correo electrónico es demasiado largo";
+        if (empty($datos['correo'])) {
+            $errores[] = 'El correo electrónico es requerido';
+        } elseif (!filter_var($datos['correo'], FILTER_VALIDATE_EMAIL)) {
+            $errores[] = 'Correo electrónico inválido';
+        } elseif (strlen($datos['correo']) > 255) {
+            $errores[] = 'El correo es demasiado largo';
         }
-
+        
+        // Validar teléfono
+        if (empty($datos['numTelefono'])) {
+            $errores[] = 'El número de teléfono es requerido';
+        } elseif (!preg_match('/^[0-9+\-\s()]{7,15}$/', $datos['numTelefono'])) {
+            $errores[] = 'Número de teléfono inválido';
+        }
+        
         // Validar sexo
         $sexosValidos = ['Hombre', 'Mujer', 'Otro', 'Prefiero no decirlo'];
-        if (empty($this->sexo) || !in_array($this->sexo, $sexosValidos)) {
-            $errores[] = "Debe seleccionar un sexo válido";
+        if (empty($datos['sexo']) || !in_array($datos['sexo'], $sexosValidos)) {
+            $errores[] = 'Sexo inválido';
         }
-
+        
         // Validar fecha de nacimiento
-        if (empty($this->fechaNacimiento)) {
-            $errores[] = "La fecha de nacimiento es obligatoria";
+        if (empty($datos['fechaNacimiento'])) {
+            $errores[] = 'La fecha de nacimiento es requerida';
         } else {
-            $fecha = DateTime::createFromFormat('Y-m-d', $this->fechaNacimiento);
-            if (!$fecha || $fecha->format('Y-m-d') !== $this->fechaNacimiento) {
-                $errores[] = "La fecha de nacimiento no tiene un formato válido";
-            } elseif ($fecha > new DateTime()) {
-                $errores[] = "La fecha de nacimiento no puede ser futura";
+            try {
+                $fechaNac = new DateTime($datos['fechaNacimiento']);
+                $hoy = new DateTime();
+                
+                // Validar que no sea fecha futura
+                if ($fechaNac > $hoy) {
+                    $errores[] = 'La fecha de nacimiento no puede ser futura';
+                }
+                
+                // Validar edad mínima
+                if (!$this->validarEdadMinima($datos['fechaNacimiento'])) {
+                    $errores[] = 'El colaborador debe ser mayor de 18 años';
+                }
+                
+                // Validar edad máxima razonable (120 años)
+                $edadMaxima = $hoy->diff($fechaNac)->y;
+                if ($edadMaxima > 120) {
+                    $errores[] = 'Fecha de nacimiento no válida';
+                }
+                
+            } catch (Exception $e) {
+                $errores[] = 'Formato de fecha de nacimiento inválido';
             }
         }
-
+        
         // Validar rol
         $rolesValidos = ['Administrador', 'Colaborador', 'Usuario'];
-        if (empty($this->roles) || !in_array($this->roles, $rolesValidos)) {
-            $errores[] = "Debe seleccionar un rol válido";
+        if (empty($datos['roles']) || !in_array($datos['roles'], $rolesValidos)) {
+            $errores[] = 'Rol inválido';
         }
-
-        // Validar contraseña (solo en creación)
-        if (!empty($this->password) && strlen($this->password) < 6) {
-            $errores[] = "La contraseña debe tener al menos 6 caracteres";
+        
+        // Validar contraseña (solo para creación o si se proporciona)
+        if (!$esActualizacion || !empty($datos['password'])) {
+            if (empty($datos['password'])) {
+                $errores[] = 'La contraseña es requerida';
+            } elseif (strlen($datos['password']) < 6) {
+                $errores[] = 'La contraseña debe tener al menos 6 caracteres';
+            } elseif (strlen($datos['password']) > 255) {
+                $errores[] = 'La contraseña es demasiado larga';
+            }
         }
-
+        
         return $errores;
     }
-
-    // Subir foto de perfil
-    public function subirFoto($archivo) {
-        $directorioDestino = "../../public/uploads/fotos/";
-        $extensionesPermitidas = ['jpg', 'jpeg', 'png', 'gif'];
-        $tamañoMaximo = 2 * 1024 * 1024; // 2MB
-
-        // Crear directorio si no existe
-        if (!file_exists($directorioDestino)) {
-            mkdir($directorioDestino, 0755, true);
-        }
-
-        // Validar archivo
-        if ($archivo['error'] !== UPLOAD_ERR_OK) {
-            return ['success' => false, 'message' => 'Error al subir el archivo'];
-        }
-
-        if ($archivo['size'] > $tamañoMaximo) {
-            return ['success' => false, 'message' => 'El archivo es demasiado grande (máx. 2MB)'];
-        }
-
-        $extension = strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION));
-        if (!in_array($extension, $extensionesPermitidas)) {
-            return ['success' => false, 'message' => 'Formato de archivo no permitido'];
-        }
-
-        // Generar nombre único
-        $nombreArchivo = $this->numDocumento . '_' . time() . '.' . $extension;
-        $rutaCompleta = $directorioDestino . $nombreArchivo;
-
-        if (move_uploaded_file($archivo['tmp_name'], $rutaCompleta)) {
-            return ['success' => true, 'filename' => $nombreArchivo];
-        } else {
-            return ['success' => false, 'message' => 'Error al guardar el archivo'];
+    
+    /**
+     * Verificar si un colaborador puede ser eliminado
+     */
+    public function puedeEliminar($numDocumento) {
+        try {
+            $this->verificarConexion();
+            
+            if (empty($numDocumento)) {
+                return false;
+            }
+            
+            // Aquí puedes agregar lógica adicional para verificar dependencias
+            // Por ejemplo, verificar si tiene reservas, actividades, etc.
+            
+            // Ejemplo de verificación con otras tablas (descomenta y ajusta según tu BD):
+            /*
+            $sql = "SELECT COUNT(*) as count FROM reservas WHERE colaborador_documento = ?";
+            $stmt = $this->conexion->prepare($sql);
+            
+            if ($stmt) {
+                $stmt->bind_param("s", $numDocumento);
+                $stmt->execute();
+                $resultado = $stmt->get_result();
+                $row = $resultado->fetch_assoc();
+                
+                if ($row['count'] > 0) {
+                    return false; // Tiene reservas dependientes
+                }
+            }
+            */
+            
+            return true; // Por ahora permitir eliminar cualquier colaborador
+            
+        } catch (Exception $e) {
+            $this->logError('Error en puedeEliminar(): ' . $e->getMessage());
+            return false;
         }
     }
-
-    // Eliminar foto anterior
-    public function eliminarFoto($nombreArchivo) {
-        $rutaArchivo = "../../public/uploads/fotos/" . $nombreArchivo;
-        if (file_exists($rutaArchivo)) {
-            unlink($rutaArchivo);
+    
+    /**
+     * Función de logging de errores
+     */
+    private function logError($mensaje) {
+        $fecha = date('Y-m-d H:i:s');
+        $logMessage = "[$fecha] MisColaboradoresModel Error: $mensaje" . PHP_EOL;
+        
+        // Intentar escribir al log de PHP
+        error_log($logMessage);
+        
+        // También puedes escribir a un archivo específico si lo deseas
+        $logFile = '../../logs/colaboradores_errors.log';
+        $logDir = dirname($logFile);
+        
+        if (!file_exists($logDir)) {
+            @mkdir($logDir, 0755, true);
+        }
+        
+        @file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
+    }
+    
+    /**
+     * Contar colaboradores
+     */
+    public function contar() {
+        try {
+            $this->verificarConexion();
+            
+            $sql = "SELECT COUNT(*) as total FROM tp_usuarios";
+            $resultado = $this->conexion->query($sql);
+            
+            if (!$resultado) {
+                throw new Exception('Error al contar colaboradores: ' . $this->conexion->error);
+            }
+            
+            $row = $resultado->fetch_assoc();
+            
+            return ['success' => true, 'total' => (int)$row['total']];
+            
+        } catch (Exception $e) {
+            $this->logError('Error en contar(): ' . $e->getMessage());
+            return ['success' => false, 'message' => 'Error al contar colaboradores: ' . $e->getMessage()];
+        }
+    }
+    
+    /**
+     * Buscar colaboradores (alias para listar con búsqueda)
+     */
+    public function buscar($termino) {
+        $filtros = ['busqueda' => $termino];
+        return $this->listar($filtros);
+    }
+    
+    /**
+     * Obtener colaboradores por rol
+     */
+    public function obtenerPorRol($rol) {
+        $filtros = ['rol' => $rol];
+        return $this->listar($filtros);
+    }
+    
+    /**
+     * Verificar integridad de la base de datos
+     */
+    public function verificarIntegridad() {
+        try {
+            $this->verificarConexion();
+            
+            // Verificar estructura de tabla
+            $sql = "DESCRIBE tp_usuarios";
+            $resultado = $this->conexion->query($sql);
+            
+            if (!$resultado) {
+                return ['success' => false, 'message' => 'Error al verificar estructura de tabla'];
+            }
+            
+            return ['success' => true, 'message' => 'Integridad verificada'];
+            
+        } catch (Exception $e) {
+            $this->logError('Error en verificarIntegridad(): ' . $e->getMessage());
+            return ['success' => false, 'message' => 'Error al verificar integridad'];
         }
     }
 }
+?>

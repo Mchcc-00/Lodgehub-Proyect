@@ -1,386 +1,394 @@
 <?php
-session_start();
-header('Content-Type: application/json');
+/**
+ * Controlador de Colaboradores - CORREGIDO
+ * Maneja todas las peticiones relacionadas con la gestión de colaboradores
+ */
 
-// Incluir archivos necesarios
-require_once '../../config/conexionGlobal.php';
-require_once '/models/misColaboradoresModel.php';
+// Headers para JSON y CORS
+header('Content-Type: application/json; charset=utf-8');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
 
-// Instancia de la base de datos
-$db = conexionDB();
-$usuario = new Usuario($db);
+// Manejar preflight OPTIONS
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
-// Función para respuesta JSON
-function enviarRespuesta($success, $message, $data = null, $code = 200) {
-    http_response_code($code);
-    echo json_encode([
+// Función para responder con JSON válido
+function responderJSON($success, $message, $data = null, $codigo = 200) {
+    http_response_code($codigo);
+    $response = [
         'success' => $success,
         'message' => $message,
-        'data' => $data
-    ]);
-    exit;
+        'timestamp' => date('Y-m-d H:i:s')
+    ];
+    
+    if ($data !== null) {
+        $response['data'] = $data;
+    }
+    
+    echo json_encode($response, JSON_UNESCAPED_UNICODE);
+    exit();
 }
 
-// Verificar método de la petición
-$metodo = $_SERVER['REQUEST_METHOD'];
-$accion = isset($_GET['accion']) ? $_GET['accion'] : '';
+// Función para registrar errores
+function logError($error, $context = '') {
+    $logMessage = date('Y-m-d H:i:s') . " - ERROR: $error";
+    if ($context) {
+        $logMessage .= " - Context: $context";
+    }
+    error_log($logMessage);
+}
 
 try {
-    switch ($metodo) {
-        case 'POST':
-            if ($accion === 'crear') {
-                crearColaborador();
-            } elseif ($accion === 'actualizar') {
-                actualizarColaborador();
-            } elseif ($accion === 'cambiarPassword') {
-                cambiarPassword();
-            } else {
-                // Manejar formulario tradicional
-                if (isset($_POST['numDocumento'])) {
-                    crearColaborador();
-                } else {
-                    enviarRespuesta(false, "Acción no válida", null, 400);
-                }
-            }
-            break;
-
-        case 'GET':
-            if ($accion === 'listar') {
-                listarColaboradores();
-            } elseif ($accion === 'obtener') {
-                obtenerColaborador();
-            } elseif ($accion === 'verificarDocumento') {
-                verificarDocumento();
-            } elseif ($accion === 'verificarCorreo') {
-                verificarCorreo();
-            } else {
-                enviarRespuesta(false, "Acción no válida", null, 400);
-            }
-            break;
-
-        case 'DELETE':
-            if ($accion === 'eliminar') {
-                eliminarColaborador();
-            } else {
-                enviarRespuesta(false, "Acción no válida", null, 400);
-            }
-            break;
-
-        default:
-            enviarRespuesta(false, "Método no permitido", null, 405);
-    }
-
-} catch (Exception $e) {
-    enviarRespuesta(false, "Error interno del servidor: " . $e->getMessage(), null, 500);
-}
-
-// Función para crear colaborador
-function crearColaborador() {
-    global $usuario;
-
-    // Obtener datos del formulario
-    $usuario->numDocumento = $_POST['numDocumento'] ?? '';
-    $usuario->tipoDocumento = $_POST['tipoDocumento'] ?? '';
-    $usuario->nombres = $_POST['nombres'] ?? '';
-    $usuario->apellidos = $_POST['apellidos'] ?? '';
-    $usuario->numTelefono = $_POST['numTelefono'] ?? '';
-    $usuario->correo = $_POST['correo'] ?? '';
-    $usuario->sexo = $_POST['sexo'] ?? '';
-    $usuario->fechaNacimiento = $_POST['fechaNacimiento'] ?? '';
-    $usuario->password = $_POST['password'] ?? '';
-    $usuario->roles = $_POST['roles'] ?? '';
-    $usuario->solicitarContraseña = isset($_POST['solicitarContraseña']) ? '1' : '0';
-
-    // Validar datos
-    $errores = $usuario->validar();
-
-    // Validar confirmación de contraseña
-    $confirmarPassword = $_POST['confirmarPassword'] ?? '';
-    if ($usuario->password !== $confirmarPassword) {
-        $errores[] = "Las contraseñas no coinciden";
-    }
-
-    // Verificar si el documento ya existe
-    if ($usuario->existeDocumento($usuario->numDocumento)) {
-        $errores[] = "Ya existe un colaborador con este número de documento";
-    }
-
-    // Verificar si el correo ya existe
-    if ($usuario->existeCorreo($usuario->correo)) {
-        $errores[] = "Ya existe un colaborador con este correo electrónico";
-    }
-
-    if (!empty($errores)) {
-        enviarRespuesta(false, implode(', ', $errores), null, 422);
-    }
-
-    // Procesar foto si se subió una nueva
-    if (isset($_FILES['foto']) && $_FILES['foto']['error'] !== UPLOAD_ERR_NO_FILE) {
-        // Obtener foto anterior para eliminarla
-        $usuarioAnterior = new Usuario($GLOBALS['db']);
-        $usuarioAnterior->numDocumento = $documentoOriginal;
-        if ($usuarioAnterior->leerUno() && !empty($usuarioAnterior->foto)) {
-            $usuario->eliminarFoto($usuarioAnterior->foto);
-        }
-
-        $resultadoFoto = $usuario->subirFoto($_FILES['foto']);
-        if ($resultadoFoto['success']) {
-            $usuario->foto = $resultadoFoto['filename'];
-        } else {
-            enviarRespuesta(false, $resultadoFoto['message'], null, 422);
-        }
-    }
-
-    // Actualizar colaborador
-    if ($usuario->actualizar()) {
-        enviarRespuesta(true, "Colaborador actualizado exitosamente", [
-            'documento' => $usuario->numDocumento,
-            'nombres' => $usuario->nombres,
-            'apellidos' => $usuario->apellidos
-        ]);
-    } else {
-        enviarRespuesta(false, "Error al actualizar el colaborador", null, 500);
-    }
-}
-
-// Función para eliminar colaborador
-function eliminarColaborador() {
-    global $usuario;
-
-    // Obtener documento del body (método DELETE)
-    $input = json_decode(file_get_contents('php://input'), true);
-    $documento = $input['documento'] ?? '';
-
-    if (empty($documento)) {
-        enviarRespuesta(false, "Documento requerido", null, 400);
-    }
-
-    $usuario->numDocumento = $documento;
-
-    // Obtener datos del colaborador antes de eliminar (para eliminar foto)
-    if ($usuario->leerUno() && !empty($usuario->foto)) {
-        $usuario->eliminarFoto($usuario->foto);
-    }
-
-    // Eliminar colaborador
-    $usuario->numDocumento = $documento;
-    if ($usuario->eliminar()) {
-        enviarRespuesta(true, "Colaborador eliminado exitosamente");
-    } else {
-        enviarRespuesta(false, "Error al eliminar el colaborador", null, 500);
-    }
-}
-
-// Función para cambiar contraseña
-function cambiarPassword() {
-    global $usuario;
-
-    $documento = $_POST['documento'] ?? '';
-    $nuevaPassword = $_POST['nueva_password'] ?? '';
-    $confirmarPassword = $_POST['confirmar_password'] ?? '';
-    $solicitarCambio = isset($_POST['solicitar_cambio']) ? '1' : '0';
-
-    if (empty($documento) || empty($nuevaPassword) || empty($confirmarPassword)) {
-        enviarRespuesta(false, "Todos los campos son obligatorios", null, 400);
-    }
-
-    if (strlen($nuevaPassword) < 6) {
-        enviarRespuesta(false, "La contraseña debe tener al menos 6 caracteres", null, 422);
-    }
-
-    if ($nuevaPassword !== $confirmarPassword) {
-        enviarRespuesta(false, "Las contraseñas no coinciden", null, 422);
-    }
-
-    $usuario->numDocumento = $documento;
-    $usuario->password = $nuevaPassword;
-    $usuario->solicitarContraseña = $solicitarCambio;
-
-    if ($usuario->cambiarPassword()) {
-        enviarRespuesta(true, "Contraseña cambiada exitosamente");
-    } else {
-        enviarRespuesta(false, "Error al cambiar la contraseña", null, 500);
-    }
-}
-
-// Función para verificar si existe un documento
-function verificarDocumento() {
-    global $usuario;
-
-    $documento = $_GET['documento'] ?? '';
-    $documentoOriginal = $_GET['documentoOriginal'] ?? null;
-
-    if (empty($documento)) {
-        enviarRespuesta(false, "Documento requerido", null, 400);
-    }
-
-    $existe = $usuario->existeDocumento($documento, $documentoOriginal);
+    // Incluir el modelo
+    require_once '../models/MisColaboradoresModel.php';
     
-    enviarRespuesta(true, $existe ? "Documento ya existe" : "Documento disponible", [
-        'existe' => $existe
-    ]);
-}
-
-// Función para verificar si existe un correo
-function verificarCorreo() {
-    global $usuario;
-
-    $correo = $_GET['correo'] ?? '';
-    $documentoOriginal = $_GET['documentoOriginal'] ?? null;
-
-    if (empty($correo)) {
-        enviarRespuesta(false, "Correo requerido", null, 400);
-    }
-
-    if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
-        enviarRespuesta(false, "Formato de correo inválido", null, 422);
-    }
-
-    $existe = $usuario->existeCorreo($correo, $documentoOriginal);
-    
-    enviarRespuesta(true, $existe ? "Correo ya existe" : "Correo disponible", [
-        'existe' => $existe
-    ]);
-}
-
-// Manejo de errores específicos
-function manejarErrores() {
-    if (error_get_last()) {
-        $error = error_get_last();
-        enviarRespuesta(false, "Error del servidor: " . $error['message'], null, 500);
-    }
-}
-
-register_shutdown_function('manejarErrores');
-?>// Procesar foto si se subió
-    $usuario->foto = null;
-    if (isset($_FILES['foto']) && $_FILES['foto']['error'] !== UPLOAD_ERR_NO_FILE) {
-        $resultadoFoto = $usuario->subirFoto($_FILES['foto']);
-        if ($resultadoFoto['success']) {
-            $usuario->foto = $resultadoFoto['filename'];
-        } else {
-            enviarRespuesta(false, $resultadoFoto['message'], null, 422);
-        }
-    }
-
-    // Crear colaborador
-    if ($usuario->crear()) {
-        enviarRespuesta(true, "Colaborador creado exitosamente", [
-            'documento' => $usuario->numDocumento,
-            'nombres' => $usuario->nombres,
-            'apellidos' => $usuario->apellidos
-        ]);
-    } else {
-        enviarRespuesta(false, "Error al crear el colaborador", null, 500);
-    }
-}
-
-// Función para listar colaboradores
-function listarColaboradores() {
-    global $usuario;
-
-    // Parámetros de paginación
-    $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
-    $porPagina = isset($_GET['porPagina']) ? (int)$_GET['porPagina'] : 10;
-    $offset = ($pagina - 1) * $porPagina;
-
-    // Parámetros de búsqueda y filtro
-    $busqueda = isset($_GET['busqueda']) ? trim($_GET['busqueda']) : '';
-    $filtro = isset($_GET['filtro']) ? $_GET['filtro'] : 'all';
-    $valorFiltro = isset($_GET['valorFiltro']) ? $_GET['valorFiltro'] : '';
-
-    // Obtener colaboradores
-    $stmt = $usuario->leer($offset, $porPagina, $busqueda, $filtro, $valorFiltro);
-    $colaboradores = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Obtener total para paginación
-    $total = $usuario->contarTotal($busqueda, $filtro, $valorFiltro);
-    $totalPaginas = ceil($total / $porPagina);
-
-    enviarRespuesta(true, "Colaboradores obtenidos exitosamente", [
-        'colaboradores' => $colaboradores,
-        'paginacion' => [
-            'paginaActual' => $pagina,
-            'totalPaginas' => $totalPaginas,
-            'total' => $total,
-            'porPagina' => $porPagina
-        ]
-    ]);
-}
-
-// Función para obtener un colaborador específico
-function obtenerColaborador() {
-    global $usuario;
-
-    $documento = $_GET['documento'] ?? '';
-    
-    if (empty($documento)) {
-        enviarRespuesta(false, "Documento requerido", null, 400);
-    }
-
-    $usuario->numDocumento = $documento;
-    
-    if ($usuario->leerUno()) {
-        // No incluir la contraseña en la respuesta
-        $datosColaborador = [
-            'numDocumento' => $usuario->numDocumento,
-            'tipoDocumento' => $usuario->tipoDocumento,
-            'nombres' => $usuario->nombres,
-            'apellidos' => $usuario->apellidos,
-            'numTelefono' => $usuario->numTelefono,
-            'correo' => $usuario->correo,
-            'sexo' => $usuario->sexo,
-            'fechaNacimiento' => $usuario->fechaNacimiento,
-            'foto' => $usuario->foto,
-            'solicitarContraseña' => $usuario->solicitarContraseña,
-            'sesionCaducada' => $usuario->sesionCaducada,
-            'roles' => $usuario->roles
-        ];
+    class ColaboradorController {
+        private $colaboradorModel;
         
-        enviarRespuesta(true, "Colaborador encontrado", $datosColaborador);
-    } else {
-        enviarRespuesta(false, "Colaborador no encontrado", null, 404);
-    }
-}
-
-// Función para actualizar colaborador
-function actualizarColaborador() {
-    global $usuario;
-
-    // Obtener datos
-    $documentoOriginal = $_POST['documento_original'] ?? '';
-    $usuario->numDocumento = $documentoOriginal; // Para la actualización usamos el documento original
-    $usuario->tipoDocumento = $_POST['tipoDocumento'] ?? '';
-    $usuario->nombres = $_POST['nombres'] ?? '';
-    $usuario->apellidos = $_POST['apellidos'] ?? '';
-    $usuario->numTelefono = $_POST['numTelefono'] ?? '';
-    $usuario->correo = $_POST['correo'] ?? '';
-    $usuario->sexo = $_POST['sexo'] ?? '';
-    $usuario->fechaNacimiento = $_POST['fechaNacimiento'] ?? '';
-    $usuario->roles = $_POST['roles'] ?? '';
-    $usuario->password = $_POST['password'] ?? '';
-    $usuario->solicitarContraseña = $_POST['solicitarContraseña'] ?? '0';
-
-    if (empty($documentoOriginal)) {
-        enviarRespuesta(false, "Documento original requerido", null, 400);
-    }
-
-    // Validar datos básicos
-    $errores = $usuario->validar();
-
-    // Si se está cambiando el número de documento, verificar que no exista
-    $nuevoDocumento = $_POST['numDocumento'] ?? '';
-    if ($nuevoDocumento !== $documentoOriginal) {
-        if ($usuario->existeDocumento($nuevoDocumento)) {
-            $errores[] = "Ya existe un colaborador con este número de documento";
+        public function __construct() {
+            try {
+                $this->colaboradorModel = new Colaborador();
+            } catch (Exception $e) {
+                logError("Error al inicializar modelo: " . $e->getMessage());
+                responderJSON(false, "Error de conexión con la base de datos", null, 500);
+            }
+        }
+        
+        public function manejarPeticion() {
+            try {
+                $action = $this->obtenerAccion();
+                
+                switch ($action) {
+                    case 'crear':
+                        $this->crear();
+                        break;
+                    
+                    case 'listar':
+                        $this->listar();
+                        break;
+                    
+                    case 'obtener':
+                        $this->obtener();
+                        break;
+                    
+                    case 'actualizar':
+                        $this->actualizar();
+                        break;
+                    
+                    case 'eliminar':
+                        $this->eliminar();
+                        break;
+                    
+                    case 'cambiarPassword':
+                        $this->cambiarPassword();
+                        break;
+                    
+                    case 'checkDocumento':
+                        $this->checkDocumento();
+                        break;
+                    
+                    case 'checkEmail':
+                        $this->checkEmail();
+                        break;
+                    
+                    case 'estadisticas':
+                        $this->estadisticas();
+                        break;
+                    
+                    default:
+                        responderJSON(false, 'Acción no válida: ' . $action, null, 400);
+                        break;
+                }
+            } catch (Exception $e) {
+                logError($e->getMessage(), 'manejarPeticion');
+                responderJSON(false, 'Error del servidor', null, 500);
+            }
+        }
+        
+        private function crear() {
+            try {
+                if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                    responderJSON(false, 'Método no permitido', null, 405);
+                }
+                
+                $datos = $this->obtenerDatosFormulario();
+                
+                // Validar datos básicos
+                if (empty($datos['numDocumento']) || empty($datos['correo'])) {
+                    responderJSON(false, 'Documento y correo son requeridos', null, 400);
+                }
+                
+                $errores = $this->colaboradorModel->validarDatos($datos);
+                if (!empty($errores)) {
+                    responderJSON(false, implode(', ', $errores), null, 400);
+                }
+                
+                // Manejar archivo de foto
+                if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+                    $datos['foto'] = $_FILES['foto'];
+                }
+                
+                $resultado = $this->colaboradorModel->crear($datos);
+                
+                if ($resultado['success']) {
+                    responderJSON(true, $resultado['message'], null, 201);
+                } else {
+                    responderJSON(false, $resultado['message'], null, 400);
+                }
+                
+            } catch (Exception $e) {
+                logError($e->getMessage(), 'crear');
+                responderJSON(false, 'Error al crear colaborador', null, 500);
+            }
+        }
+        
+        private function listar() {
+            try {
+                $filtros = [
+                    'busqueda' => $_GET['busqueda'] ?? '',
+                    'rol' => $_GET['rol'] ?? 'all',
+                    'tipoDocumento' => $_GET['tipoDocumento'] ?? 'all',
+                    'sexo' => $_GET['sexo'] ?? 'all'
+                ];
+                
+                $resultado = $this->colaboradorModel->listar($filtros);
+                
+                if ($resultado['success']) {
+                    responderJSON(true, 'Colaboradores obtenidos', $resultado['data']);
+                } else {
+                    responderJSON(false, $resultado['message'], null, 500);
+                }
+                
+            } catch (Exception $e) {
+                logError($e->getMessage(), 'listar');
+                responderJSON(false, 'Error al listar colaboradores', null, 500);
+            }
+        }
+        
+        private function obtener() {
+            try {
+                $documento = $_GET['documento'] ?? $_POST['documento'] ?? '';
+                
+                if (empty($documento)) {
+                    responderJSON(false, 'Documento requerido', null, 400);
+                }
+                
+                $resultado = $this->colaboradorModel->obtenerPorDocumento($documento);
+                
+                if ($resultado['success']) {
+                    responderJSON(true, 'Colaborador obtenido', $resultado['data']);
+                } else {
+                    responderJSON(false, $resultado['message'], null, 404);
+                }
+                
+            } catch (Exception $e) {
+                logError($e->getMessage(), 'obtener');
+                responderJSON(false, 'Error al obtener colaborador', null, 500);
+            }
+        }
+        
+        private function checkDocumento() {
+            try {
+                $documento = $_POST['numDocumento'] ?? $_GET['numDocumento'] ?? '';
+                
+                if (empty($documento)) {
+                    responderJSON(false, 'Documento requerido', null, 400);
+                }
+                
+                $existe = $this->colaboradorModel->existeDocumento($documento);
+                responderJSON(true, 'Verificación completada', ['exists' => $existe]);
+                
+            } catch (Exception $e) {
+                logError($e->getMessage(), 'checkDocumento - doc: ' . ($documento ?? 'null'));
+                responderJSON(false, 'Error al verificar documento', null, 500);
+            }
+        }
+        
+        private function checkEmail() {
+            try {
+                $correo = $_POST['correo'] ?? $_GET['correo'] ?? '';
+                
+                if (empty($correo)) {
+                    responderJSON(false, 'Correo requerido', null, 400);
+                }
+                
+                if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+                    responderJSON(false, 'Formato de correo inválido', null, 400);
+                }
+                
+                $existe = $this->colaboradorModel->existeCorreo($correo);
+                responderJSON(true, 'Verificación completada', ['exists' => $existe]);
+                
+            } catch (Exception $e) {
+                logError($e->getMessage(), 'checkEmail - email: ' . ($correo ?? 'null'));
+                responderJSON(false, 'Error al verificar correo', null, 500);
+            }
+        }
+        
+        private function actualizar() {
+            try {
+                if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                    responderJSON(false, 'Método no permitido', null, 405);
+                }
+                
+                $input = file_get_contents('php://input');
+                $datos = json_decode($input, true);
+                
+                if (!$datos) {
+                    responderJSON(false, 'Datos JSON inválidos', null, 400);
+                }
+                
+                $documentoOriginal = $datos['documentoOriginal'] ?? '';
+                unset($datos['documentoOriginal']);
+                
+                if (empty($documentoOriginal)) {
+                    responderJSON(false, 'Documento original requerido', null, 400);
+                }
+                
+                $errores = $this->colaboradorModel->validarDatos($datos, true);
+                if (!empty($errores)) {
+                    responderJSON(false, implode(', ', $errores), null, 400);
+                }
+                
+                $resultado = $this->colaboradorModel->actualizar($documentoOriginal, $datos);
+                
+                if ($resultado['success']) {
+                    responderJSON(true, $resultado['message']);
+                } else {
+                    responderJSON(false, $resultado['message'], null, 400);
+                }
+                
+            } catch (Exception $e) {
+                logError($e->getMessage(), 'actualizar');
+                responderJSON(false, 'Error al actualizar colaborador', null, 500);
+            }
+        }
+        
+        private function eliminar() {
+            try {
+                if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                    responderJSON(false, 'Método no permitido', null, 405);
+                }
+                
+                $input = file_get_contents('php://input');
+                $datos = json_decode($input, true);
+                
+                $documento = $datos['documento'] ?? '';
+                
+                if (empty($documento)) {
+                    responderJSON(false, 'Documento requerido', null, 400);
+                }
+                
+                if (!$this->colaboradorModel->puedeEliminar($documento)) {
+                    responderJSON(false, 'No se puede eliminar este colaborador', null, 400);
+                }
+                
+                $resultado = $this->colaboradorModel->eliminar($documento);
+                
+                if ($resultado['success']) {
+                    responderJSON(true, $resultado['message']);
+                } else {
+                    responderJSON(false, $resultado['message'], null, 400);
+                }
+                
+            } catch (Exception $e) {
+                logError($e->getMessage(), 'eliminar');
+                responderJSON(false, 'Error al eliminar colaborador', null, 500);
+            }
+        }
+        
+        private function cambiarPassword() {
+            try {
+                if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                    responderJSON(false, 'Método no permitido', null, 405);
+                }
+                
+                $input = file_get_contents('php://input');
+                $datos = json_decode($input, true);
+                
+                $documento = $datos['documento'] ?? '';
+                $nuevaPassword = $datos['nuevaPassword'] ?? '';
+                $solicitarCambio = isset($datos['solicitarCambio']) ? $datos['solicitarCambio'] : false;
+                
+                if (empty($documento) || empty($nuevaPassword)) {
+                    responderJSON(false, 'Documento y nueva contraseña son requeridos', null, 400);
+                }
+                
+                if (strlen($nuevaPassword) < 6) {
+                    responderJSON(false, 'La contraseña debe tener al menos 6 caracteres', null, 400);
+                }
+                
+                $resultado = $this->colaboradorModel->cambiarPassword($documento, $nuevaPassword, $solicitarCambio);
+                
+                if ($resultado['success']) {
+                    responderJSON(true, $resultado['message']);
+                } else {
+                    responderJSON(false, $resultado['message'], null, 400);
+                }
+                
+            } catch (Exception $e) {
+                logError($e->getMessage(), 'cambiarPassword');
+                responderJSON(false, 'Error al cambiar contraseña', null, 500);
+            }
+        }
+        
+        private function estadisticas() {
+            try {
+                $resultado = $this->colaboradorModel->obtenerEstadisticas();
+                
+                if ($resultado['success']) {
+                    responderJSON(true, 'Estadísticas obtenidas', $resultado['data']);
+                } else {
+                    responderJSON(false, $resultado['message'], null, 500);
+                }
+                
+            } catch (Exception $e) {
+                logError($e->getMessage(), 'estadisticas');
+                responderJSON(false, 'Error al obtener estadísticas', null, 500);
+            }
+        }
+        
+        private function obtenerAccion() {
+            return $_POST['action'] ?? $_GET['action'] ?? 'listar';
+        }
+        
+        private function obtenerDatosFormulario() {
+            return [
+                'numDocumento' => $this->limpiarInput($_POST['numDocumento'] ?? ''),
+                'tipoDocumento' => $this->limpiarInput($_POST['tipoDocumento'] ?? ''),
+                'nombres' => $this->limpiarInput($_POST['nombres'] ?? ''),
+                'apellidos' => $this->limpiarInput($_POST['apellidos'] ?? ''),
+                'numTelefono' => $this->limpiarInput($_POST['numTelefono'] ?? ''),
+                'correo' => $this->limpiarInput($_POST['correo'] ?? ''),
+                'sexo' => $this->limpiarInput($_POST['sexo'] ?? ''),
+                'fechaNacimiento' => $this->limpiarInput($_POST['fechaNacimiento'] ?? ''),
+                'password' => $_POST['password'] ?? '',
+                'roles' => $this->limpiarInput($_POST['roles'] ?? ''),
+                'solicitarContraseña' => isset($_POST['solicitarContraseña'])
+            ];
+        }
+        
+        private function limpiarInput($input) {
+            return htmlspecialchars(trim($input), ENT_QUOTES, 'UTF-8');
         }
     }
-
-    // Verificar correo (excluyendo el colaborador actual)
-    if ($usuario->existeCorreo($usuario->correo, $documentoOriginal)) {
-        $errores[] = "Ya existe un colaborador con este correo electrónico";
+    
+    // Ejecutar el controlador solo si se accede directamente
+    if (basename($_SERVER['PHP_SELF']) == 'misColaboradoresControllers.php') {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        $controller = new ColaboradorController();
+        $controller->manejarPeticion();
     }
-
-    if (!empty($errores)) {
-        enviarRespuesta(false, implode(', ', $errores), null, 422);
-    }
+    
+} catch (Exception $e) {
+    logError("Error crítico: " . $e->getMessage(), 'main');
+    responderJSON(false, 'Error crítico del servidor', null, 500);
+}
+?>

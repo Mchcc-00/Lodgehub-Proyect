@@ -1,3 +1,5 @@
+// listarColaboradores.js - Script mejorado para la gestión de colaboradores
+
 // Variables globales
 let colaboradores = [];
 let colaboradoresFiltrados = [];
@@ -5,51 +7,100 @@ let paginaActual = 1;
 const itemsPorPagina = 10;
 let filtroActual = 'all';
 let busquedaActual = '';
+let documentoSeleccionado = '';
 
-// DOM Elements
-const tabla = document.getElementById('tabla-colaboradores');
-const buscarInput = document.getElementById('buscar-input');
-const buscarBtn = document.getElementById('buscar-btn');
-const refreshBtn = document.getElementById('refresh-btn');
-const paginacionContainer = document.getElementById('paginacion-container');
-const paginacion = document.getElementById('paginacion');
+// Referencias DOM
+const elementos = {
+    tabla: document.getElementById('tabla-colaboradores'),
+    buscarInput: document.getElementById('buscar-input'),
+    buscarBtn: document.getElementById('buscar-btn'),
+    refreshBtn: document.getElementById('refresh-btn'),
+    paginacionContainer: document.getElementById('paginacion-container'),
+    paginacion: document.getElementById('paginacion'),
+    successMessage: document.getElementById('success-message'),
+    errorMessage: document.getElementById('error-message'),
+    successText: document.getElementById('success-text'),
+    errorText: document.getElementById('error-text')
+};
 
-// Messages
-const successMessage = document.getElementById('success-message');
-const errorMessage = document.getElementById('error-message');
-const successText = document.getElementById('success-text');
-const errorText = document.getElementById('error-text');
-
-// Modales
-const editarModal = new bootstrap.Modal(document.getElementById('editarModal'));
-const verModal = new bootstrap.Modal(document.getElementById('verModal'));
-const eliminarModal = new bootstrap.Modal(document.getElementById('eliminarModal'));
-const cambiarPasswordModal = new bootstrap.Modal(document.getElementById('cambiarPasswordModal'));
+// Instancias de modales
+let modales = {};
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', function() {
-    cargarColaboradores();
-    configurarEventos();
+    initializeApp();
 });
 
-// Configurar eventos
-function configurarEventos() {
-    // Búsqueda
-    buscarBtn.addEventListener('click', buscarColaboradores);
-    buscarInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            buscarColaboradores();
+function initializeApp() {
+    // Verificar elementos DOM críticos
+    if (!verificarElementosDOM()) {
+        console.error('Elementos DOM críticos no encontrados');
+        return;
+    }
+    
+    // Inicializar modales
+    inicializarModales();
+    
+    // Configurar eventos
+    configurarEventos();
+    
+    // Cargar datos iniciales
+    cargarColaboradores();
+    
+    // Restaurar estado de búsqueda
+    restaurarEstadoBusqueda();
+    
+    console.log('Aplicación de colaboradores inicializada');
+}
+
+function verificarElementosDOM() {
+    const elementosRequeridos = ['tabla', 'buscarInput', 'refreshBtn'];
+    return elementosRequeridos.every(el => elementos[el] !== null);
+}
+
+function inicializarModales() {
+    const modalElements = [
+        'editarModal',
+        'verModal', 
+        'eliminarModal',
+        'cambiarPasswordModal'
+    ];
+    
+    modalElements.forEach(modalId => {
+        const modalElement = document.getElementById(modalId);
+        if (modalElement) {
+            modales[modalId] = new bootstrap.Modal(modalElement);
         }
     });
+}
+
+function configurarEventos() {
+    // Búsqueda
+    if (elementos.buscarBtn) {
+        elementos.buscarBtn.addEventListener('click', buscarColaboradores);
+    }
+    
+    if (elementos.buscarInput) {
+        elementos.buscarInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                buscarColaboradores();
+            }
+        });
+        
+        // Búsqueda en tiempo real con debounce
+        elementos.buscarInput.addEventListener('input', debounce(function() {
+            busquedaActual = this.value.trim().toLowerCase();
+            aplicarFiltros();
+            guardarEstadoBusqueda();
+        }, 300));
+    }
 
     // Refresh
-    refreshBtn.addEventListener('click', function() {
-        cargarColaboradores();
-        busquedaActual = '';
-        filtroActual = 'all';
-        buscarInput.value = '';
-        mostrarMensaje('success', 'Datos actualizados correctamente');
-    });
+    if (elementos.refreshBtn) {
+        elementos.refreshBtn.addEventListener('click', function() {
+            refreshData();
+        });
+    }
 
     // Filtros
     document.querySelectorAll('.filter-option').forEach(option => {
@@ -57,108 +108,138 @@ function configurarEventos() {
             e.preventDefault();
             filtroActual = this.dataset.filter;
             aplicarFiltros();
+            guardarEstadoBusqueda();
+            
+            // Actualizar UI del filtro activo
+            document.querySelectorAll('.filter-option').forEach(opt => opt.classList.remove('active'));
+            this.classList.add('active');
         });
     });
 
-    // Editar colaborador
-    document.getElementById('guardar-edicion').addEventListener('click', guardarEdicion);
-
-    // Eliminar colaborador
-    document.getElementById('confirmar-eliminacion').addEventListener('click', confirmarEliminacion);
-
-    // Cambiar contraseña
-    document.getElementById('guardar-password').addEventListener('click', cambiarPassword);
-
-    // Validación de contraseñas
-    document.getElementById('confirmar-password').addEventListener('input', validarPasswords);
+    // Eventos de modales
+    setupModalEvents();
+    
+    // Atajos de teclado
+    setupKeyboardShortcuts();
 }
 
-// Cargar colaboradores desde el servidor
+function setupModalEvents() {
+    // Guardar edición
+    const guardarEdicionBtn = document.getElementById('guardar-edicion');
+    if (guardarEdicionBtn) {
+        guardarEdicionBtn.addEventListener('click', guardarEdicion);
+    }
+
+    // Confirmar eliminación
+    const confirmarEliminacionBtn = document.getElementById('confirmar-eliminacion');
+    if (confirmarEliminacionBtn) {
+        confirmarEliminacionBtn.addEventListener('click', confirmarEliminacion);
+    }
+
+    // Cambiar contraseña
+    const guardarPasswordBtn = document.getElementById('guardar-password');
+    if (guardarPasswordBtn) {
+        guardarPasswordBtn.addEventListener('click', cambiarPassword);
+    }
+
+    // Validación de contraseñas en modal
+    const confirmarPasswordModal = document.getElementById('confirmar-password');
+    if (confirmarPasswordModal) {
+        confirmarPasswordModal.addEventListener('input', validarPasswordsModal);
+    }
+}
+
+function setupKeyboardShortcuts() {
+    document.addEventListener('keydown', function(e) {
+        // Ctrl + F para enfocar búsqueda
+        if (e.ctrlKey && e.key === 'f') {
+            e.preventDefault();
+            if (elementos.buscarInput) {
+                elementos.buscarInput.focus();
+                elementos.buscarInput.select();
+            }
+        }
+        
+        // F5 o Ctrl + R para actualizar
+        if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
+            e.preventDefault();
+            refreshData();
+        }
+        
+        // Escape para cerrar modales
+        if (e.key === 'Escape') {
+            Object.values(modales).forEach(modal => {
+                if (modal._element && modal._element.classList.contains('show')) {
+                    modal.hide();
+                }
+            });
+        }
+    });
+}
+
+// Funciones principales de datos
 async function cargarColaboradores() {
     try {
         mostrarCargando(true);
         
-        // Simulación de carga de datos (reemplazar con llamada real al backend)
-        const response = await fetch('../../backend/controllers/colaboradoresController.php?action=listar');
+        const url = '../controllers/colaboradorController.php?action=listar';
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        });
         
         if (!response.ok) {
-            throw new Error('Error al cargar colaboradores');
+            throw new Error(`Error HTTP: ${response.status}`);
         }
         
-        colaboradores = await response.json();
+        const resultado = await response.json();
         
-        // Datos de ejemplo para desarrollo
-        if (!colaboradores || colaboradores.length === 0) {
-            colaboradores = [
-                {
-                    numDocumento: '12345678',
-                    tipoDocumento: 'Cédula de Ciudadanía',
-                    nombres: 'Juan Carlos',
-                    apellidos: 'González Pérez',
-                    correo: 'juan.gonzalez@lodgehub.com',
-                    numTelefono: '3001234567',
-                    sexo: 'Hombre',
-                    fechaNacimiento: '1985-03-15',
-                    roles: 'Administrador',
-                    fechaCreacion: '2024-01-15'
-                },
-                {
-                    numDocumento: '87654321',
-                    tipoDocumento: 'Cédula de Ciudadanía',
-                    nombres: 'María Elena',
-                    apellidos: 'Rodríguez Silva',
-                    correo: 'maria.rodriguez@lodgehub.com',
-                    numTelefono: '3007654321',
-                    sexo: 'Mujer',
-                    fechaNacimiento: '1990-07-22',
-                    roles: 'Colaborador',
-                    fechaCreacion: '2024-02-10'
-                },
-                {
-                    numDocumento: 'CE1234567',
-                    tipoDocumento: 'Cedula de Extranjeria',
-                    nombres: 'Luis Alberto',
-                    apellidos: 'Martínez López',
-                    correo: 'luis.martinez@lodgehub.com',
-                    numTelefono: '3009876543',
-                    sexo: 'Hombre',
-                    fechaNacimiento: '1988-11-08',
-                    roles: 'Usuario',
-                    fechaCreacion: '2024-03-05'
-                }
-            ];
+        if (resultado.success) {
+            colaboradores = resultado.data || [];
+            colaboradoresFiltrados = [...colaboradores];
+            mostrarColaboradores();
+            mostrarMensaje('success', `${colaboradores.length} colaboradores cargados`);
+        } else {
+            throw new Error(resultado.message || 'Error al cargar colaboradores');
         }
-        
-        colaboradoresFiltrados = [...colaboradores];
-        mostrarColaboradores();
         
     } catch (error) {
-        console.error('Error:', error);
-        mostrarMensaje('error', 'Error al cargar los colaboradores: ' + error.message);
+        console.error('Error al cargar colaboradores:', error);
+        mostrarMensaje('error', 'Error al cargar colaboradores: ' + error.message);
+        mostrarColaboradoresVacio('Error al cargar datos');
+    } finally {
         mostrarCargando(false);
     }
 }
 
-// Mostrar estado de carga
-function mostrarCargando(mostrar) {
-    if (mostrar) {
-        tabla.innerHTML = `
-            <tr>
-                <td colspan="10" class="loading">
-                    <i class="fas fa-spinner fa-spin"></i> Cargando colaboradores...
-                </td>
-            </tr>
-        `;
+function refreshData() {
+    // Limpiar filtros y búsqueda
+    busquedaActual = '';
+    filtroActual = 'all';
+    paginaActual = 1;
+    
+    if (elementos.buscarInput) {
+        elementos.buscarInput.value = '';
+    }
+    
+    // Limpiar estado guardado
+    sessionStorage.removeItem('colaboradores_estado');
+    
+    // Recargar datos
+    cargarColaboradores();
+}
+
+function buscarColaboradores() {
+    if (elementos.buscarInput) {
+        busquedaActual = elementos.buscarInput.value.trim().toLowerCase();
+        aplicarFiltros();
+        guardarEstadoBusqueda();
     }
 }
 
-// Buscar colaboradores
-function buscarColaboradores() {
-    busquedaActual = buscarInput.value.trim().toLowerCase();
-    aplicarFiltros();
-}
-
-// Aplicar filtros y búsqueda
 function aplicarFiltros() {
     colaboradoresFiltrados = colaboradores.filter(colaborador => {
         // Filtro de búsqueda
@@ -166,7 +247,8 @@ function aplicarFiltros() {
             colaborador.numDocumento.toLowerCase().includes(busquedaActual) ||
             colaborador.nombres.toLowerCase().includes(busquedaActual) ||
             colaborador.apellidos.toLowerCase().includes(busquedaActual) ||
-            colaborador.correo.toLowerCase().includes(busquedaActual);
+            colaborador.correo.toLowerCase().includes(busquedaActual) ||
+            (colaborador.nombres + ' ' + colaborador.apellidos).toLowerCase().includes(busquedaActual);
 
         // Filtro por categoría
         const coincideFiltro = filtroActual === 'all' ||
@@ -181,17 +263,12 @@ function aplicarFiltros() {
     mostrarColaboradores();
 }
 
-// Mostrar colaboradores en la tabla
+// Funciones de visualización
 function mostrarColaboradores() {
+    if (!elementos.tabla) return;
+    
     if (colaboradoresFiltrados.length === 0) {
-        tabla.innerHTML = `
-            <tr>
-                <td colspan="10" class="no-data">
-                    <i class="fas fa-users"></i> No se encontraron colaboradores
-                </td>
-            </tr>
-        `;
-        paginacionContainer.style.display = 'none';
+        mostrarColaboradoresVacio();
         return;
     }
 
@@ -199,101 +276,254 @@ function mostrarColaboradores() {
     const fin = inicio + itemsPorPagina;
     const colaboradoresPagina = colaboradoresFiltrados.slice(inicio, fin);
 
-    tabla.innerHTML = colaboradoresPagina.map(colaborador => `
-        <tr data-documento="${colaborador.numDocumento}">
-            <td><strong>${colaborador.numDocumento}</strong></td>
-            <td>${colaborador.tipoDocumento}</td>
-            <td>${colaborador.nombres}</td>
-            <td>${colaborador.apellidos}</td>
-            <td>${colaborador.correo}</td>
-            <td>${colaborador.numTelefono}</td>
-            <td>${colaborador.sexo}</td>
-            <td>${formatearFecha(colaborador.fechaNacimiento)}</td>
-            <td>
+    elementos.tabla.innerHTML = colaboradoresPagina.map(colaborador => 
+        generarFilaColaborador(colaborador)
+    ).join('');
+
+    configurarPaginacion();
+    
+    // Mostrar información de resultados
+    mostrarInfoResultados();
+}
+
+function generarFilaColaborador(colaborador) {
+    const edad = calcularEdad(colaborador.fechaNacimiento);
+    const fotoUrl = colaborador.foto ? 
+        `../../public/${colaborador.foto}` : 
+        '../../public/assets/images/default-user.png';
+    
+    return `
+        <tr data-documento="${colaborador.numDocumento}" class="colaborador-row">
+            <td data-label="Documento">
+                <div class="colaborador-info">
+                    <img src="${fotoUrl}" alt="Foto" class="colaborador-foto" onerror="this.src='../../public/assets/images/default-user.png'">
+                    <div class="colaborador-datos">
+                        <strong>${colaborador.numDocumento}</strong>
+                        <small class="text-muted">${colaborador.tipoDocumento}</small>
+                    </div>
+                </div>
+            </td>
+            <td data-label="Tipo Doc.">${colaborador.tipoDocumento}</td>
+            <td data-label="Nombres">${colaborador.nombres}</td>
+            <td data-label="Apellidos">${colaborador.apellidos}</td>
+            <td data-label="Correo">
+                <div class="text-truncate-custom" title="${colaborador.correo}">
+                    ${colaborador.correo}
+                </div>
+            </td>
+            <td data-label="Teléfono">${colaborador.numTelefono}</td>
+            <td data-label="Sexo">${colaborador.sexo}</td>
+            <td data-label="Fecha Nac.">${formatearFecha(colaborador.fechaNacimiento)}<br>
+                <small class="text-muted">${edad} años</small>
+            </td>
+            <td data-label="Rol">
                 <span class="badge ${getRolBadgeClass(colaborador.roles)}">
                     ${colaborador.roles}
                 </span>
             </td>
-            <td>
-                <div class="btn-group" role="group">
-                    <button class="btn btn-sm btn-info" onclick="verColaborador('${colaborador.numDocumento}')" 
+            <td data-label="Acciones">
+                <div class="acciones-tabla">
+                    <button class="btn btn-sm btn-info shadow-hover" 
+                            onclick="verColaborador('${colaborador.numDocumento}')" 
                             title="Ver detalles">
                         <i class="fas fa-eye"></i>
                     </button>
-                    <button class="btn btn-sm btn-warning" onclick="editarColaborador('${colaborador.numDocumento}')" 
-                            title="Editar">
+                    <button class="btn btn-sm btn-warning shadow-hover" 
+                            onclick="editarColaborador('${colaborador.numDocumento}')" 
+                            title="Editar colaborador">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="btn btn-sm btn-secondary" onclick="cambiarPasswordColaborador('${colaborador.numDocumento}')" 
+                    <button class="btn btn-sm btn-secondary shadow-hover" 
+                            onclick="cambiarPasswordColaborador('${colaborador.numDocumento}')" 
                             title="Cambiar contraseña">
                         <i class="fas fa-key"></i>
                     </button>
-                    <button class="btn btn-sm btn-danger" onclick="eliminarColaborador('${colaborador.numDocumento}')" 
-                            title="Eliminar">
+                    <button class="btn btn-sm btn-danger shadow-hover" 
+                            onclick="eliminarColaborador('${colaborador.numDocumento}')" 
+                            title="Eliminar colaborador">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
             </td>
         </tr>
-    `).join('');
-
-    configurarPaginacion();
+    `;
 }
 
-// Configurar paginación
+function mostrarColaboradoresVacio(mensaje = 'No se encontraron colaboradores') {
+    elementos.tabla.innerHTML = `
+        <tr>
+            <td colspan="10" class="text-center py-5">
+                <div class="no-data">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">${mensaje}</h5>
+                    <p class="text-muted">
+                        ${busquedaActual || filtroActual !== 'all' ? 
+                            'Intenta ajustar los filtros de búsqueda' : 
+                            'Comienza agregando colaboradores al sistema'}
+                    </p>
+                    ${!busquedaActual && filtroActual === 'all' ? 
+                        '<a href="crearMisColaboradores.php" class="btn btn-primary mt-2"><i class="fas fa-plus"></i> Crear Primer Colaborador</a>' : 
+                        '<button class="btn btn-outline-primary mt-2" onclick="limpiarFiltros()"><i class="fas fa-filter"></i> Limpiar Filtros</button>'}
+                </div>
+            </td>
+        </tr>
+    `;
+    
+    if (elementos.paginacionContainer) {
+        elementos.paginacionContainer.style.display = 'none';
+    }
+}
+
+function mostrarInfoResultados() {
+    const total = colaboradoresFiltrados.length;
+    const inicio = (paginaActual - 1) * itemsPorPagina + 1;
+    const fin = Math.min(paginaActual * itemsPorPagina, total);
+    
+    // Mostrar información en el header o crear un elemento
+    let infoElement = document.getElementById('resultados-info');
+    if (!infoElement) {
+        infoElement = document.createElement('div');
+        infoElement.id = 'resultados-info';
+        infoElement.className = 'alert alert-info';
+        elementos.tabla.parentNode.insertBefore(infoElement, elementos.tabla);
+    }
+    
+    if (total > 0) {
+        infoElement.innerHTML = `
+            <i class="fas fa-info-circle"></i> 
+            Mostrando ${inicio}-${fin} de ${total} colaboradores
+            ${busquedaActual ? ` | Búsqueda: "${busquedaActual}"` : ''}
+            ${filtroActual !== 'all' ? ` | Filtro: ${filtroActual}` : ''}
+        `;
+        infoElement.style.display = 'block';
+    } else {
+        infoElement.style.display = 'none';
+    }
+}
+
+function mostrarCargando(mostrar) {
+    if (!elementos.tabla) return;
+    
+    if (mostrar) {
+        elementos.tabla.innerHTML = `
+            <tr>
+                <td colspan="10" class="text-center py-5">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin fa-2x text-primary mb-3"></i>
+                        <h5 class="text-muted">Cargando colaboradores...</h5>
+                        <div class="progress" style="width: 200px; margin: 0 auto;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                 style="width: 100%"></div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+}
+
+// Funciones de paginación
 function configurarPaginacion() {
+    if (!elementos.paginacionContainer || !elementos.paginacion) return;
+    
     const totalPaginas = Math.ceil(colaboradoresFiltrados.length / itemsPorPagina);
     
     if (totalPaginas <= 1) {
-        paginacionContainer.style.display = 'none';
+        elementos.paginacionContainer.style.display = 'none';
         return;
     }
 
-    paginacionContainer.style.display = 'block';
+    elementos.paginacionContainer.style.display = 'block';
     
     let html = '';
     
     // Botón anterior
     html += `
         <li class="page-item ${paginaActual === 1 ? 'disabled' : ''}">
-            <a class="page-link" href="#" onclick="cambiarPagina(${paginaActual - 1})">Anterior</a>
+            <a class="page-link" href="#" onclick="cambiarPagina(${paginaActual - 1})" 
+               ${paginaActual === 1 ? 'tabindex="-1"' : ''}>
+                <i class="fas fa-chevron-left"></i> Anterior
+            </a>
         </li>
     `;
     
-    // Páginas
-    for (let i = 1; i <= totalPaginas; i++) {
-        if (i === 1 || i === totalPaginas || (i >= paginaActual - 2 && i <= paginaActual + 2)) {
+    // Páginas numéricas
+    const rango = generarRangoPaginacion(paginaActual, totalPaginas);
+    rango.forEach(pagina => {
+        if (pagina === '...') {
+            html += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+        } else {
             html += `
-                <li class="page-item ${i === paginaActual ? 'active' : ''}">
-                    <a class="page-link" href="#" onclick="cambiarPagina(${i})">${i}</a>
+                <li class="page-item ${pagina === paginaActual ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="cambiarPagina(${pagina})">${pagina}</a>
                 </li>
             `;
-        } else if (i === paginaActual - 3 || i === paginaActual + 3) {
-            html += '<li class="page-item disabled"><span class="page-link">...</span></li>';
         }
-    }
+    });
     
     // Botón siguiente
     html += `
         <li class="page-item ${paginaActual === totalPaginas ? 'disabled' : ''}">
-            <a class="page-link" href="#" onclick="cambiarPagina(${paginaActual + 1})">Siguiente</a>
+            <a class="page-link" href="#" onclick="cambiarPagina(${paginaActual + 1})"
+               ${paginaActual === totalPaginas ? 'tabindex="-1"' : ''}>
+                Siguiente <i class="fas fa-chevron-right"></i>
+            </a>
         </li>
     `;
     
-    paginacion.innerHTML = html;
+    elementos.paginacion.innerHTML = html;
 }
 
-// Cambiar página
+function generarRangoPaginacion(actual, total) {
+    const rango = [];
+    const delta = 2; // Páginas antes y después de la actual
+    
+    // Siempre mostrar primera página
+    rango.push(1);
+    
+    // Calcular rango alrededor de la página actual
+    const inicio = Math.max(2, actual - delta);
+    const fin = Math.min(total - 1, actual + delta);
+    
+    // Agregar puntos suspensivos si hay gap
+    if (inicio > 2) {
+        rango.push('...');
+    }
+    
+    // Agregar páginas del rango
+    for (let i = inicio; i <= fin; i++) {
+        if (i !== 1 && i !== total) {
+            rango.push(i);
+        }
+    }
+    
+    // Agregar puntos suspensivos si hay gap
+    if (fin < total - 1) {
+        rango.push('...');
+    }
+    
+    // Siempre mostrar última página (si es diferente de la primera)
+    if (total > 1) {
+        rango.push(total);
+    }
+    
+    return rango;
+}
+
 function cambiarPagina(pagina) {
     const totalPaginas = Math.ceil(colaboradoresFiltrados.length / itemsPorPagina);
     
-    if (pagina >= 1 && pagina <= totalPaginas) {
+    if (pagina >= 1 && pagina <= totalPaginas && pagina !== paginaActual) {
         paginaActual = pagina;
         mostrarColaboradores();
+        guardarEstadoBusqueda();
+        
+        // Scroll suave al inicio de la tabla
+        elementos.tabla.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
 
-// Ver colaborador
+// Funciones de modales
 function verColaborador(documento) {
     const colaborador = colaboradores.find(c => c.numDocumento === documento);
     
@@ -303,35 +533,72 @@ function verColaborador(documento) {
     }
     
     const detalles = document.getElementById('detalles-colaborador');
+    const edad = calcularEdad(colaborador.fechaNacimiento);
+    const fotoUrl = colaborador.foto ? 
+        `../../public/${colaborador.foto}` : 
+        '../../public/assets/images/default-user.png';
+    
     detalles.innerHTML = `
-        <div class="row">
-            <div class="col-md-6">
-                <h6><i class="fas fa-id-card"></i> Información Personal</h6>
-                <p><strong>Documento:</strong> ${colaborador.numDocumento}</p>
-                <p><strong>Tipo de Documento:</strong> ${colaborador.tipoDocumento}</p>
-                <p><strong>Nombres:</strong> ${colaborador.nombres}</p>
-                <p><strong>Apellidos:</strong> ${colaborador.apellidos}</p>
-                <p><strong>Sexo:</strong> ${colaborador.sexo}</p>
-                <p><strong>Fecha de Nacimiento:</strong> ${formatearFecha(colaborador.fechaNacimiento)}</p>
+        <div class="detalle-colaborador">
+            <div class="detalle-foto">
+                <img src="${fotoUrl}" alt="Foto de perfil" 
+                     onerror="this.src='../../public/assets/images/default-user.png'">
+                <div class="mt-2">
+                    <span class="badge ${getRolBadgeClass(colaborador.roles)} fs-6">
+                        ${colaborador.roles}
+                    </span>
+                </div>
             </div>
-            <div class="col-md-6">
-                <h6><i class="fas fa-contact-card"></i> Información de Contacto</h6>
-                <p><strong>Correo:</strong> ${colaborador.correo}</p>
-                <p><strong>Teléfono:</strong> ${colaborador.numTelefono}</p>
-                <br>
-                <h6><i class="fas fa-user-tag"></i> Información del Sistema</h6>
-                <p><strong>Rol:</strong> 
-                    <span class="badge ${getRolBadgeClass(colaborador.roles)}">${colaborador.roles}</span>
-                </p>
-                <p><strong>Fecha de Registro:</strong> ${formatearFecha(colaborador.fechaCreacion)}</p>
+            <div class="detalle-info">
+                <div class="info-group">
+                    <span class="info-label">Documento:</span>
+                    <span class="info-value">${colaborador.numDocumento}</span>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">Tipo:</span>
+                    <span class="info-value">${colaborador.tipoDocumento}</span>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">Nombre Completo:</span>
+                    <span class="info-value">${colaborador.nombres} ${colaborador.apellidos}</span>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">Correo:</span>
+                    <span class="info-value">
+                        <a href="mailto:${colaborador.correo}">${colaborador.correo}</a>
+                    </span>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">Teléfono:</span>
+                    <span class="info-value">
+                        <a href="tel:${colaborador.numTelefono}">${colaborador.numTelefono}</a>
+                    </span>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">Sexo:</span>
+                    <span class="info-value">${colaborador.sexo}</span>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">Fecha de Nacimiento:</span>
+                    <span class="info-value">${formatearFecha(colaborador.fechaNacimiento)} (${edad} años)</span>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">Solicitar Cambio:</span>
+                    <span class="info-value">
+                        <span class="badge ${colaborador.solicitarContraseña === '1' ? 'bg-warning' : 'bg-success'}">
+                            ${colaborador.solicitarContraseña === '1' ? 'Sí' : 'No'}
+                        </span>
+                    </span>
+                </div>
             </div>
         </div>
     `;
     
-    verModal.show();
+    if (modales.verModal) {
+        modales.verModal.show();
+    }
 }
 
-// Editar colaborador
 function editarColaborador(documento) {
     const colaborador = colaboradores.find(c => c.numDocumento === documento);
     
@@ -340,26 +607,49 @@ function editarColaborador(documento) {
         return;
     }
     
+    documentoSeleccionado = documento;
+    
     // Llenar formulario de edición
-    document.getElementById('edit-documento-original').value = colaborador.numDocumento;
-    document.getElementById('edit-numDocumento').value = colaborador.numDocumento;
-    document.getElementById('edit-tipoDocumento').value = colaborador.tipoDocumento;
-    document.getElementById('edit-nombres').value = colaborador.nombres;
-    document.getElementById('edit-apellidos').value = colaborador.apellidos;
-    document.getElementById('edit-correo').value = colaborador.correo;
-    document.getElementById('edit-numTelefono').value = colaborador.numTelefono;
-    document.getElementById('edit-sexo').value = colaborador.sexo;
-    document.getElementById('edit-fechaNacimiento').value = colaborador.fechaNacimiento;
-    document.getElementById('edit-roles').value = colaborador.roles;
+    const campos = [
+        'edit-documento-original',
+        'edit-numDocumento',
+        'edit-tipoDocumento',
+        'edit-nombres',
+        'edit-apellidos',
+        'edit-correo',
+        'edit-numTelefono',
+        'edit-sexo',
+        'edit-fechaNacimiento',
+        'edit-roles',
+        'edit-solicitarContraseña'
+    ];
+    
+    campos.forEach(campo => {
+        const elemento = document.getElementById(campo);
+        if (elemento) {
+            const propiedad = campo.replace('edit-', '').replace('-', '');
+            
+            if (campo === 'edit-documento-original') {
+                elemento.value = colaborador.numDocumento;
+            } else if (campo === 'edit-solicitarContraseña') {
+                elemento.value = colaborador.solicitarContraseña || '0';
+            } else {
+                elemento.value = colaborador[propiedad] || '';
+            }
+        }
+    });
     
     // Limpiar contraseña
-    document.getElementById('edit-password').value = '';
-    document.getElementById('edit-solicitarContraseña').value = '0';
+    const passwordField = document.getElementById('edit-password');
+    if (passwordField) {
+        passwordField.value = '';
+    }
     
-    editarModal.show();
+    if (modales.editarModal) {
+        modales.editarModal.show();
+    }
 }
 
-// Guardar edición
 async function guardarEdicion() {
     const form = document.getElementById('form-editar');
     
@@ -372,13 +662,19 @@ async function guardarEdicion() {
     const datos = Object.fromEntries(formData);
     datos.documentoOriginal = document.getElementById('edit-documento-original').value;
 
+    const guardarBtn = document.getElementById('guardar-edicion');
+    const originalText = guardarBtn.innerHTML;
+    
     try {
-        const response = await fetch('../../backend/controllers/colaboradoresController.php?action=editar', {
+        setLoadingState(guardarBtn, true, 'Guardando...');
+
+        const response = await fetch('../controllers/colaboradorController.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
             },
-            body: JSON.stringify(datos)
+            body: JSON.stringify({ ...datos, action: 'actualizar' })
         });
 
         const resultado = await response.json();
@@ -388,21 +684,28 @@ async function guardarEdicion() {
             const index = colaboradores.findIndex(c => c.numDocumento === datos.documentoOriginal);
             if (index !== -1) {
                 colaboradores[index] = { ...colaboradores[index], ...datos };
+                
+                // Si cambió el documento, actualizar la clave
+                if (datos.numDocumento !== datos.documentoOriginal) {
+                    colaboradores[index].numDocumento = datos.numDocumento;
+                }
             }
             
             aplicarFiltros();
-            editarModal.hide();
+            modales.editarModal.hide();
             mostrarMensaje('success', 'Colaborador actualizado correctamente');
+            resaltarFila(datos.numDocumento);
         } else {
             mostrarMensaje('error', resultado.message || 'Error al actualizar colaborador');
         }
     } catch (error) {
         console.error('Error:', error);
         mostrarMensaje('error', 'Error de conexión al actualizar colaborador');
+    } finally {
+        setLoadingState(guardarBtn, false, originalText);
     }
 }
 
-// Eliminar colaborador
 function eliminarColaborador(documento) {
     const colaborador = colaboradores.find(c => c.numDocumento === documento);
     
@@ -411,28 +714,43 @@ function eliminarColaborador(documento) {
         return;
     }
     
+    documentoSeleccionado = documento;
+    
     // Configurar modal de confirmación
-    document.getElementById('eliminar-info').textContent = 
-        `${colaborador.nombres} ${colaborador.apellidos}`;
-    document.getElementById('eliminar-documento').textContent = documento;
+    const infoElement = document.getElementById('eliminar-info');
+    const documentoElement = document.getElementById('eliminar-documento');
     
-    // Guardar documento para eliminar
-    document.getElementById('confirmar-eliminacion').dataset.documento = documento;
+    if (infoElement && documentoElement) {
+        infoElement.innerHTML = `${colaborador.nombres} ${colaborador.apellidos}`;
+        documentoElement.textContent = documento;
+    }
     
-    eliminarModal.show();
+    if (modales.eliminarModal) {
+        modales.eliminarModal.show();
+    }
 }
 
-// Confirmar eliminación
 async function confirmarEliminacion() {
-    const documento = document.getElementById('confirmar-eliminacion').dataset.documento;
+    const documento = documentoSeleccionado;
+    
+    if (!documento) {
+        mostrarMensaje('error', 'No se ha seleccionado ningún colaborador');
+        return;
+    }
+    
+    const confirmarBtn = document.getElementById('confirmar-eliminacion');
+    const originalText = confirmarBtn.innerHTML;
     
     try {
-        const response = await fetch('../../backend/controllers/colaboradoresController.php?action=eliminar', {
+        setLoadingState(confirmarBtn, true, 'Eliminando...');
+
+        const response = await fetch('../controllers/colaboradorController.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
             },
-            body: JSON.stringify({ documento })
+            body: JSON.stringify({ documento, action: 'eliminar' })
         });
 
         const resultado = await response.json();
@@ -441,7 +759,7 @@ async function confirmarEliminacion() {
             // Remover de datos locales
             colaboradores = colaboradores.filter(c => c.numDocumento !== documento);
             aplicarFiltros();
-            eliminarModal.hide();
+            modales.eliminarModal.hide();
             mostrarMensaje('success', 'Colaborador eliminado correctamente');
         } else {
             mostrarMensaje('error', resultado.message || 'Error al eliminar colaborador');
@@ -449,10 +767,12 @@ async function confirmarEliminacion() {
     } catch (error) {
         console.error('Error:', error);
         mostrarMensaje('error', 'Error de conexión al eliminar colaborador');
+    } finally {
+        setLoadingState(confirmarBtn, false, originalText);
+        documentoSeleccionado = '';
     }
 }
 
-// Cambiar contraseña
 function cambiarPasswordColaborador(documento) {
     const colaborador = colaboradores.find(c => c.numDocumento === documento);
     
@@ -461,15 +781,24 @@ function cambiarPasswordColaborador(documento) {
         return;
     }
     
-    document.getElementById('password-documento').value = documento;
-    document.getElementById('nueva-password').value = '';
-    document.getElementById('confirmar-password').value = '';
-    document.getElementById('solicitar-cambio').checked = false;
+    documentoSeleccionado = documento;
     
-    cambiarPasswordModal.show();
+    // Limpiar formulario
+    const form = document.getElementById('form-cambiar-password');
+    if (form) {
+        form.reset();
+    }
+    
+    const passwordDocumento = document.getElementById('password-documento');
+    if (passwordDocumento) {
+        passwordDocumento.value = documento;
+    }
+    
+    if (modales.cambiarPasswordModal) {
+        modales.cambiarPasswordModal.show();
+    }
 }
 
-// Guardar nueva contraseña
 async function cambiarPassword() {
     const form = document.getElementById('form-cambiar-password');
     
@@ -483,6 +812,7 @@ async function cambiarPassword() {
     const documento = document.getElementById('password-documento').value;
     const solicitarCambio = document.getElementById('solicitar-cambio').checked;
 
+    // Validaciones adicionales
     if (nuevaPassword !== confirmarPassword) {
         mostrarMensaje('error', 'Las contraseñas no coinciden');
         return;
@@ -493,13 +823,20 @@ async function cambiarPassword() {
         return;
     }
 
+    const guardarBtn = document.getElementById('guardar-password');
+    const originalText = guardarBtn.innerHTML;
+
     try {
-        const response = await fetch('../../backend/controllers/colaboradoresController.php?action=cambiarPassword', {
+        setLoadingState(guardarBtn, true, 'Cambiando...');
+
+        const response = await fetch('../controllers/colaboradorController.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
             },
             body: JSON.stringify({
+                action: 'cambiarPassword',
                 documento,
                 nuevaPassword,
                 solicitarCambio
@@ -509,31 +846,45 @@ async function cambiarPassword() {
         const resultado = await response.json();
 
         if (resultado.success) {
-            cambiarPasswordModal.hide();
+            // Actualizar datos locales
+            const index = colaboradores.findIndex(c => c.numDocumento === documento);
+            if (index !== -1) {
+                colaboradores[index].solicitarContraseña = solicitarCambio ? '1' : '0';
+            }
+            
+            modales.cambiarPasswordModal.hide();
             mostrarMensaje('success', 'Contraseña actualizada correctamente');
+            aplicarFiltros();
         } else {
             mostrarMensaje('error', resultado.message || 'Error al cambiar contraseña');
         }
     } catch (error) {
         console.error('Error:', error);
         mostrarMensaje('error', 'Error de conexión al cambiar contraseña');
+    } finally {
+        setLoadingState(guardarBtn, false, originalText);
     }
 }
 
-// Validar contraseñas
-function validarPasswords() {
+function validarPasswordsModal() {
     const nuevaPassword = document.getElementById('nueva-password').value;
     const confirmarPassword = document.getElementById('confirmar-password').value;
     const confirmarInput = document.getElementById('confirmar-password');
     
     if (confirmarPassword && nuevaPassword !== confirmarPassword) {
         confirmarInput.setCustomValidity('Las contraseñas no coinciden');
+        confirmarInput.classList.add('is-invalid');
+        confirmarInput.classList.remove('is-valid');
     } else {
         confirmarInput.setCustomValidity('');
+        if (confirmarPassword) {
+            confirmarInput.classList.add('is-valid');
+            confirmarInput.classList.remove('is-invalid');
+        }
     }
 }
 
-// Funciones de utilidad
+// Funciones de utilidades
 function formatearFecha(fecha) {
     if (!fecha) return '-';
     
@@ -546,191 +897,209 @@ function formatearFecha(fecha) {
     return new Date(fecha).toLocaleDateString('es-CO', opciones);
 }
 
-function getRolBadgeClass(rol) {
-    switch (rol) {
-        case 'Administrador':
-            return 'bg-danger';
-        case 'Colaborador':
-            return 'bg-warning text-dark';
-        case 'Usuario':
-            return 'bg-info';
-        default:
-            return 'bg-secondary';
+function calcularEdad(fechaNacimiento) {
+    const hoy = new Date();
+    const fechaNac = new Date(fechaNacimiento);
+    let edad = hoy.getFullYear() - fechaNac.getFullYear();
+    const mesActual = hoy.getMonth();
+    const mesNac = fechaNac.getMonth();
+    
+    if (mesActual < mesNac || (mesActual === mesNac && hoy.getDate() < fechaNac.getDate())) {
+        edad--;
     }
+    
+    return edad;
+}
+
+function getRolBadgeClass(rol) {
+    const clases = {
+        'Administrador': 'bg-danger',
+        'Colaborador': 'bg-primary',
+        'Usuario': 'bg-secondary'
+    };
+    return clases[rol] || 'bg-secondary';
 }
 
 function mostrarMensaje(tipo, texto) {
-    // Ocultar mensajes anteriores
-    successMessage.style.display = 'none';
-    errorMessage.style.display = 'none';
+    hideMessages();
     
-    if (tipo === 'success') {
-        successText.textContent = texto;
-        successMessage.style.display = 'block';
+    if (tipo === 'success' && elementos.successMessage && elementos.successText) {
+        elementos.successText.textContent = texto;
+        elementos.successMessage.style.display = 'block';
+        elementos.successMessage.scrollIntoView({ behavior: 'smooth' });
         
-        // Auto-ocultar después de 5 segundos
         setTimeout(() => {
-            successMessage.style.display = 'none';
+            elementos.successMessage.style.display = 'none';
         }, 5000);
-    } else if (tipo === 'error') {
-        errorText.textContent = texto;
-        errorMessage.style.display = 'block';
+    } else if (tipo === 'error' && elementos.errorMessage && elementos.errorText) {
+        elementos.errorText.innerHTML = texto;
+        elementos.errorMessage.style.display = 'block';
+        elementos.errorMessage.scrollIntoView({ behavior: 'smooth' });
         
-        // Auto-ocultar después de 7 segundos
         setTimeout(() => {
-            errorMessage.style.display = 'none';
+            elementos.errorMessage.style.display = 'none';
         }, 7000);
     }
 }
 
-// Validaciones adicionales
-function validarDocumento(documento, tipoDocumento) {
-    // Validaciones básicas según tipo de documento
-    switch (tipoDocumento) {
-        case 'Cédula de Ciudadanía':
-            return /^\d{7,10}$/.test(documento);
-        case 'Cedula de Extranjeria':
-            return /^[A-Z]{1,2}\d{6,8}$/.test(documento);
-        case 'Pasaporte':
-            return /^[A-Z0-9]{6,12}$/.test(documento);
-        default:
-            return documento.length >= 6;
+function hideMessages() {
+    if (elementos.successMessage) elementos.successMessage.style.display = 'none';
+    if (elementos.errorMessage) elementos.errorMessage.style.display = 'none';
+}
+
+function setLoadingState(button, isLoading, loadingText = 'Cargando...') {
+    if (isLoading) {
+        button.disabled = true;
+        button.dataset.originalText = button.innerHTML;
+        button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${loadingText}`;
+        button.classList.add('loading');
+    } else {
+        button.disabled = false;
+        button.innerHTML = button.dataset.originalText || loadingText;
+        button.classList.remove('loading');
     }
 }
 
-function validarEmail(email) {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
+function resaltarFila(documento) {
+    const fila = document.querySelector(`tr[data-documento="${documento}"]`);
+    if (fila) {
+        fila.classList.add('table-warning');
+        setTimeout(() => {
+            fila.classList.remove('table-warning');
+            fila.classList.add('table-success');
+            setTimeout(() => {
+                fila.classList.remove('table-success');
+            }, 2000);
+        }, 500);
+    }
 }
 
-function validarTelefono(telefono) {
-    const regex = /^[3][0-9]{9}$|^[+]?[0-9]{10,15}$/;
-    return regex.test(telefono);
+// Funciones de persistencia
+function guardarEstadoBusqueda() {
+    const estado = {
+        busqueda: busquedaActual,
+        filtro: filtroActual,
+        pagina: paginaActual,
+        timestamp: Date.now()
+    };
+    sessionStorage.setItem('colaboradores_estado', JSON.stringify(estado));
 }
 
-// Exportar datos a CSV (función adicional)
-function exportarCSV() {
+function restaurarEstadoBusqueda() {
+    try {
+        const estadoGuardado = sessionStorage.getItem('colaboradores_estado');
+        if (estadoGuardado) {
+            const estado = JSON.parse(estadoGuardado);
+            
+            // Verificar que no sea muy antiguo (1 hora máximo)
+            if (Date.now() - estado.timestamp < 3600000) {
+                busquedaActual = estado.busqueda || '';
+                filtroActual = estado.filtro || 'all';
+                paginaActual = estado.pagina || 1;
+                
+                if (elementos.buscarInput) {
+                    elementos.buscarInput.value = busquedaActual;
+                }
+                
+                // Marcar filtro activo en UI
+                document.querySelectorAll('.filter-option').forEach(opt => {
+                    opt.classList.toggle('active', opt.dataset.filter === filtroActual);
+                });
+            }
+        }
+    } catch (error) {
+        console.warn('Error al restaurar estado de búsqueda:', error);
+    }
+}
+
+function limpiarFiltros() {
+    busquedaActual = '';
+    filtroActual = 'all';
+    paginaActual = 1;
+    
+    if (elementos.buscarInput) {
+        elementos.buscarInput.value = '';
+    }
+    
+    document.querySelectorAll('.filter-option').forEach(opt => {
+        opt.classList.remove('active');
+    });
+    
+    aplicarFiltros();
+    sessionStorage.removeItem('colaboradores_estado');
+    mostrarMensaje('success', 'Filtros limpiados');
+}
+
+// Funciones de exportación
+function exportarColaboradores(formato = 'csv') {
     if (colaboradoresFiltrados.length === 0) {
         mostrarMensaje('error', 'No hay datos para exportar');
         return;
     }
 
-    const headers = ['Documento', 'Tipo Doc.', 'Nombres', 'Apellidos', 'Correo', 'Teléfono', 'Sexo', 'Fecha Nac.', 'Rol'];
-    
+    const datos = colaboradoresFiltrados.map(colaborador => ({
+        'Documento': colaborador.numDocumento,
+        'Tipo de Documento': colaborador.tipoDocumento,
+        'Nombres': colaborador.nombres,
+        'Apellidos': colaborador.apellidos,
+        'Correo': colaborador.correo,
+        'Teléfono': colaborador.numTelefono,
+        'Sexo': colaborador.sexo,
+        'Fecha de Nacimiento': colaborador.fechaNacimiento,
+        'Edad': calcularEdad(colaborador.fechaNacimiento),
+        'Rol': colaborador.roles
+    }));
+
+    if (formato === 'csv') {
+        exportarCSV(datos);
+    } else if (formato === 'json') {
+        exportarJSON(datos);
+    }
+}
+
+function exportarCSV(datos) {
+    const headers = Object.keys(datos[0]);
     let csv = headers.join(',') + '\n';
     
-    colaboradoresFiltrados.forEach(colaborador => {
-        const fila = [
-            colaborador.numDocumento,
-            colaborador.tipoDocumento,
-            colaborador.nombres,
-            colaborador.apellidos,
-            colaborador.correo,
-            colaborador.numTelefono,
-            colaborador.sexo,
-            colaborador.fechaNacimiento,
-            colaborador.roles
-        ];
-        csv += fila.map(campo => `"${campo}"`).join(',') + '\n';
+    datos.forEach(fila => {
+        const valores = headers.map(header => {
+            const valor = fila[header] || '';
+            return `"${valor.toString().replace(/"/g, '""')}"`;
+        });
+        csv += valores.join(',') + '\n';
     });
     
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    descargarArchivo(csv, `colaboradores_${obtenerFechaHoy()}.csv`, 'text/csv');
+    mostrarMensaje('success', 'Datos exportados a CSV correctamente');
+}
+
+function exportarJSON(datos) {
+    const json = JSON.stringify(datos, null, 2);
+    descargarArchivo(json, `colaboradores_${obtenerFechaHoy()}.json`, 'application/json');
+    mostrarMensaje('success', 'Datos exportados a JSON correctamente');
+}
+
+function descargarArchivo(contenido, nombreArchivo, tipoMime) {
+    const blob = new Blob([contenido], { type: tipoMime + ';charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     
     link.setAttribute('href', url);
-    link.setAttribute('download', `colaboradores_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', nombreArchivo);
     link.style.visibility = 'hidden';
     
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     
-    mostrarMensaje('success', 'Datos exportados correctamente');
+    URL.revokeObjectURL(url);
 }
 
-// Funciones de teclado para accesibilidad
-document.addEventListener('keydown', function(e) {
-    // Ctrl + F para enfocar búsqueda
-    if (e.ctrlKey && e.key === 'f') {
-        e.preventDefault();
-        buscarInput.focus();
-    }
-    
-    // Escape para cerrar modales
-    if (e.key === 'Escape') {
-        const modalBackdrops = document.querySelectorAll('.modal.show');
-        modalBackdrops.forEach(modal => {
-            const modalInstance = bootstrap.Modal.getInstance(modal);
-            if (modalInstance) {
-                modalInstance.hide();
-            }
-        });
-    }
-});
-
-// Manejar errores globales
-window.addEventListener('error', function(e) {
-    console.error('Error global:', e.error);
-    mostrarMensaje('error', 'Ha ocurrido un error inesperado');
-});
-
-// Prevenir envío de formularios con Enter accidental
-document.querySelectorAll('form').forEach(form => {
-    form.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && e.target.type !== 'submit') {
-            e.preventDefault();
-        }
-    });
-});
-
-// Auto-guardar búsqueda en sessionStorage para persistencia
-function guardarEstadoBusqueda() {
-    const estado = {
-        busqueda: busquedaActual,
-        filtro: filtroActual,
-        pagina: paginaActual
-    };
-    sessionStorage.setItem('colaboradores_estado', JSON.stringify(estado));
+function obtenerFechaHoy() {
+    return new Date().toISOString().split('T')[0];
 }
 
-function restaurarEstadoBusqueda() {
-    const estado = sessionStorage.getItem('colaboradores_estado');
-    if (estado) {
-        const { busqueda, filtro, pagina } = JSON.parse(estado);
-        busquedaActual = busqueda || '';
-        filtroActual = filtro || 'all';
-        paginaActual = pagina || 1;
-        buscarInput.value = busquedaActual;
-    }
-}
-
-// Mejorar UX con feedback visual
-function resaltarFila(documento) {
-    const fila = document.querySelector(`tr[data-documento="${documento}"]`);
-    if (fila) {
-        fila.classList.add('table-success');
-        setTimeout(() => {
-            fila.classList.remove('table-success');
-        }, 2000);
-    }
-}
-
-// Funciones para manejo de estados de carga
-function deshabilitarBotones(deshabilitar = true) {
-    const botones = document.querySelectorAll('button, .btn');
-    botones.forEach(btn => {
-        if (deshabilitar) {
-            btn.disabled = true;
-            btn.style.opacity = '0.6';
-        } else {
-            btn.disabled = false;
-            btn.style.opacity = '1';
-        }
-    });
-}
-
-// Debounce para búsqueda en tiempo real
+// Función debounce
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -743,52 +1112,35 @@ function debounce(func, wait) {
     };
 }
 
-// Configurar búsqueda en tiempo real con debounce
-const busquedaTiempoReal = debounce(function() {
-    busquedaActual = buscarInput.value.trim().toLowerCase();
-    aplicarFiltros();
-}, 300);
+// Funciones globales para compatibilidad
+window.verColaborador = verColaborador;
+window.editarColaborador = editarColaborador;
+window.eliminarColaborador = eliminarColaborador;
+window.cambiarPasswordColaborador = cambiarPasswordColaborador;
+window.cambiarPagina = cambiarPagina;
+window.exportarColaboradores = exportarColaboradores;
+window.limpiarFiltros = limpiarFiltros;
 
-// Añadir evento de búsqueda en tiempo real
-buscarInput.addEventListener('input', busquedaTiempoReal);
-
-// Función para validar edad mínima (ejemplo: 18 años)
-function validarEdadMinima(fechaNacimiento) {
-    const hoy = new Date();
-    const fechaNac = new Date(fechaNacimiento);
-    const edad = hoy.getFullYear() - fechaNac.getFullYear();
-    const mesActual = hoy.getMonth();
-    const mesNac = fechaNac.getMonth();
-    
-    if (mesActual < mesNac || (mesActual === mesNac && hoy.getDate() < fechaNac.getDate())) {
-        edad--;
-    }
-    
-    return edad >= 18;
-}
-
-// Tooltip para botones de acción
-document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar tooltips de Bootstrap si están disponibles
-    if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
-        tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-    }
+// Manejo de errores globales
+window.addEventListener('error', function(e) {
+    console.error('Error global:', e.error);
+    mostrarMensaje('error', 'Ha ocurrido un error inesperado');
 });
 
-// Función para limpiar formularios
-function limpiarFormulario(formId) {
-    const form = document.getElementById(formId);
-    if (form) {
-        form.reset();
-        form.classList.remove('was-validated');
-        
-        // Limpiar mensajes de validación personalizados
-        const inputs = form.querySelectorAll('input, select, textarea');
-        inputs.forEach(input => {
-            input.setCustomValidity('');
-        });
+// Monitoreo de conectividad
+window.addEventListener('online', function() {
+    mostrarMensaje('success', 'Conexión restaurada');
+});
+
+window.addEventListener('offline', function() {
+    mostrarMensaje('error', 'Sin conexión a internet');
+});
+
+// Auto-actualización cada 5 minutos (opcional)
+setInterval(function() {
+    if (document.visibilityState === 'visible') {
+        cargarColaboradores();
     }
-}
+}, 5 * 60 * 1000);
+
+console.log('Script de listado de colaboradores cargado correctamente');
