@@ -556,7 +556,7 @@ class Colaborador {
             }
             
             // Crear directorio si no existe
-            $directorioFotos = '../../public/assets/images/colaboradores/';
+            $directorioFotos = '../../public/assets/img/';
             if (!file_exists($directorioFotos)) {
                 if (!mkdir($directorioFotos, 0755, true)) {
                     $this->logError('No se pudo crear directorio de fotos');
@@ -572,7 +572,7 @@ class Colaborador {
             
             // Mover archivo
             if (move_uploaded_file($archivo['tmp_name'], $rutaCompleta)) {
-                return 'assets/images/colaboradores/' . $nombreArchivo;
+                return 'assets/img/' . $nombreArchivo;
             } else {
                 $this->logError('Error al mover archivo de foto');
                 return false;
@@ -591,7 +591,7 @@ class Colaborador {
         try {
             if (empty($rutaFoto)) return;
             
-            $rutaCompleta = '../../public/' . $rutaFoto;
+            $rutaCompleta = '../../public/img/' . $rutaFoto;
             if (file_exists($rutaCompleta)) {
                 unlink($rutaCompleta);
             }
@@ -783,7 +783,7 @@ class Colaborador {
      */
     private function logError($mensaje) {
         $fecha = date('Y-m-d H:i:s');
-        $logMessage = "[$fecha] MisColaboradoresModel Error: $mensaje" . PHP_EOL;
+        $logMessage = "[$fecha] misColaboradoresModel.php Error: $mensaje" . PHP_EOL;
         
         // Intentar escribir al log de PHP
         error_log($logMessage);

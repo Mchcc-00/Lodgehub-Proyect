@@ -1,987 +1,621 @@
-// colaboradores.js - Script mejorado para la página de crear colaboradores
+/**
+ * JavaScript para crear y gestionar colaboradores
+ * Archivo: colaboradores.js
+ */
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Referencias a elementos del DOM
-    const form = document.getElementById('colaborador-form');
-    const togglePasswordBtn = document.getElementById('toggle-password');
-    const passwordInput = document.getElementById('password');
-    const confirmarPasswordInput = document.getElementById('confirmarPassword');
-    const fotoInput = document.getElementById('foto');
-    const previewBtn = document.getElementById('preview-btn');
-    const resetBtn = document.getElementById('reset-btn');
-    const numDocumentoInput = document.getElementById('numDocumento');
-    const correoInput = document.getElementById('correo');
-    const fechaNacimientoInput = document.getElementById('fechaNacimiento');
-    const tipoDocumentoSelect = document.getElementById('tipoDocumento');
-
-    // Configuración inicial
-    initializeForm();
-    
-    // Event Listeners
-    setupEventListeners();
-    
-    function initializeForm() {
-        // Configurar fecha máxima (18 años atrás)
-        const today = new Date();
-        const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
-        fechaNacimientoInput.max = maxDate.toISOString().split('T')[0];
+class CrearColaboradorManager {
+    constructor() {
+        this.form = null;
+        this.documentoValidado = false;
+        this.correoValidado = false;
+        this.passwordValida = false;
         
-        // Limpiar mensajes al cargar
-        hideMessages();
-        clearValidationMessages();
+        this.init();
     }
     
-    function setupEventListeners() {
-        // Validación en tiempo real del documento
-        numDocumentoInput.addEventListener('input', debounce(function() {
-            validateDocumento(this.value, tipoDocumentoSelect.value);
-        }, 300));
-
-        numDocumentoInput.addEventListener('blur', function() {
-            if (this.value) {
-                checkDocumentoExists(this.value);
-            }
-        });
-
-        // Validación cuando cambia el tipo de documento
-        tipoDocumentoSelect.addEventListener('change', function() {
-            if (numDocumentoInput.value) {
-                validateDocumento(numDocumentoInput.value, this.value);
-            }
-        });
-
-        // Validación en tiempo real del correo
-        correoInput.addEventListener('input', debounce(function() {
-            validateEmail(this.value);
-        }, 300));
-
-        correoInput.addEventListener('blur', function() {
-            if (this.value) {
-                checkEmailExists(this.value);
-            }
-        });
-
-        // Toggle mostrar/ocultar contraseña
-        togglePasswordBtn.addEventListener('click', function() {
-            togglePasswordVisibility();
-        });
-
-        // Validación de fortaleza de contraseña
-        passwordInput.addEventListener('input', function() {
-            validatePasswordStrength(this.value);
-            checkPasswordMatch();
-        });
-
-        // Validación de coincidencia de contraseñas
-        confirmarPasswordInput.addEventListener('input', function() {
-            checkPasswordMatch();
-        });
-
-        // Preview de imagen
-        fotoInput.addEventListener('change', function() {
-            handleImagePreview(this);
-        });
-
-        // Vista previa del colaborador
-        previewBtn.addEventListener('click', function() {
-            showColaboradorPreview();
-        });
-
-        // Limpiar formulario
-        resetBtn.addEventListener('click', function() {
-            resetForm();
-        });
-
-        // Envío del formulario
-        form.addEventListener('submit', function(e) {
+    init() {
+        this.form = document.getElementById('colaborador-form');
+        if (!this.form) {
+            console.error('No se encontró el formulario de colaborador');
+            return;
+        }
+        
+        this.configurarEventListeners();
+        this.configurarValidaciones();
+        this.configurarFechaMaxima();
+    }
+    
+    configurarEventListeners() {
+        // Evento de envío del formulario
+        this.form.addEventListener('submit', (e) => {
             e.preventDefault();
-            handleFormSubmit();
+            this.crearColaborador();
         });
-
-        // Validaciones de input
-        setupInputValidations();
         
-        // Auto-actualización de vista previa
-        setupAutoPreview();
-    }
-    
-    function setupInputValidations() {
-        // Validación de solo letras para nombres y apellidos
-        const nombresInput = document.getElementById('nombres');
-        const apellidosInput = document.getElementById('apellidos');
-        
-        [nombresInput, apellidosInput].forEach(input => {
-            input.addEventListener('input', function() {
-                // Permitir solo letras, espacios y acentos
-                this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
-                // Capitalizar primera letra de cada palabra
-                this.value = this.value.replace(/\b\w/g, l => l.toUpperCase());
+        // Validación de documento
+        const documentoInput = document.getElementById('numDocumento');
+        if (documentoInput) {
+            documentoInput.addEventListener('blur', () => this.validarDocumento());
+            documentoInput.addEventListener('input', () => {
+                this.documentoValidado = false;
+                this.limpiarFeedback('documento-feedback');
             });
-        });
-
-        // Validación de solo números para teléfono y documento
-        const telefonoInput = document.getElementById('numTelefono');
+        }
         
-        telefonoInput.addEventListener('input', function() {
-            this.value = this.value.replace(/[^\d]/g, '');
-            validateTelefono(this.value);
-        });
+        // Validación de correo
+        const correoInput = document.getElementById('correo');
+        if (correoInput) {
+            correoInput.addEventListener('blur', () => this.validarCorreo());
+            correoInput.addEventListener('input', () => {
+                this.correoValidado = false;
+                this.limpiarFeedback('correo-feedback');
+            });
+        }
         
-        numDocumentoInput.addEventListener('input', function() {
-            // La validación de formato depende del tipo de documento
-            // Se manejará en validateDocumento()
+        // Validación de contraseña
+        const passwordInput = document.getElementById('password');
+        const confirmarPasswordInput = document.getElementById('confirmarPassword');
+        
+        if (passwordInput) {
+            passwordInput.addEventListener('input', () => this.validarFortalezaPassword());
+        }
+        
+        if (confirmarPasswordInput) {
+            confirmarPasswordInput.addEventListener('input', () => this.validarConfirmacionPassword());
+        }
+        
+        // Toggle de visibilidad de contraseña
+        const togglePasswordBtn = document.getElementById('toggle-password');
+        if (togglePasswordBtn) {
+            togglePasswordBtn.addEventListener('click', () => this.togglePasswordVisibility());
+        }
+        
+        // Vista previa de foto
+        const fotoInput = document.getElementById('foto');
+        if (fotoInput) {
+            fotoInput.addEventListener('change', () => this.previsualizarFoto());
+        }
+        
+        // Botones de acción
+        const resetBtn = document.getElementById('reset-btn');
+        const previewBtn = document.getElementById('preview-btn');
+        
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => this.limpiarFormulario());
+        }
+        
+        if (previewBtn) {
+            previewBtn.addEventListener('click', () => this.mostrarVistaPrevia());
+        }
+        
+        // Auto-completar rol por defecto
+        this.configurarRolPorDefecto();
+    }
+    
+    configurarValidaciones() {
+        // Validaciones en tiempo real para campos específicos
+        const campos = {
+            'nombres': { pattern: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, message: 'Solo se permiten letras y espacios' },
+            'apellidos': { pattern: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, message: 'Solo se permiten letras y espacios' },
+            'numTelefono': { pattern: /^[0-9+\-\s()]{7,15}$/, message: 'Formato de teléfono inválido' }
+        };
+        
+        Object.keys(campos).forEach(campo => {
+            const input = document.getElementById(campo);
+            if (input) {
+                input.addEventListener('input', () => {
+                    this.validarCampo(input, campos[campo]);
+                });
+            }
         });
     }
     
-    function setupAutoPreview() {
-        const formInputs = form.querySelectorAll('input:not([type="file"]), select');
-        formInputs.forEach(input => {
-            input.addEventListener('input', debounce(function() {
-                if (document.getElementById('colaborador-preview').style.display === 'block') {
-                    showColaboradorPreview();
-                }
-            }, 500));
-        });
+    configurarFechaMaxima() {
+        // Establecer fecha máxima para ser mayor de 18 años
+        const fechaInput = document.getElementById('fechaNacimiento');
+        if (fechaInput) {
+            const hoy = new Date();
+            const fechaMaxima = new Date(hoy.getFullYear() - 18, hoy.getMonth(), hoy.getDate());
+            fechaInput.max = fechaMaxima.toISOString().split('T')[0];
+        }
     }
-
-    // Funciones de validación
-    function validateDocumento(documento, tipoDocumento) {
-        const feedback = document.getElementById('documento-feedback');
+    
+    configurarRolPorDefecto() {
+        const rolSelect = document.getElementById('roles');
+        if (rolSelect && !rolSelect.value) {
+            rolSelect.value = 'Colaborador';
+        }
+    }
+    
+    async validarDocumento() {
+        const documentoInput = document.getElementById('numDocumento');
+        const feedbackDiv = document.getElementById('documento-feedback');
+        
+        if (!documentoInput || !feedbackDiv) return;
+        
+        const documento = documentoInput.value.trim();
         
         if (!documento) {
-            feedback.innerHTML = '';
-            setInputState(numDocumentoInput, 'neutral');
-            return false;
+            this.mostrarFeedback(feedbackDiv, 'error', 'El documento es requerido');
+            this.documentoValidado = false;
+            return;
         }
-
-        // Validaciones específicas por tipo de documento
-        let isValid = false;
-        let message = '';
-
-        switch (tipoDocumento) {
-            case 'Cédula de Ciudadanía':
-                isValid = /^\d{7,10}$/.test(documento);
-                message = isValid ? 'Formato válido para Cédula de Ciudadanía' : 'Debe contener entre 7 y 10 dígitos';
-                break;
-                
-            case 'Cedula de Extranjeria':
-                isValid = /^[A-Z]{0,2}\d{6,10}$/.test(documento);
-                message = isValid ? 'Formato válido para Cédula de Extranjería' : 'Formato: hasta 2 letras seguidas de 6-10 dígitos';
-                break;
-                
-            case 'Pasaporte':
-                isValid = /^[A-Z0-9]{6,12}$/.test(documento);
-                message = isValid ? 'Formato válido para Pasaporte' : 'Debe contener entre 6 y 12 caracteres alfanuméricos';
-                break;
-                
-            case 'Tarjeta de Identidad':
-                isValid = /^\d{7,11}$/.test(documento);
-                message = isValid ? 'Formato válido para Tarjeta de Identidad' : 'Debe contener entre 7 y 11 dígitos';
-                break;
-                
-            case 'Registro Civil':
-                isValid = /^\d{10,11}$/.test(documento);
-                message = isValid ? 'Formato válido para Registro Civil' : 'Debe contener entre 10 y 11 dígitos';
-                break;
-                
-            default:
-                isValid = documento.length >= 6 && documento.length <= 15;
-                message = isValid ? 'Formato básico válido' : 'Debe tener entre 6 y 15 caracteres';
+        
+        if (documento.length < 6 || documento.length > 15) {
+            this.mostrarFeedback(feedbackDiv, 'error', 'El documento debe tener entre 6 y 15 caracteres');
+            this.documentoValidado = false;
+            return;
         }
-
-        showValidationMessage(feedback, message, isValid ? 'success' : 'error');
-        setInputState(numDocumentoInput, isValid ? 'valid' : 'invalid');
         
-        return isValid;
-    }
-
-    function validateEmail(email) {
-        const feedback = document.getElementById('correo-feedback');
-        
-        if (!email) {
-            feedback.innerHTML = '';
-            setInputState(correoInput, 'neutral');
-            return false;
+        try {
+            this.mostrarFeedback(feedbackDiv, 'info', 'Verificando documento...');
+            
+            const formData = new FormData();
+            formData.append('action', 'checkDocumento');
+            formData.append('numDocumento', documento);
+            
+            const response = await fetch('../controllers/misColaboradoresControllers.php', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                if (data.data.exists) {
+                    this.mostrarFeedback(feedbackDiv, 'error', 'Este documento ya está registrado');
+                    this.documentoValidado = false;
+                } else {
+                    this.mostrarFeedback(feedbackDiv, 'success', 'Documento disponible');
+                    this.documentoValidado = true;
+                }
+            } else {
+                this.mostrarFeedback(feedbackDiv, 'error', 'Error al verificar documento');
+                this.documentoValidado = false;
+            }
+        } catch (error) {
+            console.error('Error al validar documento:', error);
+            this.mostrarFeedback(feedbackDiv, 'error', 'Error de conexión');
+            this.documentoValidado = false;
         }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const isValid = emailRegex.test(email);
-        
-        showValidationMessage(
-            feedback, 
-            isValid ? 'Formato de correo válido' : 'Formato de correo inválido', 
-            isValid ? 'success' : 'error'
-        );
-        
-        setInputState(correoInput, isValid ? 'valid' : 'invalid');
-        return isValid;
     }
     
-    function validateTelefono(telefono) {
-        if (!telefono) return false;
+    async validarCorreo() {
+        const correoInput = document.getElementById('correo');
+        const feedbackDiv = document.getElementById('correo-feedback');
         
-        // Validar formato colombiano (ejemplo)
-        const telefonoRegex = /^[3][0-9]{9}$|^[+]?[0-9]{10,15}$/;
-        return telefonoRegex.test(telefono);
+        if (!correoInput || !feedbackDiv) return;
+        
+        const correo = correoInput.value.trim();
+        
+        if (!correo) {
+            this.mostrarFeedback(feedbackDiv, 'error', 'El correo es requerido');
+            this.correoValidado = false;
+            return;
+        }
+        
+        if (!this.validarFormatoEmail(correo)) {
+            this.mostrarFeedback(feedbackDiv, 'error', 'Formato de correo inválido');
+            this.correoValidado = false;
+            return;
+        }
+        
+        try {
+            this.mostrarFeedback(feedbackDiv, 'info', 'Verificando correo...');
+            
+            const formData = new FormData();
+            formData.append('action', 'checkEmail');
+            formData.append('correo', correo);
+            
+            const response = await fetch('../controllers/misColaboradoresControllers.php', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                if (data.data.exists) {
+                    this.mostrarFeedback(feedbackDiv, 'error', 'Este correo ya está registrado');
+                    this.correoValidado = false;
+                } else {
+                    this.mostrarFeedback(feedbackDiv, 'success', 'Correo disponible');
+                    this.correoValidado = true;
+                }
+            } else {
+                this.mostrarFeedback(feedbackDiv, 'error', 'Error al verificar correo');
+                this.correoValidado = false;
+            }
+        } catch (error) {
+            console.error('Error al validar correo:', error);
+            this.mostrarFeedback(feedbackDiv, 'error', 'Error de conexión');
+            this.correoValidado = false;
+        }
     }
-
-    function validatePasswordStrength(password) {
+    
+    validarFortalezaPassword() {
+        const passwordInput = document.getElementById('password');
         const strengthDiv = document.getElementById('password-strength');
         
-        if (!password) {
-            strengthDiv.innerHTML = '';
-            setInputState(passwordInput, 'neutral');
-            return { isValid: false, strength: 0 };
-        }
-
-        let strength = 0;
-        let requirements = [];
-
-        // Criterios de fortaleza
-        const checks = [
-            { test: password.length >= 6, message: 'Al menos 6 caracteres' },
-            { test: /[a-z]/.test(password), message: 'Una letra minúscula' },
-            { test: /[A-Z]/.test(password), message: 'Una letra mayúscula' },
-            { test: /\d/.test(password), message: 'Un número' },
-            { test: /[!@#$%^&*(),.?":{}|<>]/.test(password), message: 'Un carácter especial' }
-        ];
-
-        checks.forEach(check => {
-            if (check.test) {
-                strength++;
-            } else {
-                requirements.push(check.message);
-            }
-        });
-
-        let strengthText = '';
-        let className = '';
-        let progressWidth = 0;
-
-        if (strength < 2) {
-            strengthText = 'Muy débil';
-            className = 'password-strength weak';
-            progressWidth = 20;
-        } else if (strength < 3) {
-            strengthText = 'Débil';
-            className = 'password-strength weak';
-            progressWidth = 40;
-        } else if (strength < 4) {
-            strengthText = 'Media';
-            className = 'password-strength medium';
-            progressWidth = 60;
-        } else if (strength < 5) {
-            strengthText = 'Fuerte';
-            className = 'password-strength strong';
-            progressWidth = 80;
-        } else {
-            strengthText = 'Muy fuerte';
-            className = 'password-strength strong';
-            progressWidth = 100;
-        }
-
-        const progressBar = `
-            <div class="password-progress-bar">
-                <div class="password-progress-fill" style="width: ${progressWidth}%;"></div>
-            </div>
-        `;
-
-        strengthDiv.innerHTML = `
-            <div class="${className}">
-                <div class="d-flex justify-content-between align-items-center">
-                    <small>Fortaleza: ${strengthText}</small>
-                    <small>${strength}/5</small>
-                </div>
-                ${progressBar}
-                ${requirements.length > 0 ? `<small>Falta: ${requirements.join(', ')}</small>` : ''}
-            </div>
-        `;
-
-        const isValid = strength >= 3;
-        setInputState(passwordInput, isValid ? 'valid' : 'invalid');
+        if (!passwordInput || !strengthDiv) return;
         
-        return { isValid, strength };
+        const password = passwordInput.value;
+        const strength = this.calcularFortalezaPassword(password);
+        
+        let mensaje = '';
+        let clase = '';
+        
+        switch (strength) {
+            case 0:
+                mensaje = 'Muy débil';
+                clase = 'text-danger';
+                this.passwordValida = false;
+                break;
+            case 1:
+                mensaje = 'Débil';
+                clase = 'text-warning';
+                this.passwordValida = false;
+                break;
+            case 2:
+                mensaje = 'Regular';
+                clase = 'text-info';
+                this.passwordValida = true;
+                break;
+            case 3:
+                mensaje = 'Fuerte';
+                clase = 'text-success';
+                this.passwordValida = true;
+                break;
+            case 4:
+                mensaje = 'Muy fuerte';
+                clase = 'text-success fw-bold';
+                this.passwordValida = true;
+                break;
+        }
+        
+        strengthDiv.innerHTML = `<small class="${clase}">Fortaleza: ${mensaje}</small>`;
     }
-
-    function checkPasswordMatch() {
+    
+    calcularFortalezaPassword(password) {
+        if (!password) return 0;
+        
+        let puntos = 0;
+        
+        // Longitud
+        if (password.length >= 8) puntos++;
+        if (password.length >= 12) puntos++;
+        
+        // Contiene minúsculas
+        if (/[a-z]/.test(password)) puntos++;
+        
+        // Contiene mayúsculas
+        if (/[A-Z]/.test(password)) puntos++;
+        
+        // Contiene números
+        if (/\d/.test(password)) puntos++;
+        
+        // Contiene caracteres especiales
+        if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) puntos++;
+        
+        return Math.min(puntos - 1, 4);
+    }
+    
+    validarConfirmacionPassword() {
+        const passwordInput = document.getElementById('password');
+        const confirmarPasswordInput = document.getElementById('confirmarPassword');
         const matchDiv = document.getElementById('password-match');
+        
+        if (!passwordInput || !confirmarPasswordInput || !matchDiv) return;
+        
         const password = passwordInput.value;
         const confirmPassword = confirmarPasswordInput.value;
-
+        
         if (!confirmPassword) {
             matchDiv.innerHTML = '';
-            setInputState(confirmarPasswordInput, 'neutral');
-            return false;
+            return;
         }
-
-        const isMatch = password === confirmPassword;
         
-        showValidationMessage(
-            matchDiv,
-            isMatch ? 'Las contraseñas coinciden' : 'Las contraseñas no coinciden',
-            isMatch ? 'success' : 'error'
-        );
-        
-        setInputState(confirmarPasswordInput, isMatch ? 'valid' : 'invalid');
-        return isMatch;
+        if (password === confirmPassword) {
+            matchDiv.innerHTML = '<small class="text-success">Las contraseñas coinciden</small>';
+        } else {
+            matchDiv.innerHTML = '<small class="text-danger">Las contraseñas no coinciden</small>';
+        }
     }
-
-    function togglePasswordVisibility() {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
+    
+    togglePasswordVisibility() {
+        const passwordInput = document.getElementById('password');
+        const toggleBtn = document.getElementById('toggle-password');
+        const icon = toggleBtn.querySelector('i');
         
-        const icon = togglePasswordBtn.querySelector('i');
-        icon.classList.toggle('fa-eye');
-        icon.classList.toggle('fa-eye-slash');
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
     }
-
-    // Manejo de imagen
-    function handleImagePreview(input) {
-        const preview = document.getElementById('foto-preview');
+    
+    previsualizarFoto() {
+        const fotoInput = document.getElementById('foto');
+        const previewDiv = document.getElementById('foto-preview');
         const previewImg = document.getElementById('preview-img');
-
-        if (input.files && input.files[0]) {
-            const file = input.files[0];
-            
-            // Validar tamaño (2MB máximo)
-            if (file.size > 2 * 1024 * 1024) {
-                showError('La imagen debe ser menor a 2MB');
-                input.value = '';
-                preview.style.display = 'none';
-                return;
-            }
-
+        
+        if (!fotoInput || !previewDiv || !previewImg) return;
+        
+        const file = fotoInput.files[0];
+        
+        if (file) {
             // Validar tipo de archivo
-            const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            if (!validTypes.includes(file.type)) {
-                showError('Solo se permiten imágenes JPG, PNG o GIF');
-                input.value = '';
-                preview.style.display = 'none';
+            const tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!tiposPermitidos.includes(file.type)) {
+                alert('Tipo de archivo no permitido. Use JPG, PNG o GIF.');
+                fotoInput.value = '';
+                previewDiv.style.display = 'none';
                 return;
             }
-
+            
+            // Validar tamaño (2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('El archivo es demasiado grande. Máximo 2MB.');
+                fotoInput.value = '';
+                previewDiv.style.display = 'none';
+                return;
+            }
+            
             const reader = new FileReader();
             reader.onload = function(e) {
                 previewImg.src = e.target.result;
-                preview.style.display = 'block';
-                
-                // Añadir efectos visuales
-                previewImg.style.opacity = '0';
-                setTimeout(() => {
-                    previewImg.style.transition = 'opacity 0.3s ease';
-                    previewImg.style.opacity = '1';
-                }, 100);
+                previewDiv.style.display = 'block';
             };
             reader.readAsDataURL(file);
         } else {
-            preview.style.display = 'none';
+            previewDiv.style.display = 'none';
         }
     }
-
-    // Verificaciones de existencia en BD
-    function checkDocumentoExists(documento) {
-        if (!validateDocumento(documento, tipoDocumentoSelect.value)) return;
-
-        const feedback = document.getElementById('documento-feedback');
-        showValidationMessage(feedback, 'Verificando disponibilidad...', 'checking');
-
-        fetch('../controllers/colaboradorController.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: `action=checkDocumento&numDocumento=${encodeURIComponent(documento)}`
-        })
-        .then(response => response.json())
-        .then(data => {
+    
+    validarCampo(input, validacion) {
+        const valor = input.value.trim();
+        
+        if (valor && !validacion.pattern.test(valor)) {
+            input.setCustomValidity(validacion.message);
+        } else {
+            input.setCustomValidity('');
+        }
+    }
+    
+    validarFormatoEmail(email) {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    }
+    
+    async crearColaborador() {
+        try {
+            // Validar formulario
+            if (!this.form.checkValidity()) {
+                this.form.reportValidity();
+                return;
+            }
+            
+            // Validaciones adicionales
+            if (!this.documentoValidado) {
+                this.mostrarMensaje('error', 'Por favor, valide el número de documento');
+                return;
+            }
+            
+            if (!this.correoValidado) {
+                this.mostrarMensaje('error', 'Por favor, valide el correo electrónico');
+                return;
+            }
+            
+            // Validar confirmación de contraseña
+            const password = document.getElementById('password').value;
+            const confirmarPassword = document.getElementById('confirmarPassword').value;
+            
+            if (password !== confirmarPassword) {
+                this.mostrarMensaje('error', 'Las contraseñas no coinciden');
+                return;
+            }
+            
+            this.mostrarLoading(true);
+            
+            const formData = new FormData(this.form);
+            formData.append('action', 'crear');
+            
+            const response = await fetch('../controllers/misColaboradoresControllers.php', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
             if (data.success) {
-                showValidationMessage(
-                    feedback,
-                    data.data.exists ? 'Este documento ya está registrado' : 'Documento disponible',
-                    data.data.exists ? 'error' : 'success'
-                );
-                setInputState(numDocumentoInput, data.data.exists ? 'invalid' : 'valid');
+                this.mostrarMensaje('success', data.message);
+                this.limpiarFormulario();
+                
+                // Redireccionar después de 2 segundos
+                setTimeout(() => {
+                    window.location.href = 'listaMisColaboradores.php';
+                }, 2000);
             } else {
-                showValidationMessage(feedback, 'Error al verificar documento', 'error');
+                this.mostrarMensaje('error', data.message);
             }
-        })
-        .catch(error => {
-            console.error('Error al verificar documento:', error);
-            showValidationMessage(feedback, 'Error de conexión', 'error');
-        });
-    }
-
-    function checkEmailExists(email) {
-        if (!validateEmail(email)) return;
-
-        const feedback = document.getElementById('correo-feedback');
-        showValidationMessage(feedback, 'Verificando disponibilidad...', 'checking');
-
-        fetch('../controllers/colaboradorController.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: `action=checkEmail&correo=${encodeURIComponent(email)}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showValidationMessage(
-                    feedback,
-                    data.data.exists ? 'Este correo ya está registrado' : 'Correo disponible',
-                    data.data.exists ? 'error' : 'success'
-                );
-                setInputState(correoInput, data.data.exists ? 'invalid' : 'valid');
-            } else {
-                showValidationMessage(feedback, 'Error al verificar correo', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error al verificar correo:', error);
-            showValidationMessage(feedback, 'Error de conexión', 'error');
-        });
-    }
-
-    // Vista previa del colaborador
-    function showColaboradorPreview() {
-        const preview = document.getElementById('colaborador-preview');
-        const content = document.getElementById('preview-content');
-        
-        const formData = new FormData(form);
-        const data = {};
-        
-        for (let [key, value] of formData.entries()) {
-            if (key !== 'foto') { // Excluir archivo
-                data[key] = value;
-            }
+        } catch (error) {
+            console.error('Error al crear colaborador:', error);
+            this.mostrarMensaje('error', 'Error de conexión. Intente nuevamente.');
+        } finally {
+            this.mostrarLoading(false);
         }
-
-        // Validar campos requeridos
-        const requiredFields = [
-            'numDocumento', 'tipoDocumento', 'nombres', 'apellidos', 
-            'correo', 'numTelefono', 'sexo', 'fechaNacimiento', 'roles', 'password'
-        ];
+    }
+    
+    mostrarVistaPrevia() {
+        const previewDiv = document.getElementById('colaborador-preview');
+        const previewContent = document.getElementById('preview-content');
         
-        const missingFields = requiredFields.filter(field => !data[field]);
-
-        if (missingFields.length > 0) {
-            showError('Complete todos los campos requeridos antes de ver la vista previa');
-            return;
-        }
-
-        const fotoPreview = document.getElementById('preview-img').src || '../../public/assets/images/default-user.png';
-        const edad = calcularEdad(data.fechaNacimiento);
-
-        content.innerHTML = `
-            <div class="preview-colaborador">
-                <div class="preview-foto">
-                    <img src="${fotoPreview}" alt="Foto de perfil" class="preview-photo">
-                    <div class="preview-badge">
-                        <span class="badge bg-${getRoleBadgeColor(data.roles)}">${data.roles}</span>
-                    </div>
+        if (!previewDiv || !previewContent) return;
+        
+        // Recopilar datos del formulario
+        const datos = {
+            numDocumento: document.getElementById('numDocumento').value,
+            tipoDocumento: document.getElementById('tipoDocumento').value,
+            nombres: document.getElementById('nombres').value,
+            apellidos: document.getElementById('apellidos').value,
+            correo: document.getElementById('correo').value,
+            numTelefono: document.getElementById('numTelefono').value,
+            sexo: document.getElementById('sexo').value,
+            fechaNacimiento: document.getElementById('fechaNacimiento').value,
+            roles: document.getElementById('roles').value,
+            solicitarContraseña: document.getElementById('solicitarContraseña').checked
+        };
+        
+        const html = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6><i class="fas fa-user"></i> Información Personal</h6>
+                    <p><strong>Documento:</strong> ${datos.numDocumento || 'No especificado'}</p>
+                    <p><strong>Tipo:</strong> ${datos.tipoDocumento || 'No especificado'}</p>
+                    <p><strong>Nombres:</strong> ${datos.nombres || 'No especificado'}</p>
+                    <p><strong>Apellidos:</strong> ${datos.apellidos || 'No especificado'}</p>
+                    <p><strong>Sexo:</strong> ${datos.sexo || 'No especificado'}</p>
+                    <p><strong>Fecha de Nacimiento:</strong> ${this.formatearFecha(datos.fechaNacimiento) || 'No especificada'}</p>
                 </div>
-                <div class="preview-datos">
-                    <div class="preview-section">
-                        <h6><i class="fas fa-id-card"></i> Identificación</h6>
-                        <div class="preview-grid">
-                            <div class="preview-item">
-                                <span class="preview-label">Documento:</span>
-                                <span class="preview-value">${data.numDocumento}</span>
-                            </div>
-                            <div class="preview-item">
-                                <span class="preview-label">Tipo:</span>
-                                <span class="preview-value">${data.tipoDocumento}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="preview-section">
-                        <h6><i class="fas fa-user"></i> Información Personal</h6>
-                        <div class="preview-grid">
-                            <div class="preview-item">
-                                <span class="preview-label">Nombres:</span>
-                                <span class="preview-value">${data.nombres}</span>
-                            </div>
-                            <div class="preview-item">
-                                <span class="preview-label">Apellidos:</span>
-                                <span class="preview-value">${data.apellidos}</span>
-                            </div>
-                            <div class="preview-item">
-                                <span class="preview-label">Sexo:</span>
-                                <span class="preview-value">${data.sexo}</span>
-                            </div>
-                            <div class='preview-item'>
-                                <span class='preview-label'>Edad:</span>
-                                <span class='preview-value'>${edad} años</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="preview-section">
-                        <h6><i class="fas fa-contact-book"></i> Contacto</h6>
-                        <div class="preview-grid">
-                            <div class="preview-item">
-                                <span class="preview-label">Correo:</span>
-                                <span class="preview-value">${data.correo}</span>
-                            </div>
-                            <div class="preview-item">
-                                <span class="preview-label">Teléfono:</span>
-                                <span class="preview-value">${data.numTelefono}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="preview-section">
-                        <h6><i class="fas fa-cog"></i> Configuración</h6>
-                        <div class="preview-grid">
-                            <div class="preview-item">
-                                <span class="preview-label">Solicitar cambio de contraseña:</span>
-                                <span class="preview-value">
-                                    <span class="badge ${data.solicitarContraseña ? 'bg-warning' : 'bg-success'}">
-                                        ${data.solicitarContraseña ? 'Sí' : 'No'}
-                                    </span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                <div class="col-md-6">
+                    <h6><i class="fas fa-envelope"></i> Información de Contacto</h6>
+                    <p><strong>Correo:</strong> ${datos.correo || 'No especificado'}</p>
+                    <p><strong>Teléfono:</strong> ${datos.numTelefono || 'No especificado'}</p>
+                    <p><strong>Rol:</strong> <span class="badge ${this.getBadgeClass(datos.roles)}">${datos.roles || 'No especificado'}</span></p>
+                    <p><strong>Solicitar cambio de contraseña:</strong> ${datos.solicitarContraseña ? 'Sí' : 'No'}</p>
                 </div>
             </div>
         `;
-
-        preview.style.display = 'block';
-        preview.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // Validación y envío del formulario
-    function validateForm() {
-        let isValid = true;
-        const errors = [];
-
-        // Validar documento
-        if (!validateDocumento(numDocumentoInput.value, tipoDocumentoSelect.value)) {
-            errors.push('Número de documento inválido');
-            isValid = false;
-        }
-
-        // Validar correo
-        if (!validateEmail(correoInput.value)) {
-            errors.push('Correo electrónico inválido');
-            isValid = false;
-        }
-
-        // Validar contraseñas
-        const passwordValidation = validatePasswordStrength(passwordInput.value);
-        if (!passwordValidation.isValid) {
-            errors.push('La contraseña no cumple con los requisitos mínimos');
-            isValid = false;
-        }
-
-        if (!checkPasswordMatch()) {
-            errors.push('Las contraseñas no coinciden');
-            isValid = false;
-        }
-
-        // Validar teléfono
-        if (!validateTelefono(document.getElementById('numTelefono').value)) {
-            errors.push('Número de teléfono inválido');
-            isValid = false;
-        }
-
-        // Validar edad (mayor de 18 años)
-        const fechaNacimiento = new Date(fechaNacimientoInput.value);
-        const edad = calcularEdad(fechaNacimientoInput.value);
-        if (edad < 18) {
-            errors.push('El colaborador debe ser mayor de 18 años');
-            isValid = false;
-        }
-
-        // Validar campos requeridos
-        const camposRequeridos = form.querySelectorAll('[required]');
-        camposRequeridos.forEach(campo => {
-            if (!campo.value.trim()) {
-                errors.push(`El campo ${campo.labels[0]?.textContent || campo.name} es requerido`);
-                isValid = false;
-            }
-        });
-
-        if (!isValid) {
-            showError('Por favor corrija los siguientes errores:<br>• ' + errors.join('<br>• '));
-        }
-
-        return isValid;
-    }
-
-    function handleFormSubmit() {
-        if (!validateForm()) {
-            return;
-        }
-
-        const submitBtn = form.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
         
-        // Mostrar estado de carga
-        setLoadingState(submitBtn, true, 'Creando colaborador...');
-        hideMessages();
-
-        const formData = new FormData(form);
-        formData.append('action', 'crear');
-
-        fetch('../controllers/colaboradorController.php', {
-            method: 'POST',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: formData
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                showSuccess('¡Colaborador creado exitosamente!');
-                resetForm();
-                
-                // Opcional: redirigir después de mostrar el mensaje
-                setTimeout(() => {
-                    if (confirm('¿Deseas ir a la lista de colaboradores?')) {
-                        window.location.href = 'listaMisColaboradores.php';
-                    }
-                }, 2000);
-            } else {
-                showError(data.message || 'Error al crear el colaborador');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showError('Error de conexión. Verifique su conexión e intente nuevamente.');
-        })
-        .finally(() => {
-            setLoadingState(submitBtn, false, originalText);
-        });
+        previewContent.innerHTML = html;
+        previewDiv.style.display = 'block';
+        
+        // Scroll suave hacia la vista previa
+        previewDiv.scrollIntoView({ behavior: 'smooth' });
     }
-
-    function resetForm() {
-        if (confirm('¿Está seguro de que desea limpiar el formulario?')) {
-            form.reset();
-            hideMessages();
-            clearValidationMessages();
-            hidePreview();
+    
+    limpiarFormulario() {
+        if (this.form) {
+            this.form.reset();
             
-            // Limpiar vista previa de imagen
-            const preview = document.getElementById('foto-preview');
-            preview.style.display = 'none';
+            // Limpiar validaciones
+            this.documentoValidado = false;
+            this.correoValidado = false;
+            this.passwordValida = false;
             
-            // Resetear estados de inputs
-            const inputs = form.querySelectorAll('input, select');
-            inputs.forEach(input => setInputState(input, 'neutral'));
+            // Limpiar feedback
+            this.limpiarFeedback('documento-feedback');
+            this.limpiarFeedback('correo-feedback');
+            this.limpiarFeedback('password-strength');
+            this.limpiarFeedback('password-match');
+            
+            // Ocultar vista previa de foto
+            const previewDiv = document.getElementById('foto-preview');
+            if (previewDiv) {
+                previewDiv.style.display = 'none';
+            }
+            
+            // Ocultar vista previa del colaborador
+            const colaboradorPreview = document.getElementById('colaborador-preview');
+            if (colaboradorPreview) {
+                colaboradorPreview.style.display = 'none';
+            }
+            
+            // Resetear rol por defecto
+            this.configurarRolPorDefecto();
         }
     }
-
-    // Funciones auxiliares
-    function showValidationMessage(element, message, type) {
-        const iconMap = {
-            success: 'fa-check-circle',
-            error: 'fa-times-circle',
-            checking: 'fa-spinner fa-spin'
+    
+    mostrarMensaje(tipo, mensaje) {
+        const successDiv = document.getElementById('success-message');
+        const errorDiv = document.getElementById('error-message');
+        const errorText = document.getElementById('error-text');
+        
+        // Ocultar ambos mensajes primero
+        if (successDiv) successDiv.style.display = 'none';
+        if (errorDiv) errorDiv.style.display = 'none';
+        
+        if (tipo === 'success' && successDiv) {
+            successDiv.style.display = 'block';
+            setTimeout(() => successDiv.style.display = 'none', 5000);
+            
+            // Scroll al mensaje
+            successDiv.scrollIntoView({ behavior: 'smooth' });
+        } else if (tipo === 'error' && errorDiv && errorText) {
+            errorText.textContent = mensaje;
+            errorDiv.style.display = 'block';
+            setTimeout(() => errorDiv.style.display = 'none', 8000);
+            
+            // Scroll al mensaje
+            errorDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+    
+    mostrarLoading(mostrar) {
+        const submitBtn = this.form.querySelector('button[type="submit"]');
+        if (!submitBtn) return;
+        
+        if (mostrar) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando...';
+        } else {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Crear Colaborador';
+        }
+    }
+    
+    mostrarFeedback(elemento, tipo, mensaje) {
+        if (!elemento) return;
+        
+        const clases = {
+            'success': 'text-success',
+            'error': 'text-danger',
+            'info': 'text-info',
+            'warning': 'text-warning'
         };
         
-        const colorMap = {
-            success: 'text-success',
-            error: 'text-danger',
-            checking: 'text-info'
+        const iconos = {
+            'success': 'fa-check-circle',
+            'error': 'fa-exclamation-circle',
+            'info': 'fa-info-circle',
+            'warning': 'fa-exclamation-triangle'
         };
         
-        const icon = iconMap[type] || 'fa-info-circle';
-        const color = colorMap[type] || 'text-muted';
-        
-        element.innerHTML = `
-            <small class="${color}">
-                <i class="fas ${icon}"></i> ${message}
+        elemento.innerHTML = `
+            <small class="${clases[tipo] || 'text-muted'}">
+                <i class="fas ${iconos[tipo] || 'fa-info-circle'}"></i>
+                ${mensaje}
             </small>
         `;
     }
-
-    function setInputState(input, state) {
-        // Limpiar clases anteriores
-        input.classList.remove('is-valid', 'is-invalid');
-        
-        switch (state) {
-            case 'valid':
-                input.classList.add('is-valid');
-                break;
-            case 'invalid':
-                input.classList.add('is-invalid');
-                break;
-            case 'neutral':
-            default:
-                // Sin clases adicionales
-                break;
+    
+    limpiarFeedback(elementoId) {
+        const elemento = document.getElementById(elementoId);
+        if (elemento) {
+            elemento.innerHTML = '';
         }
     }
-
-    function clearValidationMessages() {
-        const feedbackElements = [
-            'documento-feedback', 
-            'correo-feedback', 
-            'password-strength', 
-            'password-match'
-        ];
-        
-        feedbackElements.forEach(id => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.innerHTML = '';
-            }
-        });
+    
+    // Funciones utilitarias
+    formatearFecha(fecha) {
+        if (!fecha) return '';
+        const date = new Date(fecha);
+        return date.toLocaleDateString('es-CO');
     }
-
-    function setLoadingState(button, isLoading, loadingText = 'Cargando...') {
-        if (isLoading) {
-            button.disabled = true;
-            button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${loadingText}`;
-            button.classList.add('loading');
-        } else {
-            button.disabled = false;
-            button.classList.remove('loading');
-        }
-    }
-
-    function showSuccess(message) {
-        const successDiv = document.getElementById('success-message');
-        const messageDiv = successDiv.querySelector('div:last-child') || successDiv;
-        
-        if (messageDiv !== successDiv) {
-            messageDiv.textContent = message;
-        }
-        
-        successDiv.style.display = 'block';
-        successDiv.scrollIntoView({ behavior: 'smooth' });
-        
-        // Auto-ocultar después de 5 segundos
-        setTimeout(() => {
-            successDiv.style.display = 'none';
-        }, 5000);
-    }
-
-    function showError(message) {
-        const errorDiv = document.getElementById('error-message');
-        const errorText = document.getElementById('error-text') || errorDiv.querySelector('div:last-child');
-        
-        if (errorText) {
-            errorText.innerHTML = message;
-        } else {
-            errorDiv.innerHTML = `❌ <strong>Error</strong><br>${message}`;
-        }
-        
-        errorDiv.style.display = 'block';
-        errorDiv.scrollIntoView({ behavior: 'smooth' });
-        
-        // Auto-ocultar después de 8 segundos
-        setTimeout(() => {
-            errorDiv.style.display = 'none';
-        }, 8000);
-    }
-
-    function hideMessages() {
-        const successMessage = document.getElementById('success-message');
-        const errorMessage = document.getElementById('error-message');
-        
-        if (successMessage) successMessage.style.display = 'none';
-        if (errorMessage) errorMessage.style.display = 'none';
-    }
-
-    function hidePreview() {
-        const preview = document.getElementById('colaborador-preview');
-        preview.style.display = 'none';
-    }
-
-    function calcularEdad(fechaNacimiento) {
-        const hoy = new Date();
-        const fechaNac = new Date(fechaNacimiento);
-        let edad = hoy.getFullYear() - fechaNac.getFullYear();
-        const mesActual = hoy.getMonth();
-        const mesNac = fechaNac.getMonth();
-        
-        if (mesActual < mesNac || (mesActual === mesNac && hoy.getDate() < fechaNac.getDate())) {
-            edad--;
-        }
-        
-        return edad;
-    }
-
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    }
-
-    function getRoleBadgeColor(role) {
-        const colors = {
-            'Administrador': 'danger',
-            'Colaborador': 'primary',
-            'Usuario': 'secondary'
+    
+    getBadgeClass(rol) {
+        const badges = {
+            'Administrador': 'bg-danger',
+            'Colaborador': 'bg-primary',
+            'Usuario': 'bg-success'
         };
-        return colors[role] || 'secondary';
+        return badges[rol] || 'bg-secondary';
     }
+}
 
-    // Función debounce para optimizar las validaciones en tiempo real
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    // Funciones de accesibilidad
-    function setupAccessibility() {
-        // Atajos de teclado
-        document.addEventListener('keydown', function(e) {
-            // Ctrl + Enter para enviar formulario
-            if (e.ctrlKey && e.key === 'Enter') {
-                e.preventDefault();
-                if (validateForm()) {
-                    handleFormSubmit();
-                }
-            }
-            
-            // Escape para limpiar mensajes
-            if (e.key === 'Escape') {
-                hideMessages();
-            }
-        });
-        
-        // Mejorar navegación con Tab
-        const focusableElements = form.querySelectorAll(
-            'input, select, button, [tabindex]:not([tabindex="-1"])'
-        );
-        
-        focusableElements.forEach((el, index) => {
-            el.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' && e.target.type !== 'submit') {
-                    e.preventDefault();
-                    const nextElement = focusableElements[index + 1];
-                    if (nextElement) {
-                        nextElement.focus();
-                    }
-                }
-            });
-        });
-    }
-
-    // Inicializar características de accesibilidad
-    setupAccessibility();
-
-    // Validación de conectividad
-    function checkConnectivity() {
-        if (!navigator.onLine) {
-            showError('Sin conexión a internet. Verifique su conexión.');
-            return false;
-        }
-        return true;
-    }
-
-    // Event listeners para conectividad
-    window.addEventListener('online', function() {
-        hideMessages();
-        showSuccess('Conexión restaurada');
-    });
-
-    window.addEventListener('offline', function() {
-        showError('Se perdió la conexión a internet');
-    });
-
-    // Función para exportar datos del formulario (útil para debugging)
-    window.exportFormData = function() {
-        const formData = new FormData(form);
-        const data = {};
-        
-        for (let [key, value] of formData.entries()) {
-            data[key] = value;
-        }
-        
-        console.log('Datos del formulario:', data);
-        return data;
-    };
-
-    // Auto-guardado en localStorage (opcional)
-    function setupAutoSave() {
-        const inputs = form.querySelectorAll('input:not([type="password"]):not([type="file"]), select');
-        
-        inputs.forEach(input => {
-            // Cargar valor guardado
-            const savedValue = localStorage.getItem(`colaborador_form_${input.name}`);
-            if (savedValue && !input.value) {
-                input.value = savedValue;
-            }
-            
-            // Guardar en cada cambio
-            input.addEventListener('input', debounce(function() {
-                if (this.value) {
-                    localStorage.setItem(`colaborador_form_${this.name}`, this.value);
-                } else {
-                    localStorage.removeItem(`colaborador_form_${this.name}`);
-                }
-            }, 1000));
-        });
-    }
-
-    // Función para limpiar auto-guardado
-    function clearAutoSave() {
-        const inputs = form.querySelectorAll('input, select');
-        inputs.forEach(input => {
-            localStorage.removeItem(`colaborador_form_${input.name}`);
-        });
-    }
-
-    // Inicializar auto-guardado
-    setupAutoSave();
-
-    // Limpiar auto-guardado cuando el formulario se envía exitosamente
-    form.addEventListener('submit', function() {
-        // Se limpiará después de un envío exitoso
-        setTimeout(clearAutoSave, 1000);
-    });
-
-    // Notificar si hay datos guardados
-    window.addEventListener('load', function() {
-        const hasSavedData = localStorage.getItem('colaborador_form_nombres');
-        if (hasSavedData) {
-            showSuccess('Se restauraron algunos datos guardados anteriormente');
-        }
-    });
-
-    // Confirmación antes de salir si hay datos sin guardar
-    window.addEventListener('beforeunload', function(e) {
-        const formData = new FormData(form);
-        let hasData = false;
-        
-        for (let [key, value] of formData.entries()) {
-            if (value && key !== 'action') {
-                hasData = true;
-                break;
-            }
-        }
-        
-        if (hasData) {
-            e.preventDefault();
-            e.returnValue = '¿Está seguro de que desea salir? Los datos no guardados se perderán.';
-            return e.returnValue;
-        }
-    });
-
-    console.log('Script de colaboradores inicializado correctamente');
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    window.crearColaboradorManager = new CrearColaboradorManager();
 });

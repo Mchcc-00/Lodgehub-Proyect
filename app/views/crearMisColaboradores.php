@@ -43,7 +43,7 @@
                 <div id="error-text" style="margin-top: 5px; font-size: 0.9rem;"></div>
             </div>
 
-            <form id="colaborador-form" action="../controllers/colaboradorController.php" method="POST" enctype="multipart/form-data">
+            <form id="colaborador-form" action="../controllers/misColaboradoresControllers.php" method="POST" enctype="multipart/form-data">
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="numDocumento">Número de Documento <span class="required">*</span></label>
@@ -112,8 +112,8 @@
                         <label for="roles">Rol en el Sistema <span class="required">*</span></label>
                         <select id="roles" name="roles" required>
                             <option value="">Seleccione un rol</option>
-                            <option value="Administrador">Administrador</option>
-                            <option value="Colaborador">Colaborador</option>
+                            <option value="Administrador">Administrador</option> 
+                            <option value="Colaborador">Colaborador</option> // colocar automaticamente este rol
                             <option value="Usuario">Usuario</option>
                         </select>
                         <small class="form-text text-muted">Nivel de acceso en el sistema</small>

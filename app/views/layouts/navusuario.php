@@ -43,11 +43,7 @@
                         <hr class="dropdown-divider">
                     </li>
                     <li>
-<<<<<<< HEAD
-                        <a class="dropdown-item text-danger" href="cerrarSesion.php">
-=======
                         <a class="dropdown-item text-danger" href="/lodgehub/app/views/cerrarSesion.php">
->>>>>>> 45fca8e561555ae715c9b68c98c22314b551fdba
                             <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
                         </a>
                     </li>

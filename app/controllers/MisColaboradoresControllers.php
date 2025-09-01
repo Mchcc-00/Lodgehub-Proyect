@@ -44,7 +44,7 @@ function logError($error, $context = '') {
 
 try {
     // Incluir el modelo
-    require_once '../models/MisColaboradoresModel.php';
+    require_once '../models/misColaboradoresModel.php';
     
     class ColaboradorController {
         private $colaboradorModel;
