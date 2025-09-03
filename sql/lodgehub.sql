@@ -1,3 +1,171 @@
+CREATE DATABASE IF NOT EXISTS Lodgehub;
+USE Lodgehub;
+
+-- Tabla usuarios (debe crearse primero)
+CREATE TABLE IF NOT EXISTS tp_usuarios (
+    numDocumento VARCHAR(15) NOT NULL,
+    tipoDocumento ENUM ('Cédula de Ciudadanía','Tarjeta de Identidad','Cedula de Extranjeria','Pasaporte','Registro Civil') NOT NULL, 
+    nombres VARCHAR(50) NOT NULL,
+    apellidos VARCHAR(50) NOT NULL,
+    numTelefono VARCHAR(15) NOT NULL,
+    correo VARCHAR(255) NOT NULL,
+    sexo ENUM ('Hombre','Mujer','Otro','Prefiero no decirlo') NOT NULL,
+    fechaNacimiento DATE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    foto VARCHAR(255),
+    solicitarContraseña ENUM('0','1') DEFAULT '0',
+    tokenPassword VARCHAR(100),
+    sesionCaducada ENUM('1','0') DEFAULT '1',
+    roles ENUM ('Administrador','Colaborador','Usuario') NOT NULL,
+    
+    PRIMARY KEY (numDocumento)          
+) ENGINE=INNODB;
+
+-- Tabla hotel (corregida - removida FK inexistente)
+CREATE TABLE IF NOT EXISTS tp_hotel (
+    id INT(3) AUTO_INCREMENT NOT NULL,
+    nit VARCHAR(20) UNIQUE NOT NULL,    -- NIT único pero no PK
+    nombre VARCHAR(100) NOT NULL,
+    direccion VARCHAR(200),
+    telefono VARCHAR(15),
+    correo VARCHAR(100),
+    foto VARCHAR(255),
+    descripcion TEXT,
+    -- Si necesitas asociar hotel con usuario administrador, agrega:
+    numDocumentoAdmin VARCHAR(15),
+
+    PRIMARY KEY (id),
+    FOREIGN KEY (numDocumentoAdmin) REFERENCES tp_usuarios (numDocumento)
+) ENGINE=INNODB; 
+
+-- Tabla personal (CORREGIDA)
+CREATE TABLE IF NOT EXISTS ti_personal (
+    id_hotel INT(3) NOT NULL,
+    numDocumento VARCHAR(15) NOT NULL,  -- CORREGIDO: debe ser VARCHAR como en tp_usuarios
+    roles TEXT NOT NULL,
+
+    PRIMARY KEY (id_hotel, numDocumento),
+    FOREIGN KEY (id_hotel) REFERENCES tp_hotel (id),
+    FOREIGN KEY (numDocumento) REFERENCES tp_usuarios (numDocumento)
+) ENGINE=INNODB;  -- CORREGIDO: removida coma extra
+
+-- Tabla huéspedes
+CREATE TABLE IF NOT EXISTS tp_huespedes (
+    numDocumento VARCHAR(15) NOT NULL,
+    numTelefono VARCHAR(15) NOT NULL,
+    correo VARCHAR(30) NOT NULL,
+    nombres VARCHAR(50) NOT NULL,
+    apellidos VARCHAR(50) NOT NULL,
+    tipoDocumento ENUM ('Cedula de Ciudadania','Tarjeta de Identidad','Cedula de Extranjeria','Pasaporte','Registro Civil') NOT NULL,
+    sexo ENUM ('Hombre','Mujer','Otro','Prefiero no decirlo') NOT NULL,
+    -- NUEVO: Campos de auditoría
+    fechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fechaActualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    PRIMARY KEY (numDocumento),
+    UNIQUE KEY uk_correo (correo)
+) ENGINE=INNODB;
+
+-- Tabla tipo habitación
+CREATE TABLE IF NOT EXISTS td_tipoHabitacion (
+    id INT(3) AUTO_INCREMENT NOT NULL,
+    descripcion VARCHAR(20) NOT NULL,
+    cantidad INT(3) NOT NULL DEFAULT 0,
+
+    PRIMARY KEY (id)
+) ENGINE=INNODB;
+
+-- Tabla habitaciones
+CREATE TABLE IF NOT EXISTS tp_habitaciones (
+    numero VARCHAR(5) NOT NULL,
+    costo DECIMAL(10,2) NOT NULL, 
+    capacidad INT(3) NOT NULL,
+    tipoHabitacion INT(3) NOT NULL,
+    foto VARCHAR(255) DEFAULT NULL,
+    descripcion TEXT DEFAULT NULL,
+    estado ENUM ('Disponible', 'Reservada', 'Ocupada', 'Mantenimiento') NOT NULL DEFAULT 'Disponible',
+    descripcionMantenimiento TEXT DEFAULT NULL,
+    estadoMantenimiento ENUM ('Activo','Inactivo') NOT NULL DEFAULT 'Activo',
+
+    PRIMARY KEY (numero),
+    UNIQUE KEY uk_numero (numero),
+    FOREIGN KEY (tipoHabitacion) REFERENCES td_tipohabitacion (id)
+) ENGINE=INNODB;
+
+-- Tabla PQRS
+CREATE TABLE IF NOT EXISTS tp_pqrs (
+    id INT(10) AUTO_INCREMENT NOT NULL,
+    fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fechaLimite DATE DEFAULT (DATE_ADD(CURRENT_DATE, INTERVAL 5 DAY)),
+    tipo ENUM ('Peticiones','Quejas','Reclamos','Sugerencias','Felicitaciones') NOT NULL,
+    descripcion TEXT NOT NULL,
+    numdocumento VARCHAR(15) NOT NULL,
+    prioridad ENUM ('Bajo','Alto') NOT NULL,
+    categoria ENUM ('Servicio','Habitación','Atención','Otro') NOT NULL,
+    estado ENUM ('Pendiente', 'Finalizado') NOT NULL,
+    fechaFinalizacion DATETIME DEFAULT NULL,
+    respuesta TEXT DEFAULT NULL,
+
+    PRIMARY KEY (id),
+    FOREIGN KEY (numdocumento) REFERENCES tp_usuarios (numDocumento)
+) ENGINE=INNODB;
+
+-- Tabla reservas (CORREGIDA)
+CREATE TABLE IF NOT EXISTS tp_reservas (
+    id INT(3) AUTO_INCREMENT NOT NULL,
+    pagoFinal DECIMAL(30,2) NOT NULL, -- se multiplica la habitación por la cantidad de días
+    fechainicio DATE NOT NULL,
+    fechaFin DATE NOT NULL,
+    cantidadAdultos INT(2),
+    cantidadNinos INT(2),
+    cantidadDiscapacitados INT(2), 
+    motivoReserva ENUM ('Negocios','Personal','Viaje','Familiar', 'Otro') NOT NULL,
+    numeroHabitacion VARCHAR(10) NOT NULL,
+    metodoPago ENUM ('Tarjeta','Efectivo','PSE') NOT NULL,
+    informacionAdicional TEXT,
+    us_numDocumento VARCHAR(15) NOT NULL,
+    hue_numDocumento VARCHAR(15) NOT NULL,
+    estado ENUM ('Activa', 'Cancelada', 'Finalizada', 'Pendiente') NOT NULL,
+    fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (id),
+    FOREIGN KEY (numeroHabitacion) REFERENCES tp_habitaciones (numero),
+    FOREIGN KEY (us_numDocumento) REFERENCES tp_usuarios (numDocumento),  -- CORREGIDO: nombre de columna
+    FOREIGN KEY (hue_numDocumento) REFERENCES tp_huespedes (numDocumento) -- CORREGIDO: nombre de columna
+) ENGINE=INNODB;
+
+-- Tabla factura
+CREATE TABLE IF NOT EXISTS tp_factura (
+    id INT(3) AUTO_INCREMENT NOT NULL,
+    infoReserva INT(3) NOT NULL,
+    fechaFactura DATETIME DEFAULT CURRENT_TIMESTAMP,
+    infoHotel INT(3) NOT NULL,
+    total DECIMAL(30,2) NOT NULL,
+
+    PRIMARY KEY (id),
+    FOREIGN KEY (infoReserva) REFERENCES tp_reservas (id),
+    FOREIGN KEY (infoHotel) REFERENCES tp_hotel (id)
+) ENGINE=INNODB;
+
+-- Tabla mantenimiento
+CREATE TABLE IF NOT EXISTS tp_mantenimiento (
+    id INT(4) AUTO_INCREMENT NOT NULL,
+    numeroHabitacion VARCHAR(5) NOT NULL,
+    tipo ENUM ('Limpieza','Estructura','Eléctrico','Otro') NOT NULL,
+    problemaDescripcion VARCHAR(50) NOT NULL,
+    fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    ultimaActualizacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    frecuencia ENUM ('Sí', 'No') NOT NULL,
+    cantFrecuencia ENUM ('Diario', 'Semanal', 'Quincenal', 'Mensual') NOT NULL,
+    prioridad ENUM ('Bajo', 'Alto') NOT NULL,
+    numDocumento VARCHAR(15) NOT NULL,
+    estado ENUM ('Pendiente','Finalizado') NOT NULL DEFAULT 'Pendiente',
+
+    PRIMARY KEY (id),
+    FOREIGN KEY (numeroHabitacion) REFERENCES tp_habitaciones (numero),
+    FOREIGN KEY (numDocumento) REFERENCES tp_usuarios (numDocumento)
+) ENGINE=INNODB;
+
 -- =============================================
 -- INSERTS DE DATOS DE EJEMPLO
 -- =============================================
@@ -12,21 +180,21 @@ INSERT INTO td_tipoHabitacion (descripcion, cantidad) VALUES
 
 -- Insertar usuarios
 INSERT INTO tp_usuarios (numDocumento, tipoDocumento, nombres, apellidos, numTelefono, correo, sexo, fechaNacimiento, password, roles) VALUES 
-('1234567890', 'Cédula de Ciudadanía', 'Juan Carlos', 'Pérez García', '3001234567', 'admin@lodgehub.com', 'Hombre', '1985-03-15', '$2y$10$hashedpassword1', 'Administrador'),
-('9876543210', 'Cédula de Ciudadanía', 'María Elena', 'González López', '3009876543', 'maria.gonzalez@lodgehub.com', 'Mujer', '1990-07-22', '$2y$10$hashedpassword2', 'Colaborador'),
-('5555666677', 'Cédula de Ciudadanía', 'Carlos Alberto', 'Rodríguez Martín', '3005556666', 'carlos.rodriguez@lodgehub.com', 'Hombre', '1988-11-10', '$2y$10$hashedpassword3', 'Colaborador'),
+('1014596349', 'Cédula de Ciudadanía', 'Brayan Felipe', 'Pulido Lopez', '3172509298', 'brayan06.pulido@gmail.com', 'Hombre', '2006-03-03', '123456789', 'Administrador'),
+('1000289068', 'Cédula de Ciudadanía', 'Favian Alejandro', 'Machuca Pedraza', '3144235027', 'bleachowl98@gmail.com', 'Mujer', '2003-10-15', '123456789', 'Colaborador'),
+('1019987917', 'Cédula de Ciudadanía', 'Camilo Andres', 'Guerrero Yanquen', '3027644457', 'camiloagycr321@gmail.com', 'Hombre', '2006-02-15', '123456789', 'Usuario'),
 ('1111222233', 'Cédula de Ciudadanía', 'Ana Patricia', 'Morales Ruiz', '3001112222', 'ana.morales@lodgehub.com', 'Mujer', '1992-05-18', '$2y$10$hashedpassword4', 'Usuario'),
 ('7777888899', 'Pasaporte', 'Roberto', 'Silva Santos', '3007778888', 'roberto.silva@email.com', 'Hombre', '1987-09-25', '$2y$10$hashedpassword5', 'Usuario');
 
 -- Insertar hotel
 INSERT INTO tp_hotel (nit, nombre, direccion, telefono, correo, descripcion, numDocumentoAdmin) VALUES 
-('900123456-1', 'Hotel Lodge Hub Premium', 'Calle 123 #45-67, Bogotá, Colombia', '6013334444', 'info@lodgehub.com', 'Hotel de lujo ubicado en el corazón de la ciudad, ofreciendo servicios de alta calidad y comodidad excepcional.', '1234567890');
+('900123456-1', 'Hotel Lodge Hub Premium', 'Calle 123 #45-67, Bogotá, Colombia', '6013334444', 'info@lodgehub.com', 'Hotel de lujo ubicado en el corazón de la ciudad, ofreciendo servicios de alta calidad y comodidad excepcional.', '1014596349');
 
 -- Insertar personal del hotel
 INSERT INTO ti_personal (id_hotel, numDocumento, roles) VALUES 
-(1, '1234567890', 'Administrador General'),
-(1, '9876543210', 'Recepcionista'),
-(1, '5555666677', 'Mantenimiento');
+(1, '1014596349', 'Administrador'),
+(1, '1000289068', 'colaborador');
+
 
 -- Insertar habitaciones
 INSERT INTO tp_habitaciones (numero, costo, capacidad, tipoHabitacion, descripcion, estado) VALUES 
@@ -40,7 +208,7 @@ INSERT INTO tp_habitaciones (numero, costo, capacidad, tipoHabitacion, descripci
 
 -- Insertar huéspedes
 INSERT INTO tp_huespedes (numDocumento, numTelefono, correo, nombres, apellidos, tipoDocumento, sexo) VALUES 
-('4444555566', '3004445555', 'luis.martinez@email.com', 'Luis Fernando', 'Martínez Castro', 'Cedula de Ciudadania', 'Hombre'),
+('1140915008', '3170560930', '4198126@gmail..com', 'ANGELO', 'gONZALEZ', 'Cedula de Ciudadania', 'Mujer'),
 ('6666777788', '3006667777', 'sofia.hernandez@email.com', 'Sofía Isabel', 'Hernández Vega', 'Cedula de Ciudadania', 'Mujer'),
 ('8888999900', '3008889999', 'pedro.jimenez@email.com', 'Pedro Antonio', 'Jiménez Flores', 'Cedula de Ciudadania', 'Hombre'),
 ('2222333344', '3002223333', 'laura.torres@email.com', 'Laura Cristina', 'Torres Mendoza', 'Cedula de Ciudadania', 'Mujer'),
@@ -48,21 +216,21 @@ INSERT INTO tp_huespedes (numDocumento, numTelefono, correo, nombres, apellidos,
 
 -- Insertar reservas
 INSERT INTO tp_reservas (pagoFinal, fechainicio, fechaFin, cantidadAdultos, cantidadNinos, cantidadDiscapacitados, motivoReserva, numeroHabitacion, metodoPago, informacionAdicional, us_numDocumento, hue_numDocumento, estado) VALUES 
-(240000.00, '2025-09-10', '2025-09-12', 2, 0, 0, 'Personal', '202', 'Tarjeta', 'Luna de miel', '1111222233', '4444555566', 'Activa'),
+(240000.00, '2025-09-10', '2025-09-12', 2, 0, 0, 'Personal', '202', 'Tarjeta', 'Luna de miel', '1000289068', '1140915008', 'Activa'),
 (500000.00, '2025-09-15', '2025-09-17', 2, 0, 0, 'Negocios', '301', 'PSE', 'Reunión empresarial', '7777888899', '6666777788', 'Activa'),
 (160000.00, '2025-09-05', '2025-09-07', 1, 0, 0, 'Personal', '101', 'Efectivo', NULL, '1111222233', '8888999900', 'Finalizada'),
 (360000.00, '2025-09-20', '2025-09-22', 3, 1, 0, 'Familiar', '401', 'Tarjeta', 'Vacaciones familiares', '7777888899', '2222333344', 'Pendiente');
 
 -- Insertar PQRS
 INSERT INTO tp_pqrs (tipo, descripcion, numdocumento, prioridad, categoria, estado) VALUES 
-('Quejas', 'El aire acondicionado de la habitación 202 no funcionaba correctamente durante mi estadía.', '1111222233', 'Alto', 'Habitación', 'Finalizado'),
+('Quejas', 'El aire acondicionado de la habitación 202 no funcionaba correctamente durante mi estadía.', '1140915008', 'Alto', 'Habitación', 'Finalizado'),
 ('Sugerencias', 'Sería genial si pudieran agregar más opciones vegetarianas en el menú del restaurante.', '7777888899', 'Bajo', 'Servicio', 'Pendiente'),
 ('Felicitaciones', 'Excelente atención del personal de recepción, muy amables y profesionales.', '1111222233', 'Bajo', 'Atención', 'Finalizado'),
 ('Peticiones', 'Solicito información sobre descuentos para estadías prolongadas.', '7777888899', 'Bajo', 'Otro', 'Pendiente');
 
 -- Insertar mantenimientos
 INSERT INTO tp_mantenimiento (numeroHabitacion, tipo, problemaDescripcion, frecuencia, cantFrecuencia, prioridad, numDocumento, estado) VALUES 
-('501', 'Eléctrico', 'Falla en el sistema de iluminación LED', 'No', 'Diario', 'Alto', '5555666677', 'Pendiente'),
+('501', 'Eléctrico', 'Falla en el sistema de iluminación LED', 'No', 'Diario', 'Alto', '1000289068', 'Pendiente'),
 ('202', 'Estructura', 'Aire acondicionado requiere limpieza filtros', 'Sí', 'Mensual', 'Bajo', '5555666677', 'Finalizado'),
 ('301', 'Limpieza', 'Limpieza profunda de alfombras', 'Sí', 'Quincenal', 'Bajo', '9876543210', 'Pendiente');
 
