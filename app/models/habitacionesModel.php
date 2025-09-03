@@ -14,7 +14,7 @@ class Room {
                          h.estado, h.descripcionMantenimiento, h.estadoMantenimiento,
                          t.descripcion as tipoDescripcion
                   FROM tp_habitaciones h 
-                  LEFT JOIN td_tipoHabitacion t ON h.tipoHabitacion = t.id 
+                  INNER JOIN td_tipoHabitacion t ON h.tipoHabitacion = t.id 
                   ORDER BY h.numero";
         
         $stmt = $this->db->prepare($query);
@@ -26,7 +26,7 @@ class Room {
     public function getRoomByNumber($numero) {
         $query = "SELECT h.*, t.descripcion as tipoDescripcion
                   FROM tp_habitaciones h 
-                  LEFT JOIN td_tipoHabitacion t ON h.tipoHabitacion = t.id 
+                  INNER JOIN td_tipoHabitacion t ON h.tipoHabitacion = t.id 
                   WHERE h.numero = ?";
         
         $stmt = $this->db->prepare($query);

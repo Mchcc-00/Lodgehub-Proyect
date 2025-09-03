@@ -65,7 +65,7 @@
                 <div class="rooms-grid" id="roomsGrid">
                     <?php if (!empty($rooms)): ?>
                         <?php foreach ($rooms as $room): ?>
-                            <div class="room-card" data-estado="<?php echo $room['estado']; ?>" data-numero="<?php echo $room['numero']; ?>" data-tipo="<?php echo $room['tipoDescripcion']; ?>">
+                            <div class="room-card" data-estado="<?php echo $room['estado']; ?>" data-numero="<?php echo $room['numero']; ?>" data-tipo="<?php echo $room['tipoHabitacion']; ?>">
                                 <div class="room-image">
                                     <?php if ($room['foto'] && file_exists($room['foto'])): ?>
                                         <img src="<?php echo $room['foto']; ?>" alt="Habitación <?php echo $room['numero']; ?>" loading="lazy">
@@ -130,7 +130,7 @@
                             <i class="fas fa-bed"></i>
                             <h3>No hay habitaciones registradas</h3>
                             <p>Comienza agregando tu primera habitación</p>
-                            <a href="index.php?controller=room&action=create" class="btn btn-primary">
+                            <a href="crearHabitacion.php?controller=room&action=create" class="btn btn-primary">
                                 <i class="fas fa-plus"></i> Crear Primera Habitación
                             </a>
                         </div>
