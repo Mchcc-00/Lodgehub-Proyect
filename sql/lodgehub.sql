@@ -223,16 +223,16 @@ INSERT INTO tp_reservas (pagoFinal, fechainicio, fechaFin, cantidadAdultos, cant
 
 -- Insertar PQRS
 INSERT INTO tp_pqrs (tipo, descripcion, numdocumento, prioridad, categoria, estado) VALUES 
-('Quejas', 'El aire acondicionado de la habitación 202 no funcionaba correctamente durante mi estadía.', '1140915008', 'Alto', 'Habitación', 'Finalizado'),
-('Sugerencias', 'Sería genial si pudieran agregar más opciones vegetarianas en el menú del restaurante.', '7777888899', 'Bajo', 'Servicio', 'Pendiente'),
-('Felicitaciones', 'Excelente atención del personal de recepción, muy amables y profesionales.', '1111222233', 'Bajo', 'Atención', 'Finalizado'),
+('Quejas', 'El aire acondicionado de la habitación 202 no funcionaba correctamente durante mi estadía.', '1014596349', 'Alto', 'Habitación', 'Finalizado'),
+('Sugerencias', 'Sería genial si pudieran agregar más opciones vegetarianas en el menú del restaurante.', '1000289068', 'Bajo', 'Servicio', 'Pendiente'),
+('Felicitaciones', 'Excelente atención del personal de recepción, muy amables y profesionales.', '1019987917', 'Bajo', 'Atención', 'Finalizado'),
 ('Peticiones', 'Solicito información sobre descuentos para estadías prolongadas.', '7777888899', 'Bajo', 'Otro', 'Pendiente');
 
 -- Insertar mantenimientos
 INSERT INTO tp_mantenimiento (numeroHabitacion, tipo, problemaDescripcion, frecuencia, cantFrecuencia, prioridad, numDocumento, estado) VALUES 
-('501', 'Eléctrico', 'Falla en el sistema de iluminación LED', 'No', 'Diario', 'Alto', '1000289068', 'Pendiente'),
-('202', 'Estructura', 'Aire acondicionado requiere limpieza filtros', 'Sí', 'Mensual', 'Bajo', '5555666677', 'Finalizado'),
-('301', 'Limpieza', 'Limpieza profunda de alfombras', 'Sí', 'Quincenal', 'Bajo', '9876543210', 'Pendiente');
+('501', 'Eléctrico', 'Falla en el sistema de iluminación LED', 'No', 'Diario', 'Alto', '1014596349', 'Pendiente'),
+('202', 'Estructura', 'Aire acondicionado requiere limpieza filtros', 'Sí', 'Mensual', 'Bajo', '1000289068', 'Finalizado'),
+('301', 'Limpieza', 'Limpieza profunda de alfombras', 'Sí', 'Quincenal', 'Bajo', '1019987917', 'Pendiente');
 
 -- Insertar facturas
 INSERT INTO tp_factura (infoReserva, infoHotel, total) VALUES 
