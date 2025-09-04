@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS tp_hotel (
     nombre VARCHAR(100) NOT NULL,
     direccion VARCHAR(200),
     telefono VARCHAR(15),
-    correo VARCHAR(100),
+    correo VARCHAR(255),
     foto VARCHAR(255),
     descripcion TEXT,
     -- Si necesitas asociar hotel con usuario administrador, agrega:
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS ti_personal (
 CREATE TABLE IF NOT EXISTS tp_huespedes (
     numDocumento VARCHAR(15) NOT NULL,
     numTelefono VARCHAR(15) NOT NULL,
-    correo VARCHAR(30) NOT NULL,
+    correo VARCHAR(255) NOT NULL,
     nombres VARCHAR(50) NOT NULL,
     apellidos VARCHAR(50) NOT NULL,
     tipoDocumento ENUM ('Cedula de Ciudadania','Tarjeta de Identidad','Cedula de Extranjeria','Pasaporte','Registro Civil') NOT NULL,
