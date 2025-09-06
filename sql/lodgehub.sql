@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS tp_usuarios (
     PRIMARY KEY (numDocumento)          
 ) ENGINE=INNODB;
 
--- Tabla hotel (corregida - removida FK inexistente)
+-- Tabla hotel
 CREATE TABLE IF NOT EXISTS tp_hotel (
     id INT(3) AUTO_INCREMENT NOT NULL,
     nit VARCHAR(20) UNIQUE NOT NULL,    -- NIT único pero no PK
