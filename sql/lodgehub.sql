@@ -1,7 +1,7 @@
 CREATE DATABASE IF NOT EXISTS Lodgehub;
 USE Lodgehub;
 
--- Tabla usuarios (debe crearse primero)
+-- Tabla usuarios (sin cambios)
 CREATE TABLE IF NOT EXISTS tp_usuarios (
     numDocumento VARCHAR(15) NOT NULL,
     tipoDocumento ENUM ('Cédula de Ciudadanía','Tarjeta de Identidad','Cedula de Extranjeria','Pasaporte','Registro Civil') NOT NULL, 
@@ -17,39 +17,35 @@ CREATE TABLE IF NOT EXISTS tp_usuarios (
     tokenPassword VARCHAR(100),
     sesionCaducada ENUM('1','0') DEFAULT '1',
     roles ENUM ('Administrador','Colaborador','Usuario') NOT NULL,
-    
-    PRIMARY KEY (numDocumento)          
+    PRIMARY KEY (numDocumento)
 ) ENGINE=INNODB;
 
--- Tabla hotel
+-- Tabla hotel (sin cambios)
 CREATE TABLE IF NOT EXISTS tp_hotel (
     id INT(3) AUTO_INCREMENT NOT NULL,
-    nit VARCHAR(20) UNIQUE NOT NULL,    -- NIT único pero no PK
+    nit VARCHAR(20) UNIQUE NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     direccion VARCHAR(200),
     telefono VARCHAR(15),
     correo VARCHAR(255),
     foto VARCHAR(255),
     descripcion TEXT,
-    -- Si necesitas asociar hotel con usuario administrador, agrega:
     numDocumentoAdmin VARCHAR(15),
-
     PRIMARY KEY (id),
     FOREIGN KEY (numDocumentoAdmin) REFERENCES tp_usuarios (numDocumento)
 ) ENGINE=INNODB; 
 
--- Tabla personal (CORREGIDA)
+-- Tabla personal (sin cambios)
 CREATE TABLE IF NOT EXISTS ti_personal (
     id_hotel INT(3) NOT NULL,
-    numDocumento VARCHAR(15) NOT NULL,  -- CORREGIDO: debe ser VARCHAR como en tp_usuarios
+    numDocumento VARCHAR(15) NOT NULL,
     roles TEXT NOT NULL,
-
     PRIMARY KEY (id_hotel, numDocumento),
     FOREIGN KEY (id_hotel) REFERENCES tp_hotel (id),
     FOREIGN KEY (numDocumento) REFERENCES tp_usuarios (numDocumento)
-) ENGINE=INNODB;  -- CORREGIDO: removida coma extra
+) ENGINE=INNODB;
 
--- Tabla huéspedes
+-- Tabla huéspedes (sin cambios)
 CREATE TABLE IF NOT EXISTS tp_huespedes (
     numDocumento VARCHAR(15) NOT NULL,
     numTelefono VARCHAR(15) NOT NULL,
@@ -58,25 +54,25 @@ CREATE TABLE IF NOT EXISTS tp_huespedes (
     apellidos VARCHAR(50) NOT NULL,
     tipoDocumento ENUM ('Cedula de Ciudadania','Tarjeta de Identidad','Cedula de Extranjeria','Pasaporte','Registro Civil') NOT NULL,
     sexo ENUM ('Hombre','Mujer','Otro','Prefiero no decirlo') NOT NULL,
-    -- NUEVO: Campos de auditoría
     fechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fechaActualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
     PRIMARY KEY (numDocumento),
     UNIQUE KEY uk_correo (correo)
 ) ENGINE=INNODB;
 
--- Tabla tipo habitación
+-- Tabla tipo habitación (MODIFICADA)
 CREATE TABLE IF NOT EXISTS td_tipoHabitacion (
     id INT(3) AUTO_INCREMENT NOT NULL,
     descripcion VARCHAR(20) NOT NULL,
     cantidad INT(3) NOT NULL DEFAULT 0,
-
-    PRIMARY KEY (id)
+    id_hotel INT(3) NOT NULL, -- << NUEVO: Para saber a qué hotel pertenece este tipo de habitación
+    PRIMARY KEY (id),
+    FOREIGN KEY (id_hotel) REFERENCES tp_hotel(id) -- << NUEVO
 ) ENGINE=INNODB;
 
--- Tabla habitaciones
+-- Tabla habitaciones (MODIFICADA)
 CREATE TABLE IF NOT EXISTS tp_habitaciones (
+    id INT AUTO_INCREMENT NOT NULL, -- << NUEVO: Llave primaria única
     numero VARCHAR(5) NOT NULL,
     costo DECIMAL(10,2) NOT NULL, 
     capacidad INT(3) NOT NULL,
@@ -86,13 +82,14 @@ CREATE TABLE IF NOT EXISTS tp_habitaciones (
     estado ENUM ('Disponible', 'Reservada', 'Ocupada', 'Mantenimiento') NOT NULL DEFAULT 'Disponible',
     descripcionMantenimiento TEXT DEFAULT NULL,
     estadoMantenimiento ENUM ('Activo','Inactivo') NOT NULL DEFAULT 'Activo',
-
-    PRIMARY KEY (numero),
-    UNIQUE KEY uk_numero (numero),
+    id_hotel INT(3) NOT NULL, -- << NUEVO: Llave foránea para vincular al hotel
+    PRIMARY KEY (id), -- << MODIFICADO: Nueva llave primaria
+    UNIQUE KEY uk_hotel_numero (id_hotel, numero), -- << NUEVO: Asegura que el número de habitación sea único por hotel
+    FOREIGN KEY (id_hotel) REFERENCES tp_hotel(id), -- << NUEVO
     FOREIGN KEY (tipoHabitacion) REFERENCES td_tipohabitacion (id)
 ) ENGINE=INNODB;
 
--- Tabla PQRS
+-- Tabla PQRS (MODIFICADA)
 CREATE TABLE IF NOT EXISTS tp_pqrs (
     id INT(10) AUTO_INCREMENT NOT NULL,
     fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -105,52 +102,53 @@ CREATE TABLE IF NOT EXISTS tp_pqrs (
     estado ENUM ('Pendiente', 'Finalizado') NOT NULL,
     fechaFinalizacion DATETIME DEFAULT NULL,
     respuesta TEXT DEFAULT NULL,
-
+    id_hotel INT(3) NOT NULL, -- << NUEVO: Para saber de qué hotel es la PQRS
     PRIMARY KEY (id),
+    FOREIGN KEY (id_hotel) REFERENCES tp_hotel(id), -- << NUEVO
     FOREIGN KEY (numdocumento) REFERENCES tp_usuarios (numDocumento)
 ) ENGINE=INNODB;
 
--- Tabla reservas (CORREGIDA)
+-- Tabla reservas (MODIFICADA)
 CREATE TABLE IF NOT EXISTS tp_reservas (
     id INT(3) AUTO_INCREMENT NOT NULL,
-    pagoFinal DECIMAL(30,2) NOT NULL, -- se multiplica la habitación por la cantidad de días
+    pagoFinal DECIMAL(30,2) NOT NULL,
     fechainicio DATE NOT NULL,
     fechaFin DATE NOT NULL,
     cantidadAdultos INT(2),
     cantidadNinos INT(2),
     cantidadDiscapacitados INT(2), 
     motivoReserva ENUM ('Negocios','Personal','Viaje','Familiar', 'Otro') NOT NULL,
-    numeroHabitacion VARCHAR(10) NOT NULL,
+    id_habitacion INT NOT NULL, -- << MODIFICADO: Se referencia el ID único de la habitación
     metodoPago ENUM ('Tarjeta','Efectivo','PSE') NOT NULL,
     informacionAdicional TEXT,
     us_numDocumento VARCHAR(15) NOT NULL,
     hue_numDocumento VARCHAR(15) NOT NULL,
     estado ENUM ('Activa', 'Cancelada', 'Finalizada', 'Pendiente') NOT NULL,
     fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
-
+    id_hotel INT(3) NOT NULL, -- << NUEVO: Para saber de qué hotel es la reserva
     PRIMARY KEY (id),
-    FOREIGN KEY (numeroHabitacion) REFERENCES tp_habitaciones (numero),
-    FOREIGN KEY (us_numDocumento) REFERENCES tp_usuarios (numDocumento),  -- CORREGIDO: nombre de columna
-    FOREIGN KEY (hue_numDocumento) REFERENCES tp_huespedes (numDocumento) -- CORREGIDO: nombre de columna
+    FOREIGN KEY (id_hotel) REFERENCES tp_hotel(id), -- << NUEVO
+    FOREIGN KEY (id_habitacion) REFERENCES tp_habitaciones (id), -- << MODIFICADO
+    FOREIGN KEY (us_numDocumento) REFERENCES tp_usuarios (numDocumento),
+    FOREIGN KEY (hue_numDocumento) REFERENCES tp_huespedes (numDocumento)
 ) ENGINE=INNODB;
 
--- Tabla factura
+-- Tabla factura (sin cambios, ya estaba correcta)
 CREATE TABLE IF NOT EXISTS tp_factura (
     id INT(3) AUTO_INCREMENT NOT NULL,
     infoReserva INT(3) NOT NULL,
     fechaFactura DATETIME DEFAULT CURRENT_TIMESTAMP,
     infoHotel INT(3) NOT NULL,
     total DECIMAL(30,2) NOT NULL,
-
     PRIMARY KEY (id),
     FOREIGN KEY (infoReserva) REFERENCES tp_reservas (id),
     FOREIGN KEY (infoHotel) REFERENCES tp_hotel (id)
 ) ENGINE=INNODB;
 
--- Tabla mantenimiento
+-- Tabla mantenimiento (MODIFICADA)
 CREATE TABLE IF NOT EXISTS tp_mantenimiento (
     id INT(4) AUTO_INCREMENT NOT NULL,
-    numeroHabitacion VARCHAR(5) NOT NULL,
+    id_habitacion INT NOT NULL, -- << MODIFICADO: Se referencia el ID único de la habitación
     tipo ENUM ('Limpieza','Estructura','Eléctrico','Otro') NOT NULL,
     problemaDescripcion VARCHAR(50) NOT NULL,
     fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -160,9 +158,10 @@ CREATE TABLE IF NOT EXISTS tp_mantenimiento (
     prioridad ENUM ('Bajo', 'Alto') NOT NULL,
     numDocumento VARCHAR(15) NOT NULL,
     estado ENUM ('Pendiente','Finalizado') NOT NULL DEFAULT 'Pendiente',
-
+    id_hotel INT(3) NOT NULL, -- << NUEVO: Para saber a qué hotel pertenece el mantenimiento
     PRIMARY KEY (id),
-    FOREIGN KEY (numeroHabitacion) REFERENCES tp_habitaciones (numero),
+    FOREIGN KEY (id_hotel) REFERENCES tp_hotel(id), -- << NUEVO
+    FOREIGN KEY (id_habitacion) REFERENCES tp_habitaciones (id), -- << MODIFICADO
     FOREIGN KEY (numDocumento) REFERENCES tp_usuarios (numDocumento)
 ) ENGINE=INNODB;
 
