@@ -1,7 +1,8 @@
 <?php
 /**
- * Modelo Colaborador - MEJORADO
+ * Modelo Colaborador - ACTUALIZADO PARA FILTRAR ROLES
  * Maneja todas las operaciones CRUD para la tabla tp_usuarios
+ * Modificado para excluir administradores de la lista
  */
 
 require_once '../../config/conexionGlobal.php';
@@ -118,22 +119,25 @@ class Colaborador {
     }
     
     /**
-     * Listar todos los colaboradores con filtros mejorados
+     * Listar colaboradores y usuarios (excluyendo administradores)
+     * MODIFICADO PARA FILTRAR ROLES
      */
     public function listar($filtros = []) {
         try {
             $this->verificarConexion();
             
+            // BASE: Solo mostrar Colaboradores y Usuarios, NO Administradores
             $sql = "SELECT numDocumento, tipoDocumento, nombres, apellidos, 
                            numTelefono, correo, sexo, fechaNacimiento, 
                            foto, roles, solicitarContraseña
-                    FROM tp_usuarios";
+                    FROM tp_usuarios 
+                    WHERE roles IN ('Colaborador', 'Usuario')";
             
             $condiciones = [];
             $params = [];
             $types = "";
             
-            // Aplicar filtros con validación mejorada
+            // Aplicar filtros adicionales
             if (!empty($filtros['busqueda'])) {
                 $busqueda = trim($filtros['busqueda']);
                 if (strlen($busqueda) >= 2) {
@@ -144,9 +148,10 @@ class Colaborador {
                 }
             }
             
+            // Filtro por rol específico (solo Colaborador o Usuario)
             if (!empty($filtros['rol']) && $filtros['rol'] !== 'all') {
-                $rolesValidos = ['Administrador', 'Colaborador', 'Usuario'];
-                if (in_array($filtros['rol'], $rolesValidos)) {
+                $rolesPermitidos = ['Colaborador', 'Usuario'];
+                if (in_array($filtros['rol'], $rolesPermitidos)) {
                     $condiciones[] = "roles = ?";
                     $params[] = $filtros['rol'];
                     $types .= "s";
@@ -172,7 +177,7 @@ class Colaborador {
             }
             
             if (!empty($condiciones)) {
-                $sql .= " WHERE " . implode(" AND ", $condiciones);
+                $sql .= " AND " . implode(" AND ", $condiciones);
             }
             
             $sql .= " ORDER BY nombres ASC, apellidos ASC";
@@ -250,6 +255,7 @@ class Colaborador {
     
     /**
      * Actualizar un colaborador
+     * MODIFICADO para prevenir cambio a rol Administrador
      */
     public function actualizar($numDocumentoOriginal, $datos) {
         try {
@@ -259,6 +265,11 @@ class Colaborador {
             $colaboradorExistente = $this->obtenerPorDocumento($numDocumentoOriginal);
             if (!$colaboradorExistente['success']) {
                 return ['success' => false, 'message' => 'Colaborador no encontrado'];
+            }
+            
+            // VALIDAR QUE NO SE PUEDA CAMBIAR A ADMINISTRADOR
+            if (isset($datos['roles']) && $datos['roles'] === 'Administrador') {
+                return ['success' => false, 'message' => 'No tiene permisos para asignar el rol de Administrador'];
             }
             
             // Si se cambió el documento, verificar que el nuevo no exista
@@ -344,6 +355,7 @@ class Colaborador {
     
     /**
      * Eliminar un colaborador
+     * MODIFICADO para prevenir eliminación de administradores
      */
     public function eliminar($numDocumento) {
         try {
@@ -359,6 +371,11 @@ class Colaborador {
                 return ['success' => false, 'message' => 'Colaborador no encontrado'];
             }
             
+            // VERIFICAR QUE NO SEA UN ADMINISTRADOR
+            if ($colaborador['data']['roles'] === 'Administrador') {
+                return ['success' => false, 'message' => 'No tiene permisos para eliminar administradores'];
+            }
+            
             $this->conexion->begin_transaction();
             
             try {
@@ -367,7 +384,7 @@ class Colaborador {
                     $this->eliminarFoto($colaborador['data']['foto']);
                 }
                 
-                $sql = "DELETE FROM tp_usuarios WHERE numDocumento = ?";
+                $sql = "DELETE FROM tp_usuarios WHERE numDocumento = ? AND roles IN ('Colaborador', 'Usuario')";
                 $stmt = $this->conexion->prepare($sql);
                 
                 if (!$stmt) {
@@ -601,7 +618,8 @@ class Colaborador {
     }
     
     /**
-     * Obtener estadísticas de colaboradores
+     * Obtener estadísticas de colaboradores (sin administradores)
+     * MODIFICADO PARA EXCLUIR ADMINISTRADORES
      */
     public function obtenerEstadisticas() {
         try {
@@ -609,11 +627,11 @@ class Colaborador {
             
             $sql = "SELECT 
                         COUNT(*) as total,
-                        SUM(CASE WHEN roles = 'Administrador' THEN 1 ELSE 0 END) as administradores,
                         SUM(CASE WHEN roles = 'Colaborador' THEN 1 ELSE 0 END) as colaboradores,
                         SUM(CASE WHEN roles = 'Usuario' THEN 1 ELSE 0 END) as usuarios,
                         SUM(CASE WHEN solicitarContraseña = '1' THEN 1 ELSE 0 END) as pendientes_password
-                    FROM tp_usuarios";
+                    FROM tp_usuarios 
+                    WHERE roles IN ('Colaborador', 'Usuario')";
             
             $resultado = $this->conexion->query($sql);
             
@@ -632,7 +650,7 @@ class Colaborador {
     }
     
     /**
-     * Validar datos de entrada - MEJORADO
+     * Validar datos de entrada - MODIFICADO PARA RESTRICCIÓN DE ROLES
      */
     public function validarDatos($datos, $esActualizacion = false) {
         $errores = [];
@@ -719,10 +737,10 @@ class Colaborador {
             }
         }
         
-        // Validar rol
-        $rolesValidos = ['Administrador', 'Colaborador', 'Usuario'];
+        // VALIDAR ROL - SOLO COLABORADOR Y USUARIO PERMITIDOS
+        $rolesValidos = ['Colaborador', 'Usuario'];
         if (empty($datos['roles']) || !in_array($datos['roles'], $rolesValidos)) {
-            $errores[] = 'Rol inválido';
+            $errores[] = 'Rol inválido. Solo se permiten roles de Colaborador o Usuario';
         }
         
         // Validar contraseña (solo para creación o si se proporciona)
@@ -750,27 +768,16 @@ class Colaborador {
                 return false;
             }
             
+            // Verificar que no sea administrador
+            $colaborador = $this->obtenerPorDocumento($numDocumento);
+            if ($colaborador['success'] && $colaborador['data']['roles'] === 'Administrador') {
+                return false;
+            }
+            
             // Aquí puedes agregar lógica adicional para verificar dependencias
             // Por ejemplo, verificar si tiene reservas, actividades, etc.
             
-            // Ejemplo de verificación con otras tablas (descomenta y ajusta según tu BD):
-            /*
-            $sql = "SELECT COUNT(*) as count FROM reservas WHERE colaborador_documento = ?";
-            $stmt = $this->conexion->prepare($sql);
-            
-            if ($stmt) {
-                $stmt->bind_param("s", $numDocumento);
-                $stmt->execute();
-                $resultado = $stmt->get_result();
-                $row = $resultado->fetch_assoc();
-                
-                if ($row['count'] > 0) {
-                    return false; // Tiene reservas dependientes
-                }
-            }
-            */
-            
-            return true; // Por ahora permitir eliminar cualquier colaborador
+            return true; // Permitir eliminar colaboradores y usuarios
             
         } catch (Exception $e) {
             $this->logError('Error en puedeEliminar(): ' . $e->getMessage());
@@ -800,13 +807,13 @@ class Colaborador {
     }
     
     /**
-     * Contar colaboradores
+     * Contar colaboradores (sin administradores)
      */
     public function contar() {
         try {
             $this->verificarConexion();
             
-            $sql = "SELECT COUNT(*) as total FROM tp_usuarios";
+            $sql = "SELECT COUNT(*) as total FROM tp_usuarios WHERE roles IN ('Colaborador', 'Usuario')";
             $resultado = $this->conexion->query($sql);
             
             if (!$resultado) {
@@ -832,9 +839,13 @@ class Colaborador {
     }
     
     /**
-     * Obtener colaboradores por rol
+     * Obtener colaboradores por rol (solo Colaborador o Usuario)
      */
     public function obtenerPorRol($rol) {
+        if (!in_array($rol, ['Colaborador', 'Usuario'])) {
+            return ['success' => false, 'message' => 'Rol no permitido'];
+        }
+        
         $filtros = ['rol' => $rol];
         return $this->listar($filtros);
     }

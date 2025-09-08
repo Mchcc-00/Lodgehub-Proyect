@@ -1,5 +1,6 @@
 /**
- * JavaScript para gestionar la lista de colaboradores
+ * JavaScript para gestionar la lista de colaboradores - ACTUALIZADO
+ * Solo muestra Colaboradores y Usuarios, incluye estadísticas
  * Archivo: listarColaboradores.js
  */
 
@@ -10,6 +11,7 @@ class ColaboradoresManager {
         this.busquedaActiva = '';
         this.paginaActual = 1;
         this.itemsPorPagina = 10;
+        this.estadisticas = {};
         
         this.init();
     }
@@ -17,6 +19,7 @@ class ColaboradoresManager {
     init() {
         this.cargarEventListeners();
         this.cargarColaboradores();
+        this.cargarEstadisticas();
     }
     
     cargarEventListeners() {
@@ -48,7 +51,10 @@ class ColaboradoresManager {
         // Evento de actualizar
         const refreshBtn = document.getElementById('refresh-btn');
         if (refreshBtn) {
-            refreshBtn.addEventListener('click', () => this.cargarColaboradores());
+            refreshBtn.addEventListener('click', () => {
+                this.cargarColaboradores();
+                this.cargarEstadisticas();
+            });
         }
         
         // Eventos de modales
@@ -85,9 +91,29 @@ class ColaboradoresManager {
         try {
             this.mostrarLoading();
             
-            const url = '../controllers/misColaboradoresControllers.php?action=listar' + 
-                       (this.busquedaActiva ? `&busqueda=${encodeURIComponent(this.busquedaActiva)}` : '') +
-                       (this.filtroActivo !== 'all' ? `&rol=${encodeURIComponent(this.filtroActivo)}` : '');
+            const params = new URLSearchParams({
+                action: 'listar'
+            });
+            
+            if (this.busquedaActiva) {
+                params.append('busqueda', this.busquedaActiva);
+            }
+            
+            if (this.filtroActivo !== 'all') {
+                // Solo permitir filtros de Colaborador y Usuario
+                if (['Colaborador', 'Usuario'].includes(this.filtroActivo)) {
+                    params.append('rol', this.filtroActivo);
+                } else {
+                    // Para otros filtros como tipo documento o sexo
+                    if (this.filtroActivo.includes('Cédula') || this.filtroActivo === 'Pasaporte') {
+                        params.append('tipoDocumento', this.filtroActivo);
+                    } else if (['Hombre', 'Mujer', 'Otro'].includes(this.filtroActivo)) {
+                        params.append('sexo', this.filtroActivo);
+                    }
+                }
+            }
+            
+            const url = `../controllers/misColaboradoresControllers.php?${params.toString()}`;
             
             console.log('Cargando desde URL:', url);
             
@@ -121,6 +147,56 @@ class ColaboradoresManager {
         }
     }
     
+    async cargarEstadisticas() {
+        try {
+            const response = await fetch('../controllers/misColaboradoresControllers.php?action=estadisticas', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.estadisticas = data.data;
+                this.actualizarEstadisticas();
+            } else {
+                console.error('Error al cargar estadísticas:', data.message);
+            }
+            
+        } catch (error) {
+            console.error('Error al cargar estadísticas:', error);
+        }
+    }
+    
+    actualizarEstadisticas() {
+        const totalElement = document.getElementById('total-colaboradores');
+        const colaboradoresElement = document.getElementById('total-colaboradores-rol');
+        const usuariosElement = document.getElementById('total-usuarios');
+        const pendientesElement = document.getElementById('pendientes-password');
+        
+        if (totalElement && this.estadisticas.total !== undefined) {
+            totalElement.textContent = this.estadisticas.total || 0;
+        }
+        
+        if (colaboradoresElement && this.estadisticas.colaboradores !== undefined) {
+            colaboradoresElement.textContent = this.estadisticas.colaboradores || 0;
+        }
+        
+        if (usuariosElement && this.estadisticas.usuarios !== undefined) {
+            usuariosElement.textContent = this.estadisticas.usuarios || 0;
+        }
+        
+        if (pendientesElement && this.estadisticas.pendientes_password !== undefined) {
+            pendientesElement.textContent = this.estadisticas.pendientes_password || 0;
+        }
+    }
+    
     renderizarTabla() {
         const tbody = document.getElementById('tabla-colaboradores');
         if (!tbody) {
@@ -136,6 +212,11 @@ class ColaboradoresManager {
         let html = '';
         
         this.colaboradores.forEach(colaborador => {
+            // Solo mostrar si es Colaborador o Usuario (filtro adicional por seguridad)
+            if (!['Colaborador', 'Usuario'].includes(colaborador.roles)) {
+                return;
+            }
+            
             html += `
                 <tr>
                     <td>${this.escapeHtml(colaborador.numDocumento || '')}</td>
@@ -146,7 +227,12 @@ class ColaboradoresManager {
                     <td>${this.escapeHtml(colaborador.numTelefono || '')}</td>
                     <td>${this.escapeHtml(colaborador.sexo || '')}</td>
                     <td>${this.formatearFecha(colaborador.fechaNacimiento)}</td>
-                    <td><span class="badge ${this.getBadgeClass(colaborador.roles)}">${this.escapeHtml(colaborador.roles || '')}</span></td>
+                    <td>
+                        <span class="badge ${this.getBadgeClass(colaborador.roles)}">
+                            ${this.escapeHtml(colaborador.roles || '')}
+                        </span>
+                        ${colaborador.solicitarContraseña === '1' ? '<i class="fas fa-exclamation-triangle text-warning ms-1" title="Cambio de contraseña pendiente"></i>' : ''}
+                    </td>
                     <td>
                         <div class="btn-group" role="group">
                             <button type="button" class="btn btn-sm btn-outline-info" onclick="colaboradoresManager.verColaborador('${colaborador.numDocumento}')" title="Ver detalles">
@@ -214,6 +300,11 @@ class ColaboradoresManager {
             const data = await response.json();
             
             if (data.success && data.data) {
+                // Verificar que sea Colaborador o Usuario antes de mostrar
+                if (!['Colaborador', 'Usuario'].includes(data.data.roles)) {
+                    this.mostrarMensaje('error', 'No tiene permisos para ver este usuario');
+                    return;
+                }
                 this.mostrarDetallesColaborador(data.data);
             } else {
                 this.mostrarMensaje('error', 'Error al obtener detalles del colaborador');
@@ -231,20 +322,26 @@ class ColaboradoresManager {
         const html = `
             <div class="row">
                 <div class="col-md-6">
-                    <h6>Información Personal</h6>
+                    <h6><i class="fas fa-user"></i> Información Personal</h6>
                     <p><strong>Documento:</strong> ${this.escapeHtml(colaborador.numDocumento)}</p>
                     <p><strong>Tipo:</strong> ${this.escapeHtml(colaborador.tipoDocumento)}</p>
                     <p><strong>Nombres:</strong> ${this.escapeHtml(colaborador.nombres)}</p>
                     <p><strong>Apellidos:</strong> ${this.escapeHtml(colaborador.apellidos)}</p>
                     <p><strong>Sexo:</strong> ${this.escapeHtml(colaborador.sexo)}</p>
                     <p><strong>Fecha de Nacimiento:</strong> ${this.formatearFecha(colaborador.fechaNacimiento)}</p>
+                    <p><strong>Edad:</strong> ${this.calcularEdad(colaborador.fechaNacimiento)} años</p>
                 </div>
                 <div class="col-md-6">
-                    <h6>Información de Contacto</h6>
+                    <h6><i class="fas fa-envelope"></i> Información de Contacto y Sistema</h6>
                     <p><strong>Correo:</strong> ${this.escapeHtml(colaborador.correo)}</p>
                     <p><strong>Teléfono:</strong> ${this.escapeHtml(colaborador.numTelefono)}</p>
                     <p><strong>Rol:</strong> <span class="badge ${this.getBadgeClass(colaborador.roles)}">${this.escapeHtml(colaborador.roles)}</span></p>
-                    <p><strong>Solicitar cambio de contraseña:</strong> ${colaborador.solicitarContraseña === '1' ? 'Sí' : 'No'}</p>
+                    <p><strong>Solicitar cambio de contraseña:</strong> 
+                        <span class="badge ${colaborador.solicitarContraseña === '1' ? 'bg-warning' : 'bg-success'}">
+                            ${colaborador.solicitarContraseña === '1' ? 'Pendiente' : 'No requerido'}
+                        </span>
+                    </p>
+                    ${colaborador.foto ? `<p><strong>Foto:</strong> <i class="fas fa-check text-success"></i> Disponible</p>` : ''}
                 </div>
             </div>
         `;
@@ -261,6 +358,11 @@ class ColaboradoresManager {
             const data = await response.json();
             
             if (data.success && data.data) {
+                // Verificar que sea Colaborador o Usuario antes de editar
+                if (!['Colaborador', 'Usuario'].includes(data.data.roles)) {
+                    this.mostrarMensaje('error', 'No tiene permisos para editar este usuario');
+                    return;
+                }
                 this.llenarFormularioEdicion(data.data);
                 const modal = new bootstrap.Modal(document.getElementById('editarModal'));
                 modal.show();
@@ -300,6 +402,12 @@ class ColaboradoresManager {
             const datos = Object.fromEntries(formData);
             datos.documentoOriginal = document.getElementById('edit-documento-original').value;
             
+            // Verificar que no se intente cambiar a Administrador
+            if (datos.roles === 'Administrador') {
+                this.mostrarMensaje('error', 'No tiene permisos para asignar el rol de Administrador');
+                return;
+            }
+            
             const response = await fetch('../controllers/misColaboradoresControllers.php', {
                 method: 'POST',
                 headers: {
@@ -318,6 +426,7 @@ class ColaboradoresManager {
                 const modal = bootstrap.Modal.getInstance(document.getElementById('editarModal'));
                 modal.hide();
                 this.cargarColaboradores();
+                this.cargarEstadisticas();
             } else {
                 this.mostrarMensaje('error', data.message);
             }
@@ -363,6 +472,7 @@ class ColaboradoresManager {
                 const modal = bootstrap.Modal.getInstance(document.getElementById('eliminarModal'));
                 modal.hide();
                 this.cargarColaboradores();
+                this.cargarEstadisticas();
             } else {
                 this.mostrarMensaje('error', data.message);
             }
@@ -427,6 +537,7 @@ class ColaboradoresManager {
                 this.mostrarMensaje('success', data.message);
                 const modal = bootstrap.Modal.getInstance(document.getElementById('cambiarPasswordModal'));
                 modal.hide();
+                this.cargarEstadisticas(); // Actualizar estadísticas
             } else {
                 this.mostrarMensaje('error', data.message);
             }
@@ -468,9 +579,22 @@ class ColaboradoresManager {
         return date.toLocaleDateString('es-CO');
     }
     
+    calcularEdad(fechaNacimiento) {
+        if (!fechaNacimiento) return 'N/A';
+        const hoy = new Date();
+        const fechaNac = new Date(fechaNacimiento);
+        let edad = hoy.getFullYear() - fechaNac.getFullYear();
+        const mes = hoy.getMonth() - fechaNac.getMonth();
+        
+        if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
+            edad--;
+        }
+        
+        return edad;
+    }
+    
     getBadgeClass(rol) {
         const badges = {
-            'Administrador': 'bg-danger',
             'Colaborador': 'bg-primary',
             'Usuario': 'bg-success'
         };

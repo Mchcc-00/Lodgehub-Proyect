@@ -23,7 +23,7 @@
     <div class="container">
         <div class="header">
             <h1>Lista de Colaboradores</h1>
-            <p>Gestiona todos los colaboradores del sistema LodgeHub</p>
+            <p>Gestiona colaboradores y usuarios del sistema LodgeHub</p>
         </div>
 
         <!-- Sección de búsqueda y filtros -->
@@ -46,7 +46,6 @@
                             <li><a class="dropdown-item filter-option" href="#" data-filter="all">Todos</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><h6 class="dropdown-header">Por Rol</h6></li>
-                            <li><a class="dropdown-item filter-option" href="#" data-filter="Administrador">Administradores</a></li>
                             <li><a class="dropdown-item filter-option" href="#" data-filter="Colaborador">Colaboradores</a></li>
                             <li><a class="dropdown-item filter-option" href="#" data-filter="Usuario">Usuarios</a></li>
                             <li><hr class="dropdown-divider"></li>
@@ -78,6 +77,42 @@
 
         <div id="error-message" class="error-message" style="display: none;">
             ❌ <strong id="error-text">Error en la operación</strong>
+        </div>
+
+        <!-- Estadísticas rápidas -->
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h4 id="total-colaboradores">0</h4>
+                        <p class="mb-0">Total</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <h4 id="total-colaboradores-rol">0</h4>
+                        <p class="mb-0">Colaboradores</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h4 id="total-usuarios">0</h4>
+                        <p class="mb-0">Usuarios</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <h4 id="pendientes-password">0</h4>
+                        <p class="mb-0">Cambio Contraseña</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Tabla de Colaboradores -->
@@ -202,7 +237,6 @@
                                 <div class="mb-3">
                                     <label for="edit-roles" class="form-label">Rol <span class="required">*</span></label>
                                     <select class="form-select" id="edit-roles" name="roles" required>
-                                        <option value="Administrador">Administrador</option>
                                         <option value="Colaborador">Colaborador</option>
                                         <option value="Usuario">Usuario</option>
                                     </select>
