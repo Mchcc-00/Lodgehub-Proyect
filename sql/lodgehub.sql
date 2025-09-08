@@ -169,268 +169,313 @@ CREATE TABLE IF NOT EXISTS tp_mantenimiento (
 -- INSERTS DE DATOS DE EJEMPLO
 -- =============================================
 
--- Insertar tipos de habitación
-INSERT INTO td_tipoHabitacion (descripcion, cantidad) VALUES 
-('Individual', 10),
-('Doble', 15),
-('Suite', 5),
-('Familiar', 8),
-('Ejecutiva', 6);
-
--- Insertar usuarios
+-- Insertar usuarios (corregido)
 INSERT INTO tp_usuarios (numDocumento, tipoDocumento, nombres, apellidos, numTelefono, correo, sexo, fechaNacimiento, password, roles) VALUES 
 ('1014596349', 'Cédula de Ciudadanía', 'Brayan Felipe', 'Pulido Lopez', '3172509298', 'brayan06.pulido@gmail.com', 'Hombre', '2006-03-03', '123456789', 'Administrador'),
-('1000289068', 'Cédula de Ciudadanía', 'Favian Alejandro', 'Machuca Pedraza', '3144235027', 'bleachowl98@gmail.com', 'Mujer', '2003-10-15', '123456789', 'Colaborador'),
+('1000289068', 'Cédula de Ciudadanía', 'Favian Alejandro', 'Machuca Pedraza', '3144235027', 'bleachowl98@gmail.com', 'Hombre', '2003-10-15', '123456789', 'Colaborador'),
 ('1019987917', 'Cédula de Ciudadanía', 'Camilo Andres', 'Guerrero Yanquen', '3027644457', 'camiloagycr321@gmail.com', 'Hombre', '2006-02-15', '123456789', 'Usuario'),
-('1111222233', 'Cédula de Ciudadanía', 'Ana Patricia', 'Morales Ruiz', '3001112222', 'ana.morales@lodgehub.com', 'Mujer', '1992-05-18', '$2y$10$hashedpassword4', 'Usuario'),
-('7777888899', 'Pasaporte', 'Roberto', 'Silva Santos', '3007778888', 'roberto.silva@email.com', 'Hombre', '1987-09-25', '$2y$10$hashedpassword5', 'Usuario');
+('1111222233', 'Cédula de Ciudadanía', 'Ana Patricia', 'Morales Ruiz', '3001112222', 'ana.morales@lodgehub.com', 'Mujer', '1992-05-18', '123456789', 'Usuario'),
+('7777888899', 'Pasaporte', 'Roberto', 'Silva Santos', '3007778888', 'roberto.silva@email.com', 'Hombre', '1987-09-25', '123456789', 'Usuario'),
+('5555666677', 'Cédula de Ciudadanía', 'María Elena', 'Ramírez Castro', '3005556666', 'maria.ramirez@lodgehub.com', 'Mujer', '1985-12-10', '123456789', 'Administrador');
 
--- Insertar hotel
+-- Insertar hoteles
 INSERT INTO tp_hotel (nit, nombre, direccion, telefono, correo, descripcion, numDocumentoAdmin) VALUES 
-('900123456-1', 'Hotel Lodge Hub Premium', 'Calle 123 #45-67, Bogotá, Colombia', '6013334444', 'info@lodgehub.com', 'Hotel de lujo ubicado en el corazón de la ciudad, ofreciendo servicios de alta calidad y comodidad excepcional.', '1014596349');
+('900123456-1', 'Hotel Lodge Hub Premium', 'Calle 123 #45-67, Bogotá, Colombia', '6013334444', 'info@lodgehub.com', 'Hotel de lujo ubicado en el corazón de la ciudad, ofreciendo servicios de alta calidad y comodidad excepcional.', '1014596349'),
+('900987654-2', 'Lodge Hub Business', 'Carrera 15 #80-25, Medellín, Colombia', '6044445555', 'medellin@lodgehub.com', 'Hotel especializado en turismo de negocios con salas de conferencias y servicios corporativos.', '5555666677'),
+('900555777-3', 'Lodge Hub Resort', 'Km 5 Vía Cartagena-Barú, Cartagena, Colombia', '6055556666', 'cartagena@lodgehub.com', 'Resort frente al mar con spa, piscinas y actividades recreativas para toda la familia.', '1014596349');
 
 -- Insertar personal del hotel
 INSERT INTO ti_personal (id_hotel, numDocumento, roles) VALUES 
-(1, '1014596349', 'Administrador'),
-(1, '1000289068', 'colaborador');
+(1, '1014596349', 'Administrador,Recepcionista'),
+(1, '1000289068', 'Colaborador,Mantenimiento'),
+(2, '5555666677', 'Administrador,Gerente'),
+(2, '1111222233', 'Colaborador,Recepcionista'),
+(3, '1014596349', 'Administrador'),
+(3, '7777888899', 'Colaborador,Animador');
 
+-- Insertar tipos de habitación por hotel
+INSERT INTO td_tipoHabitacion (descripcion, cantidad, id_hotel) VALUES 
+-- Hotel Premium Bogotá
+('Individual', 10, 1),
+('Doble', 15, 1),
+('Suite', 5, 1),
+('Familiar', 8, 1),
+('Ejecutiva', 6, 1),
+-- Hotel Business Medellín
+('Individual', 8, 2),
+('Doble', 12, 2),
+('Suite Ejecutiva', 4, 2),
+('Familiar', 6, 2),
+('Presidencial', 2, 2),
+-- Resort Cartagena
+('Standard', 20, 3),
+('Ocean View', 15, 3),
+('Villa', 8, 3),
+('Master Suite', 5, 3),
+('Penthouse', 2, 3);
 
 -- Insertar habitaciones
-INSERT INTO tp_habitaciones (numero, costo, capacidad, tipoHabitacion, descripcion, estado) VALUES 
-('101', 80000.00, 1, 1, 'Habitación individual con baño privado, TV, WiFi', 'Disponible'),
-('102', 80000.00, 1, 1, 'Habitación individual con vista a la ciudad', 'Disponible'),
-('201', 120000.00, 2, 2, 'Habitación doble con cama matrimonial, minibar', 'Disponible'),
-('202', 120000.00, 2, 2, 'Habitación doble con dos camas individuales', 'Ocupada'),
-('301', 250000.00, 2, 3, 'Suite ejecutiva con sala, jacuzzi, balcón', 'Disponible'),
-('401', 180000.00, 4, 4, 'Habitación familiar con litera y cama matrimonial', 'Disponible'),
-('501', 200000.00, 2, 5, 'Habitación ejecutiva con escritorio y sala de reuniones', 'Mantenimiento');
+INSERT INTO tp_habitaciones (numero, costo, capacidad, tipoHabitacion, descripcion, estado, id_hotel) VALUES 
+-- Hotel Premium Bogotá (id_hotel = 1)
+('101', 80000.00, 1, 1, 'Habitación individual con baño privado, TV, WiFi', 'Disponible', 1),
+('102', 80000.00, 1, 1, 'Habitación individual con vista a la ciudad', 'Disponible', 1),
+('201', 120000.00, 2, 2, 'Habitación doble con cama matrimonial, minibar', 'Disponible', 1),
+('202', 120000.00, 2, 2, 'Habitación doble con dos camas individuales', 'Ocupada', 1),
+('301', 250000.00, 2, 3, 'Suite ejecutiva con sala, jacuzzi, balcón', 'Disponible', 1),
+('401', 180000.00, 4, 4, 'Habitación familiar con litera y cama matrimonial', 'Disponible', 1),
+('501', 200000.00, 2, 5, 'Habitación ejecutiva con escritorio y sala de reuniones', 'Mantenimiento', 1),
 
--- Insertar huéspedes
+-- Hotel Business Medellín (id_hotel = 2)
+('B101', 75000.00, 1, 6, 'Habitación individual con escritorio de trabajo', 'Disponible', 2),
+('B102', 75000.00, 1, 6, 'Habitación individual con vista al valle', 'Disponible', 2),
+('B201', 110000.00, 2, 7, 'Habitación doble con área de trabajo amplia', 'Disponible', 2),
+('B301', 300000.00, 2, 8, 'Suite ejecutiva con sala de juntas privada', 'Disponible', 2),
+('B401', 170000.00, 4, 9, 'Habitación familiar con conexión de alta velocidad', 'Disponible', 2),
+
+-- Resort Cartagena (id_hotel = 3)
+('C101', 150000.00, 2, 11, 'Habitación standard con aire acondicionado', 'Disponible', 3),
+('C201', 220000.00, 2, 12, 'Habitación con vista al océano y balcón', 'Disponible', 3),
+('C301', 400000.00, 4, 13, 'Villa con piscina privada y jardín', 'Disponible', 3),
+('C501', 600000.00, 6, 14, 'Master suite con jacuzzi y terraza panorámica', 'Disponible', 3),
+('C601', 1200000.00, 8, 15, 'Penthouse con vista 360° y servicio personalizado', 'Disponible', 3);
+
+-- Insertar huéspedes (corregido el tipo de documento)
 INSERT INTO tp_huespedes (numDocumento, numTelefono, correo, nombres, apellidos, tipoDocumento, sexo) VALUES 
-('1140915008', '3170560930', '4198126@gmail..com', 'ANGELO', 'gONZALEZ', 'Cedula de Ciudadania', 'Mujer'),
+('1140915008', '3170560930', 'angelo.gonzalez@gmail.com', 'ANGELO', 'GONZALEZ', 'Cedula de Ciudadania', 'Hombre'),
 ('6666777788', '3006667777', 'sofia.hernandez@email.com', 'Sofía Isabel', 'Hernández Vega', 'Cedula de Ciudadania', 'Mujer'),
 ('8888999900', '3008889999', 'pedro.jimenez@email.com', 'Pedro Antonio', 'Jiménez Flores', 'Cedula de Ciudadania', 'Hombre'),
 ('2222333344', '3002223333', 'laura.torres@email.com', 'Laura Cristina', 'Torres Mendoza', 'Cedula de Ciudadania', 'Mujer'),
-('9999000011', '3009990000', 'miguel.vargas@email.com', 'Miguel Ángel', 'Vargas Pineda', 'Pasaporte', 'Hombre');
+('9999000011', '3009990000', 'miguel.vargas@email.com', 'Miguel Ángel', 'Vargas Pineda', 'Pasaporte', 'Hombre'),
+('3333444455', '3003334444', 'carla.ospina@email.com', 'Carla Andrea', 'Ospina Mejía', 'Cedula de Ciudadania', 'Mujer'),
+('4444555566', '3004445555', 'diego.castro@email.com', 'Diego Fernando', 'Castro López', 'Cedula de Ciudadania', 'Hombre');
 
--- Insertar reservas
-INSERT INTO tp_reservas (pagoFinal, fechainicio, fechaFin, cantidadAdultos, cantidadNinos, cantidadDiscapacitados, motivoReserva, numeroHabitacion, metodoPago, informacionAdicional, us_numDocumento, hue_numDocumento, estado) VALUES 
-(240000.00, '2025-09-10', '2025-09-12', 2, 0, 0, 'Personal', '202', 'Tarjeta', 'Luna de miel', '1000289068', '1140915008', 'Activa'),
-(500000.00, '2025-09-15', '2025-09-17', 2, 0, 0, 'Negocios', '301', 'PSE', 'Reunión empresarial', '7777888899', '6666777788', 'Activa'),
-(160000.00, '2025-09-05', '2025-09-07', 1, 0, 0, 'Personal', '101', 'Efectivo', NULL, '1111222233', '8888999900', 'Finalizada'),
-(360000.00, '2025-09-20', '2025-09-22', 3, 1, 0, 'Familiar', '401', 'Tarjeta', 'Vacaciones familiares', '7777888899', '2222333344', 'Pendiente');
+-- Insertar reservas (corregido para usar id_habitacion)
+INSERT INTO tp_reservas (pagoFinal, fechainicio, fechaFin, cantidadAdultos, cantidadNinos, cantidadDiscapacitados, motivoReserva, id_habitacion, metodoPago, informacionAdicional, us_numDocumento, hue_numDocumento, estado, id_hotel) VALUES 
+(240000.00, '2025-09-10', '2025-09-12', 2, 0, 0, 'Personal', 4, 'Tarjeta', 'Luna de miel', '1000289068', '1140915008', 'Activa', 1),
+(500000.00, '2025-09-15', '2025-09-17', 2, 0, 0, 'Negocios', 5, 'PSE', 'Reunión empresarial', '7777888899', '6666777788', 'Activa', 1),
+(160000.00, '2025-09-05', '2025-09-07', 1, 0, 0, 'Personal', 1, 'Efectivo', NULL, '1111222233', '8888999900', 'Finalizada', 1),
+(360000.00, '2025-09-20', '2025-09-22', 3, 1, 0, 'Familiar', 6, 'Tarjeta', 'Vacaciones familiares', '7777888899', '2222333344', 'Pendiente', 1),
+(220000.00, '2025-09-25', '2025-09-27', 2, 0, 0, 'Negocios', 10, 'PSE', 'Conferencia médica', '5555666677', '3333444455', 'Activa', 2),
+(800000.00, '2025-10-01', '2025-10-05', 4, 2, 0, 'Familiar', 14, 'Tarjeta', 'Vacaciones en familia', '1014596349', '4444555566', 'Pendiente', 3);
 
--- Insertar PQRS
-INSERT INTO tp_pqrs (tipo, descripcion, numdocumento, prioridad, categoria, estado) VALUES 
-('Quejas', 'El aire acondicionado de la habitación 202 no funcionaba correctamente durante mi estadía.', '1014596349', 'Alto', 'Habitación', 'Finalizado'),
-('Sugerencias', 'Sería genial si pudieran agregar más opciones vegetarianas en el menú del restaurante.', '1000289068', 'Bajo', 'Servicio', 'Pendiente'),
-('Felicitaciones', 'Excelente atención del personal de recepción, muy amables y profesionales.', '1019987917', 'Bajo', 'Atención', 'Finalizado'),
-('Peticiones', 'Solicito información sobre descuentos para estadías prolongadas.', '7777888899', 'Bajo', 'Otro', 'Pendiente');
+-- Insertar PQRS (agregado id_hotel)
+INSERT INTO tp_pqrs (tipo, descripcion, numdocumento, prioridad, categoria, estado, id_hotel, respuesta, fechaFinalizacion) VALUES 
+('Quejas', 'El aire acondicionado de la habitación 202 no funcionaba correctamente durante mi estadía.', '1014596349', 'Alto', 'Habitación', 'Finalizado', 1, 'Se realizó mantenimiento correctivo al aire acondicionado. Disculpas por las molestias.', '2025-09-02 14:30:00'),
+('Sugerencias', 'Sería genial si pudieran agregar más opciones vegetarianas en el menú del restaurante.', '1000289068', 'Bajo', 'Servicio', 'Pendiente', 1, NULL, NULL),
+('Felicitaciones', 'Excelente atención del personal de recepción, muy amables y profesionales.', '1019987917', 'Bajo', 'Atención', 'Finalizado', 1, 'Gracias por sus comentarios. Los transmitiremos al equipo.', '2025-09-03 09:15:00'),
+('Peticiones', 'Solicito información sobre descuentos para estadías prolongadas.', '7777888899', 'Bajo', 'Otro', 'Pendiente', 1, NULL, NULL),
+('Quejas', 'La conexión WiFi en la habitación B201 era muy lenta.', '5555666677', 'Alto', 'Habitación', 'Pendiente', 2, NULL, NULL),
+('Sugerencias', 'Podrían implementar un servicio de spa en el resort.', '1014596349', 'Bajo', 'Servicio', 'Pendiente', 3, NULL, NULL);
 
--- Insertar mantenimientos
-INSERT INTO tp_mantenimiento (numeroHabitacion, tipo, problemaDescripcion, frecuencia, cantFrecuencia, prioridad, numDocumento, estado) VALUES 
-('501', 'Eléctrico', 'Falla en el sistema de iluminación LED', 'No', 'Diario', 'Alto', '1014596349', 'Pendiente'),
-('202', 'Estructura', 'Aire acondicionado requiere limpieza filtros', 'Sí', 'Mensual', 'Bajo', '1000289068', 'Finalizado'),
-('301', 'Limpieza', 'Limpieza profunda de alfombras', 'Sí', 'Quincenal', 'Bajo', '1019987917', 'Pendiente');
+-- Insertar mantenimientos (corregido para usar id_habitacion)
+INSERT INTO tp_mantenimiento (id_habitacion, tipo, problemaDescripcion, frecuencia, cantFrecuencia, prioridad, numDocumento, estado, id_hotel) VALUES 
+(7, 'Eléctrico', 'Falla en el sistema de iluminación LED', 'No', 'Diario', 'Alto', '1014596349', 'Pendiente', 1),
+(4, 'Estructura', 'Aire acondicionado requiere limpieza filtros', 'Sí', 'Mensual', 'Bajo', '1000289068', 'Finalizado', 1),
+(5, 'Limpieza', 'Limpieza profunda de alfombras', 'Sí', 'Quincenal', 'Bajo', '1019987917', 'Pendiente', 1),
+(10, 'Eléctrico', 'Revisión sistema de iluminación sala juntas', 'Sí', 'Mensual', 'Bajo', '5555666677', 'Pendiente', 2),
+(14, 'Limpieza', 'Mantenimiento jacuzzi master suite', 'Sí', 'Semanal', 'Alto', '7777888899', 'Pendiente', 3);
 
 -- Insertar facturas
 INSERT INTO tp_factura (infoReserva, infoHotel, total) VALUES 
 (3, 1, 160000.00),
-(1, 1, 240000.00);
+(1, 1, 240000.00),
+(5, 2, 220000.00);
 
 -- =============================================
 -- VISTAS
 -- =============================================
 
--- Vista: Información completa de reservas
-CREATE VIEW v_reservas_completas AS
+-- Vista: Información completa de habitaciones por hotel
+CREATE OR REPLACE VIEW vw_habitaciones_completa AS
 SELECT 
-    r.id AS reserva_id,
-    r.fechainicio,
-    r.fechaFin,
-    r.pagoFinal,
-    r.estado AS estado_reserva,
-    h.numero AS habitacion,
-    h.costo AS costo_habitacion,
-    th.descripcion AS tipo_habitacion,
-    hu.nombres AS huesped_nombres,
-    hu.apellidos AS huesped_apellidos,
-    hu.numDocumento AS huesped_documento,
-    hu.correo AS huesped_correo,
-    u.nombres AS usuario_nombres,
-    u.apellidos AS usuario_apellidos,
-    r.cantidadAdultos,
-    r.cantidadNinos,
-    r.motivoReserva,
-    r.metodoPago,
-    DATEDIFF(r.fechaFin, r.fechainicio) AS dias_estancia
-FROM tp_reservas r
-JOIN tp_habitaciones h ON r.numeroHabitacion = h.numero
-JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
-JOIN tp_huespedes hu ON r.hue_numDocumento = hu.numDocumento
-JOIN tp_usuarios u ON r.us_numDocumento = u.numDocumento;
-
--- Vista: Dashboard de habitaciones
-CREATE VIEW v_dashboard_habitaciones AS
-SELECT 
+    h.id,
     h.numero,
-    h.estado,
     h.costo,
     h.capacidad,
-    th.descripcion AS tipo_habitacion,
-    CASE 
-        WHEN h.estado = 'Ocupada' THEN r.fechaFin
-        ELSE NULL 
-    END AS fecha_liberacion,
-    CASE 
-        WHEN h.estado = 'Mantenimiento' THEN m.problemaDescripcion
-        ELSE NULL 
-    END AS motivo_mantenimiento
+    h.descripcion,
+    h.estado,
+    h.descripcionMantenimiento,
+    h.estadoMantenimiento,
+    th.descripcion AS tipoHabitacion,
+    ht.nombre AS nombreHotel,
+    ht.id AS id_hotel
 FROM tp_habitaciones h
-LEFT JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
-LEFT JOIN tp_reservas r ON h.numero = r.numeroHabitacion 
-    AND r.estado = 'Activa' 
-    AND CURDATE() BETWEEN r.fechainicio AND r.fechaFin
-LEFT JOIN tp_mantenimiento m ON h.numero = m.numeroHabitacion 
-    AND m.estado = 'Pendiente'
-    AND h.estado = 'Mantenimiento';
+INNER JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
+INNER JOIN tp_hotel ht ON h.id_hotel = ht.id;
 
--- Vista: Estadísticas de ocupación
-CREATE VIEW v_estadisticas_ocupacion AS
+-- Vista: Reservas con información completa
+CREATE OR REPLACE VIEW vw_reservas_completa AS
 SELECT 
-    th.descripcion AS tipo_habitacion,
-    COUNT(h.numero) AS total_habitaciones,
-    SUM(CASE WHEN h.estado = 'Disponible' THEN 1 ELSE 0 END) AS disponibles,
-    SUM(CASE WHEN h.estado = 'Ocupada' THEN 1 ELSE 0 END) AS ocupadas,
-    SUM(CASE WHEN h.estado = 'Reservada' THEN 1 ELSE 0 END) AS reservadas,
-    SUM(CASE WHEN h.estado = 'Mantenimiento' THEN 1 ELSE 0 END) AS mantenimiento,
-    ROUND((SUM(CASE WHEN h.estado IN ('Ocupada', 'Reservada') THEN 1 ELSE 0 END) / COUNT(h.numero)) * 100, 2) AS porcentaje_ocupacion
-FROM tp_habitaciones h
-JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
-GROUP BY th.id, th.descripcion;
+    r.id,
+    r.pagoFinal,
+    r.fechainicio,
+    r.fechaFin,
+    r.cantidadAdultos,
+    r.cantidadNinos,
+    r.cantidadDiscapacitados,
+    r.motivoReserva,
+    r.metodoPago,
+    r.informacionAdicional,
+    r.estado,
+    r.fechaRegistro,
+    h.numero AS numeroHabitacion,
+    th.descripcion AS tipoHabitacion,
+    ht.nombre AS nombreHotel,
+    CONCAT(u.nombres, ' ', u.apellidos) AS nombreUsuario,
+    CONCAT(hu.nombres, ' ', hu.apellidos) AS nombreHuesped,
+    hu.correo AS correoHuesped,
+    hu.numTelefono AS telefonoHuesped,
+    DATEDIFF(r.fechaFin, r.fechainicio) AS diasEstadia
+FROM tp_reservas r
+INNER JOIN tp_habitaciones h ON r.id_habitacion = h.id
+INNER JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
+INNER JOIN tp_hotel ht ON r.id_hotel = ht.id
+INNER JOIN tp_usuarios u ON r.us_numDocumento = u.numDocumento
+INNER JOIN tp_huespedes hu ON r.hue_numDocumento = hu.numDocumento;
 
--- Vista: PQRS pendientes con información del usuario
-CREATE VIEW v_pqrs_pendientes AS
+-- Vista: Dashboard de ocupación por hotel
+CREATE OR REPLACE VIEW vw_ocupacion_hotel AS
+SELECT 
+    h.id AS id_hotel,
+    h.nombre AS nombreHotel,
+    COUNT(hab.id) AS totalHabitaciones,
+    SUM(CASE WHEN hab.estado = 'Disponible' THEN 1 ELSE 0 END) AS habitacionesDisponibles,
+    SUM(CASE WHEN hab.estado = 'Ocupada' THEN 1 ELSE 0 END) AS habitacionesOcupadas,
+    SUM(CASE WHEN hab.estado = 'Reservada' THEN 1 ELSE 0 END) AS habitacionesReservadas,
+    SUM(CASE WHEN hab.estado = 'Mantenimiento' THEN 1 ELSE 0 END) AS habitacionesMantenimiento,
+    ROUND((SUM(CASE WHEN hab.estado IN ('Ocupada', 'Reservada') THEN 1 ELSE 0 END) / COUNT(hab.id)) * 100, 2) AS porcentajeOcupacion
+FROM tp_hotel h
+LEFT JOIN tp_habitaciones hab ON h.id = hab.id_hotel
+WHERE hab.estadoMantenimiento = 'Activo'
+GROUP BY h.id, h.nombre;
+
+-- Vista: PQRS con información completa
+CREATE OR REPLACE VIEW vw_pqrs_completa AS
 SELECT 
     p.id,
     p.fechaRegistro,
     p.fechaLimite,
     p.tipo,
-    p.categoria,
-    p.prioridad,
     p.descripcion,
-    u.nombres,
-    u.apellidos,
-    u.correo,
-    u.numTelefono,
-    DATEDIFF(p.fechaLimite, CURDATE()) AS dias_restantes
+    p.prioridad,
+    p.categoria,
+    p.estado,
+    p.fechaFinalizacion,
+    p.respuesta,
+    CONCAT(u.nombres, ' ', u.apellidos) AS nombreUsuario,
+    u.correo AS correoUsuario,
+    h.nombre AS nombreHotel,
+    DATEDIFF(COALESCE(p.fechaFinalizacion, NOW()), p.fechaRegistro) AS diasTranscurridos,
+    CASE 
+        WHEN p.estado = 'Pendiente' AND p.fechaLimite < CURDATE() THEN 'Vencida'
+        WHEN p.estado = 'Pendiente' AND DATEDIFF(p.fechaLimite, CURDATE()) <= 1 THEN 'Por vencer'
+        ELSE 'En tiempo'
+    END AS estadoTiempo
 FROM tp_pqrs p
-JOIN tp_usuarios u ON p.numdocumento = u.numDocumento
-WHERE p.estado = 'Pendiente'
-ORDER BY p.prioridad DESC, p.fechaLimite ASC;
+INNER JOIN tp_usuarios u ON p.numdocumento = u.numDocumento
+INNER JOIN tp_hotel h ON p.id_hotel = h.id;
 
--- Vista: Mantenimientos activos
-CREATE VIEW v_mantenimientos_activos AS
+-- Vista: Mantenimientos con información completa
+CREATE OR REPLACE VIEW vw_mantenimientos_completa AS
 SELECT 
     m.id,
-    m.numeroHabitacion,
     m.tipo,
     m.problemaDescripcion,
     m.fechaRegistro,
+    m.ultimaActualizacion,
+    m.frecuencia,
+    m.cantFrecuencia,
     m.prioridad,
-    u.nombres AS tecnico_nombres,
-    u.apellidos AS tecnico_apellidos,
-    h.estado AS estado_habitacion,
-    DATEDIFF(CURDATE(), m.fechaRegistro) AS dias_pendiente
+    m.estado,
+    hab.numero AS numeroHabitacion,
+    th.descripcion AS tipoHabitacion,
+    CONCAT(u.nombres, ' ', u.apellidos) AS nombreTecnico,
+    h.nombre AS nombreHotel,
+    DATEDIFF(NOW(), m.fechaRegistro) AS diasPendientes
 FROM tp_mantenimiento m
-JOIN tp_usuarios u ON m.numDocumento = u.numDocumento
-JOIN tp_habitaciones h ON m.numeroHabitacion = h.numero
-WHERE m.estado = 'Pendiente'
-ORDER BY m.prioridad DESC, m.fechaRegistro ASC;
+INNER JOIN tp_habitaciones hab ON m.id_habitacion = hab.id
+INNER JOIN td_tipoHabitacion th ON hab.tipoHabitacion = th.id
+INNER JOIN tp_usuarios u ON m.numDocumento = u.numDocumento
+INNER JOIN tp_hotel h ON m.id_hotel = h.id;
 
--- Vista: Ingresos por período
-CREATE VIEW v_ingresos_mensuales AS
+-- Vista: Ingresos por hotel
+CREATE OR REPLACE VIEW vw_ingresos_hotel AS
 SELECT 
-    YEAR(r.fechaRegistro) AS año,
-    MONTH(r.fechaRegistro) AS mes,
-    MONTHNAME(r.fechaRegistro) AS nombre_mes,
-    COUNT(r.id) AS total_reservas,
-    SUM(r.pagoFinal) AS ingresos_total,
-    AVG(r.pagoFinal) AS ingreso_promedio,
-    SUM(CASE WHEN r.estado = 'Activa' THEN r.pagoFinal ELSE 0 END) AS ingresos_activos,
-    SUM(CASE WHEN r.estado = 'Cancelada' THEN r.pagoFinal ELSE 0 END) AS ingresos_cancelados
-FROM tp_reservas r
-GROUP BY YEAR(r.fechaRegistro), MONTH(r.fechaRegistro)
-ORDER BY año DESC, mes DESC;
+    h.id AS id_hotel,
+    h.nombre AS nombreHotel,
+    DATE_FORMAT(r.fechaRegistro, '%Y-%m') AS mesAno,
+    COUNT(r.id) AS totalReservas,
+    SUM(CASE WHEN r.estado = 'Finalizada' THEN r.pagoFinal ELSE 0 END) AS ingresosFinalizado,
+    SUM(CASE WHEN r.estado = 'Activa' THEN r.pagoFinal ELSE 0 END) AS ingresosActivos,
+    SUM(r.pagoFinal) AS ingresosTotales,
+    AVG(r.pagoFinal) AS promedioReserva
+FROM tp_hotel h
+LEFT JOIN tp_reservas r ON h.id = r.id_hotel
+WHERE r.fechaRegistro >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
+GROUP BY h.id, h.nombre, DATE_FORMAT(r.fechaRegistro, '%Y-%m')
+ORDER BY h.nombre, mesAno DESC;
 
--- =============================================
--- ÍNDICES PARA OPTIMIZACIÓN
--- =============================================
+-- Vista: Personal por hotel
+CREATE OR REPLACE VIEW vw_personal_hotel AS
+SELECT 
+    h.id AS id_hotel,
+    h.nombre AS nombreHotel,
+    CONCAT(u.nombres, ' ', u.apellidos) AS nombreCompleto,
+    u.numDocumento,
+    u.correo,
+    u.numTelefono,
+    u.roles AS rolSistema,
+    p.roles AS rolesHotel
+FROM tp_hotel h
+INNER JOIN ti_personal p ON h.id = p.id_hotel
+INNER JOIN tp_usuarios u ON p.numDocumento = u.numDocumento;
 
--- Índices en tp_usuarios
-CREATE INDEX idx_usuarios_correo ON tp_usuarios(correo);
-CREATE INDEX idx_usuarios_roles ON tp_usuarios(roles);
-CREATE INDEX idx_usuarios_tipo_documento ON tp_usuarios(tipoDocumento);
+-- ========================================
+-- ÍNDICES PARA MEJORAR RENDIMIENTO
+-- ========================================
 
--- Índices en tp_habitaciones
-CREATE INDEX idx_habitaciones_estado ON tp_habitaciones(estado);
+-- Índices para tp_habitaciones
+CREATE INDEX idx_habitaciones_hotel_estado ON tp_habitaciones(id_hotel, estado);
 CREATE INDEX idx_habitaciones_tipo ON tp_habitaciones(tipoHabitacion);
-CREATE INDEX idx_habitaciones_costo ON tp_habitaciones(costo);
+CREATE INDEX idx_habitaciones_estado_mant ON tp_habitaciones(estadoMantenimiento);
 
--- Índices en tp_reservas
+-- Índices para tp_reservas
+CREATE INDEX idx_reservas_hotel ON tp_reservas(id_hotel);
 CREATE INDEX idx_reservas_fechas ON tp_reservas(fechainicio, fechaFin);
 CREATE INDEX idx_reservas_estado ON tp_reservas(estado);
-CREATE INDEX idx_reservas_huesped ON tp_reservas(hue_numDocumento);
 CREATE INDEX idx_reservas_usuario ON tp_reservas(us_numDocumento);
-CREATE INDEX idx_reservas_habitacion ON tp_reservas(numeroHabitacion);
-CREATE INDEX idx_reservas_fecha_registro ON tp_reservas(fechaRegistro);
+CREATE INDEX idx_reservas_huesped ON tp_reservas(hue_numDocumento);
+CREATE INDEX idx_reservas_habitacion ON tp_reservas(id_habitacion);
 
--- Índices en tp_huespedes
-CREATE INDEX idx_huespedes_nombres ON tp_huespedes(nombres, apellidos);
-CREATE INDEX idx_huespedes_tipo_doc ON tp_huespedes(tipoDocumento);
-CREATE INDEX idx_huespedes_fecha_creacion ON tp_huespedes(fechaCreacion);
-
--- Índices en tp_pqrs
+-- Índices para tp_pqrs
+CREATE INDEX idx_pqrs_hotel ON tp_pqrs(id_hotel);
 CREATE INDEX idx_pqrs_estado ON tp_pqrs(estado);
-CREATE INDEX idx_pqrs_tipo ON tp_pqrs(tipo);
 CREATE INDEX idx_pqrs_prioridad ON tp_pqrs(prioridad);
 CREATE INDEX idx_pqrs_fecha_limite ON tp_pqrs(fechaLimite);
-CREATE INDEX idx_pqrs_categoria ON tp_pqrs(categoria);
+CREATE INDEX idx_pqrs_usuario ON tp_pqrs(numdocumento);
 
--- Índices en tp_mantenimiento
+-- Índices para tp_mantenimiento
+CREATE INDEX idx_mantenimiento_hotel ON tp_mantenimiento(id_hotel);
+CREATE INDEX idx_mantenimiento_habitacion ON tp_mantenimiento(id_habitacion);
 CREATE INDEX idx_mantenimiento_estado ON tp_mantenimiento(estado);
-CREATE INDEX idx_mantenimiento_habitacion ON tp_mantenimiento(numeroHabitacion);
-CREATE INDEX idx_mantenimiento_tipo ON tp_mantenimiento(tipo);
 CREATE INDEX idx_mantenimiento_prioridad ON tp_mantenimiento(prioridad);
 CREATE INDEX idx_mantenimiento_fecha ON tp_mantenimiento(fechaRegistro);
 
--- Índices en tp_factura
-CREATE INDEX idx_factura_fecha ON tp_factura(fechaFactura);
+-- Índices para td_tipoHabitacion
+CREATE INDEX idx_tipo_habitacion_hotel ON td_tipoHabitacion(id_hotel);
+
+-- Índices para ti_personal
+CREATE INDEX idx_personal_hotel ON ti_personal(id_hotel);
+
+-- Índices para tp_usuarios
+CREATE INDEX idx_usuarios_email ON tp_usuarios(correo);
+CREATE INDEX idx_usuarios_rol ON tp_usuarios(roles);
+
+-- Índices para tp_huespedes
+CREATE INDEX idx_huespedes_email ON tp_huespedes(correo);
+CREATE INDEX idx_huespedes_fecha ON tp_huespedes(fechaCreacion);
+
+-- Índices para tp_factura
 CREATE INDEX idx_factura_hotel ON tp_factura(infoHotel);
-
--- Índices compuestos para consultas frecuentes
-CREATE INDEX idx_reservas_activas ON tp_reservas(estado, fechainicio, fechaFin);
-CREATE INDEX idx_habitaciones_disponibles ON tp_habitaciones(estado, tipoHabitacion);
-CREATE INDEX idx_pqrs_pendientes ON tp_pqrs(estado, prioridad, fechaLimite);
-
--- =============================================
--- CONSULTAS DE EJEMPLO PARA PROBAR LAS VISTAS
--- =============================================
-
--- Consultar todas las reservas activas
--- SELECT * FROM v_reservas_completas WHERE estado_reserva = 'Activa';
-
--- Ver dashboard de habitaciones
--- SELECT * FROM v_dashboard_habitaciones;
-
--- Estadísticas de ocupación
--- SELECT * FROM v_estadisticas_ocupacion;
-
--- PQRS pendientes urgentes
--- SELECT * FROM v_pqrs_pendientes WHERE dias_restantes <= 2;
-
--- Mantenimientos prioritarios
--- SELECT * FROM v_mantenimientos_activos WHERE prioridad = 'Alto';
-
--- Ingresos del mes actual
--- SELECT * FROM v_ingresos_mensuales WHERE año = YEAR(CURDATE()) AND mes = MONTH(CURDATE());
+CREATE INDEX idx_factura_reserva ON tp_factura(infoReserva);
+CREATE INDEX idx_factura_fecha ON tp_factura(fechaFactura);
