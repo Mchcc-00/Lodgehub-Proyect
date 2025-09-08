@@ -8,7 +8,7 @@ require_once 'validarSesion.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Hoteles</title>
+    <title>Registrar Hotel</title>
 
     <!-- CSS personalizado adaptado -->
     <link rel="stylesheet" href="../../public/assets/css/stylesForm.css">
@@ -32,13 +32,13 @@ require_once 'validarSesion.php';
 
 
             <div class="header">
-                <h1><i class="fas fa-hotel"></i> Sistema de Gestión de Hoteles</h1>
+                <h1><i class="fas fa-hotel"></i> Mi hotel</h1>
                 <p>Administra y valida información de hoteles en tiempo real</p>
             </div>
 
             <div class="form-container">
-                <h2><i class="fas fa-plus-circle"></i> Agregar/Editar Hotel</h2>
-                <form id="hotel-form" action="/lodgehub/api/v1/hotel.php" method="POST">
+                <h2><i class="fas fa-plus-circle"></i> Registrar hotel</h2>
+                <form id="hotel-form" action="/lodgehub/api/v1/hotel.php" method="POST" enctype="multipart/form-data">
                     <input type="hidden" id="hotelId" name="id">
 
                     <div class="form-grid">
@@ -95,10 +95,13 @@ require_once 'validarSesion.php';
 
                         <div class="form-group">
                             <label for="foto">
-                                <i class="fas fa-image"></i> URL Foto
+                                <i class="fas fa-image"></i> Foto del Hotel
                             </label>
-                            <input type="url" id="foto" name="foto"
-                                placeholder="https://ejemplo.com/imagen.jpg">
+                            <input type="file" id="foto" name="foto" class="form-control" accept="image/jpeg, image/png, image/gif">
+                            <div class="image-preview-container mt-2" id="image-preview-container" style="display:none;">
+                                <img id="image-preview" src="#" alt="Vista previa de la imagen" class="image-preview"/>
+                                <span class="image-preview-text">Vista previa</span>
+                            </div>
                             <div class="error" id="foto-error"></div>
                         </div>
                     </div>

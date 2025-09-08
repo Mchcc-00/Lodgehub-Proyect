@@ -487,3 +487,34 @@ input:focus, select:focus, textarea:focus {
     border-top-color: transparent;
     animation: spin 1s linear infinite;
 }
+
+/* Imagen de hotel */
+.image-preview-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-color: #f9f9f9;
+}
+
+.image-preview {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+}
+
+.image-preview-text {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+}
