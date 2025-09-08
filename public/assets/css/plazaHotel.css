@@ -10,13 +10,11 @@ body {
   color: #333;
   background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
   min-height: 100vh;
-  /* El padding-top es manejado por stylesNavUsuario.css para la navbar fija */
-  /* No añadir padding aquí para evitar conflictos */
 }
 
 .container-principal {
   max-width: 1024px;
-  margin: 0 auto;
+  margin: 2rem auto 0; /* Añadido margen superior de 2rem */
   background-color: #ffffff;
   border-radius: 20px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);

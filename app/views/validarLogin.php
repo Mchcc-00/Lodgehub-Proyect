@@ -72,13 +72,14 @@ if ($filas > 0) {
     
     if ($password_valida) {
         // Login exitoso - Validar roles y establecer sesión
-        session_start();
-        $_SESSION['user'] = $correo;
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        // Guardar toda la información del usuario en un solo array de sesión
+        $_SESSION['user'] = $usuario;
+        // Para compatibilidad con otras partes del código que usan estas variables directamente
         $_SESSION['numDocumento'] = $usuario['numDocumento'];
         $_SESSION['nombres'] = $usuario['nombres'];
-        $_SESSION['apellidos'] = $usuario['apellidos'];
-        $_SESSION['roles'] = $usuario['roles'];
-        $_SESSION['login_time'] = time(); // Para tracking de sesión
         
         // Validación y redirección por roles (basado en ENUM de la BD)
         $rol_usuario = trim($usuario['roles']); // No convertir a minúsculas para mantener formato ENUM
