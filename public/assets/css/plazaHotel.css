@@ -1,457 +1,463 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
-    color: #333;
-    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-    min-height: 100vh;
-    padding: 20px 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  min-height: 100vh;
+  /* El padding-top es manejado por stylesNavUsuario.css para la navbar fija */
+  /* No añadir padding aquí para evitar conflictos */
 }
 
 .container-principal {
-    max-width: 1024px;
-    margin: 0 auto;
-    background-color: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    overflow: hidden;
-    animation: slideUp 0.8s ease-out;
+  max-width: 1024px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  animation: slideUp 0.8s ease-out;
 }
 
 @keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* HEADER CON IMAGEN */
 .header-imagen {
-    position: relative;
-    height: 320px;
-    overflow: hidden;
+  position: relative;
+  height: 320px;
+  overflow: hidden;
 }
 
 .imagen-hotel {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
 }
 
 .imagen-hotel:hover {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 .overlay-gradiente {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent 60%, transparent);
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.7),
+    transparent 60%,
+    transparent
+  );
 }
 
 .info-superpuesta {
-    position: absolute;
-    bottom: 24px;
-    left: 24px;
-    color: white;
-    z-index: 2;
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  color: white;
+  z-index: 2;
 }
 
 .titulo-hotel {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 12px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    animation: fadeInLeft 1s ease-out 0.3s both;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  animation: fadeInLeft 1s ease-out 0.3s both;
 }
 
 @keyframes fadeInLeft {
-    from {
-        opacity: 0;
-        transform: translateX(-30px);
-    }
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
 
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .contenedor-calificacion {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    animation: fadeInLeft 1s ease-out 0.5s both;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: fadeInLeft 1s ease-out 0.5s both;
 }
 
 .estrellas-promedio {
-    display: flex;
-    gap: 2px;
+  display: flex;
+  gap: 2px;
 }
 
 .numero-promedio {
-    font-size: 1.2rem;
-    font-weight: 600;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .cantidad-reseñas {
-    font-size: 0.9rem;
-    opacity: 0.9;
+  font-size: 0.9rem;
+  opacity: 0.9;
 }
 
 /* CONTENIDO PRINCIPAL */
 .contenido-principal {
-    padding: 40px;
+  padding: 40px;
 }
 
 .grid-informacion {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 40px;
-    margin-bottom: 40px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
 }
 
 @media (min-width: 768px) {
-    .grid-informacion {
-        grid-template-columns: repeat(2, 1fr);
-    }
+  .grid-informacion {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .titulo-seccion {
-    font-size: 1.8rem;
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 20px;
-    position: relative;
-    padding-bottom: 8px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 8px;
 }
 
 .titulo-seccion::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 50px;
-    height: 3px;
-    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-    border-radius: 2px;
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+  border-radius: 2px;
 }
 
 .texto-descripcion {
-    color: #4b5563;
-    line-height: 1.8;
-    font-size: 1rem;
+  color: #4b5563;
+  line-height: 1.8;
+  font-size: 1rem;
 }
 
 /* INFORMACIÓN DE CONTACTO */
 .lista-contactos {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .item-contacto {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 12px;
-    border-radius: 10px;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
 }
 
 .item-contacto:hover {
-    background-color: #f8fafc;
-    border-color: #e2e8f0;
-    transform: translateX(5px);
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  transform: translateX(5px);
 }
 
 .icono-contacto {
-    width: 20px;
-    height: 20px;
-    fill: #2563eb;
-    flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  fill: #2563eb;
+  flex-shrink: 0;
 }
 
 .info-contacto {
-    flex: 1;
+  flex: 1;
 }
 
 .etiqueta-contacto {
-    font-weight: 600;
-    color: #374151;
-    display: inline-block;
-    min-width: 80px;
+  font-weight: 600;
+  color: #374151;
+  display: inline-block;
+  min-width: 80px;
 }
 
 .valor-contacto {
-    color: #4b5563;
-    margin-left: 8px;
+  color: #4b5563;
+  margin-left: 8px;
 }
 
 /* SISTEMA DE CALIFICACIONES */
 .seccion-calificaciones {
-    border-top: 2px solid #e5e7eb;
-    padding-top: 40px;
+  border-top: 2px solid #e5e7eb;
+  padding-top: 40px;
 }
 
 .formulario-reseña {
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border-radius: 16px;
-    padding: 30px;
-    margin-bottom: 40px;
-    border: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 16px;
+  padding: 30px;
+  margin-bottom: 40px;
+  border: 1px solid #e2e8f0;
 }
 
 .titulo-formulario {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 25px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 25px;
 }
 
 .campo-calificacion,
 .campo-descripcion {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .etiqueta-campo {
-    display: block;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 8px;
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
 }
 
 .selector-estrellas {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 5px;
+  display: flex;
+  gap: 6px;
+  margin-bottom: 5px;
 }
 
 .estrella,
 .estrella-interactiva {
-    width: 28px;
-    height: 28px;
-    fill: #d1d5db;
-    transition: all 0.2s ease;
+  width: 28px;
+  height: 28px;
+  fill: #d1d5db;
+  transition: all 0.2s ease;
 }
 
 .estrella-interactiva {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .estrella-interactiva:hover,
 .estrella.activa {
-    fill: #fbbf24;
-    filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.4));
-    transform: scale(1.1);
+  fill: #fbbf24;
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.4));
+  transform: scale(1.1);
 }
 
 .textarea-reseña {
-    width: 100%;
-    padding: 15px;
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    font-family: inherit;
-    font-size: 0.95rem;
-    resize: none;
-    transition: all 0.3s ease;
-    background-color: white;
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: none;
+  transition: all 0.3s ease;
+  background-color: white;
 }
 
 .textarea-reseña:focus {
-    outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    background-color: #fefefe;
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  background-color: #fefefe;
 }
 
 .boton-enviar {
-    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-    color: white;
-    font-weight: 600;
-    padding: 15px 30px;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 1rem;
-    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  color: white;
+  font-weight: 600;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
 .boton-enviar:hover {
-    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
 }
 
 .boton-enviar:active {
-    transform: translateY(0);
+  transform: translateY(0);
 }
 
 .boton-enviar:disabled {
-    background: #9ca3af;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* RESEÑAS */
 .lista-reseñas {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .titulo-lista {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 5px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 5px;
 }
 
 .tarjeta-reseña {
-    background-color: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
-    padding: 25px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .tarjeta-reseña:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
 }
 
 .header-reseña {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
-    gap: 10px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .info-autor {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .estrellas-reseña {
-    display: flex;
-    gap: 2px;
+  display: flex;
+  gap: 2px;
 }
 
 .estrellas-reseña .estrella {
-    width: 20px;
-    height: 20px;
-    fill: #fbbf24;
+  width: 20px;
+  height: 20px;
+  fill: #fbbf24;
 }
 
 .nombre-autor {
-    font-weight: 600;
-    color: #1f2937;
-    font-size: 0.95rem;
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 0.95rem;
 }
 
 .fecha-reseña {
-    font-size: 0.85rem;
-    color: #6b7280;
-    font-style: italic;
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-style: italic;
 }
 
 .texto-reseña {
-    color: #4b5563;
-    line-height: 1.7;
-    font-size: 0.95rem;
+  color: #4b5563;
+  line-height: 1.7;
+  font-size: 0.95rem;
 }
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
-    .contenido-principal {
-        padding: 24px;
-    }
+  .contenido-principal {
+    padding: 24px;
+  }
 
-    .titulo-hotel {
-        font-size: 2rem;
-    }
+  .titulo-hotel {
+    font-size: 2rem;
+  }
 
-    .grid-informacion {
-        gap: 30px;
-    }
+  .grid-informacion {
+    gap: 30px;
+  }
 
-    .formulario-reseña {
-        padding: 20px;
-    }
+  .formulario-reseña {
+    padding: 20px;
+  }
 
-    .header-reseña {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+  .header-reseña {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 @media (max-width: 480px) {
-    body {
-        padding: 10px 0;
-    }
+  body {
+    padding: 10px 0;
+  }
 
-    .container-principal {
-        margin: 0 10px;
-    }
+  .container-principal {
+    margin: 0 10px;
+  }
 
-    .contenido-principal {
-        padding: 20px;
-    }
+  .contenido-principal {
+    padding: 20px;
+  }
 
-    .titulo-hotel {
-        font-size: 1.8rem;
-    }
+  .titulo-hotel {
+    font-size: 1.8rem;
+  }
 
-    .info-superpuesta {
-        left: 16px;
-        bottom: 16px;
-    }
+  .info-superpuesta {
+    left: 16px;
+    bottom: 16px;
+  }
 }
 
 /* Animaciones adicionales */
 .columna-descripcion,
 .columna-contacto {
-    animation: fadeInUp 0.8s ease-out;
+  animation: fadeInUp 0.8s ease-out;
 }
 
 .columna-contacto {
-    animation-delay: 0.2s;
+  animation-delay: 0.2s;
 }
 
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .formulario-reseña {
-    animation: fadeInUp 0.8s ease-out 0.4s both;
+  animation: fadeInUp 0.8s ease-out 0.4s both;
 }
 
 .tarjeta-reseña {
-    animation: fadeInUp 0.8s ease-out 0.6s both;
+  animation: fadeInUp 0.8s ease-out 0.6s both;
 }

@@ -457,3 +457,29 @@ body {
         height: 110px;
     }
 }
+/* Estilos homepage sin registro de hotel */
+
+.no-hotel-banner {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 12px;
+    padding: 40px;
+    margin-bottom: 2rem;
+    text-align: center;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.no-hotel-content h3 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 0.75rem;
+}
+
+.no-hotel-content p {
+    font-size: 1.1rem;
+    color: #6c757d;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}

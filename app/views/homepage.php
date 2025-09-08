@@ -116,6 +116,17 @@ try {
                         <span id="currentDate"></span>
                     </div>
             </section>
+            <?php else: ?>
+            <section class="no-hotel-banner">
+                <div class="no-hotel-content">
+                    <i class="fas fa-hotel fa-3x text-primary mb-3"></i>
+                    <h3>Aún no has registrado tu hotel. ¡Hazlo ahora!</h3>
+                    <p>Registrar tu hotel te permitirá acceder a todas las herramientas de gestión que LodgeHub ofrece.</p>
+                    <a href="agregarHoteles.php" class="btn btn-primary btn-lg mt-3">
+                        <i class="fas fa-plus-circle me-2"></i>Registrar mi Hotel
+                    </a>
+                </div>
+            </section>
             <?php endif; ?>
 
             <!-- Dashboard Sections -->
