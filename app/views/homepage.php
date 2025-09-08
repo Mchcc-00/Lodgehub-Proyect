@@ -1,6 +1,7 @@
 <?php
 require_once 'validarSesion.php';
 require_once 'validarHome.php';
+require_once __DIR__ . '/../models/hotelModel.php';
 
 // Crear instancia de DashboardData
 try {
@@ -33,6 +34,30 @@ try {
     ];
     error_log("Error en dashboard: " . $e->getMessage());
 }
+
+// --- Lógica para obtener información del primer hotel ---
+$hotelInfo = null;
+try {
+    $hotelModel = new HotelModel();
+    $usuarioLogueado = $_SESSION['user'] ?? null;
+
+    if ($usuarioLogueado) {
+        if ($usuarioLogueado['roles'] === 'Administrador') {
+            // Para un admin global, se muestra el primer hotel del sistema
+            $hotelesResult = $hotelModel->obtenerHoteles();
+        } else {
+            // Para otros roles, se muestran los hoteles asignados
+            $hotelesResult = $hotelModel->obtenerHotelesPorAdmin($usuarioLogueado['numDocumento']);
+        }
+
+        if ($hotelesResult['success'] && !empty($hotelesResult['data'])) {
+            $hotelInfo = $hotelesResult['data'][0]; // Tomamos el primer hotel de la lista
+        }
+    }
+} catch (Exception $e) {
+    error_log("Error al obtener información del hotel para el homepage: " . $e->getMessage());
+    // $hotelInfo permanece null, la sección no se mostrará
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -58,22 +83,40 @@ try {
     <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content" id="mainContent">
         <div class="content-wrapper">
-            <!-- Header de la página -->
-            <div class="page-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h2 class="page-title">
-                            <i class="fas fa-tachometer-alt text-primary me-2"></i>
-                            Tablero Principal
-                        </h2>
-                        <p class="page-subtitle text-muted">Resumen general del sistema LODGEHUB</p>
+            
+            <?php if (isset($_GET['status']) && $_GET['status'] === 'hotel_success' && isset($_GET['message'])): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <?php echo htmlspecialchars(urldecode($_GET['message'])); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+            <?php if ($hotelInfo): ?>
+            <section class="hotel-info-banner">
+                <div class="hotel-photo">
+                    <img src="<?php echo !empty($hotelInfo['foto']) ? htmlspecialchars($hotelInfo['foto']) : '../../public/assets/img/default_hotel.png'; ?>" 
+                         alt="Foto del hotel <?php echo htmlspecialchars($hotelInfo['nombre']); ?>"
+                         onerror="this.onerror=null;this.src='../../public/assets/img/default_hotel.png';">
+                </div>
+                <h3 class="hotel-name"><?php echo htmlspecialchars($hotelInfo['nombre']); ?></h3>
+                <div class="hotel-details">
+                    <p class="hotel-address"><i class="fas fa-map-marker-alt me-2"></i><?php echo htmlspecialchars($hotelInfo['direccion'] ?? 'Dirección no disponible'); ?></p>
+                    <div class="hotel-contact">
+                        <span><i class="fas fa-phone me-2"></i><?php echo htmlspecialchars($hotelInfo['telefono'] ?? 'N/A'); ?></span>
+                        <span><i class="fas fa-envelope me-2"></i><?php echo htmlspecialchars($hotelInfo['correo'] ?? 'N/A'); ?></span>
                     </div>
-                    <div class="date-display">
+                </div>
+                <div class="hotel-actions">
+                    <a href="plazaHotel.php?id=<?php echo $hotelInfo['id']; ?>" class="btn btn-primary">
+                        <i class="fas fa-eye me-2"></i>Ver Información Completa
+                    </a>
+                </div>
+                <div class="date-display">
                         <i class="fas fa-calendar-day me-2"></i>
                         <span id="currentDate"></span>
                     </div>
-                </div>
-            </div>
+            </section>
+            <?php endif; ?>
 
             <!-- Dashboard Sections -->
             <div class="dashboard-sections">

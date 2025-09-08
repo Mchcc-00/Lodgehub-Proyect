@@ -9,11 +9,11 @@ require_once 'validarSesion.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Hoteles</title>
-    
+
     <!-- CSS personalizado adaptado -->
-    <link rel="stylesheet" href="../../public/assets/css/stylesForm.css">  
+    <link rel="stylesheet" href="../../public/assets/css/stylesForm.css">
     <link rel="stylesheet" href="../../public/assets/css/stylesNav.css">
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -29,7 +29,7 @@ require_once 'validarSesion.php';
     <!-- Contenido principal adaptado para sidebar y navbar -->
     <div class="main-content" id="main-content">
         <div class="container">
-            
+
 
             <div class="header">
                 <h1><i class="fas fa-hotel"></i> Sistema de Gestión de Hoteles</h1>
@@ -38,7 +38,7 @@ require_once 'validarSesion.php';
 
             <div class="form-container">
                 <h2><i class="fas fa-plus-circle"></i> Agregar/Editar Hotel</h2>
-                <form id="hotelForm" novalidate>
+                <form id="hotel-form" action="/lodgehub/api/v1/hotel.php" method="POST">
                     <input type="hidden" id="hotelId" name="id">
 
                     <div class="form-grid">
@@ -66,7 +66,12 @@ require_once 'validarSesion.php';
                                 <i class="fas fa-user-tie"></i> Documento Administrador
                             </label>
                             <input type="text" id="numDocumento" name="numDocumento" required
-                                placeholder="Número de documento del administrador">
+                                placeholder="Número de documento del administrador"
+                                value="<?php echo htmlspecialchars($_SESSION['user']['numDocumento'] ?? ''); ?>" readonly>
+                            <small class="form-text text-muted">
+                                <i class="fas fa-info-circle"></i>
+                                Solo puedes registrar hoteles con tu propio número de documento
+                            </small>
                             <div class="error" id="numDocumento-error"></div>
                         </div>
 
@@ -134,26 +139,20 @@ require_once 'validarSesion.php';
                 </form>
             </div>
 
-            <div class="hotels-list">
-                <h2><i class="fas fa-list"></i> Lista de Hoteles</h2>
-                <div id="hotelsList">
-                    <div class="loading">Cargando hoteles</div>
-                </div>
-            </div>
         </div>
     </div>
 
     <!-- Scripts -->
     <script src="../../public/assets/js/sidebar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/hotelScript.js"></script>
+    <script src="../../public/assets/js/hotelScript.js"></script>
 
     <script>
         // Script para manejar el colapso del sidebar
         document.addEventListener('DOMContentLoaded', function() {
             const sidebarToggle = document.querySelector('[data-sidebar-toggle]');
             const mainContent = document.getElementById('main-content');
-            
+
             if (sidebarToggle && mainContent) {
                 sidebarToggle.addEventListener('click', function() {
                     mainContent.classList.toggle('sidebar-collapsed');
