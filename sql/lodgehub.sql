@@ -338,12 +338,11 @@ INSERT INTO tp_mantenimiento (id_habitacion, tipo, problemaDescripcion, frecuenc
 (27, 'Limpieza', 'Pintura y retoque de paredes habitación doble', 'No', NULL, 'Bajo', '0987654321', 'Pendiente', 4, NULL);
 
 -- Insertar facturas
-INSERT INTO tp_factura (infoReserva, infoHotel, total, impuestos, descuentos, subtotal) VALUES 
-(3, 1, 240000.00, 45600.00, 0.00, 194400.00),    -- Reserva finalizada Hotel Premium
-(1, 1, 360000.00, 68400.00, 0.00, 291600.00),    -- Reserva activa Hotel Premium  
-(5, 2, 300000.00, 57000.00, 15000.00, 258000.00), -- Reserva activa Hotel Business (con descuento)
-(9, 4, 160000.00, 30400.00, 0.00, 129600.00);    -- Reserva activa Hotel Express
-
+INSERT INTO tp_factura (id, infoReserva, fechaFactura, infoHotel, total) VALUES 
+(NULL, 3, '2025-06-12', 1, 240000.00),    -- Reserva finalizada Hotel Premium
+(NULL, 1, '2025-06-12', 1, 360000.00),    -- Reserva activa Hotel Premium  
+(NULL, 5, '2025-06-12', 2, 300000.00), -- Reserva activa Hotel Business
+(NULL, 9, '2025-06-12', 4, 160000.00);    -- Reserva activa Hotel Express
 -- =============================================
 -- VISTAS
 -- =============================================
@@ -542,3 +541,6 @@ CREATE INDEX idx_huespedes_fecha ON tp_huespedes(fechaCreacion);
 CREATE INDEX idx_factura_hotel ON tp_factura(infoHotel);
 CREATE INDEX idx_factura_reserva ON tp_factura(infoReserva);
 CREATE INDEX idx_factura_fecha ON tp_factura(fechaFactura);
+
+
+-- He encontrado un error grave. Cuando dentro de la base de datos no hay ningún registro y hago el proceso: crear usuario > iniciar sesión > registrar hotel, sale bien la información registrada de ese usuario. Pero si ya está ese usuario creado con anterioridad, y hago de nuevo el proceso: crear usuario > iniciar sesión > registrar hotel, el paso de registrar hotel no pasa, pues ese usuario Administrador creado por última vez, queda con el hotel del primer usuario Administrador creado, creo que es por falta de la inserción en ti_personal. Me ayudas a solucionar ese error?

@@ -11,48 +11,66 @@ class HotelModel {
 
     // Crear un nuevo hotel
     public function crearHotel($datos) {
+        // Iniciar una transacción para asegurar la integridad de los datos
+        $this->db->beginTransaction();
+
         try {
-            $query = "INSERT INTO " . $this->table . " 
+            // 1. Insertar el hotel en la tabla tp_hotel
+            $queryHotel = "INSERT INTO " . $this->table . " 
                      (nit, nombre, direccion, telefono, correo, foto, descripcion, numDocumentoAdmin) 
                      VALUES (:nit, :nombre, :direccion, :telefono, :correo, :foto, :descripcion, :numDocumentoAdmin)";
             
-            $stmt = $this->db->prepare($query);
+            $stmtHotel = $this->db->prepare($queryHotel);
             
             // Vincular parámetros
-            $stmt->bindParam(':nit', $datos['nit']);
-            $stmt->bindParam(':nombre', $datos['nombre']);
-            $stmt->bindParam(':direccion', $datos['direccion']);
-            $stmt->bindParam(':telefono', $datos['telefono']);
-            $stmt->bindParam(':correo', $datos['correo']);
-            $stmt->bindParam(':foto', $datos['foto']);
-            $stmt->bindParam(':descripcion', $datos['descripcion']);
-            $stmt->bindParam(':numDocumentoAdmin', $datos['numDocumentoAdmin']);
+            $stmtHotel->bindParam(':nit', $datos['nit']);
+            $stmtHotel->bindParam(':nombre', $datos['nombre']);
+            $stmtHotel->bindParam(':direccion', $datos['direccion']);
+            $stmtHotel->bindParam(':telefono', $datos['telefono']);
+            $stmtHotel->bindParam(':correo', $datos['correo']);
+            $stmtHotel->bindParam(':foto', $datos['foto']);
+            $stmtHotel->bindParam(':descripcion', $datos['descripcion']);
+            $stmtHotel->bindParam(':numDocumentoAdmin', $datos['numDocumentoAdmin']);
             
-            if ($stmt->execute()) {
-                return [
-                    'success' => true,
-                    'message' => 'Hotel creado exitosamente',
-                    'id' => $this->db->lastInsertId()
-                ];
+            if (!$stmtHotel->execute()) {
+                throw new PDOException("Error al crear el hotel.");
             }
-            
+
+            // Obtener el ID del hotel recién creado
+            $hotelId = $this->db->lastInsertId();
+
+            // 2. Asignar el administrador al hotel en la tabla ti_personal
+            $queryPersonal = "INSERT INTO ti_personal (id_hotel, numDocumento, roles) VALUES (:id_hotel, :numDocumento, :roles)";
+            $stmtPersonal = $this->db->prepare($queryPersonal);
+
+            $rolAdmin = 'Administrador'; // Rol por defecto para el creador del hotel
+            $stmtPersonal->bindParam(':id_hotel', $hotelId);
+            $stmtPersonal->bindParam(':numDocumento', $datos['numDocumentoAdmin']);
+            $stmtPersonal->bindParam(':roles', $rolAdmin);
+
+            if (!$stmtPersonal->execute()) {
+                throw new PDOException("Error al asignar el administrador al hotel.");
+            }
+
+            // Si todo fue bien, confirmar la transacción
+            $this->db->commit();
+
             return [
-                'success' => false,
-                'message' => 'Error al crear el hotel'
+                'success' => true,
+                'message' => 'Hotel creado y administrador asignado exitosamente.',
+                'id' => $hotelId
             ];
-            
+
         } catch (PDOException $e) {
+            // Si algo falla, revertir la transacción
+            $this->db->rollBack();
+
             if ($e->getCode() == 23000) { // Código de error para duplicados
-                return [
-                    'success' => false,
-                    'message' => 'El NIT ya está registrado para otro hotel'
-                ];
+                return ['success' => false, 'message' => 'El NIT ya está registrado para otro hotel.'];
             }
             
-            return [
-                'success' => false,
-                'message' => 'Error en la base de datos: ' . $e->getMessage()
-            ];
+            // Devolver un mensaje de error genérico
+            return ['success' => false, 'message' => 'Error en la base de datos: ' . $e->getMessage()];
         }
     }
 
