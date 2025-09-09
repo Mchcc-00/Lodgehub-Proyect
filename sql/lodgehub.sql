@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS tp_huespedes (
     correo VARCHAR(255) NOT NULL,
     nombres VARCHAR(50) NOT NULL,
     apellidos VARCHAR(50) NOT NULL,
-    tipoDocumento ENUM ('Cedula de Ciudadania','Tarjeta de Identidad','Cedula de Extranjeria','Pasaporte','Registro Civil') NOT NULL,
+    tipoDocumento ENUM ('Cedula de Ciudadanía','Tarjeta de Identidad','Cedula de Extranjeria','Pasaporte','Registro Civil') NOT NULL,
     sexo ENUM ('Hombre','Mujer','Otro','Prefiero no decirlo') NOT NULL,
     fechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fechaActualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -159,6 +159,7 @@ CREATE TABLE IF NOT EXISTS tp_mantenimiento (
     numDocumento VARCHAR(15) NOT NULL,
     estado ENUM ('Pendiente','Finalizado') NOT NULL DEFAULT 'Pendiente',
     id_hotel INT(3) NOT NULL, -- << NUEVO: Para saber a qué hotel pertenece el mantenimiento
+    observaciones TEXT,
     PRIMARY KEY (id),
     FOREIGN KEY (id_hotel) REFERENCES tp_hotel(id), -- << NUEVO
     FOREIGN KEY (id_habitacion) REFERENCES tp_habitaciones (id), -- << MODIFICADO
@@ -169,117 +170,179 @@ CREATE TABLE IF NOT EXISTS tp_mantenimiento (
 -- INSERTS DE DATOS DE EJEMPLO
 -- =============================================
 
--- Insertar usuarios (corregido)
+-- Insertar usuarios
 INSERT INTO tp_usuarios (numDocumento, tipoDocumento, nombres, apellidos, numTelefono, correo, sexo, fechaNacimiento, password, roles) VALUES 
 ('1014596349', 'Cédula de Ciudadanía', 'Brayan Felipe', 'Pulido Lopez', '3172509298', 'brayan06.pulido@gmail.com', 'Hombre', '2006-03-03', '123456789', 'Administrador'),
 ('1000289068', 'Cédula de Ciudadanía', 'Favian Alejandro', 'Machuca Pedraza', '3144235027', 'bleachowl98@gmail.com', 'Hombre', '2003-10-15', '123456789', 'Colaborador'),
 ('1019987917', 'Cédula de Ciudadanía', 'Camilo Andres', 'Guerrero Yanquen', '3027644457', 'camiloagycr321@gmail.com', 'Hombre', '2006-02-15', '123456789', 'Usuario'),
-('1111222233', 'Cédula de Ciudadanía', 'Ana Patricia', 'Morales Ruiz', '3001112222', 'ana.morales@lodgehub.com', 'Mujer', '1992-05-18', '123456789', 'Usuario'),
+('1014596348', 'Cédula de Ciudadanía', 'Brayan', 'Pulido', '3172509298', 'brayanpulido941@gmail.com', 'Hombre', '2006-03-03', '123456789', 'Administrador'),
 ('7777888899', 'Pasaporte', 'Roberto', 'Silva Santos', '3007778888', 'roberto.silva@email.com', 'Hombre', '1987-09-25', '123456789', 'Usuario'),
-('5555666677', 'Cédula de Ciudadanía', 'María Elena', 'Ramírez Castro', '3005556666', 'maria.ramirez@lodgehub.com', 'Mujer', '1985-12-10', '123456789', 'Administrador');
+('5555666677', 'Cédula de Ciudadanía', 'María Elena', 'Ramírez Castro', '3005556666', 'maria.ramirez@lodgehub.com', 'Mujer', '1985-12-10', '123456789', 'Administrador'),
+('1111222233', 'Cédula de Ciudadanía', 'Usuario', 'Temporal', '3001112222', 'usuario.temporal@email.com', 'Hombre', '1990-01-01', '123456789', 'Usuario'),
+('1234567890', 'Cédula de Ciudadanía', 'Ana María', 'González Pérez', '3101234567', 'ana.gonzalez@lodgehub.com', 'Mujer', '1988-05-15', '123456789', 'Colaborador'),
+('0987654321', 'Cédula de Ciudadanía', 'Carlos Eduardo', 'Martínez López', '3109876543', 'carlos.martinez@lodgehub.com', 'Hombre', '1992-11-20', '123456789', 'Colaborador');
 
 -- Insertar hoteles
 INSERT INTO tp_hotel (nit, nombre, direccion, telefono, correo, descripcion, numDocumentoAdmin) VALUES 
 ('900123456-1', 'Hotel Lodge Hub Premium', 'Calle 123 #45-67, Bogotá, Colombia', '6013334444', 'info@lodgehub.com', 'Hotel de lujo ubicado en el corazón de la ciudad, ofreciendo servicios de alta calidad y comodidad excepcional.', '1014596349'),
 ('900987654-2', 'Lodge Hub Business', 'Carrera 15 #80-25, Medellín, Colombia', '6044445555', 'medellin@lodgehub.com', 'Hotel especializado en turismo de negocios con salas de conferencias y servicios corporativos.', '5555666677'),
-('900555777-3', 'Lodge Hub Resort', 'Km 5 Vía Cartagena-Barú, Cartagena, Colombia', '6055556666', 'cartagena@lodgehub.com', 'Resort frente al mar con spa, piscinas y actividades recreativas para toda la familia.', '1014596349');
+('900555777-3', 'Lodge Hub Resort', 'Km 5 Vía Cartagena-Barú, Cartagena, Colombia', '6055556666', 'cartagena@lodgehub.com', 'Resort frente al mar con spa, piscinas y actividades recreativas para toda la familia.', '1014596348'),
+('900111222-4', 'Lodge Hub Express', 'Avenida El Dorado #50-30, Bogotá, Colombia', '6011112222', 'express@lodgehub.com', 'Hotel económico con servicios básicos de calidad para viajeros de negocios.', '1234567890');
 
 -- Insertar personal del hotel
 INSERT INTO ti_personal (id_hotel, numDocumento, roles) VALUES 
-(1, '1014596349', 'Administrador,Recepcionista'),
-(1, '1000289068', 'Colaborador,Mantenimiento'),
-(2, '5555666677', 'Administrador,Gerente'),
-(2, '1111222233', 'Colaborador,Recepcionista'),
-(3, '1014596349', 'Administrador'),
-(3, '7777888899', 'Colaborador,Animador');
+(1, '1014596349', 'Administrador General'),
+(1, '1000289068', 'Colaborador Recepción'),
+(1, '1234567890', 'Colaborador Mantenimiento'),
+(2, '5555666677', 'Administrador General'),
+(2, '7777888899', 'Colaborador Servicios'),
+(2, '0987654321', 'Colaborador Recepción'),
+(3, '1014596348', 'Administrador General'),
+(3, '7777888899', 'Colaborador Resort'),
+(3, '1000289068', 'Colaborador Spa'),
+(4, '1234567890', 'Administrador General'),
+(4, '0987654321', 'Colaborador Express');
 
 -- Insertar tipos de habitación por hotel
 INSERT INTO td_tipoHabitacion (descripcion, cantidad, id_hotel) VALUES 
--- Hotel Premium Bogotá
-('Individual', 10, 1),
-('Doble', 15, 1),
-('Suite', 5, 1),
-('Familiar', 8, 1),
-('Ejecutiva', 6, 1),
--- Hotel Business Medellín
-('Individual', 8, 2),
-('Doble', 12, 2),
-('Suite Ejecutiva', 4, 2),
-('Familiar', 6, 2),
-('Presidencial', 2, 2),
--- Resort Cartagena
-('Standard', 20, 3),
-('Ocean View', 15, 3),
-('Villa', 8, 3),
-('Master Suite', 5, 3),
-('Penthouse', 2, 3);
+-- Hotel Premium Bogotá (id=1)
+('Individual', 15, 1),
+('Doble', 20, 1),
+('Suite Junior', 8, 1),
+('Suite Ejecutiva', 5, 1),
+('Suite Presidencial', 2, 1),
+-- Hotel Business Medellín (id=2)
+('Individual Business', 12, 2),
+('Doble Business', 15, 2),
+('Suite Ejecutiva', 6, 2),
+('Sala de Juntas', 4, 2),
+-- Resort Cartagena (id=3)
+('Standard Ocean', 25, 3),
+('Superior Ocean View', 20, 3),
+('Villa Familiar', 10, 3),
+('Master Suite', 6, 3),
+('Penthouse', 2, 3),
+-- Hotel Express Bogotá (id=4)
+('Individual Express', 20, 4),
+('Doble Express', 15, 4);
 
 -- Insertar habitaciones
 INSERT INTO tp_habitaciones (numero, costo, capacidad, tipoHabitacion, descripcion, estado, id_hotel) VALUES 
 -- Hotel Premium Bogotá (id_hotel = 1)
-('101', 80000.00, 1, 1, 'Habitación individual con baño privado, TV, WiFi', 'Disponible', 1),
-('102', 80000.00, 1, 1, 'Habitación individual con vista a la ciudad', 'Disponible', 1),
-('201', 120000.00, 2, 2, 'Habitación doble con cama matrimonial, minibar', 'Disponible', 1),
-('202', 120000.00, 2, 2, 'Habitación doble con dos camas individuales', 'Ocupada', 1),
-('301', 250000.00, 2, 3, 'Suite ejecutiva con sala, jacuzzi, balcón', 'Disponible', 1),
-('401', 180000.00, 4, 4, 'Habitación familiar con litera y cama matrimonial', 'Disponible', 1),
-('501', 200000.00, 2, 5, 'Habitación ejecutiva con escritorio y sala de reuniones', 'Mantenimiento', 1),
+('101', 120000.00, 1, 1, 'Habitación individual premium con baño privado, TV LED 42", WiFi de alta velocidad', 'Disponible', 1),
+('102', 120000.00, 1, 1, 'Habitación individual con vista a la ciudad y minibar', 'Disponible', 1),
+('103', 120000.00, 1, 1, 'Habitación individual con escritorio ejecutivo', 'Disponible', 1),
+('201', 180000.00, 2, 2, 'Habitación doble con cama king, balcón y vista panorámica', 'Disponible', 1),
+('202', 180000.00, 2, 2, 'Habitación doble con dos camas queen y sala de estar', 'Disponible', 1),
+('203', 180000.00, 2, 2, 'Habitación doble con jacuzzi y vista a la ciudad', 'Ocupada', 1),
+('301', 350000.00, 3, 3, 'Suite junior con sala independiente, minibar y terraza', 'Disponible', 1),
+('302', 350000.00, 3, 3, 'Suite junior con área de trabajo y sofá cama', 'Disponible', 1),
+('401', 500000.00, 4, 4, 'Suite ejecutiva con sala de reuniones, jacuzzi y balcón amplio', 'Disponible', 1),
+('501', 800000.00, 6, 5, 'Suite presidencial con salón, comedor, cocina y terraza', 'Disponible', 1),
 
 -- Hotel Business Medellín (id_hotel = 2)
-('B101', 75000.00, 1, 6, 'Habitación individual con escritorio de trabajo', 'Disponible', 2),
-('B102', 75000.00, 1, 6, 'Habitación individual con vista al valle', 'Disponible', 2),
-('B201', 110000.00, 2, 7, 'Habitación doble con área de trabajo amplia', 'Disponible', 2),
-('B301', 300000.00, 2, 8, 'Suite ejecutiva con sala de juntas privada', 'Disponible', 2),
-('B401', 170000.00, 4, 9, 'Habitación familiar con conexión de alta velocidad', 'Disponible', 2),
+('B101', 100000.00, 1, 6, 'Habitación individual business con escritorio amplio y silla ergonómica', 'Disponible', 2),
+('B102', 100000.00, 1, 6, 'Habitación individual con vista al valle de Aburrá', 'Disponible', 2),
+('B201', 150000.00, 2, 7, 'Habitación doble business con área de trabajo para dos personas', 'Disponible', 2),
+('B202', 150000.00, 2, 7, 'Habitación doble con conexión empresarial de alta velocidad', 'Disponible', 2),
+('B301', 400000.00, 4, 8, 'Suite ejecutiva con sala de juntas para 8 personas', 'Disponible', 2),
+('B302', 400000.00, 4, 8, 'Suite ejecutiva con equipos de videoconferencia', 'Disponible', 2),
+('SALA1', 0.00, 12, 9, 'Sala de juntas principal con proyector y sistema de audio', 'Disponible', 2),
 
 -- Resort Cartagena (id_hotel = 3)
-('C101', 150000.00, 2, 11, 'Habitación standard con aire acondicionado', 'Disponible', 3),
-('C201', 220000.00, 2, 12, 'Habitación con vista al océano y balcón', 'Disponible', 3),
-('C301', 400000.00, 4, 13, 'Villa con piscina privada y jardín', 'Disponible', 3),
-('C501', 600000.00, 6, 14, 'Master suite con jacuzzi y terraza panorámica', 'Disponible', 3),
-('C601', 1200000.00, 8, 15, 'Penthouse con vista 360° y servicio personalizado', 'Disponible', 3);
+('C101', 200000.00, 2, 10, 'Habitación standard con vista parcial al océano y aire acondicionado', 'Disponible', 3),
+('C102', 200000.00, 2, 10, 'Habitación standard con balcón y acceso directo a jardines', 'Disponible', 3),
+('C201', 280000.00, 2, 11, 'Habitación superior con vista completa al océano y balcón amplio', 'Disponible', 3),
+('C202', 280000.00, 2, 11, 'Habitación superior con hamaca y vista al atardecer', 'Disponible', 3),
+('C301', 450000.00, 4, 12, 'Villa familiar con piscina privada, jardín y área de BBQ', 'Disponible', 3),
+('C302', 450000.00, 4, 12, 'Villa familiar con sala, comedor y cocina equipada', 'Disponible', 3),
+('C401', 700000.00, 6, 13, 'Master suite con jacuzzi, terraza panorámica y mayordomo', 'Disponible', 3),
+('C501', 1200000.00, 8, 14, 'Penthouse con vista 360°, piscina privada y servicio exclusivo', 'Disponible', 3),
 
--- Insertar huéspedes (corregido el tipo de documento)
+-- Hotel Express Bogotá (id_hotel = 4)
+('E101', 80000.00, 1, 15, 'Habitación individual económica con servicios básicos de calidad', 'Disponible', 4),
+('E102', 80000.00, 1, 15, 'Habitación individual con WiFi y TV cable', 'Disponible', 4),
+('E201', 110000.00, 2, 16, 'Habitación doble económica con baño privado', 'Disponible', 4),
+('E202', 110000.00, 2, 16, 'Habitación doble con escritorio y área de trabajo', 'Disponible', 4);
+
+-- Insertar huéspedes
 INSERT INTO tp_huespedes (numDocumento, numTelefono, correo, nombres, apellidos, tipoDocumento, sexo) VALUES 
-('1140915008', '3170560930', 'angelo.gonzalez@gmail.com', 'ANGELO', 'GONZALEZ', 'Cedula de Ciudadania', 'Hombre'),
-('6666777788', '3006667777', 'sofia.hernandez@email.com', 'Sofía Isabel', 'Hernández Vega', 'Cedula de Ciudadania', 'Mujer'),
-('8888999900', '3008889999', 'pedro.jimenez@email.com', 'Pedro Antonio', 'Jiménez Flores', 'Cedula de Ciudadania', 'Hombre'),
-('2222333344', '3002223333', 'laura.torres@email.com', 'Laura Cristina', 'Torres Mendoza', 'Cedula de Ciudadania', 'Mujer'),
+('1140915008', '3170560930', 'angelo.gonzalez@gmail.com', 'Angelo', 'González', 'Cédula de Ciudadanía', 'Hombre'),
+('6666777788', '3006667777', 'sofia.hernandez@email.com', 'Sofía Isabel', 'Hernández Vega', 'Cédula de Ciudadanía', 'Mujer'),
+('8888999900', '3008889999', 'pedro.jimenez@email.com', 'Pedro Antonio', 'Jiménez Flores', 'Cédula de Ciudadanía', 'Hombre'),
+('2222333344', '3002223333', 'laura.torres@email.com', 'Laura Cristina', 'Torres Mendoza', 'Cédula de Ciudadanía', 'Mujer'),
 ('9999000011', '3009990000', 'miguel.vargas@email.com', 'Miguel Ángel', 'Vargas Pineda', 'Pasaporte', 'Hombre'),
-('3333444455', '3003334444', 'carla.ospina@email.com', 'Carla Andrea', 'Ospina Mejía', 'Cedula de Ciudadania', 'Mujer'),
-('4444555566', '3004445555', 'diego.castro@email.com', 'Diego Fernando', 'Castro López', 'Cedula de Ciudadania', 'Hombre');
+('3333444455', '3003334444', 'carla.ospina@email.com', 'Carla Andrea', 'Ospina Mejía', 'Cédula de Ciudadanía', 'Mujer'),
+('4444555566', '3004445555', 'diego.castro@email.com', 'Diego Fernando', 'Castro López', 'Cédula de Ciudadanía', 'Hombre'),
+('5555666699', '3005556669', 'isabella.rodriguez@email.com', 'Isabella', 'Rodríguez Morales', 'Cédula de Ciudadanía', 'Mujer'),
+('7777888811', '3007778881', 'fernando.lopez@email.com', 'Fernando', 'López Gutiérrez', 'Cédula de Ciudadanía', 'Hombre'),
+('1122334455', '3011223344', 'patricia.silva@email.com', 'Patricia', 'Silva Ramírez', 'Cédula de Ciudadanía', 'Mujer');
 
--- Insertar reservas (corregido para usar id_habitacion)
+-- Insertar reservas
 INSERT INTO tp_reservas (pagoFinal, fechainicio, fechaFin, cantidadAdultos, cantidadNinos, cantidadDiscapacitados, motivoReserva, id_habitacion, metodoPago, informacionAdicional, us_numDocumento, hue_numDocumento, estado, id_hotel) VALUES 
-(240000.00, '2025-09-10', '2025-09-12', 2, 0, 0, 'Personal', 4, 'Tarjeta', 'Luna de miel', '1000289068', '1140915008', 'Activa', 1),
-(500000.00, '2025-09-15', '2025-09-17', 2, 0, 0, 'Negocios', 5, 'PSE', 'Reunión empresarial', '7777888899', '6666777788', 'Activa', 1),
-(160000.00, '2025-09-05', '2025-09-07', 1, 0, 0, 'Personal', 1, 'Efectivo', NULL, '1111222233', '8888999900', 'Finalizada', 1),
-(360000.00, '2025-09-20', '2025-09-22', 3, 1, 0, 'Familiar', 6, 'Tarjeta', 'Vacaciones familiares', '7777888899', '2222333344', 'Pendiente', 1),
-(220000.00, '2025-09-25', '2025-09-27', 2, 0, 0, 'Negocios', 10, 'PSE', 'Conferencia médica', '5555666677', '3333444455', 'Activa', 2),
-(800000.00, '2025-10-01', '2025-10-05', 4, 2, 0, 'Familiar', 14, 'Tarjeta', 'Vacaciones en familia', '1014596349', '4444555566', 'Pendiente', 3);
+-- Reservas Hotel Premium Bogotá
+(360000.00, '2025-09-10', '2025-09-12', 2, 0, 0, 'Personal', 4, 'Tarjeta', 'Luna de miel - solicitan decoración especial', '1000289068', '1140915008', 'Activa', 1),
+(700000.00, '2025-09-15', '2025-09-17', 3, 1, 0, 'Familiar', 7, 'PSE', 'Familia con niño de 5 años', '1019987917', '6666777788', 'Activa', 1),
+(240000.00, '2025-09-05', '2025-09-07', 1, 0, 0, 'Negocios', 1, 'Efectivo', 'Ejecutivo en viaje de trabajo', '1111222233', '8888999900', 'Finalizada', 1),
+(500000.00, '2025-09-20', '2025-09-22', 4, 0, 0, 'Negocios', 9, 'Tarjeta', 'Reunión ejecutiva importante', '1014596349', '2222333344', 'Pendiente', 1),
 
--- Insertar PQRS (agregado id_hotel)
+-- Reservas Hotel Business Medellín  
+(300000.00, '2025-09-25', '2025-09-27', 2, 0, 0, 'Negocios', 13, 'PSE', 'Conferencia empresarial', '5555666677', '3333444455', 'Activa', 2),
+(800000.00, '2025-10-01', '2025-10-03', 4, 0, 0, 'Negocios', 15, 'Tarjeta', 'Junta directiva - suite ejecutiva', '7777888899', '4444555566', 'Pendiente', 2),
+
+-- Reservas Resort Cartagena
+(560000.00, '2025-10-05', '2025-10-07', 2, 0, 0, 'Personal', 19, 'Tarjeta', 'Aniversario de bodas', '1014596348', '5555666699', 'Pendiente', 3),
+(900000.00, '2025-10-10', '2025-10-13', 4, 2, 0, 'Familiar', 21, 'PSE', 'Vacaciones familiares con niños', '1000289068', '7777888811', 'Pendiente', 3),
+
+-- Reservas Hotel Express Bogotá
+(160000.00, '2025-09-28', '2025-09-30', 1, 0, 0, 'Negocios', 25, 'Efectivo', 'Viaje de trabajo económico', '1234567890', '1122334455', 'Activa', 4),
+(220000.00, '2025-10-15', '2025-10-17', 2, 0, 0, 'Personal', 27, 'Tarjeta', 'Pareja joven - presupuesto ajustado', '0987654321', '9999000011', 'Pendiente', 4);
+
+-- Insertar PQRS
 INSERT INTO tp_pqrs (tipo, descripcion, numdocumento, prioridad, categoria, estado, id_hotel, respuesta, fechaFinalizacion) VALUES 
-('Quejas', 'El aire acondicionado de la habitación 202 no funcionaba correctamente durante mi estadía.', '1014596349', 'Alto', 'Habitación', 'Finalizado', 1, 'Se realizó mantenimiento correctivo al aire acondicionado. Disculpas por las molestias.', '2025-09-02 14:30:00'),
-('Sugerencias', 'Sería genial si pudieran agregar más opciones vegetarianas en el menú del restaurante.', '1000289068', 'Bajo', 'Servicio', 'Pendiente', 1, NULL, NULL),
-('Felicitaciones', 'Excelente atención del personal de recepción, muy amables y profesionales.', '1019987917', 'Bajo', 'Atención', 'Finalizado', 1, 'Gracias por sus comentarios. Los transmitiremos al equipo.', '2025-09-03 09:15:00'),
-('Peticiones', 'Solicito información sobre descuentos para estadías prolongadas.', '7777888899', 'Bajo', 'Otro', 'Pendiente', 1, NULL, NULL),
-('Quejas', 'La conexión WiFi en la habitación B201 era muy lenta.', '5555666677', 'Alto', 'Habitación', 'Pendiente', 2, NULL, NULL),
-('Sugerencias', 'Podrían implementar un servicio de spa en el resort.', '1014596349', 'Bajo', 'Servicio', 'Pendiente', 3, NULL, NULL);
+-- PQRS Hotel Premium
+('Quejas', 'El aire acondicionado de la habitación 203 presentó fallas durante la estadía. Se escuchaban ruidos extraños.', '1014596349', 'Alto', 'Habitación', 'Finalizado', 1, 'Se realizó mantenimiento correctivo al sistema de aire acondicionado. Se cambió el compresor. Disculpas por las molestias ocasionadas.', '2025-09-02 14:30:00'),
+('Sugerencias', 'Sería excelente si pudieran agregar más opciones vegetarianas y veganas en el menú del restaurante del hotel.', '1000289068', 'Bajo', 'Servicio', 'Pendiente', 1, NULL, NULL),
+('Felicitaciones', 'Excelente atención del personal de recepción, especialmente de la señorita Ana. Muy amables y profesionales en todo momento.', '1019987917', 'Bajo', 'Atención', 'Finalizado', 1, 'Muchas gracias por sus comentarios positivos. Los transmitiremos al equipo de recepción y especialmente a Ana.', '2025-09-03 09:15:00'),
+('Peticiones', 'Solicito información detallada sobre descuentos para estadías prolongadas y tarifas corporativas.', '7777888899', 'Bajo', 'Otro', 'Pendiente', 1, NULL, NULL),
 
--- Insertar mantenimientos (corregido para usar id_habitacion)
-INSERT INTO tp_mantenimiento (id_habitacion, tipo, problemaDescripcion, frecuencia, cantFrecuencia, prioridad, numDocumento, estado, id_hotel) VALUES 
-(7, 'Eléctrico', 'Falla en el sistema de iluminación LED', 'No', 'Diario', 'Alto', '1014596349', 'Pendiente', 1),
-(4, 'Estructura', 'Aire acondicionado requiere limpieza filtros', 'Sí', 'Mensual', 'Bajo', '1000289068', 'Finalizado', 1),
-(5, 'Limpieza', 'Limpieza profunda de alfombras', 'Sí', 'Quincenal', 'Bajo', '1019987917', 'Pendiente', 1),
-(10, 'Eléctrico', 'Revisión sistema de iluminación sala juntas', 'Sí', 'Mensual', 'Bajo', '5555666677', 'Pendiente', 2),
-(14, 'Limpieza', 'Mantenimiento jacuzzi master suite', 'Sí', 'Semanal', 'Alto', '7777888899', 'Pendiente', 3);
+-- PQRS Hotel Business
+('Quejas', 'La conexión WiFi en la habitación B201 era extremadamente lenta, afectando mi trabajo remoto.', '5555666677', 'Alto', 'Habitación', 'Pendiente', 2, NULL, NULL),
+('Peticiones', 'Necesito información sobre salas de conferencias disponibles para el próximo mes y sus tarifas.', '7777888899', 'Bajo', 'Servicio', 'Finalizado', 2, 'Se envió por correo la información completa de nuestras salas de conferencias, disponibilidad y tarifas especiales.', '2025-09-04 16:20:00'),
+
+-- PQRS Resort Cartagena
+('Sugerencias', 'Podrían implementar un servicio de spa con masajes en la playa y tratamientos con productos naturales del Caribe.', '1014596348', 'Bajo', 'Servicio', 'Pendiente', 3, NULL, NULL),
+('Felicitaciones', 'El resort superó todas nuestras expectativas. La villa familiar es espectacular y el servicio excepcional.', '1000289068', 'Bajo', 'Atención', 'Finalizado', 3, 'Gracias por elegirnos para sus vacaciones familiares. Nos alegra saber que disfrutaron su estadía.', '2025-09-05 11:30:00'),
+
+-- PQRS Hotel Express
+('Quejas', 'La habitación E102 tenía problemas con el agua caliente en la ducha durante las mañanas.', '1234567890', 'Alto', 'Habitación', 'Pendiente', 4, NULL, NULL),
+('Sugerencias', 'Sería útil tener un servicio de desayuno continental básico incluido en la tarifa.', '0987654321', 'Bajo', 'Servicio', 'Pendiente', 4, NULL, NULL);
+
+-- Insertar mantenimientos
+INSERT INTO tp_mantenimiento (id_habitacion, tipo, problemaDescripcion, frecuencia, cantFrecuencia, prioridad, numDocumento, estado, id_hotel, observaciones) VALUES 
+-- Mantenimientos Hotel Premium
+(6, 'Eléctrico', 'Falla en sistema de aire acondicionado - ruidos anómalos', 'No', NULL, 'Alto', '1234567890', 'Finalizado', 1, 'Se cambió compresor y se realizó limpieza completa del sistema'),
+(9, 'Limpieza', 'Limpieza profunda de alfombras y tapicería de suite ejecutiva', 'Sí', 'Quincenal', 'Bajo', '1000289068', 'Pendiente', 1, NULL ),
+(10, 'Estructura', 'Revisión y mantenimiento de jacuzzi en suite presidencial', 'Sí', 'Mensual', 'Bajo', '1234567890', 'Pendiente', 1, NULL),
+
+-- Mantenimientos Hotel Business
+(13, 'Eléctrico', 'Mejora de conexión WiFi y cableado de red en habitación business', 'No', NULL, 'Alto', '0987654321', 'Pendiente', 2, NULL),
+(17, 'Limpieza', 'Mantenimiento equipos audiovisuales sala de juntas', 'Sí', 'Semanal', 'Bajo', '0987654321', 'Pendiente', 2, NULL),
+
+-- Mantenimientos Resort Cartagena
+(21, 'Limpieza', 'Limpieza y mantenimiento de piscina privada en villa familiar', 'Sí', 'Semanal', 'Alto', '7777888899', 'Pendiente', 3, NULL),
+(24, 'Estructura', 'Mantenimiento de jacuzzi y sistemas de hidromasaje', 'Sí', 'Quincenal', 'Alto', '7777888899', 'Pendiente', 3, NULL),
+
+-- Mantenimientos Hotel Express
+(26, 'Eléctrico', 'Reparación sistema agua caliente habitación individual', 'No', NULL, 'Alto', '1234567890', 'Pendiente', 4, NULL),
+(27, 'Limpieza', 'Pintura y retoque de paredes habitación doble', 'No', NULL, 'Bajo', '0987654321', 'Pendiente', 4, NULL);
 
 -- Insertar facturas
-INSERT INTO tp_factura (infoReserva, infoHotel, total) VALUES 
-(3, 1, 160000.00),
-(1, 1, 240000.00),
-(5, 2, 220000.00);
+INSERT INTO tp_factura (infoReserva, infoHotel, total, impuestos, descuentos, subtotal) VALUES 
+(3, 1, 240000.00, 45600.00, 0.00, 194400.00),    -- Reserva finalizada Hotel Premium
+(1, 1, 360000.00, 68400.00, 0.00, 291600.00),    -- Reserva activa Hotel Premium  
+(5, 2, 300000.00, 57000.00, 15000.00, 258000.00), -- Reserva activa Hotel Business (con descuento)
+(9, 4, 160000.00, 30400.00, 0.00, 129600.00);    -- Reserva activa Hotel Express
 
 -- =============================================
 -- VISTAS

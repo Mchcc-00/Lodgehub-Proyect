@@ -1,19 +1,42 @@
 <?php
-// dashboard_data.php - Funciones para obtener datos del dashboard
+// validarHome.php - Validación y configuración para homepage con sistema multi-hotel
 require_once '../../config/conexionGlobal.php';
 
 class DashboardData {
     private $db;
+    private $hotel_id;
+    private $user_role;
     
-    public function __construct() {
+    public function __construct($hotel_id = null, $user_role = 'Usuario') {
         $this->db = conexionDB();
+        $this->hotel_id = $hotel_id;
+        $this->user_role = $user_role;
+    }
+    
+    /**
+     * Construye la condición WHERE para filtrar por hotel
+     */
+    private function getHotelFilter() {
+        // Super administradores pueden ver todo
+        if ($this->user_role === 'Administrador' && empty($this->hotel_id)) {
+            return "";
+        }
+        
+        // Otros usuarios solo ven su hotel
+        if ($this->hotel_id) {
+            return " AND id_hotel = " . intval($this->hotel_id);
+        }
+        
+        // Si no hay hotel asignado y no es super admin, no mostrar nada
+        return " AND 1=0";
     }
     
     // MÉTODOS PARA RESERVAS
     public function getReservasHoyInician() {
         try {
+            $hotelFilter = $this->getHotelFilter();
             $sql = "SELECT COUNT(*) as count FROM tp_reservas 
-                   WHERE DATE(fechainicio) = CURDATE() AND estado = 'Activa'";
+                   WHERE DATE(fechainicio) = CURDATE() AND estado = 'Activa' {$hotelFilter}";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             return $stmt->fetch()['count'];
@@ -25,8 +48,9 @@ class DashboardData {
     
     public function getReservasHoyTerminan() {
         try {
+            $hotelFilter = $this->getHotelFilter();
             $sql = "SELECT COUNT(*) as count FROM tp_reservas 
-                   WHERE DATE(fechaFin) = CURDATE() AND estado = 'Activa'";
+                   WHERE DATE(fechaFin) = CURDATE() AND estado = 'Activa' {$hotelFilter}";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             return $stmt->fetch()['count'];
@@ -38,7 +62,8 @@ class DashboardData {
     
     public function getReservasActivas() {
         try {
-            $sql = "SELECT COUNT(*) as count FROM tp_reservas WHERE estado = 'Activa'";
+            $hotelFilter = $this->getHotelFilter();
+            $sql = "SELECT COUNT(*) as count FROM tp_reservas WHERE estado = 'Activa' {$hotelFilter}";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             return $stmt->fetch()['count'];
@@ -50,7 +75,8 @@ class DashboardData {
     
     public function getReservasPendientes() {
         try {
-            $sql = "SELECT COUNT(*) as count FROM tp_reservas WHERE estado = 'Pendiente'";
+            $hotelFilter = $this->getHotelFilter();
+            $sql = "SELECT COUNT(*) as count FROM tp_reservas WHERE estado = 'Pendiente' {$hotelFilter}";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             return $stmt->fetch()['count'];
@@ -62,8 +88,9 @@ class DashboardData {
     
     public function getReservasInactivas() {
         try {
+            $hotelFilter = $this->getHotelFilter();
             $sql = "SELECT COUNT(*) as count FROM tp_reservas 
-                   WHERE estado IN ('Cancelada', 'Finalizada')";
+                   WHERE estado IN ('Cancelada', 'Finalizada') {$hotelFilter}";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             return $stmt->fetch()['count'];
@@ -76,7 +103,8 @@ class DashboardData {
     // MÉTODOS PARA MANTENIMIENTO
     public function getMantenimientoPendientes() {
         try {
-            $sql = "SELECT COUNT(*) as count FROM tp_mantenimiento WHERE estado = 'Pendiente'";
+            $hotelFilter = $this->getHotelFilter();
+            $sql = "SELECT COUNT(*) as count FROM tp_mantenimiento WHERE estado = 'Pendiente' {$hotelFilter}";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             return $stmt->fetch()['count'];
@@ -88,10 +116,10 @@ class DashboardData {
     
     public function getMantenimientoEnProceso() {
         try {
-            // Asumiendo que "En Proceso" sería mantenimiento pendiente con prioridad alta
-            // o que se ha actualizado recientemente
+            $hotelFilter = $this->getHotelFilter();
+            // Mantenimiento de alta prioridad pendiente se considera "en proceso"
             $sql = "SELECT COUNT(*) as count FROM tp_mantenimiento 
-                   WHERE estado = 'Pendiente' AND prioridad = 'Alto'";
+                   WHERE estado = 'Pendiente' AND prioridad = 'Alto' {$hotelFilter}";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             return $stmt->fetch()['count'];
@@ -103,7 +131,8 @@ class DashboardData {
     
     public function getMantenimientoFinalizados() {
         try {
-            $sql = "SELECT COUNT(*) as count FROM tp_mantenimiento WHERE estado = 'Finalizado'";
+            $hotelFilter = $this->getHotelFilter();
+            $sql = "SELECT COUNT(*) as count FROM tp_mantenimiento WHERE estado = 'Finalizado' {$hotelFilter}";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             return $stmt->fetch()['count'];
@@ -116,8 +145,9 @@ class DashboardData {
     // MÉTODOS PARA PQRS
     public function getPQRSGravedadAlta() {
         try {
+            $hotelFilter = $this->getHotelFilter();
             $sql = "SELECT COUNT(*) as count FROM tp_pqrs 
-                   WHERE prioridad = 'Alto' AND estado = 'Pendiente'";
+                   WHERE prioridad = 'Alto' AND estado = 'Pendiente' {$hotelFilter}";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             return $stmt->fetch()['count'];
@@ -129,11 +159,11 @@ class DashboardData {
     
     public function getPQRSGravedadMedia() {
         try {
-            // Asumiendo que "Gravedad Media" son PQRS pendientes de prioridad baja 
-            // pero con cierta antigüedad
+            $hotelFilter = $this->getHotelFilter();
+            // PQRS de prioridad baja pero con más de 2 días de antigüedad
             $sql = "SELECT COUNT(*) as count FROM tp_pqrs 
                    WHERE prioridad = 'Bajo' AND estado = 'Pendiente' 
-                   AND DATEDIFF(CURDATE(), DATE(fechaRegistro)) > 2";
+                   AND DATEDIFF(CURDATE(), DATE(fechaRegistro)) > 2 {$hotelFilter}";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             return $stmt->fetch()['count'];
@@ -145,9 +175,10 @@ class DashboardData {
     
     public function getPQRSGravedadBaja() {
         try {
+            $hotelFilter = $this->getHotelFilter();
             $sql = "SELECT COUNT(*) as count FROM tp_pqrs 
                    WHERE prioridad = 'Bajo' AND estado = 'Pendiente'
-                   AND DATEDIFF(CURDATE(), DATE(fechaRegistro)) <= 2";
+                   AND DATEDIFF(CURDATE(), DATE(fechaRegistro)) <= 2 {$hotelFilter}";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             return $stmt->fetch()['count'];
@@ -159,7 +190,8 @@ class DashboardData {
     
     public function getPQRSRespondidos() {
         try {
-            $sql = "SELECT COUNT(*) as count FROM tp_pqrs WHERE estado = 'Finalizado'";
+            $hotelFilter = $this->getHotelFilter();
+            $sql = "SELECT COUNT(*) as count FROM tp_pqrs WHERE estado = 'Finalizado' {$hotelFilter}";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             return $stmt->fetch()['count'];
@@ -169,8 +201,38 @@ class DashboardData {
         }
     }
     
+    // MÉTODO ADICIONAL: Obtener estadísticas de habitaciones por hotel
+    public function getEstadisticasHabitaciones() {
+        try {
+            $hotelFilter = $this->getHotelFilter();
+            $sql = "SELECT 
+                        COUNT(*) as total_habitaciones,
+                        SUM(CASE WHEN estado = 'Disponible' THEN 1 ELSE 0 END) as disponibles,
+                        SUM(CASE WHEN estado = 'Ocupada' THEN 1 ELSE 0 END) as ocupadas,
+                        SUM(CASE WHEN estado = 'Reservada' THEN 1 ELSE 0 END) as reservadas,
+                        SUM(CASE WHEN estado = 'Mantenimiento' THEN 1 ELSE 0 END) as en_mantenimiento
+                    FROM tp_habitaciones 
+                    WHERE estadoMantenimiento = 'Activo' {$hotelFilter}";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetch();
+        } catch (Exception $e) {
+            error_log("Error getEstadisticasHabitaciones: " . $e->getMessage());
+            return [
+                'total_habitaciones' => 0,
+                'disponibles' => 0,
+                'ocupadas' => 0,
+                'reservadas' => 0,
+                'en_mantenimiento' => 0
+            ];
+        }
+    }
+    
     // MÉTODO PARA OBTENER TODOS LOS DATOS DE UNA VEZ
     public function getAllDashboardData() {
+        $habitaciones = $this->getEstadisticasHabitaciones();
+        
         return [
             'reservas' => [
                 'hoy_inician' => $this->getReservasHoyInician(),
@@ -189,8 +251,155 @@ class DashboardData {
                 'gravedad_media' => $this->getPQRSGravedadMedia(),
                 'gravedad_baja' => $this->getPQRSGravedadBaja(),
                 'respondidos' => $this->getPQRSRespondidos()
+            ],
+            'habitaciones' => $habitaciones,
+            'hotel_info' => [
+                'id' => $this->hotel_id,
+                'filtrado_por_hotel' => !empty($this->hotel_id)
             ]
         ];
     }
+}
+
+/**
+ * Función para obtener el hotel actual del usuario logueado
+ */
+function obtenerHotelActualUsuario() {
+    // Verificar si hay sesión iniciada
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    if (!isset($_SESSION['user'])) {
+        return null;
+    }
+    
+    $usuario = $_SESSION['user'];
+    $hotelInfo = null;
+    
+    try {
+        $db = conexionDB();
+        
+        switch ($usuario['roles']) {
+            case 'Administrador':
+                // Si es admin de hotel específico (tiene hotel asignado en sesión)
+                if (isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id'])) {
+                    $hotelInfo = [
+                        'id' => $_SESSION['hotel_id'],
+                        'tipo_admin' => 'hotel'
+                    ];
+                } else {
+                    // Super admin: obtener el primer hotel del sistema o el seleccionado
+                    $sql = "SELECT h.id, h.nombre, h.nit, h.direccion, h.telefono, h.correo, h.foto, h.descripcion
+                            FROM tp_hotel h
+                            ORDER BY h.nombre ASC
+                            LIMIT 1";
+                    
+                    $stmt = $db->prepare($sql);
+                    $stmt->execute();
+                    $hotel = $stmt->fetch();
+                    
+                    if ($hotel) {
+                        $hotelInfo = [
+                            'id' => $hotel['id'],
+                            'nombre' => $hotel['nombre'],
+                            'nit' => $hotel['nit'],
+                            'direccion' => $hotel['direccion'],
+                            'telefono' => $hotel['telefono'],
+                            'correo' => $hotel['correo'],
+                            'foto' => $hotel['foto'],
+                            'descripcion' => $hotel['descripcion'],
+                            'tipo_admin' => 'super'
+                        ];
+                    }
+                }
+                break;
+                
+            case 'Colaborador':
+                // Los colaboradores siempre tienen un hotel asignado
+                if (isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id'])) {
+                    $sql = "SELECT h.id, h.nombre, h.nit, h.direccion, h.telefono, h.correo, h.foto, h.descripcion
+                            FROM tp_hotel h
+                            INNER JOIN ti_personal p ON h.id = p.id_hotel
+                            WHERE p.numDocumento = ? AND h.id = ?";
+                    
+                    $stmt = $db->prepare($sql);
+                    $stmt->execute([$usuario['numDocumento'], $_SESSION['hotel_id']]);
+                    $hotel = $stmt->fetch();
+                    
+                    if ($hotel) {
+                        $hotelInfo = [
+                            'id' => $hotel['id'],
+                            'nombre' => $hotel['nombre'],
+                            'nit' => $hotel['nit'],
+                            'direccion' => $hotel['direccion'],
+                            'telefono' => $hotel['telefono'],
+                            'correo' => $hotel['correo'],
+                            'foto' => $hotel['foto'],
+                            'descripcion' => $hotel['descripcion'],
+                            'tipo_admin' => 'colaborador'
+                        ];
+                    }
+                }
+                break;
+                
+            case 'Usuario':
+                // Los usuarios finales no tienen hotel asignado por defecto
+                $hotelInfo = null;
+                break;
+        }
+        
+    } catch (Exception $e) {
+        error_log("Error obtenerHotelActualUsuario: " . $e->getMessage());
+        $hotelInfo = null;
+    }
+    
+    return $hotelInfo;
+}
+
+/**
+ * Función para validar si el usuario puede acceder al dashboard del hotel
+ */
+function validarAccesoHotel($hotel_id = null) {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    if (!isset($_SESSION['user'])) {
+        return false;
+    }
+    
+    $usuario = $_SESSION['user'];
+    
+    // Super administradores pueden acceder a cualquier hotel
+    if ($usuario['roles'] === 'Administrador' && (!isset($_SESSION['hotel_id']) || empty($_SESSION['hotel_id']))) {
+        return true;
+    }
+    
+    // Otros usuarios solo pueden acceder a su hotel asignado
+    if ($hotel_id && isset($_SESSION['hotel_id'])) {
+        return intval($hotel_id) === intval($_SESSION['hotel_id']);
+    }
+    
+    return isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id']);
+}
+
+/**
+ * Función para obtener información de contexto del usuario y hotel
+ */
+function obtenerContextoUsuarioHotel() {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    $hotelInfo = obtenerHotelActualUsuario();
+    
+    return [
+        'usuario' => $_SESSION['user'] ?? null,
+        'hotel' => $hotelInfo,
+        'puede_gestionar_multiples_hoteles' => isset($_SESSION['tipo_admin']) && $_SESSION['tipo_admin'] === 'super',
+        'hotel_id_filtro' => $hotelInfo ? $hotelInfo['id'] : null,
+        'rol_usuario' => $_SESSION['user']['roles'] ?? 'Usuario'
+    ];
 }
 ?>
