@@ -178,9 +178,9 @@ function calcularEdad($fechaNacimiento) {
 
             <!-- Actions -->
             <div class="actions">
-                <button type="button" class="btn-edit-profile" onclick="abrirModalEditarPerfil()">
+                <a href="editarPerfil.php" class="btn-change-password">
                     <i class="fas fa-edit"></i> Editar Perfil
-                </button>
+                </a>
                 <a href="contraseña.php" class="btn-change-password">
                     <i class="fas fa-key"></i> Cambiar Contraseña
                 </a>

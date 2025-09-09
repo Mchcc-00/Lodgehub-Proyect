@@ -95,7 +95,7 @@ if ($hotelInfo) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - <?php echo $hotelInfo ? htmlspecialchars($hotelInfo['nombre']) : 'LodgeHub'; ?></title>
+    <title>Home </title>
     <link rel="stylesheet" href="../../public/assets/css/styleHomepage.css">
     <link rel="stylesheet" href="../../public/assets/css/stylesNav.css">
     <!-- Bootstrap CSS -->
@@ -192,26 +192,6 @@ if ($hotelInfo) {
                         </div>
                     </div>
 
-                    <!-- Estadísticas rápidas -->
-                    <div class="hotel-stats-quick">
-                        <div class="stat-item">
-                            <div class="stat-number"><?php echo $dashboardData['habitaciones']['total_habitaciones']; ?></div>
-                            <div class="stat-label">Total Habitaciones</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number text-success"><?php echo $dashboardData['habitaciones']['disponibles']; ?></div>
-                            <div class="stat-label">Disponibles</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number text-warning"><?php echo $dashboardData['habitaciones']['ocupadas']; ?></div>
-                            <div class="stat-label">Ocupadas</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number text-info"><?php echo $dashboardData['reservas']['activas']; ?></div>
-                            <div class="stat-label">Reservas Activas</div>
-                        </div>
-                    </div>
-
                     <!-- Acciones del hotel -->
                     <div class="hotel-actions">
                         <a href="plazaHotel.php?id=<?php echo $hotelInfo['id']; ?>" class="btn btn-primary">
@@ -219,12 +199,6 @@ if ($hotelInfo) {
                         </a>
                         
                         <?php if (in_array($rol_usuario, ['Administrador', 'Colaborador'])): ?>
-                        <a href="habitaciones.php?hotel_id=<?php echo $hotelInfo['id']; ?>" class="btn btn-outline-primary">
-                            <i class="fas fa-bed me-2"></i>Gestionar Habitaciones
-                        </a>
-                        <a href="reservas.php?hotel_id=<?php echo $hotelInfo['id']; ?>" class="btn btn-outline-success">
-                            <i class="fas fa-calendar-check me-2"></i>Ver Reservas
-                        </a>
                         <?php endif; ?>
                         
                         <?php if ($rol_usuario === 'Administrador'): ?>
@@ -242,12 +216,6 @@ if ($hotelInfo) {
                 
                 <!-- Indicador de filtrado -->
                 <?php if ($dashboardData['hotel_info']['filtrado_por_hotel']): ?>
-                <div class="filter-indicator">
-                    <small class="text-muted">
-                        <i class="fas fa-filter me-1"></i>
-                        Datos filtrados para: <strong><?php echo htmlspecialchars($hotelInfo['nombre']); ?></strong>
-                    </small>
-                </div>
                 <?php endif; ?>
             </section>
 

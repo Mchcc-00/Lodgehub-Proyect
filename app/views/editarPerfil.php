@@ -1,12 +1,6 @@
 <?php
-session_start();
 
-// Verificar si el usuario está logueado
-if (!isset($_SESSION['numDocumento']) || !isset($_SESSION['user'])) {
-    header('Location: login.php?mensaje=Sesión expirada');
-    exit();
-}
-
+require_once 'validarSesion.php';
 // Incluir conexión a la base de datos
 require_once '../../config/conexionGlobal.php';
 
@@ -63,8 +57,10 @@ try {
     <title>Editar Perfil - LodgeHub</title>
     <link rel="stylesheet" href="../../public/assets/css/stylesEditarPerfil.css">
     <link rel="stylesheet" href="../../public/assets/css/stylesNav.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
 
 </head>
