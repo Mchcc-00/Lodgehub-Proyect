@@ -36,6 +36,11 @@ class Colaborador {
      * Crear un nuevo colaborador
      */
     public function crear($datos) {
+        // El controlador debe pasar el id_hotel del administrador logueado.
+        $id_hotel_admin = $datos['id_hotel_admin'] ?? null;
+        if (empty($id_hotel_admin)) {
+            return ['success' => false, 'message' => 'No se pudo identificar el hotel del administrador. Inicie sesión de nuevo.'];
+        }
         try {
             $this->verificarConexion();
             
@@ -104,6 +109,27 @@ class Colaborador {
                     throw new Exception('Error al ejecutar la consulta: ' . $stmt->error);
                 }
                 
+                // 2. Asignar el nuevo usuario al hotel del administrador en ti_personal
+                $sqlPersonal = "INSERT INTO ti_personal (id_hotel, numDocumento, roles) VALUES (?, ?, ?)";
+                $stmtPersonal = $this->conexion->prepare($sqlPersonal);
+
+                if (!$stmtPersonal) {
+                    throw new Exception('Error al preparar la consulta de personal: ' . $this->conexion->error);
+                }
+
+                // definir un rol por defecto para los nuevos colaboradores
+                $rolHotel = 'Colaborador'; 
+                $stmtPersonal->bind_param(
+                    "iss",
+                    $id_hotel_admin,
+                    $datos['numDocumento'],
+                    $rolHotel
+                );
+
+                if (!$stmtPersonal->execute()) {
+                    throw new Exception('Error al asignar el colaborador al hotel: ' . $stmtPersonal->error);
+                }
+
                 $this->conexion->commit();
                 return ['success' => true, 'message' => 'Colaborador creado exitosamente'];
                 
@@ -126,16 +152,25 @@ class Colaborador {
         try {
             $this->verificarConexion();
             
-            // BASE: Solo mostrar Colaboradores y Usuarios, NO Administradores
-            $sql = "SELECT numDocumento, tipoDocumento, nombres, apellidos, 
-                           numTelefono, correo, sexo, fechaNacimiento, 
-                           foto, roles, solicitarContraseña
-                    FROM tp_usuarios 
-                    WHERE roles IN ('Colaborador', 'Usuario')";
-            
             $condiciones = [];
             $params = [];
             $types = "";
+
+            // BASE: Unir usuarios con personal para filtrar por hotel
+            $sql = "SELECT u.numDocumento, u.tipoDocumento, u.nombres, u.apellidos, 
+                           u.numTelefono, u.correo, u.sexo, u.fechaNacimiento, 
+                           u.foto, u.roles, u.solicitarContraseña, p.id_hotel
+                    FROM tp_usuarios u
+                    INNER JOIN ti_personal p ON u.numDocumento = p.numDocumento
+                    WHERE u.roles IN ('Colaborador', 'Usuario')";
+
+            // Filtro por hotel del administrador
+            if (!empty($filtros['id_hotel_admin'])) {
+                $condiciones[] = "p.id_hotel = ?";
+                $params[] = $filtros['id_hotel_admin'];
+                $types .= "i";
+            }
+            
             
             // Aplicar filtros adicionales
             if (!empty($filtros['busqueda'])) {
@@ -151,7 +186,7 @@ class Colaborador {
             // Filtro por rol específico (solo Colaborador o Usuario)
             if (!empty($filtros['rol']) && $filtros['rol'] !== 'all') {
                 $rolesPermitidos = ['Colaborador', 'Usuario'];
-                if (in_array($filtros['rol'], $rolesPermitidos)) {
+                if (in_array($filtros['rol'], $rolesPermitidos, true)) {
                     $condiciones[] = "roles = ?";
                     $params[] = $filtros['rol'];
                     $types .= "s";
@@ -160,7 +195,7 @@ class Colaborador {
             
             if (!empty($filtros['tipoDocumento']) && $filtros['tipoDocumento'] !== 'all') {
                 $tiposValidos = ['Cédula de Ciudadanía', 'Tarjeta de Identidad', 'Cedula de Extranjeria', 'Pasaporte', 'Registro Civil'];
-                if (in_array($filtros['tipoDocumento'], $tiposValidos)) {
+                if (in_array($filtros['tipoDocumento'], $tiposValidos, true)) {
                     $condiciones[] = "tipoDocumento = ?";
                     $params[] = $filtros['tipoDocumento'];
                     $types .= "s";
@@ -169,7 +204,7 @@ class Colaborador {
             
             if (!empty($filtros['sexo']) && $filtros['sexo'] !== 'all') {
                 $sexosValidos = ['Hombre', 'Mujer', 'Otro', 'Prefiero no decirlo'];
-                if (in_array($filtros['sexo'], $sexosValidos)) {
+                if (in_array($filtros['sexo'], $sexosValidos, true)) {
                     $condiciones[] = "sexo = ?";
                     $params[] = $filtros['sexo'];
                     $types .= "s";

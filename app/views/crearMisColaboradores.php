@@ -15,12 +15,28 @@
 <body>
 
     <?php
+        // Iniciar sesión si no está iniciada para acceder a las variables de sesión
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         include "layouts/sidebar.php";
         include "layouts/navbar.php";
+
+        // VALIDACIÓN: Asegurarse de que un hotel ha sido seleccionado
+        $hotelSeleccionado = isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id']);
     ?>
     <script src="../../public/assets/js/sidebar.js"></script>
     
     <div class="container">
+        <?php if (!$hotelSeleccionado): ?>
+            <div class="alert alert-danger mt-4" role="alert">
+                <h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> ¡Acción Requerida!</h4>
+                <p>Para poder crear un nuevo colaborador, primero debes <strong>seleccionar un hotel</strong> desde el panel principal (Home).</p>
+                <hr>
+                <p class="mb-0">Por favor, regresa al <a href="homepage.php" class="alert-link">Home</a> y elige el hotel al que deseas añadir el colaborador.</p>
+            </div>
+        <?php else: ?>
         <div class="header">
             <h1>Crear Colaborador</h1>
             <p>Registra un nuevo colaborador en el sistema LodgeHub</p>
@@ -189,6 +205,7 @@
                 </div>
             </form>
         </div>
+        <?php endif; // Fin del bloque de validación ?>
     </div>
 
     <!-- Scripts -->

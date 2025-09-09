@@ -3,6 +3,9 @@ require_once 'validarSesion.php';
 // Asumiendo que tienes el rol del usuario en una sesión o variable
 $userRole = $_SESSION['user']['roles'] ?? 'Colaborador'; // 'Administrador' o 'Colaborador'
 
+// Verificar si hay un hotel seleccionado en la sesión
+$hotelSeleccionado = isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id']);
+
 // Configurar los elementos del menú según el rol
 $menuItems = [];
 
@@ -40,10 +43,12 @@ if ($userRole === 'Administrador') {
                 ],
                 [
                     'page' => 'Colaboradores',
-                    'href' => 'listaMisColaboradores.php',
+                    'href' => 'listaMisColaboradores.php', // Enlace siempre activo
                     'icon' => 'fas fa-users',
-                    'text' => 'Mis Colaboradores'
-                ],
+                    'text' => 'Mis Colaboradores',
+                    'disabled' => !$hotelSeleccionado, // Añadimos una propiedad para deshabilitar
+                    'tooltip' => !$hotelSeleccionado ? 'Seleccione un hotel en el Home para gestionar colaboradores' : ''
+                ],                
                 [
                     'page' => 'Mantenimiento',
                     'href' => 'listaMantenimiento.php',
@@ -136,8 +141,14 @@ function isSubmenuActive($submenu, $currentPage) {
                     <ul class="submenu" id="submenu-<?php echo $item['page']; ?>">
                         <?php foreach ($item['submenu'] as $subitem): ?>
                         <li class="nav-item">
-                            <a class="nav-link submenu-item <?php echo (isset($currentPage) && $currentPage == $subitem['page']) ? 'active' : ''; ?>" 
-                               href="<?php echo $subitem['href']; ?>">
+                            <a class="nav-link submenu-item 
+                                <?php echo (isset($currentPage) && $currentPage == $subitem['page']) ? 'active' : ''; ?>
+                                <?php echo !empty($subitem['disabled']) ? 'disabled-link' : ''; ?>" 
+                               href="<?php echo $subitem['href']; ?>"
+                               <?php if (!empty($subitem['tooltip'])): ?>
+                                   title="<?php echo htmlspecialchars($subitem['tooltip']); ?>"
+                               <?php endif; ?>
+                            >
                                 <i class="<?php echo $subitem['icon']; ?>"></i>
                                 <span><?php echo $subitem['text']; ?></span>
                             </a>

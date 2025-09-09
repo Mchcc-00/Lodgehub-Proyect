@@ -132,6 +132,14 @@ try {
                     $datos['foto'] = $_FILES['foto'];
                 }
                 
+                // Añadir el id_hotel del administrador a los datos que se enviarán al modelo
+                // La sesión ya se inicia al final de este archivo.
+                if (isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id'])) {
+                    $datos['id_hotel_admin'] = $_SESSION['hotel_id'];
+                } else {
+                    responderJSON(false, 'Error: No se pudo identificar el hotel del administrador. Por favor, inicie sesión de nuevo.', null, 403);
+                }
+                
                 $resultado = $this->colaboradorModel->crear($datos);
                 
                 if ($resultado['success']) {
@@ -152,7 +160,8 @@ try {
                     'busqueda' => $_GET['busqueda'] ?? '',
                     'rol' => $_GET['rol'] ?? 'all',
                     'tipoDocumento' => $_GET['tipoDocumento'] ?? 'all',
-                    'sexo' => $_GET['sexo'] ?? 'all'
+                    'sexo' => $_GET['sexo'] ?? 'all',
+                    'id_hotel_admin' => $_SESSION['hotel_id'] ?? null // Pasar el hotel de la sesión
                 ];
                 
                 $resultado = $this->colaboradorModel->listar($filtros);
