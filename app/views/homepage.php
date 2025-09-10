@@ -18,17 +18,16 @@ if (!$usuario) {
 // Crear instancia de DashboardData con filtro de hotel
 try {
     $dashboard = new DashboardData($hotel_id_filtro, $rol_usuario);
-    
+
     // Obtener todos los datos del dashboard filtrados por hotel
     $dashboardData = $dashboard->getAllDashboardData();
-    
+
     // Log para debug (opcional)
     if ($hotel_id_filtro) {
         error_log("Dashboard cargado para usuario {$usuario['numDocumento']} en hotel {$hotel_id_filtro}");
     } else if ($rol_usuario === 'Administrador') {
         error_log("Dashboard cargado para super administrador {$usuario['numDocumento']} - vista global");
     }
-    
 } catch (Exception $e) {
     // En caso de error, usar valores por defecto
     $dashboardData = [
@@ -92,6 +91,7 @@ if ($hotelInfo) {
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -102,20 +102,20 @@ if ($hotelInfo) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
+
 </head>
 
 <body>
     <?php
-        include "layouts/sidebar.php";
-        include "layouts/navbar.php";
+    include "layouts/sidebar.php";
+    include "layouts/navbar.php";
     ?>
     <script src="../../public/assets/js/sidebar.js"></script>
 
     <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content" id="mainContent">
         <div class="content-wrapper">
-            
+
             <!-- Alertas de estado -->
             <?php if (isset($_GET['status']) && $_GET['status'] === 'hotel_success' && isset($_GET['message'])): ?>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -127,109 +127,109 @@ if ($hotelInfo) {
 
             <!-- Header del Dashboard con selector de hotel para super admins -->
             <?php if ($contexto['puede_gestionar_multiples_hoteles']): ?>
-            <div class="dashboard-header">
-                <h2>Panel de Administración</h2>
-                
-            </div>
+                <div class="dashboard-header">
+                    <h2>Panel de Administración</h2>
+
+                </div>
             <?php endif; ?>
 
             <!-- Banner de información del hotel -->
             <?php if ($hotelInfo): ?>
-            <section class="hotel-info-banner">
-                <div class="hotel-photo">
-                    <img src="<?php echo !empty($hotelInfo['foto']) ? htmlspecialchars($hotelInfo['foto']) : '../../public/assets/img/default_hotel.png'; ?>" 
-                         alt="Foto del hotel <?php echo htmlspecialchars($hotelInfo['nombre']); ?>"
-                         onerror="this.onerror=null;this.src='../../public/assets/img/default_hotel.png';">
-                </div>
-                
-                <div class="hotel-main-info">
-                    <div class="hotel-header">
-                        <h3 class="hotel-name"><?php echo htmlspecialchars($hotelInfo['nombre']); ?></h3>
-                        
-                        <!-- Indicador del tipo de vista -->
-                        <?php if (!empty($mensajeBanner)): ?>
-                        <!-- SOLUCIÓN: Añadir ms-3 para crear un margen a la izquierda -->
-                        <div class="vista-indicator ms-3" style="align-self: center;">
-                            <!-- SOLUCIÓN: Cambiar de 'badge' a 'btn' para que se vea como un botón, manteniendo el color. -->
-                            <span class="btn btn-sm btn-<?php echo $tipoAdmin === 'super' ? 'primary' : 'success'; ?> disabled rounded-pill" style="cursor: default;">
-                                <i class="fas fa-<?php echo $tipoAdmin === 'super' ? 'globe' : 'building'; ?> me-1"></i>
-                                <?php echo htmlspecialchars($mensajeBanner); ?>
-                            </span>
-                        </div>
-                        <?php endif; ?>
+                <section class="hotel-info-banner">
+                    <div class="hotel-photo">
+                        <img src="<?php echo !empty($hotelInfo['foto']) ? htmlspecialchars($hotelInfo['foto']) : '../../public/assets/img/default_hotel.png'; ?>"
+                            alt="Foto del hotel <?php echo htmlspecialchars($hotelInfo['nombre']); ?>"
+                            onerror="this.onerror=null;this.src='../../public/assets/img/default_hotel.png';">
                     </div>
-                    
-                    <div class="hotel-details mt-2">
-                        <p class="hotel-address mb-2">
-                            <i class="fas fa-map-marker-alt me-2"></i>
-                            <?php echo htmlspecialchars($hotelInfo['direccion'] ?? 'Dirección no disponible'); ?>
-                        </p>
-                        <div class="hotel-contact d-flex flex-wrap gap-3">
-                            <span>
-                                <i class="fas fa-phone me-2"></i>
-                                <?php echo htmlspecialchars($hotelInfo['telefono'] ?? 'N/A'); ?>
-                            </span>
-                            <span>
-                                <i class="fas fa-envelope me-2"></i>
-                                <?php echo htmlspecialchars($hotelInfo['correo'] ?? 'N/A'); ?>
-                            </span>
-                            <?php if (!empty($hotelInfo['nit'])): ?>
-                            <span>
-                                <i class="fas fa-id-card me-2"></i>
-                                NIT: <?php echo htmlspecialchars($hotelInfo['nit']); ?>
-                            </span>
+
+                    <div class="hotel-main-info">
+                        <div class="hotel-header">
+                            <h3 class="hotel-name"><?php echo htmlspecialchars($hotelInfo['nombre']); ?></h3>
+
+                            <!-- Indicador del tipo de vista -->
+                            <?php if (!empty($mensajeBanner)): ?>
+                                <!-- SOLUCIÓN: Añadir ms-3 para crear un margen a la izquierda -->
+                                <div class="vista-indicator ms-3" style="align-self: center;">
+                                    <!-- SOLUCIÓN: Cambiar de 'badge' a 'btn' para que se vea como un botón, manteniendo el color. -->
+                                    <span class="btn btn-sm btn-<?php echo $tipoAdmin === 'super' ? 'primary' : 'success'; ?> disabled rounded-pill" style="cursor: default;">
+                                        <i class="fas fa-<?php echo $tipoAdmin === 'super' ? 'globe' : 'building'; ?> me-1"></i>
+                                        <?php echo htmlspecialchars($mensajeBanner); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="hotel-details mt-2">
+                            <p class="hotel-address mb-2">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                <?php echo htmlspecialchars($hotelInfo['direccion'] ?? 'Dirección no disponible'); ?>
+                            </p>
+                            <div class="hotel-contact d-flex flex-wrap gap-3">
+                                <span>
+                                    <i class="fas fa-phone me-2"></i>
+                                    <?php echo htmlspecialchars($hotelInfo['telefono'] ?? 'N/A'); ?>
+                                </span>
+                                <span>
+                                    <i class="fas fa-envelope me-2"></i>
+                                    <?php echo htmlspecialchars($hotelInfo['correo'] ?? 'N/A'); ?>
+                                </span>
+                                <?php if (!empty($hotelInfo['nit'])): ?>
+                                    <span>
+                                        <i class="fas fa-id-card me-2"></i>
+                                        NIT: <?php echo htmlspecialchars($hotelInfo['nit']); ?>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <!-- Acciones del hotel -->
+                        <div class="hotel-actions">
+                            <a href="plazaHotel.php?id=<?php echo $hotelInfo['id']; ?>" class="btn btn-primary">
+                                <i class="fas fa-eye me-2"></i>Ver Información Completa
+                            </a>
+
+                            <?php if (in_array($rol_usuario, ['Administrador', 'Colaborador'])): ?>
+                            <?php endif; ?>
+
+                            <?php if ($rol_usuario === 'Administrador'): ?>
+                                <a href="editarHotel.php?id=<?php echo $hotelInfo['id']; ?>" class="btn btn-outline-warning">
+                                    <i class="fas fa-edit me-2"></i>Editar Hotel
+                                </a>
                             <?php endif; ?>
                         </div>
                     </div>
 
-                    <!-- Acciones del hotel -->
-                    <div class="hotel-actions">
-                        <a href="plazaHotel.php?id=<?php echo $hotelInfo['id']; ?>" class="btn btn-primary">
-                            <i class="fas fa-eye me-2"></i>Ver Información Completa
-                        </a>
-                        
-                        <?php if (in_array($rol_usuario, ['Administrador', 'Colaborador'])): ?>
-                        <?php endif; ?>
-                        
-                        <?php if ($rol_usuario === 'Administrador'): ?>
-                        <a href="editarHotel.php?id=<?php echo $hotelInfo['id']; ?>" class="btn btn-outline-warning">
-                            <i class="fas fa-edit me-2"></i>Editar Hotel
-                        </a>
-                        <?php endif; ?>
+                    <div class="date-display">
+                        <i class="fas fa-calendar-day me-2"></i>
+                        <span id="currentDate"></span>
                     </div>
-                </div>
-                
-                <div class="date-display">
-                    <i class="fas fa-calendar-day me-2"></i>
-                    <span id="currentDate"></span>
-                </div>
-                
-                <!-- Indicador de filtrado -->
-                <?php if ($dashboardData['hotel_info']['filtrado_por_hotel']): ?>
-                <?php endif; ?>
-            </section>
+
+                    <!-- Indicador de filtrado -->
+                    <?php if ($dashboardData['hotel_info']['filtrado_por_hotel']): ?>
+                    <?php endif; ?>
+                </section>
 
             <?php elseif ($mostrarBannerSinHotel): ?>
-            <section class="no-hotel-banner">
-                <div class="no-hotel-content">
-                    <i class="fas fa-hotel fa-3x text-white mb-3"></i>
-                    <i class="fas fa-hotel fa-3x text-secondary mb-3"></i>
-                    
-                    <?php if ($rol_usuario === 'Administrador'): ?>
-                        <h3>¡Crea tu primer hotel en el sistema!</h3>
-                        <p class="mb-4">Como administrador, puedes registrar hoteles y comenzar a gestionar reservas, habitaciones y más.</p>
-                        <a href="agregarHoteles.php" class="btn btn-light btn-lg">
-                            <i class="fas fa-plus-circle me-2"></i>Registrar Primer Hotel
-                        </a>
-                    <?php else: ?>
-                        <h3>No tienes un hotel asignado</h3>
-                        <p class="mb-4">Contacta con el administrador para que te asigne a un hotel y puedas acceder a las herramientas de gestión.</p>
-                        <a href="contacto.php" class="btn btn-outline-light btn-lg">
-                            <i class="fas fa-envelope me-2"></i>Contactar Soporte
-                        </a>
-                    <?php endif; ?>
-                </div>
-            </section>
+                <section class="no-hotel-banner">
+                    <div class="no-hotel-content">
+                        <i class="fas fa-hotel fa-3x text-white mb-3"></i>
+                        <i class="fas fa-hotel fa-3x text-secondary mb-3"></i>
+
+                        <?php if ($rol_usuario === 'Administrador'): ?>
+                            <h3>¡Crea tu primer hotel en el sistema!</h3>
+                            <p class="mb-4">Como administrador, puedes registrar hoteles y comenzar a gestionar reservas, habitaciones y más.</p>
+                            <a href="agregarHoteles.php" class="btn btn-light btn-lg">
+                                <i class="fas fa-plus-circle me-2"></i>Registrar Primer Hotel
+                            </a>
+                        <?php else: ?>
+                            <h3>No tienes un hotel asignado</h3>
+                            <p class="mb-4">Contacta con el administrador para que te asigne a un hotel y puedas acceder a las herramientas de gestión.</p>
+                            <a href="contacto.php" class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-envelope me-2"></i>Contactar Soporte
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                </section>
             <?php endif; ?>
 
             <!-- Dashboard Sections -->
@@ -240,7 +240,7 @@ if ($hotelInfo) {
                         <span class="icon">📅</span>
                         Reservas
                         <?php if ($dashboardData['hotel_info']['filtrado_por_hotel']): ?>
-                        <small class="text-muted">- <?php echo htmlspecialchars($hotelInfo['nombre']); ?></small>
+                            <small class="text-muted">- <?php echo htmlspecialchars($hotelInfo['nombre']); ?></small>
                         <?php endif; ?>
                     </h3>
                     <div class="cards-grid">
@@ -253,7 +253,7 @@ if ($hotelInfo) {
                                 <p>Inician Hoy</p>
                             </div>
                         </div>
-                        
+
                         <div class="stats-card card-warning" onclick="redirectTo('reservas.php?filter=hoy_terminan&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-warning">
                                 <i class="fas fa-calendar-minus"></i>
@@ -263,7 +263,7 @@ if ($hotelInfo) {
                                 <p>Terminan Hoy</p>
                             </div>
                         </div>
-                        
+
                         <div class="stats-card card-success" onclick="redirectTo('reservas.php?filter=activas&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-success">
                                 <i class="fas fa-calendar-check"></i>
@@ -273,7 +273,7 @@ if ($hotelInfo) {
                                 <p>Activas</p>
                             </div>
                         </div>
-                        
+
                         <div class="stats-card card-pending" onclick="redirectTo('reservas.php?filter=pendientes&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-secondary">
                                 <i class="fas fa-clock"></i>
@@ -283,7 +283,7 @@ if ($hotelInfo) {
                                 <p>Pendientes</p>
                             </div>
                         </div>
-                        
+
                         <div class="stats-card card-inactive" onclick="redirectTo('reservas.php?filter=inactivas&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-danger">
                                 <i class="fas fa-calendar-times"></i>
@@ -302,7 +302,7 @@ if ($hotelInfo) {
                         <span class="icon">🔧</span>
                         Mantenimiento
                         <?php if ($dashboardData['hotel_info']['filtrado_por_hotel']): ?>
-                        <small class="text-muted">- <?php echo htmlspecialchars($hotelInfo['nombre']); ?></small>
+                            <small class="text-muted">- <?php echo htmlspecialchars($hotelInfo['nombre']); ?></small>
                         <?php endif; ?>
                     </h3>
                     <div class="cards-grid maintenance-grid">
@@ -315,7 +315,7 @@ if ($hotelInfo) {
                                 <p>Pendientes</p>
                             </div>
                         </div>
-                        
+
                         <div class="stats-card card-process" onclick="redirectTo('mantenimiento.php?filter=proceso&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-warning">
                                 <i class="fas fa-cog fa-spin"></i>
@@ -325,7 +325,7 @@ if ($hotelInfo) {
                                 <p>En Proceso</p>
                             </div>
                         </div>
-                        
+
                         <div class="stats-card card-completed" onclick="redirectTo('mantenimiento.php?filter=finalizados&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-success">
                                 <i class="fas fa-check-circle"></i>
@@ -344,7 +344,7 @@ if ($hotelInfo) {
                         <span class="icon">📞</span>
                         PQRS
                         <?php if ($dashboardData['hotel_info']['filtrado_por_hotel']): ?>
-                        <small class="text-muted">- <?php echo htmlspecialchars($hotelInfo['nombre']); ?></small>
+                            <small class="text-muted">- <?php echo htmlspecialchars($hotelInfo['nombre']); ?></small>
                         <?php endif; ?>
                     </h3>
                     <div class="cards-grid pqrs-grid">
@@ -358,8 +358,8 @@ if ($hotelInfo) {
                                 <small class="text-muted">Sin responder</small>
                             </div>
                         </div>
-                        
-                        
+
+
                         <div class="stats-card pqrs-low" onclick="redirectTo('pqrs.php?filter=baja&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-info">
                                 <i class="fas fa-info-circle"></i>
@@ -370,7 +370,7 @@ if ($hotelInfo) {
                                 <small class="text-muted">Sin responder</small>
                             </div>
                         </div>
-                        
+
                         <div class="stats-card pqrs-answered" onclick="redirectTo('pqrs.php?filter=respondidos&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-success">
                                 <i class="fas fa-check-double"></i>
@@ -382,7 +382,7 @@ if ($hotelInfo) {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="pqrs-actions">
                         <button class="btn btn-primary btn-lg" onclick="redirectTo('pqrs.php?hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <i class="fas fa-list me-2"></i>
@@ -398,11 +398,11 @@ if ($hotelInfo) {
         // Mostrar fecha actual
         function updateDate() {
             const now = new Date();
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
             };
             const dateElement = document.getElementById('currentDate');
             if (dateElement) {
@@ -428,7 +428,7 @@ if ($hotelInfo) {
 
         // Inicializar
         updateDate();
-        
+
         // Actualizar fecha cada minuto
         setInterval(updateDate, 60000);
 
@@ -441,4 +441,5 @@ if ($hotelInfo) {
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
