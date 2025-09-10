@@ -541,6 +541,3 @@ CREATE INDEX idx_huespedes_fecha ON tp_huespedes(fechaCreacion);
 CREATE INDEX idx_factura_hotel ON tp_factura(infoHotel);
 CREATE INDEX idx_factura_reserva ON tp_factura(infoReserva);
 CREATE INDEX idx_factura_fecha ON tp_factura(fechaFactura);
-
-
--- He encontrado un error grave. Cuando dentro de la base de datos no hay ningún registro y hago el proceso: crear usuario > iniciar sesión > registrar hotel, sale bien la información registrada de ese usuario. Pero si ya está ese usuario creado con anterioridad, y hago de nuevo el proceso: crear usuario > iniciar sesión > registrar hotel, el paso de registrar hotel no pasa, pues ese usuario Administrador creado por última vez, queda con el hotel del primer usuario Administrador creado, creo que es por falta de la inserción en ti_personal. Me ayudas a solucionar ese error?

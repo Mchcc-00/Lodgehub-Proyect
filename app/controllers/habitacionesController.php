@@ -1,236 +1,330 @@
 <?php
+/**
+ * Controlador para la gestión de habitaciones
+ */
+
 require_once '../models/habitacionesModel.php';
 
-class RoomController {
-    private $roomModel;
+class HabitacionController {
+    private $habitacion;
     
-    public function __construct($database) {
-        $this->roomModel = new Room($database);
+    public function __construct() {
+        $this->habitacion = new Habitacion();
     }
     
-    // Mostrar lista de habitaciones
-    public function list() {
-        $rooms = $this->roomModel->getAllRooms();
-        $roomTypes = $this->roomModel->getRoomTypes();
-        include '../views/listaHabitaciones.php';
+    /**
+     * Mostrar la vista principal con todas las habitaciones
+     */
+    public function index() {
+        $id_hotel = isset($_GET['hotel']) ? $_GET['hotel'] : null;
+        $habitaciones = $this->habitacion->obtenerTodas($id_hotel);
+        $hoteles = $this->habitacion->obtenerHoteles();
+        
+        include 'views/habitaciones/index.php';
     }
     
-    // Mostrar formulario de creación
-    public function create() {
-        $roomTypes = $this->roomModel->getRoomTypes();
-        include '../views/crearHabitacion.php';
+    /**
+     * Mostrar formulario para crear nueva habitación
+     */
+    public function crear() {
+        $hoteles = $this->habitacion->obtenerHoteles();
+        $tipos = [];
+        
+        if (isset($_GET['hotel'])) {
+            $tipos = $this->habitacion->obtenerTiposPorHotel($_GET['hotel']);
+        }
+        
+        include 'views/habitaciones/crear.php';
     }
     
-    // Procesar creación de habitación
+    /**
+     * Procesar la creación de una nueva habitación
+     */
     public function store() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $errors = [];
+            $datos = $this->validarDatos($_POST);
             
-            // Validaciones
-            $numero = trim($_POST['numero']);
-            $costo = trim($_POST['costo']);
-            $capacidad = trim($_POST['capacidad']);
-            $tipoHabitacion = trim($_POST['tipoHabitacion']);
-            
-            if (empty($numero)) {
-                $errors[] = "El número de habitación es obligatorio";
-            } elseif ($this->roomModel->roomExists($numero)) {
-                $errors[] = "El número de habitación ya existe";
-            }
-            
-            if (empty($costo) || !is_numeric($costo) || $costo <= 0) {
-                $errors[] = "El costo debe ser un número mayor a 0";
-            }
-            
-            if (empty($capacidad) || !is_numeric($capacidad) || $capacidad <= 0) {
-                $errors[] = "La capacidad debe ser un número mayor a 0";
-            }
-            
-            if (empty($tipoHabitacion)) {
-                $errors[] = "Debe seleccionar un tipo de habitación";
-            }
-            
-            // Procesar imagen si se subió
-            $fotoPath = null;
-            if (isset($_FILES['foto']) && $_FILES['foto']['error'] === 0) {
-                $allowed = ['jpg', 'jpeg', 'png', 'gif'];
-                $filename = $_FILES['foto']['name'];
-                $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+            if ($datos['valid']) {
+                $resultado = $this->habitacion->crear($datos['data']);
                 
-                if (in_array($extension, $allowed)) {
-                    $newFilename = 'room_' . $numero . '_' . time() . '.' . $extension;
-                    $uploadPath = 'uploads/rooms/' . $newFilename;
-                    
-                    // Crear directorio si no existe
-                    if (!file_exists('uploads/rooms/')) {
-                        mkdir('uploads/rooms/', 0777, true);
-                    }
-                    
-                    if (move_uploaded_file($_FILES['foto']['tmp_name'], $uploadPath)) {
-                        $fotoPath = $uploadPath;
-                    } else {
-                        $errors[] = "Error al subir la imagen";
-                    }
+                if ($resultado['success']) {
+                    $this->jsonResponse($resultado);
                 } else {
-                    $errors[] = "Solo se permiten archivos JPG, JPEG, PNG y GIF";
+                    $this->jsonResponse($resultado);
                 }
-            }
-            
-            if (empty($errors)) {
-                $data = [
-                    'numero' => $numero,
-                    'costo' => $costo,
-                    'capacidad' => $capacidad,
-                    'tipoHabitacion' => $tipoHabitacion,
-                    'foto' => $fotoPath,
-                    'descripcion' => trim($_POST['descripcion']),
-                    'estado' => $_POST['estado'] ?? 'Disponible',
-                    'descripcionMantenimiento' => trim($_POST['descripcionMantenimiento']),
-                    'estadoMantenimiento' => $_POST['estadoMantenimiento'] ?? 'Activo'
-                ];
-                
-                if ($this->roomModel->createRoom($data)) {
-                    $_SESSION['success'] = "Habitación creada exitosamente";
-                    header('Location: /../views/listaHabitaciones.php?controller=room&action=index');
-                    exit;
-                } else {
-                    $errors[] = "Error al crear la habitación";
-                }
-            }
-            
-            $_SESSION['errors'] = $errors;
-            $_SESSION['form_data'] = $_POST;
-            header('Location:/../views/listaHabitaciones.php?controller=room&action=create');
-            exit;
-        }
-    }
-    
-    // Mostrar formulario de edición
-    public function edit() {
-        $numero = $_GET['numero'] ?? '';
-        $room = $this->roomModel->getRoomByNumber($numero);
-        
-        if (!$room) {
-            $_SESSION['error'] = "Habitación no encontrada";
-            header('Location: index.php?controller=room&action=index');
-            exit;
-        }
-        
-        $roomTypes = $this->roomModel->getRoomTypes();
-        include 'views/rooms/edit.php';
-    }
-    
-    // Procesar actualización de habitación
-    public function update() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $numero = $_POST['numero_original'];
-            $errors = [];
-            
-            // Validaciones similares al store
-            $costo = trim($_POST['costo']);
-            $capacidad = trim($_POST['capacidad']);
-            $tipoHabitacion = trim($_POST['tipoHabitacion']);
-            
-            if (empty($costo) || !is_numeric($costo) || $costo <= 0) {
-                $errors[] = "El costo debe ser un número mayor a 0";
-            }
-            
-            if (empty($capacidad) || !is_numeric($capacidad) || $capacidad <= 0) {
-                $errors[] = "La capacidad debe ser un número mayor a 0";
-            }
-            
-            if (empty($tipoHabitacion)) {
-                $errors[] = "Debe seleccionar un tipo de habitación";
-            }
-            
-            // Procesar nueva imagen si se subió
-            $room = $this->roomModel->getRoomByNumber($numero);
-            $fotoPath = $room['foto']; // Mantener foto actual por defecto
-            
-            if (isset($_FILES['foto']) && $_FILES['foto']['error'] === 0) {
-                $allowed = ['jpg', 'jpeg', 'png', 'gif'];
-                $filename = $_FILES['foto']['name'];
-                $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-                
-                if (in_array($extension, $allowed)) {
-                    $newFilename = 'room_' . $numero . '_' . time() . '.' . $extension;
-                    $uploadPath = 'uploads/rooms/' . $newFilename;
-                    
-                    if (move_uploaded_file($_FILES['foto']['tmp_name'], $uploadPath)) {
-                        // Eliminar foto anterior si existe
-                        if ($room['foto'] && file_exists($room['foto'])) {
-                            unlink($room['foto']);
-                        }
-                        $fotoPath = $uploadPath;
-                    } else {
-                        $errors[] = "Error al subir la imagen";
-                    }
-                } else {
-                    $errors[] = "Solo se permiten archivos JPG, JPEG, PNG y GIF";
-                }
-            }
-            
-            if (empty($errors)) {
-                $data = [
-                    'costo' => $costo,
-                    'capacidad' => $capacidad,
-                    'tipoHabitacion' => $tipoHabitacion,
-                    'foto' => $fotoPath,
-                    'descripcion' => trim($_POST['descripcion']),
-                    'estado' => $_POST['estado'],
-                    'descripcionMantenimiento' => trim($_POST['descripcionMantenimiento']),
-                    'estadoMantenimiento' => $_POST['estadoMantenimiento']
-                ];
-                
-                if ($this->roomModel->updateRoom($numero, $data)) {
-                    $_SESSION['success'] = "Habitación actualizada exitosamente";
-                    header('Location: index.php?controller=room&action=index');
-                    exit;
-                } else {
-                    $errors[] = "Error al actualizar la habitación";
-                }
-            }
-            
-            $_SESSION['errors'] = $errors;
-            header('Location: index.php?controller=room&action=edit&numero=' . $numero);
-            exit;
-        }
-    }
-    
-    // Eliminar habitación
-    public function delete() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $numero = $_POST['numero'];
-            
-            // Obtener información de la habitación para eliminar foto
-            $room = $this->roomModel->getRoomByNumber($numero);
-            
-            if ($this->roomModel->deleteRoom($numero)) {
-                // Eliminar foto si existe
-                if ($room['foto'] && file_exists($room['foto'])) {
-                    unlink($room['foto']);
-                }
-                $_SESSION['success'] = "Habitación eliminada exitosamente";
             } else {
-                $_SESSION['error'] = "Error al eliminar la habitación";
+                $this->jsonResponse(['success' => false, 'message' => 'Datos inválidos', 'errors' => $datos['errors']]);
             }
-            
-            header('Location: index.php?controller=room&action=index');
-            exit;
         }
     }
     
-    // Filtrar por estado
-    public function filterByStatus() {
-        $estado = $_GET['estado'] ?? '';
-        if ($estado) {
-            $rooms = $this->roomModel->getRoomsByStatus($estado);
-        } else {
-            $rooms = $this->roomModel->getAllRooms();
+    /**
+     * Mostrar formulario para editar habitación
+     */
+    public function editar($id) {
+        $habitacion = $this->habitacion->obtenerPorId($id);
+        
+        if (!$habitacion) {
+            header("Location: index.php?error=Habitación no encontrada");
+            exit();
         }
         
-        $roomTypes = $this->roomModel->getRoomTypes();
-        include 'views/rooms/index.php';
+        $hoteles = $this->habitacion->obtenerHoteles();
+        $tipos = $this->habitacion->obtenerTiposPorHotel($habitacion['id_hotel']);
+        
+        include 'views/habitaciones/editar.php';
     }
+    
+    /**
+     * Procesar la actualización de una habitación
+     */
+    public function update($id) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $datos = $this->validarDatos($_POST);
+            
+            if ($datos['valid']) {
+                $resultado = $this->habitacion->actualizar($id, $datos['data']);
+                $this->jsonResponse($resultado);
+            } else {
+                $this->jsonResponse(['success' => false, 'message' => 'Datos inválidos', 'errors' => $datos['errors']]);
+            }
+        }
+    }
+    
+    /**
+     * Eliminar una habitación
+     */
+    public function eliminar($id) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $resultado = $this->habitacion->eliminar($id);
+            $this->jsonResponse($resultado);
+        }
+    }
+    
+    /**
+     * Obtener tipos de habitación por hotel (AJAX)
+     */
+    public function obtenerTipos() {
+        if (isset($_GET['hotel'])) {
+            $tipos = $this->habitacion->obtenerTiposPorHotel($_GET['hotel']);
+            $this->jsonResponse(['success' => true, 'data' => $tipos]);
+        } else {
+            $this->jsonResponse(['success' => false, 'message' => 'Hotel no especificado']);
+        }
+    }
+    
+    /**
+     * Buscar habitaciones con filtros
+     */
+    public function buscar() {
+        $filtros = [
+            'hotel' => $_GET['hotel'] ?? '',
+            'tipo' => $_GET['tipo'] ?? '',
+            'estado' => $_GET['estado'] ?? '',
+            'numero' => $_GET['numero'] ?? ''
+        ];
+        
+        $habitaciones = $this->habitacion->buscar($filtros);
+        $this->jsonResponse(['success' => true, 'data' => $habitaciones]);
+    }
+    
+    /**
+     * Obtener datos de una habitación específica (AJAX)
+     */
+    public function obtener($id) {
+        $habitacion = $this->habitacion->obtenerPorId($id);
+        
+        if ($habitacion) {
+            $this->jsonResponse(['success' => true, 'data' => $habitacion]);
+        } else {
+            $this->jsonResponse(['success' => false, 'message' => 'Habitación no encontrada']);
+        }
+    }
+    
+    /**
+     * Validar datos del formulario
+     */
+    private function validarDatos($datos) {
+        $errors = [];
+        $cleanData = [];
+        
+        // Validar número
+        if (empty($datos['numero'])) {
+            $errors['numero'] = 'El número de habitación es requerido';
+        } else {
+            $cleanData['numero'] = trim($datos['numero']);
+        }
+        
+        // Validar costo
+        if (empty($datos['costo']) || !is_numeric($datos['costo']) || $datos['costo'] <= 0) {
+            $errors['costo'] = 'El costo debe ser un número mayor a 0';
+        } else {
+            $cleanData['costo'] = floatval($datos['costo']);
+        }
+        
+        // Validar capacidad
+        if (empty($datos['capacidad']) || !is_numeric($datos['capacidad']) || $datos['capacidad'] <= 0) {
+            $errors['capacidad'] = 'La capacidad debe ser un número mayor a 0';
+        } else {
+            $cleanData['capacidad'] = intval($datos['capacidad']);
+        }
+        
+        // Validar tipo de habitación
+        if (empty($datos['tipoHabitacion'])) {
+            $errors['tipoHabitacion'] = 'El tipo de habitación es requerido';
+        } else {
+            $cleanData['tipoHabitacion'] = intval($datos['tipoHabitacion']);
+        }
+        
+        // Validar hotel
+        if (empty($datos['id_hotel'])) {
+            $errors['id_hotel'] = 'El hotel es requerido';
+        } else {
+            $cleanData['id_hotel'] = intval($datos['id_hotel']);
+        }
+        
+        // Validar estado
+        $estadosValidos = ['Disponible', 'Reservada', 'Ocupada', 'Mantenimiento'];
+        if (empty($datos['estado']) || !in_array($datos['estado'], $estadosValidos)) {
+            $errors['estado'] = 'El estado no es válido';
+        } else {
+            $cleanData['estado'] = $datos['estado'];
+        }
+        
+        // Validar estado mantenimiento
+        $estadosMantenimiento = ['Activo', 'Inactivo'];
+        $cleanData['estadoMantenimiento'] = in_array($datos['estadoMantenimiento'] ?? 'Activo', $estadosMantenimiento) 
+            ? $datos['estadoMantenimiento'] 
+            : 'Activo';
+        
+        // Campos opcionales
+        $cleanData['foto'] = $datos['foto'] ?? '';
+        $cleanData['descripcion'] = $datos['descripcion'] ?? '';
+        $cleanData['descripcionMantenimiento'] = $datos['descripcionMantenimiento'] ?? '';
+        
+        return [
+            'valid' => empty($errors),
+            'errors' => $errors,
+            'data' => $cleanData
+        ];
+    }
+    
+    /**
+     * Manejar subida de imagen
+     */
+    public function subirImagen() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['imagen'])) {
+            $archivo = $_FILES['imagen'];
+            
+            // Validar archivo
+            $tiposPermitidos = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+            $tamanoMaximo = 5 * 1024 * 1024; // 5MB
+            
+            if (!in_array($archivo['type'], $tiposPermitidos)) {
+                $this->jsonResponse(['success' => false, 'message' => 'Tipo de archivo no permitido']);
+                return;
+            }
+            
+            if ($archivo['size'] > $tamanoMaximo) {
+                $this->jsonResponse(['success' => false, 'message' => 'El archivo es demasiado grande']);
+                return;
+            }
+            
+            // Crear directorio si no existe
+            $directorioDestino = 'uploads/habitaciones/';
+            if (!file_exists($directorioDestino)) {
+                mkdir($directorioDestino, 0755, true);
+            }
+            
+            // Generar nombre único
+            $extension = pathinfo($archivo['name'], PATHINFO_EXTENSION);
+            $nombreArchivo = uniqid('habitacion_') . '.' . $extension;
+            $rutaCompleta = $directorioDestino . $nombreArchivo;
+            
+            if (move_uploaded_file($archivo['tmp_name'], $rutaCompleta)) {
+                $this->jsonResponse(['success' => true, 'url' => $rutaCompleta]);
+            } else {
+                $this->jsonResponse(['success' => false, 'message' => 'Error al subir el archivo']);
+            }
+        }
+    }
+    
+    /**
+     * Enviar respuesta JSON
+     */
+    private function jsonResponse($data) {
+        header('Content-Type: application/json');
+        echo json_encode($data);
+        exit();
+    }
+}
+
+// Manejo de rutas
+if (isset($_GET['action'])) {
+    $controller = new HabitacionController();
+    $action = $_GET['action'];
+    
+    switch ($action) {
+        case 'index':
+            $controller->index();
+            break;
+            
+        case 'crear':
+            $controller->crear();
+            break;
+            
+        case 'store':
+            $controller->store();
+            break;
+            
+        case 'editar':
+            $id = $_GET['id'] ?? null;
+            if ($id) {
+                $controller->editar($id);
+            } else {
+                header("Location: ?action=index");
+            }
+            break;
+            
+        case 'update':
+            $id = $_GET['id'] ?? null;
+            if ($id) {
+                $controller->update($id);
+            }
+            break;
+            
+        case 'eliminar':
+            $id = $_GET['id'] ?? null;
+            if ($id) {
+                $controller->eliminar($id);
+            }
+            break;
+            
+        case 'obtener-tipos':
+            $controller->obtenerTipos();
+            break;
+            
+        case 'buscar':
+            $controller->buscar();
+            break;
+            
+        case 'obtener':
+            $id = $_GET['id'] ?? null;
+            if ($id) {
+                $controller->obtener($id);
+            }
+            break;
+            
+        case 'subir-imagen':
+            $controller->subirImagen();
+            break;
+            
+        default:
+            $controller->index();
+            break;
+    }
+} else {
+    $controller = new HabitacionController();
+    $controller->index();
 }
 ?>

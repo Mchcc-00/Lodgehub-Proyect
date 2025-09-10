@@ -3,166 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Habitaciones</title>
-    <link rel="stylesheet" href="../../public/assets/css/stylesHabitacion.css">
-    <link rel="stylesheet" href="../../public/assets/css/stylesNav.css">
+    <title>Gestión de Habitaciones - LodgeHub</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link href="../../public/assets/css/stylesNav.css" rel="stylesheet"> 
+    
 </head>
 <body>
     <?php
-        include 'layouts/sidebar.php'; 
-        include 'layouts/navbar.php'; 
+        include "layouts/sidebar.php";
+        include "layouts/navbar.php";
     ?>
     <script src="../../public/assets/js/sidebar.js"></script>
 
-    <div class="container">      
-            <!-- Contenido Principal -->
-            <main class="content">
-                <div class="page-header">
-                    <h1><i class="fas fa-bed"></i> Gestión de Habitaciones</h1>
-                    <div class="page-actions">
-                        <a href="crearHabitacion.php?controller=room&action=create" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Nueva Habitación
-                        </a>
-                    </div>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-bed"></i> Gestión de Habitaciones</h1>
+            <p>Administra las habitaciones de tus hoteles de manera eficiente</p>
+        </div>
+
+        <!-- Mensajes -->
+        <div id="success-message" class="success-message">
+            <i class="fas fa-check-circle"></i>
+            <span id="success-text"></span>
+        </div>
+
+        <div id="error-message" class="error-message">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="error-text"></span>
+        </div>
+
+        <!-- Filtros y búsqueda -->
+        <div class="search-section">
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label">Hotel</label>
+                    <select id="filtro-hotel" class="form-select">
+                        <option value="">Todos los hoteles</option>
+                        <?php foreach ($hoteles as $hotel): ?>
+                            <option value="<?php echo $hotel['id']; ?>" 
+                                    <?php echo (isset($_GET['hotel']) && $_GET['hotel'] == $hotel['id']) ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($hotel['nombre']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
-
-                <!-- Mensajes de éxito/error -->
-                <?php if (isset($_SESSION['success'])): ?>
-                    <div class="alert alert-success">
-                        <i class="fas fa-check-circle"></i>
-                        <?php echo $_SESSION['success']; unset($_SESSION['success']); ?>
-                    </div>
-                <?php endif; ?>
-
-                <?php if (isset($_SESSION['error'])): ?>
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
-                    </div>
-                <?php endif; ?>
-
-                <!-- Filtros -->
-                <div class="filters-container">
-                    <div class="filters">
-                        <select id="statusFilter" class="filter-select">
-                            <option value="">Todos los estados</option>
-                            <option value="Disponible" <?php echo (isset($_GET['estado']) && $_GET['estado'] == 'Disponible') ? 'selected' : ''; ?>>Disponible</option>
-                            <option value="Reservada" <?php echo (isset($_GET['estado']) && $_GET['estado'] == 'Reservada') ? 'selected' : ''; ?>>Reservada</option>
-                            <option value="Ocupada" <?php echo (isset($_GET['estado']) && $_GET['estado'] == 'Ocupada') ? 'selected' : ''; ?>>Ocupada</option>
-                            <option value="Mantenimiento" <?php echo (isset($_GET['estado']) && $_GET['estado'] == 'Mantenimiento') ? 'selected' : ''; ?>>Mantenimiento</option>
-                        </select>
-                        
-                        <div class="search-container">
-                            <input type="text" id="searchInput" placeholder="Buscar habitación..." class="search-input">
-                            <i class="fas fa-search search-icon"></i>
-                        </div>
-                    </div>
+                <div class="col-md-3">
+                    <label class="form-label">Estado</label>
+                    <select id="filtro-estado" class="form-select">
+                        <option value="">Todos los estados</option>
+                        <option value="Disponible">Disponible</option>
+                        <option value="Reservada">Reservada</option>
+                        <option value="Ocupada">Ocupada</option>
+                        <option value="Mantenimiento">Mantenimiento</option>
+                    </select>
                 </div>
+                <div class="col-md-4">
+                    <label class="form-label">Buscar por número</label>
+                    <input type="text" id="filtro-numero" class="form-control" placeholder="Número de habitación">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" id="btn-buscar" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
+            </div>
+        </div>
 
-                <!-- Grid de Habitaciones -->
-                <div class="rooms-grid" id="roomsGrid">
-                    <?php if (!empty($rooms)): ?>
-                        <?php foreach ($rooms as $room): ?>
-                            <div class="room-card" data-estado="<?php echo $room['estado']; ?>" data-numero="<?php echo $room['numero']; ?>" data-tipo="<?php echo $room['tipoHabitacion']; ?>">
-                                <div class="room-image">
-                                    <?php if ($room['foto'] && file_exists($room['foto'])): ?>
-                                        <img src="<?php echo $room['foto']; ?>" alt="Habitación <?php echo $room['numero']; ?>" loading="lazy">
-                                    <?php else: ?>
-                                        <div class="no-image">
-                                            <i class="fas fa-bed"></i>
-                                            <span>Sin imagen</span>
-                                        </div>
-                                    <?php endif; ?>
-                                    
-                                    <div class="room-status status-<?php echo strtolower($room['estado']); ?>">
-                                        <i class="fas fa-circle"></i>
-                                        <?php echo $room['estado']; ?>
-                                    </div>
+        <!-- Botón crear -->
+        <div class="mb-4 text-end">
+            <a href="?action=crear" class="btn btn-success btn-lg">
+                <i class="fas fa-plus"></i> Nueva Habitación
+            </a>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="text-center py-5" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-2">Cargando habitaciones...</p>
+        </div>
+
+        <!-- Grid de habitaciones -->
+        <div id="habitaciones-grid" class="habitaciones-grid">
+            <?php if (empty($habitaciones)): ?>
+                <div class="no-habitaciones">
+                    <i class="fas fa-bed fa-5x text-muted"></i>
+                    <h3 class="mt-3 text-muted">No hay habitaciones</h3>
+                    <p class="text-muted">Comienza creando tu primera habitación</p>
+                    <a href="?action=crear" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Crear Habitación
+                    </a>
+                </div>
+            <?php else: ?>
+                <?php foreach ($habitaciones as $habitacion): ?>
+                    <div class="habitacion-card" data-id="<?php echo $habitacion['id']; ?>">
+                        <div class="habitacion-image">
+                            <?php if (!empty($habitacion['foto'])): ?>
+                                <img src="<?php echo htmlspecialchars($habitacion['foto']); ?>" 
+                                     alt="Habitación <?php echo htmlspecialchars($habitacion['numero']); ?>">
+                            <?php else: ?>
+                                <div class="no-image">
+                                    <i class="fas fa-bed"></i>
+                                    <span>Sin imagen</span>
                                 </div>
-                                
-                                <div class="room-info">
-                                    <div class="room-header">
-                                        <h3 class="room-number">Habitación <?php echo $room['numero']; ?></h3>
-                                        <span class="room-type"><?php echo $room['tipoDescripcion']; ?></span>
-                                    </div>
-                                    
-                                    <div class="room-details">
-                                        <div class="detail-item">
-                                            <i class="fas fa-dollar-sign"></i>
-                                            <span>$<?php echo number_format($room['costo'], 2); ?></span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <i class="fas fa-users"></i>
-                                            <span><?php echo $room['capacidad']; ?> personas</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <?php if ($room['descripcion']): ?>
-                                        <p class="room-description"><?php echo htmlspecialchars(substr($room['descripcion'], 0, 100)) . (strlen($room['descripcion']) > 100 ? '...' : ''); ?></p>
-                                    <?php endif; ?>
-                                    
-                                    <?php if ($room['estado'] === 'Mantenimiento' && $room['descripcionMantenimiento']): ?>
-                                        <div class="maintenance-info">
-                                            <i class="fas fa-tools"></i>
-                                            <small><?php echo htmlspecialchars($room['descripcionMantenimiento']); ?></small>
-                                        </div>
-                                    <?php endif; ?>
-                                    
-                                    <div class="room-actions">
-                                        <a href="index.php?controller=room&action=edit&numero=<?php echo $room['numero']; ?>" 
-                                           class="btn btn-sm btn-secondary" title="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <button type="button" 
-                                                class="btn btn-sm btn-danger delete-room" 
-                                                data-numero="<?php echo $room['numero']; ?>" 
-                                                title="Eliminar">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
+                            <?php endif; ?>
+                            
+                            <?php
+                                // Lógica para asignar colores de Bootstrap según el estado
+                                $estado = $habitacion['estado'];
+                                $badge_class = '';
+                                switch ($estado) {
+                                    case 'Disponible':
+                                        $badge_class = 'bg-success';
+                                        break;
+                                    case 'Reservada':
+                                        $badge_class = 'bg-info';
+                                        break;
+                                    case 'Ocupada':
+                                        $badge_class = 'bg-warning text-dark';
+                                        break;
+                                    case 'Mantenimiento':
+                                        $badge_class = 'bg-danger';
+                                        break;
+                                    default:
+                                        $badge_class = 'bg-secondary';
+                                }
+                            ?>
+                            <div class="habitacion-estado">
+                                <span class="badge rounded-pill fs-6 <?php echo $badge_class; ?>"><?php echo htmlspecialchars($estado); ?></span>
+                            </div>
+                        </div>
+                        
+                        <div class="habitacion-content">
+                            <div class="habitacion-header">
+                                <h3 class="habitacion-numero">
+                                    <i class="fas fa-door-open"></i>
+                                    Habitación <?php echo htmlspecialchars($habitacion['numero']); ?>
+                                </h3>
+                                <span class="habitacion-hotel">
+                                    <?php echo htmlspecialchars($habitacion['hotel_nombre']); ?>
+                                </span>
+                            </div>
+                            
+                            <div class="habitacion-info">
+                                <div class="info-item">
+                                    <i class="fas fa-tag"></i>
+                                    <span><?php echo htmlspecialchars($habitacion['tipo_descripcion']); ?></span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-users"></i>
+                                    <span><?php echo $habitacion['capacidad']; ?> personas</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-dollar-sign"></i>
+                                    <span>$<?php echo number_format($habitacion['costo'], 0, ',', '.'); ?>/noche</span>
                                 </div>
                             </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <div class="empty-state">
-                            <i class="fas fa-bed"></i>
-                            <h3>No hay habitaciones registradas</h3>
-                            <p>Comienza agregando tu primera habitación</p>
-                            <a href="crearHabitacion.php?controller=room&action=create" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> Crear Primera Habitación
-                            </a>
+                            
+                            <?php if (!empty($habitacion['descripcion'])): ?>
+                                <div class="habitacion-descripcion">
+                                    <p><?php echo htmlspecialchars(substr($habitacion['descripcion'], 0, 100)); ?>
+                                       <?php echo strlen($habitacion['descripcion']) > 100 ? '...' : ''; ?></p>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <?php if ($habitacion['estado'] == 'Mantenimiento' && !empty($habitacion['descripcionMantenimiento'])): ?>
+                                <div class="habitacion-mantenimiento">
+                                    <i class="fas fa-tools"></i>
+                                    <small><?php echo htmlspecialchars($habitacion['descripcionMantenimiento']); ?></small>
+                                </div>
+                            <?php endif; ?>
                         </div>
-                    <?php endif; ?>
-                </div>
-            </main>
+                        
+                        <div class="habitacion-actions">
+                            <button type="button" class="btn btn-info btn-sm" onclick="verDetalles(<?php echo $habitacion['id']; ?>)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <a href="?action=editar&id=<?php echo $habitacion['id']; ?>" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="eliminarHabitacion(<?php echo $habitacion['id']; ?>)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
     </div>
 
-    <!-- Modal de confirmación de eliminación -->
-    <div class="modal" id="deleteModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación</h3>
-                <button class="modal-close" id="closeModal">&times;</button>
+    <!-- Modal de detalles -->
+    <div class="modal fade" id="modalDetalles" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-bed"></i> Detalles de la Habitación
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="detalles-content">
+                    <!-- Contenido cargado dinámicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
             </div>
-            <div class="modal-body">
-                <p>¿Estás seguro de que deseas eliminar la habitación <strong id="roomNumberToDelete"></strong>?</p>
-                <p class="text-danger">Esta acción no se puede deshacer.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="cancelDelete">Cancelar</button>
-                <form method="POST" action="index.php?controller=room&action=delete" style="display: inline;">
-                    <input type="hidden" id="numeroToDelete" name="numero">
-                    <button type="submit" class="btn btn-danger">
+        </div>
+    </div>
+
+    <!-- Modal de confirmación eliminar -->
+    <div class="modal fade" id="modalEliminar" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle text-danger"></i> 
+                        Confirmar Eliminación
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas eliminar esta habitación?</p>
+                    <p class="text-danger mb-0">
+                        <strong>Esta acción no se puede deshacer.</strong>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btn-confirmar-eliminar" class="btn btn-danger">
                         <i class="fas fa-trash"></i> Eliminar
                     </button>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../public/assets/js/habitaciones.js"></script>
 </body>

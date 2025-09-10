@@ -1,113 +1,304 @@
 <?php
-require_once __DIR__ . '/../../config/conexionGlobal.php';
+/**
+ * Modelo para la gestión de habitaciones
+ */
 
-class Room {
+require_once  '../../config/conexionGlobal.php.php';
+
+class Habitacion {
     private $db;
     
-    public function __construct($database) {
+    public function __construct() {
         $this->db = conexionDB();
     }
     
-    // Obtener todas las habitaciones con información del tipo
-    public function getAllRooms() {
-        $query = "SELECT h.numero, h.costo, h.capacidad, h.foto, h.descripcion, 
-                         h.estado, h.descripcionMantenimiento, h.estadoMantenimiento,
-                         t.descripcion as tipoDescripcion
-                  FROM tp_habitaciones h 
-                  INNER JOIN td_tipoHabitacion t ON h.tipoHabitacion = t.id 
-                  ORDER BY h.numero";
-        
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    /**
+     * Obtener todas las habitaciones con información del tipo y hotel
+     */
+    public function obtenerTodas($id_hotel = null) {
+        try {
+            $sql = "SELECT h.*, 
+                           th.descripcion as tipo_descripcion,
+                           hot.nombre as hotel_nombre
+                    FROM tp_habitaciones h
+                    INNER JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
+                    INNER JOIN tp_hotel hot ON h.id_hotel = hot.id";
+            
+            $params = [];
+            if ($id_hotel) {
+                $sql .= " WHERE h.id_hotel = :id_hotel";
+                $params[':id_hotel'] = $id_hotel;
+            }
+            
+            $sql .= " ORDER BY h.numero ASC";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            error_log("Error al obtener habitaciones: " . $e->getMessage());
+            return [];
+        }
     }
     
-    // Obtener habitación por número
-    public function getRoomByNumber($numero) {
-        $query = "SELECT h.*, t.descripcion as tipoDescripcion
-                  FROM tp_habitaciones h 
-                  INNER JOIN td_tipoHabitacion t ON h.tipoHabitacion = t.id 
-                  WHERE h.numero = ?";
-        
-        $stmt = $this->db->prepare($query);
-        $stmt->execute([$numero]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+    /**
+     * Obtener una habitación por ID
+     */
+    public function obtenerPorId($id) {
+        try {
+            $sql = "SELECT h.*, 
+                           th.descripcion as tipo_descripcion,
+                           hot.nombre as hotel_nombre
+                    FROM tp_habitaciones h
+                    INNER JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
+                    INNER JOIN tp_hotel hot ON h.id_hotel = hot.id
+                    WHERE h.id = :id";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetch();
+        } catch (PDOException $e) {
+            error_log("Error al obtener habitación: " . $e->getMessage());
+            return null;
+        }
     }
     
-    // Crear nueva habitación
-    public function createRoom($data) {
-        $query = "INSERT INTO tp_habitaciones (numero, costo, capacidad, tipoHabitacion, foto, descripcion, estado, descripcionMantenimiento, estadoMantenimiento) 
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        $stmt = $this->db->prepare($query);
-        return $stmt->execute([
-            $data['numero'],
-            $data['costo'],
-            $data['capacidad'],
-            $data['tipoHabitacion'],
-            $data['foto'] ?? null,
-            $data['descripcion'] ?? null,
-            $data['estado'] ?? 'Disponible',
-            $data['descripcionMantenimiento'] ?? null,
-            $data['estadoMantenimiento'] ?? 'Activo'
-        ]);
+    /**
+     * Crear una nueva habitación
+     */
+    public function crear($datos) {
+        try {
+            // Verificar que el número no esté duplicado en el mismo hotel
+            if ($this->existeNumero($datos['numero'], $datos['id_hotel'])) {
+                return ['success' => false, 'message' => 'El número de habitación ya existe en este hotel'];
+            }
+            
+            $sql = "INSERT INTO tp_habitaciones (
+                        numero, costo, capacidad, tipoHabitacion, 
+                        foto, descripcion, estado, id_hotel
+                    ) VALUES (
+                        :numero, :costo, :capacidad, :tipoHabitacion,
+                        :foto, :descripcion, :estado, :id_hotel
+                    )";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':numero', $datos['numero']);
+            $stmt->bindParam(':costo', $datos['costo']);
+            $stmt->bindParam(':capacidad', $datos['capacidad'], PDO::PARAM_INT);
+            $stmt->bindParam(':tipoHabitacion', $datos['tipoHabitacion'], PDO::PARAM_INT);
+            $stmt->bindParam(':foto', $datos['foto']);
+            $stmt->bindParam(':descripcion', $datos['descripcion']);
+            $stmt->bindParam(':estado', $datos['estado']);
+            $stmt->bindParam(':id_hotel', $datos['id_hotel'], PDO::PARAM_INT);
+            
+            if ($stmt->execute()) {
+                return ['success' => true, 'message' => 'Habitación creada exitosamente', 'id' => $this->db->lastInsertId()];
+            }
+            
+            return ['success' => false, 'message' => 'Error al crear la habitación'];
+        } catch (PDOException $e) {
+            error_log("Error al crear habitación: " . $e->getMessage());
+            return ['success' => false, 'message' => 'Error en la base de datos: ' . $e->getMessage()];
+        }
     }
     
-    // Actualizar habitación
-    public function updateRoom($numero, $data) {
-        $query = "UPDATE tp_habitaciones SET 
-                  costo = ?, capacidad = ?, tipoHabitacion = ?, foto = ?, 
-                  descripcion = ?, estado = ?, descripcionMantenimiento = ?, estadoMantenimiento = ?
-                  WHERE numero = ?";
-        
-        $stmt = $this->db->prepare($query);
-        return $stmt->execute([
-            $data['costo'],
-            $data['capacidad'],
-            $data['tipoHabitacion'],
-            $data['foto'],
-            $data['descripcion'],
-            $data['estado'],
-            $data['descripcionMantenimiento'],
-            $data['estadoMantenimiento'],
-            $numero
-        ]);
+    /**
+     * Actualizar una habitación
+     */
+    public function actualizar($id, $datos) {
+        try {
+            // Verificar que el número no esté duplicado en el mismo hotel (excluyendo la actual)
+            if ($this->existeNumero($datos['numero'], $datos['id_hotel'], $id)) {
+                return ['success' => false, 'message' => 'El número de habitación ya existe en este hotel'];
+            }
+            
+            $sql = "UPDATE tp_habitaciones SET 
+                        numero = :numero,
+                        costo = :costo,
+                        capacidad = :capacidad,
+                        tipoHabitacion = :tipoHabitacion,
+                        foto = :foto,
+                        descripcion = :descripcion,
+                        estado = :estado,
+                        descripcionMantenimiento = :descripcionMantenimiento,
+                        estadoMantenimiento = :estadoMantenimiento,
+                        id_hotel = :id_hotel
+                    WHERE id = :id";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':numero', $datos['numero']);
+            $stmt->bindParam(':costo', $datos['costo']);
+            $stmt->bindParam(':capacidad', $datos['capacidad'], PDO::PARAM_INT);
+            $stmt->bindParam(':tipoHabitacion', $datos['tipoHabitacion'], PDO::PARAM_INT);
+            $stmt->bindParam(':foto', $datos['foto']);
+            $stmt->bindParam(':descripcion', $datos['descripcion']);
+            $stmt->bindParam(':estado', $datos['estado']);
+            $stmt->bindParam(':descripcionMantenimiento', $datos['descripcionMantenimiento']);
+            $stmt->bindParam(':estadoMantenimiento', $datos['estadoMantenimiento']);
+            $stmt->bindParam(':id_hotel', $datos['id_hotel'], PDO::PARAM_INT);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            
+            if ($stmt->execute()) {
+                return ['success' => true, 'message' => 'Habitación actualizada exitosamente'];
+            }
+            
+            return ['success' => false, 'message' => 'Error al actualizar la habitación'];
+        } catch (PDOException $e) {
+            error_log("Error al actualizar habitación: " . $e->getMessage());
+            return ['success' => false, 'message' => 'Error en la base de datos: ' . $e->getMessage()];
+        }
     }
     
-    // Eliminar habitación
-    public function deleteRoom($numero) {
-        $query = "DELETE FROM tp_habitaciones WHERE numero = ?";
-        $stmt = $this->db->prepare($query);
-        return $stmt->execute([$numero]);
+    /**
+     * Eliminar una habitación
+     */
+    public function eliminar($id) {
+        try {
+            // Verificar si la habitación tiene reservas activas
+            if ($this->tieneReservasActivas($id)) {
+                return ['success' => false, 'message' => 'No se puede eliminar la habitación porque tiene reservas activas'];
+            }
+            
+            $sql = "DELETE FROM tp_habitaciones WHERE id = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            
+            if ($stmt->execute()) {
+                return ['success' => true, 'message' => 'Habitación eliminada exitosamente'];
+            }
+            
+            return ['success' => false, 'message' => 'Error al eliminar la habitación'];
+        } catch (PDOException $e) {
+            error_log("Error al eliminar habitación: " . $e->getMessage());
+            return ['success' => false, 'message' => 'Error en la base de datos: ' . $e->getMessage()];
+        }
     }
     
-    // Obtener tipos de habitación
-    public function getRoomTypes() {
-        $query = "SELECT * FROM td_tipoHabitacion ORDER BY descripcion";
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    /**
+     * Obtener tipos de habitación por hotel
+     */
+    public function obtenerTiposPorHotel($id_hotel) {
+        try {
+            $sql = "SELECT * FROM td_tipoHabitacion WHERE id_hotel = :id_hotel ORDER BY descripcion";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':id_hotel', $id_hotel, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            error_log("Error al obtener tipos de habitación: " . $e->getMessage());
+            return [];
+        }
     }
     
-    // Verificar si el número de habitación ya existe
-    public function roomExists($numero) {
-        $query = "SELECT COUNT(*) FROM tp_habitaciones WHERE numero = ?";
-        $stmt = $this->db->prepare($query);
-        $stmt->execute([$numero]);
-        return $stmt->fetchColumn() > 0;
+    /**
+     * Obtener todos los hoteles
+     */
+    public function obtenerHoteles() {
+        try {
+            $sql = "SELECT id, nombre FROM tp_hotel ORDER BY nombre";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            error_log("Error al obtener hoteles: " . $e->getMessage());
+            return [];
+        }
     }
     
-    // Filtrar habitaciones por estado
-    public function getRoomsByStatus($estado) {
-        $query = "SELECT h.*, t.descripcion as tipoDescripcion
-                  FROM tp_habitaciones h 
-                  LEFT JOIN td_tipoHabitacion t ON h.tipoHabitacion = t.id 
-                  WHERE h.estado = ?
-                  ORDER BY h.numero";
-        
-        $stmt = $this->db->prepare($query);
-        $stmt->execute([$estado]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    /**
+     * Verificar si existe el número de habitación en el hotel
+     */
+    private function existeNumero($numero, $id_hotel, $excluir_id = null) {
+        try {
+            $sql = "SELECT COUNT(*) FROM tp_habitaciones WHERE numero = :numero AND id_hotel = :id_hotel";
+            $params = [':numero' => $numero, ':id_hotel' => $id_hotel];
+            
+            if ($excluir_id) {
+                $sql .= " AND id != :id";
+                $params[':id'] = $excluir_id;
+            }
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            
+            return $stmt->fetchColumn() > 0;
+        } catch (PDOException $e) {
+            error_log("Error al verificar número: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Verificar si la habitación tiene reservas activas
+     */
+    private function tieneReservasActivas($id_habitacion) {
+        try {
+            // Aquí deberías verificar en tu tabla de reservas
+            // Como no tienes la estructura, asumo que existe una tabla tp_reservas
+            $sql = "SELECT COUNT(*) FROM tp_reservas 
+                    WHERE id_habitacion = :id_habitacion 
+                    AND estado IN ('Activa', 'Confirmada', 'En proceso')";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':id_habitacion', $id_habitacion, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetchColumn() > 0;
+        } catch (PDOException $e) {
+            // Si no existe la tabla de reservas, permitir eliminar
+            return false;
+        }
+    }
+    
+    /**
+     * Buscar habitaciones con filtros
+     */
+    public function buscar($filtros = []) {
+        try {
+            $sql = "SELECT h.*, 
+                           th.descripcion as tipo_descripcion,
+                           hot.nombre as hotel_nombre
+                    FROM tp_habitaciones h
+                    INNER JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
+                    INNER JOIN tp_hotel hot ON h.id_hotel = hot.id
+                    WHERE 1=1";
+            
+            $params = [];
+            
+            if (!empty($filtros['hotel'])) {
+                $sql .= " AND h.id_hotel = :hotel";
+                $params[':hotel'] = $filtros['hotel'];
+            }
+            
+            if (!empty($filtros['tipo'])) {
+                $sql .= " AND h.tipoHabitacion = :tipo";
+                $params[':tipo'] = $filtros['tipo'];
+            }
+            
+            if (!empty($filtros['estado'])) {
+                $sql .= " AND h.estado = :estado";
+                $params[':estado'] = $filtros['estado'];
+            }
+            
+            if (!empty($filtros['numero'])) {
+                $sql .= " AND h.numero LIKE :numero";
+                $params[':numero'] = '%' . $filtros['numero'] . '%';
+            }
+            
+            $sql .= " ORDER BY h.numero ASC";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            error_log("Error en búsqueda: " . $e->getMessage());
+            return [];
+        }
     }
 }
-?>

@@ -148,8 +148,10 @@ if ($hotelInfo) {
                         
                         <!-- Indicador del tipo de vista -->
                         <?php if (!empty($mensajeBanner)): ?>
-                        <div class="vista-indicator">
-                            <span class="badge bg-<?php echo $tipoAdmin === 'super' ? 'primary' : 'success'; ?>">
+                        <!-- SOLUCIÓN: Añadir ms-3 para crear un margen a la izquierda -->
+                        <div class="vista-indicator ms-3" style="align-self: center;">
+                            <!-- SOLUCIÓN: Cambiar de 'badge' a 'btn' para que se vea como un botón, manteniendo el color. -->
+                            <span class="btn btn-sm btn-<?php echo $tipoAdmin === 'super' ? 'primary' : 'success'; ?> disabled rounded-pill" style="cursor: default;">
                                 <i class="fas fa-<?php echo $tipoAdmin === 'super' ? 'globe' : 'building'; ?> me-1"></i>
                                 <?php echo htmlspecialchars($mensajeBanner); ?>
                             </span>
@@ -157,12 +159,12 @@ if ($hotelInfo) {
                         <?php endif; ?>
                     </div>
                     
-                    <div class="hotel-details">
-                        <p class="hotel-address">
+                    <div class="hotel-details mt-2">
+                        <p class="hotel-address mb-2">
                             <i class="fas fa-map-marker-alt me-2"></i>
                             <?php echo htmlspecialchars($hotelInfo['direccion'] ?? 'Dirección no disponible'); ?>
                         </p>
-                        <div class="hotel-contact">
+                        <div class="hotel-contact d-flex flex-wrap gap-3">
                             <span>
                                 <i class="fas fa-phone me-2"></i>
                                 <?php echo htmlspecialchars($hotelInfo['telefono'] ?? 'N/A'); ?>
