@@ -1,0 +1,1222 @@
+/* ============================================
+   CSS MODULAR MODERNO - SISTEMA DE GESTIÓN
+   ============================================ */
+
+/* Variables CSS Globales */
+:root {
+    /* Colores principales */
+    --primary: #0d6efd;
+    --secondary: #6c757d;
+    --success: #198754;
+    --danger: #dc3545;
+    --warning: #ffc107;
+    --info: #0dcaf0;
+    --light: #f8f9fa;
+    --dark: #212529;
+    
+    /* Colores extendidos */
+    --primary-hover: #0b5ed7;
+    --success-hover: #157347;
+    --danger-hover: #bb2d3b;
+    --warning-hover: #ffca2c;
+    --info-hover: #3dd5f3;
+    
+    /* Bordes y sombras */
+    --border-color: #dee2e6;
+    --border-radius: 12px;
+    --border-radius-sm: 8px;
+    --border-radius-lg: 16px;
+    
+    /* Sombras */
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow: 0 4px 6px rgba(0,0,0,0.1);
+    --shadow-md: 0 6px 12px rgba(0,0,0,0.15);
+    --shadow-lg: 0 8px 25px rgba(0,0,0,0.2);
+    --shadow-xl: 0 20px 40px rgba(0,0,0,0.15);
+    
+    /* Transiciones */
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: all 0.2s ease;
+    
+    /* Tipografía */
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 2rem;
+    
+    /* Espaciado */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+}
+
+/* ============================================
+   RESET Y BASE
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    background: linear-gradient(135deg, #83b3fa 0%, #b7d0f7 100%) !important;
+    min-height: 100vh;
+    color: var(--dark);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   CONTENEDOR PRINCIPAL
+   ============================================ */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--spacing);
+    background: white;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    position: relative;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.header {
+    background: linear-gradient(135deg, var(--primary) 0%, #4c84ff 100%);
+    color: white;
+    padding: var(--spacing-2xl) var(--spacing-xl);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="2" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23pattern)"/></svg>');
+    opacity: 0.3;
+    z-index: 0;
+}
+
+.header h1,
+.header p {
+    position: relative;
+    z-index: 1;
+}
+
+.header h1 {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing);
+}
+
+.header p {
+    font-size: var(--font-size-lg);
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+/* ============================================
+   BARRA DE ACCIONES
+   ============================================ */
+.actions-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-xl);
+    background: linear-gradient(135deg, var(--light), #e9ecef);
+    border-radius: var(--border-radius);
+    margin-bottom: var(--spacing-xl);
+    box-shadow: var(--shadow-sm);
+    gap: var(--spacing);
+    flex-wrap: wrap;
+}
+
+/* ============================================
+   ESTADÍSTICAS
+   ============================================ */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-2xl);
+}
+
+.stat-card {
+    background: white;
+    padding: var(--spacing-xl);
+    border-radius: var(--border-radius);
+    text-align: center;
+    border-left: 4px solid var(--primary);
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent, rgba(13, 110, 253, 0.02));
+    z-index: 0;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stat-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.stat-number {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.stat-label {
+    color: var(--secondary);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Variantes de colores para stat-cards */
+.stat-card.success {
+    border-left-color: var(--success);
+}
+
+.stat-card.success .stat-number {
+    color: var(--success);
+}
+
+.stat-card.danger {
+    border-left-color: var(--danger);
+}
+
+.stat-card.danger .stat-number {
+    color: var(--danger);
+}
+
+.stat-card.warning {
+    border-left-color: var(--warning);
+}
+
+.stat-card.warning .stat-number {
+    color: #856404;
+}
+
+/* ============================================
+   BOTONES
+   ============================================ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 0.75rem 1.5rem;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    text-decoration: none;
+    border: 2px solid transparent;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+    z-index: 1;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* Variantes de botones */
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), #4c84ff);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--primary-hover), #365fc7);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--success), #20c997);
+    color: white;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, var(--success-hover), #1aa179);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--danger), #e74c3c);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, var(--danger-hover), #c0392b);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, var(--warning), #fd7e14);
+    color: var(--dark);
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, var(--warning-hover), #e0670e);
+}
+
+.btn-info {
+    background: linear-gradient(135deg, var(--info), #17a2b8);
+    color: white;
+}
+
+.btn-info:hover {
+    background: linear-gradient(135deg, var(--info-hover), #138496);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, var(--secondary), #495057);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #5a6268, #343a40);
+}
+
+.btn-outline {
+    background: transparent;
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn-outline:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* Tamaños de botones */
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: var(--font-size-sm);
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: var(--font-size-lg);
+}
+
+/* ============================================
+   CONTENEDOR DE TABLA
+   ============================================ */
+.table-container {
+    background: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    margin-bottom: var(--spacing-xl);
+}
+
+.table-header {
+    padding: var(--spacing-xl);
+    background: linear-gradient(135deg, var(--light), #e9ecef);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing);
+    flex-wrap: wrap;
+}
+
+.table-title {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+/* ============================================
+   TABLA
+   ============================================ */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+}
+
+.table th {
+    background: linear-gradient(135deg, var(--dark), #495057);
+    color: white;
+    padding: var(--spacing) 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.5px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border: none;
+}
+
+.table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #f1f3f4;
+    vertical-align: middle;
+    transition: var(--transition-fast);
+}
+
+.table tbody tr {
+    transition: var(--transition-fast);
+}
+
+.table tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.05);
+    transform: scale(1.001);
+}
+
+/* ============================================
+   BADGES Y ESTADOS
+   ============================================ */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: 0.4rem 0.8rem;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-radius: 20px;
+    line-height: 1;
+}
+
+.badge-success {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+}
+
+.badge-danger {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24;
+}
+
+.badge-warning {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    color: #856404;
+}
+
+.badge-info {
+    background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+    color: #0c5460;
+}
+
+.badge-primary {
+    background: linear-gradient(135deg, #cce7ff, #b3d9ff);
+    color: #004085;
+}
+
+.badge-secondary {
+    background: linear-gradient(135deg, #e2e3e5, #d6d8db);
+    color: #383d41;
+}
+
+/* ============================================
+   FORMULARIOS
+   ============================================ */
+.form-section {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-bottom: var(--spacing-xl);
+}
+
+.form-header {
+    background: linear-gradient(135deg, var(--success), #20c997);
+    color: white;
+    padding: var(--spacing-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing);
+}
+
+.form-header h2 {
+    font-size: var(--font-size-2xl);
+    font-weight: 600;
+    margin: 0;
+}
+
+.form-body {
+    padding: var(--spacing-xl);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-xl);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--dark);
+    font-size: var(--font-size-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.form-label .required {
+    color: var(--danger);
+    font-weight: 700;
+}
+
+.form-control {
+    padding: 0.75rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-base);
+    transition: var(--transition);
+    background: white;
+    color: var(--dark);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.form-control.is-valid {
+    border-color: var(--success);
+    background: rgba(25, 135, 84, 0.05);
+}
+
+.form-control.is-invalid {
+    border-color: var(--danger);
+    background: rgba(220, 53, 69, 0.05);
+}
+
+/* ============================================
+   MENSAJES Y ALERTAS
+   ============================================ */
+.alert {
+    padding: var(--spacing) var(--spacing-lg);
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing);
+    margin-bottom: var(--spacing-xl);
+    box-shadow: var(--shadow-sm);
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+    border-left: 4px solid var(--success);
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24;
+    border-left: 4px solid var(--danger);
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    color: #856404;
+    border-left: 4px solid var(--warning);
+}
+
+.alert-info {
+    background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+    color: #0c5460;
+    border-left: 4px solid var(--info);
+}
+
+/* ============================================
+   ESTADO VACÍO
+   ============================================ */
+.no-data {
+    text-align: center;
+    padding: var(--spacing-2xl) var(--spacing-xl);
+    color: var(--secondary);
+}
+
+.no-data h3 {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing);
+    color: var(--dark);
+}
+
+.no-data p {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.no-data .icon {
+    font-size: 4rem;
+    opacity: 0.3;
+    margin-bottom: var(--spacing);
+}
+
+/* ============================================
+   LOADING
+   ============================================ */
+.loading {
+    text-align: center;
+    padding: var(--spacing-2xl);
+}
+
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--primary);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto var(--spacing-xl);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ============================================
+   UTILIDADES
+   ============================================ */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.d-flex { display: flex; }
+.d-grid { display: grid; }
+.d-none { display: none; }
+.d-block { display: block; }
+
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-start { justify-content: flex-start; }
+.justify-end { justify-content: flex-end; }
+
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+
+.gap-sm { gap: var(--spacing-sm); }
+.gap { gap: var(--spacing); }
+.gap-lg { gap: var(--spacing-lg); }
+.gap-xl { gap: var(--spacing-xl); }
+
+.p-sm { padding: var(--spacing-sm); }
+.p { padding: var(--spacing); }
+.p-lg { padding: var(--spacing-lg); }
+.p-xl { padding: var(--spacing-xl); }
+
+.m-sm { margin: var(--spacing-sm); }
+.m { margin: var(--spacing); }
+.m-lg { margin: var(--spacing-lg); }
+.m-xl { margin: var(--spacing-xl); }
+
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow { box-shadow: var(--shadow); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+
+.cursor-pointer { cursor: pointer; }
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 1200px) {
+    .container {
+        margin: var(--spacing-sm);
+        border-radius: var(--border-radius);
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        margin: 0;
+        border-radius: 0;
+    }
+    
+    .header {
+        padding: var(--spacing-xl) var(--spacing);
+    }
+    
+    .header h1 {
+        font-size: var(--font-size-2xl);
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+    
+    .actions-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    .table {
+        min-width: 600px;
+    }
+}
+
+@media (max-width: 576px) {
+    .header {
+        padding: var(--spacing) var(--spacing-sm);
+    }
+    
+    .actions-bar,
+    .form-body,
+    .table-header {
+        padding: var(--spacing);
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .table thead {
+        display: none;
+    }
+    
+    .table tbody td {
+        display: block;
+        text-align: right;
+        border: none;
+        padding: 0.5rem var(--spacing);
+        position: relative;
+        padding-left: 50%;
+    }
+    
+    .table tbody td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: var(--spacing);
+        width: 45%;
+        text-align: left;
+        font-weight: 600;
+        color: var(--dark);
+    }
+    
+    .table tbody tr {
+        display: block;
+        border: 1px solid var(--border-color);
+        margin-bottom: var(--spacing);
+        border-radius: var(--border-radius);
+        background: white;
+    }
+}
+
+/* ============================================
+   MÓDULO DE RESERVAS - ESTILOS ESPECÍFICOS
+   ============================================ */
+
+/* Variables específicas para reservas */
+.reservas-module {
+    --reservas-primary: #0d6efd;
+    --reservas-success: #198754;
+    --reservas-danger: #dc3545;
+    --reservas-warning: #ffc107;
+    --reservas-info: #0dcaf0;
+}
+
+/* Contenedor específico para reservas */
+.reservas-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    min-height: calc(100vh - 150px);
+}
+
+.reservas-container h1 {
+    text-align: center;
+    color: var(--dark);
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    margin-bottom: var(--spacing-2xl);
+    padding-bottom: var(--spacing);
+    border-bottom: 3px solid var(--primary);
+    position: relative;
+}
+
+.reservas-container h1::after {
+    content: '📅';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2rem;
+    opacity: 0.7;
+}
+
+/* Mensajes de estado para reservas */
+.mensaje {
+    padding: var(--spacing) var(--spacing-lg);
+    border-radius: var(--border-radius);
+    margin-bottom: var(--spacing-xl);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing);
+    box-shadow: var(--shadow-sm);
+    animation: slideInDown 0.5s ease;
+}
+
+.mensaje.success {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+    border-left: 4px solid var(--success);
+}
+
+.mensaje.success::before {
+    content: '✅';
+    font-size: 1.2rem;
+}
+
+.mensaje.error {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24;
+    border-left: 4px solid var(--danger);
+}
+
+.mensaje.error::before {
+    content: '❌';
+    font-size: 1.2rem;
+}
+
+/* Formulario de reservas */
+.reservas-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+/* Grupos de formulario específicos para reservas */
+.reservas-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius);
+    border: 2px solid transparent;
+    transition: var(--transition);
+    position: relative;
+}
+
+.reservas-form .form-group::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--info));
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.reservas-form .form-group:hover::before {
+    opacity: 1;
+}
+
+.reservas-form .form-group:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    transform: translateY(-2px);
+}
+
+.reservas-form .form-group:focus-within::before {
+    opacity: 1;
+}
+
+/* Etiquetas del formulario */
+.reservas-form .form-group label {
+    font-weight: 600;
+    color: var(--dark);
+    font-size: var(--font-size-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+}
+
+.reservas-form .form-group label::before {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    font-size: var(--font-size-xs);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* Iconos específicos por tipo de campo */
+.form-group:has(select[name*="hotel"]) label::before { content: '🏨'; background: var(--info); }
+.form-group:has(select[name*="habitacion"]) label::before { content: '🛏️'; background: var(--success); }
+.form-group:has(input[name*="fecha"]) label::before { content: '📅'; background: var(--warning); color: var(--dark); }
+.form-group:has(input[name*="cantidad"]) label::before { content: '👥'; background: var(--primary); }
+.form-group:has(select[name*="usuario"]) label::before { content: '👤'; background: var(--secondary); }
+.form-group:has(select[name*="huesped"]) label::before { content: '🏠'; background: var(--info); }
+.form-group:has(select[name*="motivo"]) label::before { content: '💭'; background: var(--success); }
+.form-group:has(select[name*="metodo"]) label::before { content: '💳'; background: var(--warning); color: var(--dark); }
+.form-group:has(input[name*="pago"]) label::before { content: '💰'; background: var(--success); }
+.form-group:has(select[name*="estado"]) label::before { content: '📊'; background: var(--info); }
+.form-group:has(textarea) label::before { content: '📝'; background: var(--secondary); }
+
+.reservas-form .required {
+    color: var(--danger);
+    font-weight: 700;
+    font-size: 1.1em;
+}
+
+/* Campos del formulario */
+.reservas-form input,
+.reservas-form select,
+.reservas-form textarea {
+    padding: 0.875rem var(--spacing);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-base);
+    transition: var(--transition);
+    background: white;
+    color: var(--dark);
+    font-family: var(--font-family);
+}
+
+.reservas-form input:focus,
+.reservas-form select:focus,
+.reservas-form textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    background: #fefffe;
+}
+
+.reservas-form input:valid,
+.reservas-form select:valid {
+    border-color: var(--success);
+    background: rgba(25, 135, 84, 0.05);
+}
+
+.reservas-form input:invalid:not(:placeholder-shown),
+.reservas-form select:invalid {
+    border-color: var(--danger);
+    background: rgba(220, 53, 69, 0.05);
+}
+
+/* Textarea específico */
+.reservas-form textarea {
+    min-height: 100px;
+    resize: vertical;
+    font-family: var(--font-family);
+    line-height: 1.5;
+}
+
+/* Campos de número con estilo especial */
+.reservas-form input[type="number"] {
+    background: linear-gradient(135deg, #fff, #f8f9fa);
+}
+
+.reservas-form input[type="date"] {
+    background: linear-gradient(135deg, #fff3cd, #fff);
+}
+
+/* Select con estilo mejorado */
+.reservas-form select {
+    background: white url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") no-repeat right 0.75rem center/1.5em 1.5em;
+    appearance: none;
+}
+
+.reservas-form select:focus {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%230d6efd' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+/* Acciones del formulario */
+.form-actions {
+    display: flex;
+    gap: var(--spacing);
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-xl) 0;
+    border-top: 1px solid var(--border-color);
+    margin-top: var(--spacing-xl);
+}
+
+.form-actions .btn {
+    min-width: 150px;
+    padding: var(--spacing) var(--spacing-xl);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.form-actions .btn:not(.btn-secondary) {
+    background: linear-gradient(135deg, var(--success), #20c997);
+    color: white;
+    border: 2px solid var(--success);
+}
+
+.form-actions .btn:not(.btn-secondary):hover {
+    background: linear-gradient(135deg, var(--success-hover), #1aa179);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.form-actions .btn.btn-secondary {
+    background: linear-gradient(135deg, var(--secondary), #495057);
+    color: white;
+    border: 2px solid var(--secondary);
+}
+
+.form-actions .btn.btn-secondary:hover {
+    background: linear-gradient(135deg, #5a6268, #343a40);
+}
+
+/* Estados de validación específicos */
+.reservas-form .form-group.has-error {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.reservas-form .form-group.has-error::before {
+    background: var(--danger);
+}
+
+.reservas-form .form-group.has-success {
+    border-color: var(--success);
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+}
+
+.reservas-form .form-group.has-success::before {
+    background: var(--success);
+}
+
+/* Responsive para formulario de reservas */
+@media (max-width: 768px) {
+    .reservas-container {
+        margin: var(--spacing-sm);
+        padding: var(--spacing);
+        border-radius: var(--border-radius-sm);
+    }
+    
+    .reservas-container h1 {
+        font-size: var(--font-size-2xl);
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .reservas-container h1::after {
+        position: static;
+        transform: none;
+        margin-top: var(--spacing-sm);
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: var(--spacing);
+    }
+    
+    .reservas-form .form-group {
+        padding: var(--spacing);
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .reservas-form .form-group {
+        padding: 0.75rem;
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .reservas-form input,
+    .reservas-form select,
+    .reservas-form textarea {
+        padding: 0.75rem;
+        font-size: var(--font-size-sm);
+    }
+    
+    .form-actions .btn {
+        padding: 0.875rem var(--spacing);
+        font-size: var(--font-size-sm);
+    }
+}
+
+/* Animación específica para el formulario de reservas */
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.reservas-form .form-group {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.reservas-form .form-group:nth-child(1) { animation-delay: 0.1s; }
+.reservas-form .form-group:nth-child(2) { animation-delay: 0.2s; }
+.reservas-form .form-group:nth-child(3) { animation-delay: 0.3s; }
+.reservas-form .form-group:nth-child(4) { animation-delay: 0.4s; }
+
+/* ============================================
+   ANIMACIONES GENERALES
+   ============================================ */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Aplicar animaciones */
+.container > * {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.alert {
+    animation: slideInLeft 0.4s ease forwards;
+}
+
+.stat-card {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+/* Staggered animations */
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3) { animation-delay: 0.3s; }
+.stat-card:nth-child(4) { animation-delay: 0.4s; }

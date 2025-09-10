@@ -1,11 +1,158 @@
-/* Importar estilos base del sistema PQRS */
-@import url('styles.css');
-
 /* ============================================
-   ESTILOS ESPECÍFICOS PARA HABITACIONES
+   ESTILOS PARA EL MÓDULO DE HABITACIONES
    ============================================ */
 
-/* Grid de habitaciones */
+/* Variables CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #83b3fa 0%, #b7d0f7 100%) !important;
+    min-height: 100vh;
+    color: #333;
+    padding-top: 75px;
+}
+
+:root {
+    --habitacion-primary: #0d6efd;
+    --habitacion-success: #198754;
+    --habitacion-danger: #dc3545;
+    --habitacion-warning: #ffc107;
+    --habitacion-info: #0dcaf0;
+    --habitacion-light: #f8f9fa;
+    --habitacion-dark: #212529;
+    --habitacion-border: #dee2e6;
+    --habitacion-border-radius: 12px;
+    --habitacion-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    --habitacion-shadow-hover: 0 8px 15px rgba(0,0,0,0.2);
+    --habitacion-gradient-disponible: linear-gradient(135deg, #d4edda, #c3e6cb);
+    --habitacion-gradient-reservada: linear-gradient(135deg, #d1ecf1, #b8daff);
+    --habitacion-gradient-ocupada: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    --habitacion-gradient-mantenimiento: linear-gradient(135deg, #f8d7da, #f5c6cb);
+}
+
+/* ============================================
+   CONTENEDOR PRINCIPAL
+   ============================================ */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ============================================
+   HEADER DE PÁGINAS
+   ============================================ */
+.header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 2.5rem 0;
+    background: linear-gradient(135deg, var(--habitacion-primary), #4c84ff);
+    color: white;
+    border-radius: var(--habitacion-border-radius);
+    box-shadow: var(--habitacion-shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="bed-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><text x="10" y="15" text-anchor="middle" fill="rgba(255,255,255,0.1)" font-size="12">🏨</text></pattern></defs><rect width="100" height="100" fill="url(%23bed-pattern)"/></svg>');
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.header h1,
+.header p {
+    position: relative;
+    z-index: 1;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.header p {
+    font-size: 1.1rem;
+    margin: 0;
+    opacity: 0.9;
+}
+
+/* ============================================
+   SECCIÓN DE BÚSQUEDA Y FILTROS (TARJETÓN)
+   ============================================ */
+.search-section {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--habitacion-border-radius);
+    box-shadow: var(--habitacion-shadow);
+    margin-bottom: 2rem;
+    border: 1px solid var(--habitacion-border);
+    transition: all 0.3s ease;
+}
+
+.search-section:hover {
+    box-shadow: var(--habitacion-shadow-hover);
+    transform: translateY(-2px);
+}
+
+.search-section .form-label {
+    font-weight: 600;
+    color: var(--habitacion-dark);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.search-section .form-select,
+.search-section .form-control {
+    border: 2px solid var(--habitacion-border);
+    border-radius: var(--habitacion-border-radius);
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.search-section .form-select:focus,
+.search-section .form-control:focus {
+    outline: none;
+    border-color: var(--habitacion-primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.search-section .btn {
+    border-radius: var(--habitacion-border-radius);
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.search-section .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--habitacion-shadow);
+}
+
+/* ============================================
+   GRID DE HABITACIONES
+   ============================================ */
 .habitaciones-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -13,28 +160,60 @@
     margin-bottom: 2rem;
 }
 
-/* Tarjeta de habitación */
+/* ============================================
+   TARJETAS DE HABITACIONES
+   ============================================ */
 .habitacion-card {
     background: white;
-    border-radius: var(--pqrs-border-radius);
-    box-shadow: var(--pqrs-shadow);
+    border-radius: var(--habitacion-border-radius);
+    box-shadow: var(--habitacion-shadow);
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--habitacion-border);
     position: relative;
-    border: 2px solid transparent;
 }
 
 .habitacion-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--pqrs-shadow-hover);
-    border-color: var(--pqrs-primary);
+    transform: translateY(-8px);
+    box-shadow: var(--habitacion-shadow-hover);
 }
 
-/* Imagen de la habitación */
+.habitacion-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--habitacion-primary), var(--habitacion-info));
+    z-index: 1;
+}
+
+/* Estados de habitación - colores de borde izquierdo */
+.habitacion-card[data-estado="Disponible"]::before {
+    background: linear-gradient(90deg, var(--habitacion-success), #20c997);
+}
+
+.habitacion-card[data-estado="Reservada"]::before {
+    background: linear-gradient(90deg, var(--habitacion-info), #17a2b8);
+}
+
+.habitacion-card[data-estado="Ocupada"]::before {
+    background: linear-gradient(90deg, var(--habitacion-warning), #fd7e14);
+}
+
+.habitacion-card[data-estado="Mantenimiento"]::before {
+    background: linear-gradient(90deg, var(--habitacion-danger), #e74c3c);
+}
+
+/* ============================================
+   IMAGEN DE HABITACIÓN
+   ============================================ */
 .habitacion-image {
-    height: 200px;
     position: relative;
+    height: 200px;
     overflow: hidden;
+    background: var(--habitacion-light);
 }
 
 .habitacion-image img {
@@ -61,52 +240,75 @@
 .no-image i {
     font-size: 3rem;
     margin-bottom: 0.5rem;
+    opacity: 0.5;
 }
 
-/* Estado de la habitación */
+.no-image span {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* ============================================
+   ESTADO DE HABITACIÓN (BADGE)
+   ============================================ */
 .habitacion-estado {
     position: absolute;
     top: 1rem;
     right: 1rem;
-    z-index: 10; /* Asegura que la insignia esté sobre la imagen */
+    z-index: 2;
 }
 
-/* Contenido de la tarjeta */
+.habitacion-estado .badge {
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    border: 2px solid white;
+}
+
+/* ============================================
+   CONTENIDO DE LA TARJETA
+   ============================================ */
 .habitacion-content {
     padding: 1.5rem;
 }
 
 .habitacion-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
     margin-bottom: 1rem;
 }
 
 .habitacion-numero {
-    margin: 0;
     font-size: 1.25rem;
     font-weight: 700;
-    color: var(--pqrs-dark);
+    color: var(--habitacion-dark);
+    margin: 0 0 0.25rem 0;
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.habitacion-hotel {
-    font-size: 0.9rem;
-    color: var(--pqrs-primary);
-    font-weight: 600;
-    background: rgba(13, 110, 253, 0.1);
-    padding: 0.25rem 0.75rem;
-    border-radius: 15px;
+.habitacion-numero i {
+    color: var(--habitacion-primary);
+    font-size: 1.1rem;
 }
 
-/* Información de la habitación */
+.habitacion-hotel {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 500;
+    background: var(--habitacion-light);
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    display: inline-block;
+}
+
+/* ============================================
+   INFORMACIÓN DE LA HABITACIÓN
+   ============================================ */
 .habitacion-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
     margin-bottom: 1rem;
 }
 
@@ -114,355 +316,906 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    margin-bottom: 0.5rem;
     font-size: 0.9rem;
-    color: #6c757d;
+    color: var(--habitacion-dark);
+}
+
+.info-item:last-child {
+    margin-bottom: 0;
 }
 
 .info-item i {
-    color: var(--pqrs-primary);
     width: 16px;
     text-align: center;
+    color: var(--habitacion-primary);
+    font-size: 0.85rem;
 }
 
-/* Descripción */
+.info-item span {
+    font-weight: 500;
+}
+
+/* ============================================
+   DESCRIPCIÓN Y MANTENIMIENTO
+   ============================================ */
 .habitacion-descripcion {
     margin-bottom: 1rem;
-    font-size: 0.9rem;
-    color: #6c757d;
-    line-height: 1.4;
+    padding: 1rem;
+    background: rgba(13, 110, 253, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid var(--habitacion-primary);
 }
 
 .habitacion-descripcion p {
     margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #495057;
 }
 
-/* Información de mantenimiento */
 .habitacion-mantenimiento {
-    background: rgba(220, 53, 69, 0.1);
-    border: 1px solid rgba(220, 53, 69, 0.3);
-    border-radius: var(--pqrs-border-radius);
-    padding: 0.75rem;
     margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: rgba(220, 53, 69, 0.1);
+    border-radius: 8px;
+    border-left: 3px solid var(--habitacion-danger);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
 }
 
 .habitacion-mantenimiento i {
-    color: var(--pqrs-danger);
-    margin-right: 0.5rem;
+    color: var(--habitacion-danger);
+    margin-top: 0.1rem;
 }
 
 .habitacion-mantenimiento small {
-    color: var(--pqrs-danger);
+    color: #721c24;
     font-weight: 500;
+    line-height: 1.3;
 }
 
-/* Acciones de la habitación */
+/* ============================================
+   ACCIONES DE LA TARJETA
+   ============================================ */
 .habitacion-actions {
-    display: flex;
-    gap: 0.5rem;
     padding: 1rem 1.5rem;
-    background: var(--pqrs-light);
-    border-top: 1px solid var(--pqrs-border);
+    background: var(--habitacion-light);
+    border-top: 1px solid var(--habitacion-border);
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
 .habitacion-actions .btn {
-    flex: 1;
+    border-radius: 8px;
+    padding: 0.5rem;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.5rem;
+    transition: all 0.3s ease;
+    border: none;
     font-size: 0.9rem;
 }
 
-/* Estados especiales para las tarjetas */
-.habitacion-card.mantenimiento {
-    border-left: 4px solid var(--pqrs-danger);
+.habitacion-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-.habitacion-card.ocupada {
-    border-left: 4px solid var(--pqrs-info);
-}
-
-.habitacion-card.reservada {
-    border-left: 4px solid var(--pqrs-warning);
-}
-
-.habitacion-card.disponible {
-    border-left: 4px solid var(--pqrs-success);
+.habitacion-actions .btn i {
+    font-size: 0.9rem;
 }
 
 /* ============================================
-   FORMULARIO DE HABITACIONES
-   ============================================ */
-
-/* Área de subida de imagen */
-.image-upload-area {
-    border: 2px dashed var(--pqrs-border);
-    border-radius: var(--pqrs-border-radius);
-    padding: 2rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    position: relative;
-    background: #fafbfc;
-}
-
-.image-upload-area:hover {
-    border-color: var(--pqrs-primary);
-    background: rgba(13, 110, 253, 0.05);
-}
-
-.image-upload-area.dragover {
-    border-color: var(--pqrs-success);
-    background: rgba(25, 135, 84, 0.05);
-}
-
-.upload-placeholder i {
-    font-size: 3rem;
-    color: var(--pqrs-primary);
-    margin-bottom: 1rem;
-}
-
-.upload-placeholder p {
-    margin: 0 0 0.5rem 0;
-    font-weight: 600;
-    color: var(--pqrs-dark);
-}
-
-/* Vista previa de imagen */
-.image-preview {
-    position: relative;
-    display: inline-block;
-    border-radius: var(--pqrs-border-radius);
-    overflow: hidden;
-    box-shadow: var(--pqrs-shadow);
-}
-
-.image-preview img {
-    max-width: 300px;
-    max-height: 200px;
-    width: auto;
-    height: auto;
-    display: block;
-}
-
-.remove-image {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 30px;
-    height: 30px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-
-/* ============================================
-   MENSAJE SIN HABITACIONES
+   ESTADO VACÍO
    ============================================ */
 .no-habitaciones {
     grid-column: 1 / -1;
     text-align: center;
     padding: 4rem 2rem;
     background: white;
-    border-radius: var(--pqrs-border-radius);
-    box-shadow: var(--pqrs-shadow);
+    border-radius: var(--habitacion-border-radius);
+    box-shadow: var(--habitacion-shadow);
+    border: 2px dashed var(--habitacion-border);
 }
 
 .no-habitaciones i {
-    opacity: 0.5;
+    opacity: 0.3;
+    margin-bottom: 1rem;
+}
+
+.no-habitaciones h3 {
+    margin-bottom: 0.5rem;
+}
+
+.no-habitaciones p {
+    margin-bottom: 1.5rem;
 }
 
 /* ============================================
-   RESPONSIVE DESIGN ESPECÍFICO
+   LOADING
+   ============================================ */
+#loading {
+    background: white;
+    border-radius: var(--habitacion-border-radius);
+    box-shadow: var(--habitacion-shadow);
+    padding: 3rem;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* ============================================
+   MENSAJES
+   ============================================ */
+.success-message,
+.error-message {
+    padding: 1rem 1.5rem;
+    border-radius: var(--habitacion-border-radius);
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    box-shadow: var(--habitacion-shadow);
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.success-message {
+    background: var(--habitacion-gradient-disponible);
+    border: 1px solid var(--habitacion-success);
+    color: #155724;
+}
+
+.error-message {
+    background: var(--habitacion-gradient-mantenimiento);
+    border: 1px solid var(--habitacion-danger);
+    color: #721c24;
+}
+
+/* ============================================
+   BOTONES GENERALES
+   ============================================ */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--habitacion-border-radius);
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--habitacion-shadow);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* ============================================
+   MODALES
+   ============================================ */
+.modal-content {
+    border-radius: var(--habitacion-border-radius);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: none;
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--habitacion-border);
+    background: linear-gradient(135deg, var(--habitacion-light), white);
+    border-radius: var(--habitacion-border-radius) var(--habitacion-border-radius) 0 0;
+}
+
+.modal-title {
+    font-weight: 600;
+    color: var(--habitacion-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--habitacion-border);
+    background: var(--habitacion-light);
+    border-radius: 0 0 var(--habitacion-border-radius) var(--habitacion-border-radius);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
    ============================================ */
 @media (max-width: 768px) {
-    .habitaciones-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    .habitacion-card {
-        margin: 0 0.5rem;
-    }
-    
-    .habitacion-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
-    
-    .habitacion-info {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.75rem;
-    }
-    
-    .habitacion-actions {
-        flex-wrap: wrap;
-    }
-    
-    .habitacion-actions .btn {
-        min-width: 80px;
-    }
-    
-    .image-upload-area {
+    .container {
         padding: 1rem;
     }
     
-    .upload-placeholder i {
+    .header h1 {
         font-size: 2rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .habitacion-info {
-        grid-template-columns: 1fr;
+        flex-direction: column;
+        gap: 0.5rem;
     }
     
-    .habitacion-actions {
-        padding: 0.75rem;
+    .habitaciones-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .habitacion-card {
+        margin: 0 auto;
+        max-width: 400px;
+    }
+    
+    .search-section {
+        padding: 1.5rem;
+    }
+    
+    .search-section .row {
+        margin: 0;
+    }
+    
+    .search-section .col-md-3,
+    .search-section .col-md-4,
+    .search-section .col-md-2 {
+        padding: 0;
+        margin-bottom: 1rem;
+    }
+    
+    .search-section .col-md-2:last-child {
+        margin-bottom: 0;
     }
     
     .habitacion-actions .btn {
+        width: 35px;
+        height: 35px;
         font-size: 0.8rem;
-        padding: 0.4rem 0.6rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .header {
+        padding: 2rem 1rem;
+    }
+    
+    .header h1 {
+        font-size: 1.75rem;
+    }
+    
+    .habitacion-content {
+        padding: 1rem;
+    }
+    
+    .habitacion-actions {
+        padding: 0.75rem 1rem;
+    }
+    
+    .no-habitaciones {
+        padding: 3rem 1rem;
     }
 }
 
 /* ============================================
-   ANIMACIONES ESPECÍFICAS
+   ANIMACIONES
    ============================================ */
-@keyframes cardAppear {
-    from {
-        opacity: 0;
-        transform: translateY(30px) scale(0.9);
+@keyframes fadeInUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px); 
     }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes slideInLeft {
+    from { 
+        transform: translateX(-20px); 
+        opacity: 0; 
+    }
+    to { 
+        transform: translateX(0); 
+        opacity: 1; 
     }
 }
 
 .habitacion-card {
-    animation: cardAppear 0.6s ease forwards;
+    animation: fadeInUp 0.6s ease forwards;
 }
 
-.habitacion-card:nth-child(even) {
-    animation-delay: 0.1s;
+.success-message,
+.error-message {
+    animation: slideInLeft 0.4s ease forwards;
 }
 
-.habitacion-card:nth-child(3n) {
-    animation-delay: 0.2s;
+/* Staggered animation for cards */
+.habitacion-card:nth-child(1) { animation-delay: 0.1s; }
+.habitacion-card:nth-child(2) { animation-delay: 0.2s; }
+.habitacion-card:nth-child(3) { animation-delay: 0.3s; }
+.habitacion-card:nth-child(4) { animation-delay: 0.4s; }
+.habitacion-card:nth-child(5) { animation-delay: 0.5s; }
+.habitacion-card:nth-child(6) { animation-delay: 0.6s; }
+
+/* ============================================
+   FORMULARIO DE HABITACIONES (CREAR/EDITAR)
+   ============================================ */
+
+/* Sección principal del formulario */
+.form-section {
+    background: white;
+    border-radius: var(--habitacion-border-radius);
+    box-shadow: var(--habitacion-shadow);
+    overflow: hidden;
+    margin-bottom: 2rem;
+    border: 1px solid var(--habitacion-border);
+    transition: all 0.3s ease;
 }
 
-/* Efectos hover mejorados */
-.habitacion-card::before {
+.form-section:hover {
+    box-shadow: var(--habitacion-shadow-hover);
+}
+
+/* Título del formulario */
+.form-title {
+    background: linear-gradient(135deg, var(--habitacion-success), #20c997);
+    color: white;
+    padding: 1.5rem 2rem;
+    margin: 0 0 2rem 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.form-title::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(45deg, transparent, rgba(13, 110, 253, 0.05), transparent);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="form-pattern" x="0" y="0" width="15" height="15" patternUnits="userSpaceOnUse"><text x="7.5" y="12" text-anchor="middle" fill="rgba(255,255,255,0.1)" font-size="10">✏️</text></pattern></defs><rect width="100" height="100" fill="url(%23form-pattern)"/></svg>');
+    opacity: 0.1;
+    z-index: 0;
 }
 
-.habitacion-card:hover::before {
-    opacity: 1;
+.form-title i,
+.form-title span {
+    position: relative;
+    z-index: 1;
 }
 
-/* ============================================
-   FILTROS Y BÚSQUEDA
-   ============================================ */
-.search-section .form-select:focus,
-.search-section .form-control:focus {
-    border-color: var(--pqrs-primary);
+.form-title i {
+    font-size: 1.75rem;
+}
+
+/* Grid del formulario */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 0 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Grupos de formulario */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    padding: 1.25rem;
+    border-radius: var(--habitacion-border-radius);
+    border: 2px solid var(--habitacion-border);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.form-group:hover {
+    border-color: var(--habitacion-primary);
+    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.1);
+    transform: translateY(-1px);
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group:focus-within {
+    border-color: var(--habitacion-primary);
     box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
 }
 
-/* ============================================
-   ESTADOS DE CARGA
-   ============================================ */
-.habitaciones-grid.loading {
-    opacity: 0.6;
-    pointer-events: none;
+/* Etiquetas del formulario */
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--habitacion-dark);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.8);
+.form-group label::before {
+    content: '📝';
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+.form-group .required {
+    color: var(--habitacion-danger);
+    font-weight: 700;
+    margin-left: 0.25rem;
+}
+
+/* Campos del formulario */
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 0.875rem 1rem;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: var(--habitacion-light);
+    color: var(--habitacion-dark);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    background: white;
+    border-color: var(--habitacion-primary);
+    box-shadow: 0 0 0 0.1rem rgba(13, 110, 253, 0.15);
+}
+
+.form-group input.is-valid,
+.form-group select.is-valid,
+.form-group textarea.is-valid {
+    border-color: var(--habitacion-success);
+    background: rgba(25, 135, 84, 0.05);
+}
+
+.form-group input.is-invalid,
+.form-group select.is-invalid,
+.form-group textarea.is-invalid {
+    border-color: var(--habitacion-danger);
+    background: rgba(220, 53, 69, 0.05);
+}
+
+/* Grupo de entrada con ícono */
+.input-group {
+    display: flex;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.input-group-text {
+    background: var(--habitacion-primary);
+    color: white;
+    border: 2px solid var(--habitacion-primary);
+    padding: 0.875rem 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.input-group .form-control {
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+}
+
+/* Texto de ayuda */
+.form-text {
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    color: #6c757d;
+    font-style: italic;
+    line-height: 1.3;
+}
+
+/* ============================================
+   ÁREA DE CARGA DE IMAGEN
+   ============================================ */
+.image-upload-area {
+    border: 3px dashed var(--habitacion-border);
+    border-radius: var(--habitacion-border-radius);
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    min-height: 200px;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 9999;
+    position: relative;
+}
+
+.image-upload-area:hover {
+    border-color: var(--habitacion-primary);
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.05), rgba(13, 110, 253, 0.02));
+}
+
+.upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: #6c757d;
+}
+
+.upload-placeholder i {
+    font-size: 3rem;
+    color: var(--habitacion-primary);
+    opacity: 0.6;
+}
+
+.upload-placeholder p {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.upload-placeholder small {
+    font-size: 0.9rem;
+}
+
+/* Vista previa de imagen */
+.image-preview {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+    box-shadow: var(--habitacion-shadow);
+    object-fit: cover;
+}
+
+.remove-image {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
 }
 
 /* ============================================
-   MODAL DE DETALLES
+   VISTA PREVIA DE HABITACIÓN
    ============================================ */
-.modal-body .habitacion-detail {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 2rem;
-    align-items: start;
+.pqrs-preview {
+    margin: 2rem;
+    margin-top: 0;
+    border: 2px solid var(--habitacion-info);
+    border-radius: var(--habitacion-border-radius);
+    background: linear-gradient(135deg, rgba(13, 202, 240, 0.05), rgba(13, 202, 240, 0.02));
+    overflow: hidden;
+    box-shadow: var(--habitacion-shadow);
 }
 
-.modal-body .habitacion-detail .detail-image img {
-    width: 100%;
-    border-radius: var(--pqrs-border-radius);
-    box-shadow: var(--pqrs-shadow);
-}
-
-.modal-body .detail-info .info-group {
-    margin-bottom: 1.5rem;
-}
-
-.modal-body .detail-info .info-group h6 {
-    color: var(--pqrs-primary);
+.preview-title {
+    background: linear-gradient(135deg, var(--habitacion-info), #17a2b8);
+    color: white;
+    padding: 1rem 1.5rem;
     font-weight: 600;
-    margin-bottom: 0.5rem;
-    border-bottom: 1px solid var(--pqrs-border);
-    padding-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
 }
 
+.preview-content {
+    padding: 1.5rem;
+    background: white;
+}
+
+.preview-item {
+    display: flex;
+    margin-bottom: 1.25rem;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: var(--habitacion-light);
+    border-radius: 8px;
+    border-left: 4px solid var(--habitacion-primary);
+}
+
+.preview-item:last-child {
+    margin-bottom: 0;
+}
+
+.preview-label {
+    font-weight: 600;
+    min-width: 140px;
+    color: var(--habitacion-dark);
+    font-size: 0.9rem;
+}
+
+.preview-value {
+    flex: 1;
+    word-break: break-word;
+    color: #495057;
+    line-height: 1.4;
+}
+
+/* ============================================
+   CAMPOS DE MANTENIMIENTO
+   ============================================ */
+#grupo-mantenimiento {
+    border-left: 4px solid var(--habitacion-danger);
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.05), rgba(220, 53, 69, 0.02));
+}
+
+#grupo-mantenimiento label::before {
+    content: '🔧';
+}
+
+/* ============================================
+   BOTONES DE ACCIÓN DEL FORMULARIO
+   ============================================ */
+.form-actions {
+    padding: 2rem;
+    background: linear-gradient(135deg, var(--habitacion-light), #e9ecef);
+    border-top: 1px solid var(--habitacion-border);
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-actions .btn {
+    padding: 0.875rem 1.75rem;
+    border-radius: var(--habitacion-border-radius);
+    font-weight: 600;
+    text-decoration: none;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.form-actions .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.form-actions .btn:hover::before {
+    left: 100%;
+}
+
+.form-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--habitacion-shadow-hover);
+}
+
+.form-actions .btn:active {
+    transform: translateY(0);
+}
+
+.form-actions .btn.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.form-actions .btn.loading::after {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 0.5rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Colores específicos de botones */
+.btn-secondary {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: white;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #5a6268, #343a40);
+    border-color: #545b62;
+}
+
+.btn-info {
+    background: linear-gradient(135deg, var(--habitacion-info), #17a2b8);
+    color: white;
+    border-color: var(--habitacion-info);
+}
+
+.btn-info:hover {
+    background: linear-gradient(135deg, #0bb3d1, #138496);
+    border-color: #0bb3d1;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, var(--habitacion-warning), #fd7e14);
+    color: var(--habitacion-dark);
+    border-color: var(--habitacion-warning);
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #ffca2c, #e0a800);
+    border-color: #ffca2c;
+}
+
+/* ============================================
+   RESPONSIVE PARA FORMULARIOS
+   ============================================ */
 @media (max-width: 768px) {
-    .modal-body .habitacion-detail {
+    .form-grid {
         grid-template-columns: 1fr;
+        padding: 0 1rem;
         gap: 1rem;
+    }
+    
+    .form-group {
+        padding: 1rem;
+    }
+    
+    .form-title {
+        padding: 1.25rem 1rem;
+        font-size: 1.25rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1.5rem 1rem;
+    }
+    
+    .form-actions .btn {
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .image-upload-area {
+        padding: 1.5rem;
+        min-height: 150px;
+    }
+    
+    .upload-placeholder i {
+        font-size: 2.5rem;
+    }
+    
+    .preview-item {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .preview-label {
+        min-width: auto;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .form-section {
+        margin: 0 -1rem 2rem -1rem;
+        border-radius: 0;
+    }
+    
+    .form-grid {
+        padding: 0 0.5rem;
+    }
+    
+    .form-group {
+        padding: 0.75rem;
+    }
+    
+    .form-title {
+        padding: 1rem;
+        font-size: 1.1rem;
+    }
+    
+    .image-upload-area {
+        min-height: 120px;
+        padding: 1rem;
+    }
+    
+    .upload-placeholder i {
+        font-size: 2rem;
+    }
+    
+    .upload-placeholder p {
+        font-size: 1rem;
     }
 }
 
 /* ============================================
    UTILIDADES ADICIONALES
    ============================================ */
-.precio-destacado {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--pqrs-success);
+.shadow-hover:hover {
+    box-shadow: var(--habitacion-shadow-hover) !important;
 }
 
-.capacidad-badge {
-    background: var(--pqrs-info);
-    color: white;
-    padding: 0.25rem 0.5rem;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 600;
+.cursor-pointer {
+    cursor: pointer;
 }
 
-.tipo-badge {
-    background: var(--pqrs-primary);
-    color: white;
-    padding: 0.25rem 0.5rem;
-    border-radius: 12px;
-    font-size: 0.8rem;
+/* ============================================
+   MEJORAS VISUALES ESPECÍFICAS
+   ============================================ */
+
+/* Efecto glassmorphism sutil para las tarjetas */
+.habitacion-card {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Indicador de capacidad visual */
+.info-item:has(i.fa-users) span::after {
+    content: ' 👥';
+    opacity: 0.6;
+    font-size: 0.8em;
+}
+
+/* Indicador de precio visual */
+.info-item:has(i.fa-dollar-sign) {
     font-weight: 600;
+    color: var(--habitacion-success);
+}
+
+/* Estados adicionales para accesibilidad */
+.habitacion-card:focus-within {
+    outline: 2px solid var(--habitacion-primary);
+    outline-offset: 2px;
+}
+
+/* Transiciones suaves para todos los elementos interactivos */
+* {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }

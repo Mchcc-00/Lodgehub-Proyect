@@ -6,9 +6,17 @@
     <title>Editar Habitación - LodgeHub</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="../css/habitaciones.css" rel="stylesheet">
+    <link href="../../public/assets/css/stylesNav.css" rel="stylesheet"> 
+    <link href="../../public/assets/css/stylesHabitaciones.css" rel="stylesheet"> 
+    
 </head>
 <body>
+    <?php
+        include "layouts/sidebar.php";
+        include "layouts/navbar.php";
+    ?>
+    <script src="../../public/assets/js/sidebar.js"></script>
+
     <div class="container">
         <!-- Header -->
         <div class="header">

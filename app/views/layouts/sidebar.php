@@ -25,7 +25,7 @@ if ($userRole === 'Administrador') {
                 ],
                 [
                     'page' => 'Reservas',
-                    'href' => 'listarReservas.php',
+                    'href' => 'listaReservas.php',
                     'icon' => 'fas fa-calendar-check',
                     'text' => 'Reservas'
                 ],
