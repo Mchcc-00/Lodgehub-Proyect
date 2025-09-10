@@ -31,7 +31,7 @@ if ($userRole === 'Administrador') {
                 ],
                 [
                     'page' => 'Huéspedes',
-                    'href' => '../huespedes/dashboard.php',
+                    'href' => 'listaHuespedes.php',
                     'icon' => 'fas fa-user-friends',
                     'text' => 'Huéspedes'
                 ],

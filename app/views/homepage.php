@@ -244,7 +244,7 @@ if ($hotelInfo) {
                         <?php endif; ?>
                     </h3>
                     <div class="cards-grid">
-                        <div class="stats-card card-info" onclick="redirectTo('reservas.php?filter=hoy_inician&hotel_id=<?php echo $hotel_id_filtro; ?>')">
+                        <div class="stats-card card-info" onclick="redirectTo('listaReservas.php?filter=hoy_inician&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-primary">
                                 <i class="fas fa-calendar-plus"></i>
                             </div>
@@ -306,7 +306,7 @@ if ($hotelInfo) {
                         <?php endif; ?>
                     </h3>
                     <div class="cards-grid maintenance-grid">
-                        <div class="stats-card card-danger" onclick="redirectTo('mantenimiento.php?filter=pendientes&hotel_id=<?php echo $hotel_id_filtro; ?>')">
+                        <div class="stats-card card-danger" onclick="redirectTo('listaMantenimiento.php?filter=pendientes&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-danger">
                                 <i class="fas fa-exclamation-triangle"></i>
                             </div>
@@ -348,7 +348,7 @@ if ($hotelInfo) {
                         <?php endif; ?>
                     </h3>
                     <div class="cards-grid pqrs-grid">
-                        <div class="stats-card pqrs-high" onclick="redirectTo('pqrs.php?filter=alta&hotel_id=<?php echo $hotel_id_filtro; ?>')">
+                        <div class="stats-card pqrs-high" onclick="redirectTo('listaPQRS.php?filter=alta&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-danger">
                                 <i class="fas fa-exclamation-circle"></i>
                             </div>

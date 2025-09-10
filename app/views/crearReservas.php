@@ -103,12 +103,11 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Nueva Reserva</title>
+    <title>Crear Nueva Reserva - Sistema de Gestión</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <link href="../../public/assets/css/stylesNav.css" rel="stylesheet"> 
     <link href="../../public/assets/css/stylesReservas.css" rel="stylesheet"> 
-    
 </head>
 <body>
     <?php
@@ -117,146 +116,245 @@ try {
     ?>
     <script src="../../public/assets/js/sidebar.js"></script>
 
-    <div class="container">
-        <h1>Crear Nueva Reserva</h1>
+    <div class="container reservas-container">
+        <!-- Header Section -->
+        <div class="header">
+            <h1><i class="fas fa-calendar-plus"></i> Crear Nueva Reserva</h1>
+            <p>Complete el formulario para registrar una nueva reserva en el sistema</p>
+        </div>
         
+        <!-- Messages Section -->
         <?php if ($mensaje): ?>
-            <div class="mensaje <?php echo $tipoMensaje; ?>">
+            <div class="alert alert-<?php echo $tipoMensaje === 'success' ? 'success' : 'danger'; ?>">
+                <i class="fas fa-<?php echo $tipoMensaje === 'success' ? 'check-circle' : 'exclamation-triangle'; ?>"></i>
                 <?php echo htmlspecialchars($mensaje); ?>
             </div>
         <?php endif; ?>
         
-        <form method="POST">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="id_hotel">Hotel <span class="required">*</span></label>
-                    <select name="id_hotel" id="id_hotel" required>
-                        <option value="">Seleccionar hotel</option>
-                        <?php foreach ($hoteles as $hotel): ?>
-                            <option value="<?php echo $hotel['id']; ?>" <?php echo (isset($_POST['id_hotel']) && $_POST['id_hotel'] == $hotel['id']) ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($hotel['nombre']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="id_habitacion">Habitación <span class="required">*</span></label>
-                    <select name="id_habitacion" id="id_habitacion" required>
-                        <option value="">Seleccionar habitación</option>
-                        <?php foreach ($habitaciones as $habitacion): ?>
-                            <option value="<?php echo $habitacion['id']; ?>" <?php echo (isset($_POST['id_habitacion']) && $_POST['id_habitacion'] == $habitacion['id']) ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($habitacion['hotel_nombre'] . ' - Hab. ' . $habitacion['numero'] . ' (' . $habitacion['tipo'] . ')'); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+        <!-- Form Section -->
+        <div class="form-section">
+            <div class="form-header">
+                <i class="fas fa-edit"></i>
+                <h2>Información de la Reserva</h2>
             </div>
             
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="fechainicio">Fecha de Inicio <span class="required">*</span></label>
-                    <input type="date" name="fechainicio" id="fechainicio" required value="<?php echo $_POST['fechainicio'] ?? ''; ?>">
-                </div>
-                <div class="form-group">
-                    <label for="fechaFin">Fecha de Fin <span class="required">*</span></label>
-                    <input type="date" name="fechaFin" id="fechaFin" required value="<?php echo $_POST['fechaFin'] ?? ''; ?>">
-                </div>
+            <div class="form-body">
+                <form method="POST" class="reservas-form">
+                    <!-- Sección: Ubicación -->
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="id_hotel" class="form-label">
+                                <i class="fas fa-hotel"></i>
+                                Hotel <span class="required">*</span>
+                            </label>
+                            <select name="id_hotel" id="id_hotel" class="form-control" required>
+                                <option value="">Seleccionar hotel</option>
+                                <?php foreach ($hoteles as $hotel): ?>
+                                    <option value="<?php echo $hotel['id']; ?>" <?php echo (isset($_POST['id_hotel']) && $_POST['id_hotel'] == $hotel['id']) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($hotel['nombre']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="id_habitacion" class="form-label">
+                                <i class="fas fa-bed"></i>
+                                Habitación <span class="required">*</span>
+                            </label>
+                            <select name="id_habitacion" id="id_habitacion" class="form-control" required>
+                                <option value="">Seleccionar habitación</option>
+                                <?php foreach ($habitaciones as $habitacion): ?>
+                                    <option value="<?php echo $habitacion['id']; ?>" <?php echo (isset($_POST['id_habitacion']) && $_POST['id_habitacion'] == $habitacion['id']) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($habitacion['hotel_nombre'] . ' - Hab. ' . $habitacion['numero'] . ' (' . $habitacion['tipo'] . ')'); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Sección: Fechas -->
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="fechainicio" class="form-label">
+                                <i class="fas fa-calendar-check"></i>
+                                Fecha de Inicio <span class="required">*</span>
+                            </label>
+                            <input type="date" name="fechainicio" id="fechainicio" class="form-control" required value="<?php echo $_POST['fechainicio'] ?? ''; ?>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="fechaFin" class="form-label">
+                                <i class="fas fa-calendar-times"></i>
+                                Fecha de Fin <span class="required">*</span>
+                            </label>
+                            <input type="date" name="fechaFin" id="fechaFin" class="form-control" required value="<?php echo $_POST['fechaFin'] ?? ''; ?>">
+                        </div>
+                    </div>
+                    
+                    <!-- Sección: Huéspedes -->
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="cantidadAdultos" class="form-label">
+                                <i class="fas fa-users"></i>
+                                Cantidad de Adultos
+                            </label>
+                            <input type="number" name="cantidadAdultos" id="cantidadAdultos" class="form-control" min="0" max="99" value="<?php echo $_POST['cantidadAdultos'] ?? 1; ?>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cantidadNinos" class="form-label">
+                                <i class="fas fa-child"></i>
+                                Cantidad de Niños
+                            </label>
+                            <input type="number" name="cantidadNinos" id="cantidadNinos" class="form-control" min="0" max="99" value="<?php echo $_POST['cantidadNinos'] ?? 0; ?>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cantidadDiscapacitados" class="form-label">
+                                <i class="fas fa-wheelchair"></i>
+                                Cantidad de Personas con Discapacidad
+                            </label>
+                            <input type="number" name="cantidadDiscapacitados" id="cantidadDiscapacitados" class="form-control" min="0" max="99" value="<?php echo $_POST['cantidadDiscapacitados'] ?? 0; ?>">
+                        </div>
+                    </div>
+                    
+                    <!-- Sección: Personas -->
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="us_numDocumento" class="form-label">
+                                <i class="fas fa-user-tie"></i>
+                                Usuario <span class="required">*</span>
+                            </label>
+                            <select name="us_numDocumento" id="us_numDocumento" class="form-control" required>
+                                <option value="">Seleccionar usuario</option>
+                                <?php foreach ($usuarios as $usuario): ?>
+                                    <option value="<?php echo $usuario['numDocumento']; ?>" <?php echo (isset($_POST['us_numDocumento']) && $_POST['us_numDocumento'] == $usuario['numDocumento']) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($usuario['nombre'] . ' ' . $usuario['apellido'] . ' (' . $usuario['numDocumento'] . ')'); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="hue_numDocumento" class="form-label">
+                                <i class="fas fa-user-friends"></i>
+                                Huésped <span class="required">*</span>
+                            </label>
+                            <select name="hue_numDocumento" id="hue_numDocumento" class="form-control" required>
+                                <option value="">Seleccionar huésped</option>
+                                <?php foreach ($huespedes as $huesped): ?>
+                                    <option value="<?php echo $huesped['numDocumento']; ?>" <?php echo (isset($_POST['hue_numDocumento']) && $_POST['hue_numDocumento'] == $huesped['numDocumento']) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($huesped['nombre'] . ' ' . $huesped['apellido'] . ' (' . $huesped['numDocumento'] . ')'); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Sección: Detalles de Reserva -->
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="motivoReserva" class="form-label">
+                                <i class="fas fa-comment-alt"></i>
+                                Motivo de la Reserva <span class="required">*</span>
+                            </label>
+                            <select name="motivoReserva" id="motivoReserva" class="form-control" required>
+                                <option value="">Seleccionar motivo</option>
+                                <option value="Negocios" <?php echo (isset($_POST['motivoReserva']) && $_POST['motivoReserva'] == 'Negocios') ? 'selected' : ''; ?>>Negocios</option>
+                                <option value="Personal" <?php echo (isset($_POST['motivoReserva']) && $_POST['motivoReserva'] == 'Personal') ? 'selected' : ''; ?>>Personal</option>
+                                <option value="Viaje" <?php echo (isset($_POST['motivoReserva']) && $_POST['motivoReserva'] == 'Viaje') ? 'selected' : ''; ?>>Viaje</option>
+                                <option value="Familiar" <?php echo (isset($_POST['motivoReserva']) && $_POST['motivoReserva'] == 'Familiar') ? 'selected' : ''; ?>>Familiar</option>
+                                <option value="Otro" <?php echo (isset($_POST['motivoReserva']) && $_POST['motivoReserva'] == 'Otro') ? 'selected' : ''; ?>>Otro</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="metodoPago" class="form-label">
+                                <i class="fas fa-credit-card"></i>
+                                Método de Pago <span class="required">*</span>
+                            </label>
+                            <select name="metodoPago" id="metodoPago" class="form-control" required>
+                                <option value="">Seleccionar método</option>
+                                <option value="Tarjeta" <?php echo (isset($_POST['metodoPago']) && $_POST['metodoPago'] == 'Tarjeta') ? 'selected' : ''; ?>>Tarjeta</option>
+                                <option value="Efectivo" <?php echo (isset($_POST['metodoPago']) && $_POST['metodoPago'] == 'Efectivo') ? 'selected' : ''; ?>>Efectivo</option>
+                                <option value="PSE" <?php echo (isset($_POST['metodoPago']) && $_POST['metodoPago'] == 'PSE') ? 'selected' : ''; ?>>PSE</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Sección: Pago y Estado -->
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="pagoFinal" class="form-label">
+                                <i class="fas fa-dollar-sign"></i>
+                                Pago Final <span class="required">*</span>
+                            </label>
+                            <input type="number" name="pagoFinal" id="pagoFinal" class="form-control" step="0.01" min="0" required value="<?php echo $_POST['pagoFinal'] ?? ''; ?>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="estado" class="form-label">
+                                <i class="fas fa-info-circle"></i>
+                                Estado <span class="required">*</span>
+                            </label>
+                            <select name="estado" id="estado" class="form-control" required>
+                                <option value="">Seleccionar estado</option>
+                                <option value="Activa" <?php echo (isset($_POST['estado']) && $_POST['estado'] == 'Activa') ? 'selected' : ''; ?>>Activa</option>
+                                <option value="Cancelada" <?php echo (isset($_POST['estado']) && $_POST['estado'] == 'Cancelada') ? 'selected' : ''; ?>>Cancelada</option>
+                                <option value="Finalizada" <?php echo (isset($_POST['estado']) && $_POST['estado'] == 'Finalizada') ? 'selected' : ''; ?>>Finalizada</option>
+                                <option value="Pendiente" <?php echo (isset($_POST['estado']) && $_POST['estado'] == 'Pendiente') ? 'selected' : ''; ?>>Pendiente</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Sección: Información Adicional -->
+                    <div class="form-group full-width">
+                        <label for="informacionAdicional" class="form-label">
+                            <i class="fas fa-sticky-note"></i>
+                            Información Adicional
+                        </label>
+                        <textarea name="informacionAdicional" id="informacionAdicional" class="form-control" rows="4" placeholder="Escriba cualquier información adicional sobre la reserva..."><?php echo $_POST['informacionAdicional'] ?? ''; ?></textarea>
+                    </div>
+                    
+                    <!-- Botones de Acción -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-save"></i>
+                            Crear Reserva
+                        </button>
+                        <a href="listarReservas.php" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
             </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="cantidadAdultos">Cantidad de Adultos</label>
-                    <input type="number" name="cantidadAdultos" id="cantidadAdultos" min="0" max="99" value="<?php echo $_POST['cantidadAdultos'] ?? 1; ?>">
-                </div>
-                <div class="form-group">
-                    <label for="cantidadNinos">Cantidad de Niños</label>
-                    <input type="number" name="cantidadNinos" id="cantidadNinos" min="0" max="99" value="<?php echo $_POST['cantidadNinos'] ?? 0; ?>">
-                </div>
-                <div class="form-group">
-                    <label for="cantidadDiscapacitados">Cantidad de Discapacitados</label>
-                    <input type="number" name="cantidadDiscapacitados" id="cantidadDiscapacitados" min="0" max="99" value="<?php echo $_POST['cantidadDiscapacitados'] ?? 0; ?>">
-                </div>
+        </div>
+        
+        <!-- Stats Section (opcional) -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number"><?php echo count($hoteles); ?></div>
+                <div class="stat-label">Hoteles Disponibles</div>
             </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="us_numDocumento">Usuario <span class="required">*</span></label>
-                    <select name="us_numDocumento" id="us_numDocumento" required>
-                        <option value="">Seleccionar usuario</option>
-                        <?php foreach ($usuarios as $usuario): ?>
-                            <option value="<?php echo $usuario['numDocumento']; ?>" <?php echo (isset($_POST['us_numDocumento']) && $_POST['us_numDocumento'] == $usuario['numDocumento']) ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($usuario['nombre'] . ' ' . $usuario['apellido'] . ' (' . $usuario['numDocumento'] . ')'); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="hue_numDocumento">Huésped <span class="required">*</span></label>
-                    <select name="hue_numDocumento" id="hue_numDocumento" required>
-                        <option value="">Seleccionar huésped</option>
-                        <?php foreach ($huespedes as $huesped): ?>
-                            <option value="<?php echo $huesped['numDocumento']; ?>" <?php echo (isset($_POST['hue_numDocumento']) && $_POST['hue_numDocumento'] == $huesped['numDocumento']) ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($huesped['nombre'] . ' ' . $huesped['apellido'] . ' (' . $huesped['numDocumento'] . ')'); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+            <div class="stat-card success">
+                <div class="stat-number"><?php echo count($habitaciones); ?></div>
+                <div class="stat-label">Habitaciones Totales</div>
             </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="motivoReserva">Motivo de la Reserva <span class="required">*</span></label>
-                    <select name="motivoReserva" id="motivoReserva" required>
-                        <option value="">Seleccionar motivo</option>
-                        <option value="Negocios" <?php echo (isset($_POST['motivoReserva']) && $_POST['motivoReserva'] == 'Negocios') ? 'selected' : ''; ?>>Negocios</option>
-                        <option value="Personal" <?php echo (isset($_POST['motivoReserva']) && $_POST['motivoReserva'] == 'Personal') ? 'selected' : ''; ?>>Personal</option>
-                        <option value="Viaje" <?php echo (isset($_POST['motivoReserva']) && $_POST['motivoReserva'] == 'Viaje') ? 'selected' : ''; ?>>Viaje</option>
-                        <option value="Familiar" <?php echo (isset($_POST['motivoReserva']) && $_POST['motivoReserva'] == 'Familiar') ? 'selected' : ''; ?>>Familiar</option>
-                        <option value="Otro" <?php echo (isset($_POST['motivoReserva']) && $_POST['motivoReserva'] == 'Otro') ? 'selected' : ''; ?>>Otro</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="metodoPago">Método de Pago <span class="required">*</span></label>
-                    <select name="metodoPago" id="metodoPago" required>
-                        <option value="">Seleccionar método</option>
-                        <option value="Tarjeta" <?php echo (isset($_POST['metodoPago']) && $_POST['metodoPago'] == 'Tarjeta') ? 'selected' : ''; ?>>Tarjeta</option>
-                        <option value="Efectivo" <?php echo (isset($_POST['metodoPago']) && $_POST['metodoPago'] == 'Efectivo') ? 'selected' : ''; ?>>Efectivo</option>
-                        <option value="PSE" <?php echo (isset($_POST['metodoPago']) && $_POST['metodoPago'] == 'PSE') ? 'selected' : ''; ?>>PSE</option>
-                    </select>
-                </div>
+            <div class="stat-card warning">
+                <div class="stat-number"><?php echo count($usuarios); ?></div>
+                <div class="stat-label">Usuarios Registrados</div>
             </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="pagoFinal">Pago Final <span class="required">*</span></label>
-                    <input type="number" name="pagoFinal" id="pagoFinal" step="0.01" min="0" required value="<?php echo $_POST['pagoFinal'] ?? ''; ?>">
-                </div>
-                <div class="form-group">
-                    <label for="estado">Estado <span class="required">*</span></label>
-                    <select name="estado" id="estado" required>
-                        <option value="">Seleccionar estado</option>
-                        <option value="Activa" <?php echo (isset($_POST['estado']) && $_POST['estado'] == 'Activa') ? 'selected' : ''; ?>>Activa</option>
-                        <option value="Cancelada" <?php echo (isset($_POST['estado']) && $_POST['estado'] == 'Cancelada') ? 'selected' : ''; ?>>Cancelada</option>
-                        <option value="Finalizada" <?php echo (isset($_POST['estado']) && $_POST['estado'] == 'Finalizada') ? 'selected' : ''; ?>>Finalizada</option>
-                        <option value="Pendiente" <?php echo (isset($_POST['estado']) && $_POST['estado'] == 'Pendiente') ? 'selected' : ''; ?>>Pendiente</option>
-                    </select>
-                </div>
+            <div class="stat-card danger">
+                <div class="stat-number"><?php echo count($huespedes); ?></div>
+                <div class="stat-label">Huéspedes Registrados</div>
             </div>
-            
-            <div class="form-group">
-                <label for="informacionAdicional">Información Adicional</label>
-                <textarea name="informacionAdicional" id="informacionAdicional" placeholder="Información adicional sobre la reserva..."><?php echo $_POST['informacionAdicional'] ?? ''; ?></textarea>
-            </div>
-            
-            <div class="form-actions">
-                <button type="submit" class="btn">Crear Reserva</button>
-                <a href="listarReservas.php" class="btn btn-secondary">Cancelar</a>
-            </div>
-        </form>
+        </div>
     </div>
     
     <script>
-        // Script para filtrar habitaciones por hotel seleccionado
+        // Script mejorado para filtrar habitaciones por hotel seleccionado
         document.getElementById('id_hotel').addEventListener('change', function() {
             const hotelId = this.value;
             const habitacionSelect = document.getElementById('id_habitacion');
@@ -276,28 +374,140 @@ try {
             }
             
             habitacionSelect.value = '';
+            
+            // Agregar efecto visual al cambio
+            habitacionSelect.style.borderColor = '#0d6efd';
+            setTimeout(() => {
+                habitacionSelect.style.borderColor = '';
+            }, 1000);
         });
         
-        // Validar fechas en el cliente
-        document.getElementById('fechainicio').addEventListener('change', function() {
-            const fechaInicio = new Date(this.value);
-            const fechaFin = document.getElementById('fechaFin');
+        // Validar fechas en el cliente con mejor UX
+        function validarFecha(elemento, esFechaInicio = true) {
+            const fecha = new Date(elemento.value);
+            const fechaComparacion = esFechaInicio ? 
+                document.getElementById('fechaFin').value : 
+                document.getElementById('fechainicio').value;
             
-            if (fechaFin.value && fechaInicio >= new Date(fechaFin.value)) {
-                alert('La fecha de inicio debe ser anterior a la fecha de fin');
-                this.value = '';
+            if (fechaComparacion) {
+                const fechaComp = new Date(fechaComparacion);
+                
+                if (esFechaInicio && fecha >= fechaComp) {
+                    mostrarError(elemento, 'La fecha de inicio debe ser anterior a la fecha de fin');
+                    return false;
+                } else if (!esFechaInicio && fecha <= fechaComp) {
+                    mostrarError(elemento, 'La fecha de fin debe ser posterior a la fecha de inicio');
+                    return false;
+                }
             }
+            
+            if (esFechaInicio && fecha < new Date()) {
+                mostrarError(elemento, 'La fecha de inicio no puede ser anterior a hoy');
+                return false;
+            }
+            
+            limpiarError(elemento);
+            return true;
+        }
+        
+        function mostrarError(elemento, mensaje) {
+            elemento.style.borderColor = '#dc3545';
+            elemento.style.backgroundColor = 'rgba(220, 53, 69, 0.05)';
+            
+            // Remover mensaje anterior si existe
+            const errorAnterior = elemento.parentNode.querySelector('.error-message');
+            if (errorAnterior) {
+                errorAnterior.remove();
+            }
+            
+            // Crear nuevo mensaje de error
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.style.color = '#dc3545';
+            errorDiv.style.fontSize = '0.875rem';
+            errorDiv.style.marginTop = '0.25rem';
+            errorDiv.textContent = mensaje;
+            elemento.parentNode.appendChild(errorDiv);
+        }
+        
+        function limpiarError(elemento) {
+            elemento.style.borderColor = '#198754';
+            elemento.style.backgroundColor = 'rgba(25, 135, 84, 0.05)';
+            
+            const errorMsg = elemento.parentNode.querySelector('.error-message');
+            if (errorMsg) {
+                errorMsg.remove();
+            }
+        }
+        
+        // Event listeners para las fechas
+        document.getElementById('fechainicio').addEventListener('change', function() {
+            validarFecha(this, true);
         });
         
         document.getElementById('fechaFin').addEventListener('change', function() {
-            const fechaFin = new Date(this.value);
+            validarFecha(this, false);
+        });
+        
+        // Validación del formulario antes del envío
+        document.querySelector('form').addEventListener('submit', function(e) {
             const fechaInicio = document.getElementById('fechainicio');
+            const fechaFin = document.getElementById('fechaFin');
             
-            if (fechaInicio.value && fechaFin <= new Date(fechaInicio.value)) {
-                alert('La fecha de fin debe ser posterior a la fecha de inicio');
-                this.value = '';
+            if (!validarFecha(fechaInicio, true) || !validarFecha(fechaFin, false)) {
+                e.preventDefault();
+                
+                // Scroll hacia el primer error
+                const primerError = document.querySelector('.error-message');
+                if (primerError) {
+                    primerError.parentNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
             }
         });
+        
+        // Efecto de carga para el formulario
+        document.addEventListener('DOMContentLoaded', function() {
+            const formGroups = document.querySelectorAll('.form-group');
+            
+            formGroups.forEach((group, index) => {
+                group.style.opacity = '0';
+                group.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    group.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    group.style.opacity = '1';
+                    group.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+        
+        // Mejorar la experiencia de usuario en campos numéricos
+        const numericos = document.querySelectorAll('input[type="number"]');
+        numericos.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.style.backgroundColor = 'rgba(13, 110, 253, 0.05)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.style.backgroundColor = '';
+            });
+        });
+        
+        // Auto-guardar draft (opcional - comentado por ser demo)
+        /*
+        let autoSaveTimer;
+        const inputs = document.querySelectorAll('input, select, textarea');
+        
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                clearTimeout(autoSaveTimer);
+                autoSaveTimer = setTimeout(() => {
+                    // Aquí podrías implementar auto-guardar borrador
+                    console.log('Auto-guardando borrador...');
+                }, 2000);
+            });
+        });
+        */
     </script>
 </body>
 </html>
