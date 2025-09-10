@@ -129,19 +129,7 @@ if ($hotelInfo) {
             <?php if ($contexto['puede_gestionar_multiples_hoteles']): ?>
             <div class="dashboard-header">
                 <h2>Panel de Administración</h2>
-                <div class="hotel-selector show">
-                    <select class="form-select" id="hotelSelector" onchange="cambiarHotel(this.value)">
-                        <option value="">Seleccionar Hotel...</option>
-                        <?php
-                        if (isset($_SESSION['hoteles_asignados']) && !empty($_SESSION['hoteles_asignados'])) {
-                            foreach ($_SESSION['hoteles_asignados'] as $hotel) {
-                                $selected = ($hotel_id_filtro == $hotel['id']) ? 'selected' : '';
-                                echo "<option value='{$hotel['id']}' {$selected}>" . htmlspecialchars($hotel['nombre']) . "</option>";
-                            }
-                        }
-                        ?>
-                    </select>
-                </div>
+                
             </div>
             <?php endif; ?>
 
@@ -223,6 +211,7 @@ if ($hotelInfo) {
             <section class="no-hotel-banner">
                 <div class="no-hotel-content">
                     <i class="fas fa-hotel fa-3x text-white mb-3"></i>
+                    <i class="fas fa-hotel fa-3x text-secondary mb-3"></i>
                     
                     <?php if ($rol_usuario === 'Administrador'): ?>
                         <h3>¡Crea tu primer hotel en el sistema!</h3>
@@ -368,16 +357,6 @@ if ($hotelInfo) {
                             </div>
                         </div>
                         
-                        <div class="stats-card pqrs-medium" onclick="redirectTo('pqrs.php?filter=media&hotel_id=<?php echo $hotel_id_filtro; ?>')">
-                            <div class="stats-icon bg-warning">
-                                <i class="fas fa-exclamation-triangle"></i>
-                            </div>
-                            <div class="stats-content">
-                                <h3><?php echo $dashboardData['pqrs']['gravedad_media']; ?></h3>
-                                <p>Gravedad Media</p>
-                                <small class="text-muted">Sin responder</small>
-                            </div>
-                        </div>
                         
                         <div class="stats-card pqrs-low" onclick="redirectTo('pqrs.php?filter=baja&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-info">

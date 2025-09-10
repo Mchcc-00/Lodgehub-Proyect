@@ -17,7 +17,7 @@
             </li>
             
             <li class="nav-item">
-                <a class="nav-link <?php echo (isset($currentPage) && $currentPage == 'reservas') ? 'active' : ''; ?>" href="../../6_Reservas/2R/mainReservas.php">
+                <a class="nav-link <?php echo (isset($currentPage) && $currentPage == 'reservas') ? 'active' : ''; ?>" href="listarReservas.php">
                     <i class="fas fa-calendar-check"></i>
                     <span>Reservas</span>
                 </a>

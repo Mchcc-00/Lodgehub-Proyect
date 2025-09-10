@@ -1,0 +1,191 @@
+/* Footer Styles - Completamente específico, sin afectar otros elementos */
+.site-footer {
+    margin-top: 50px;
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6, #1e3a8a);
+  padding: 40px 0 20px;
+  font-size: 15px;
+  line-height: 24px;
+  color: #ffffff;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.site-footer .container {
+  /* Usa las clases de Bootstrap sin modificar */
+}
+
+.site-footer .row {
+  /* Usa las clases de Bootstrap sin modificar */
+}
+
+.site-footer hr {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+  opacity: 1;
+  margin: 30px 0 20px;
+}
+
+.site-footer h6 {
+  color: #ffffff;
+  font-size: 16px;
+  text-transform: uppercase;
+  margin-top: 5px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 20px;
+}
+
+.site-footer .text-justify {
+  text-align: justify;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.site-footer .footer-links {
+  padding-left: 0;
+  list-style: none;
+  margin-bottom: 0;
+}
+
+.site-footer .footer-links li {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.site-footer .footer-links a {
+  color: rgba(255, 255, 255, 0.8);
+  padding: 5px 0;
+  display: inline-block;
+  position: relative;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.site-footer .footer-links a::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  transition: all 0.3s ease;
+}
+
+.site-footer .footer-links a:hover {
+  color: #ffffff;
+  transform: translateX(5px);
+  text-decoration: none;
+}
+
+.site-footer .footer-links a:hover::before {
+  width: 100%;
+}
+
+.site-footer .copyright-text {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+.site-footer .copyright-text a {
+  color: #ffffff;
+  font-weight: 600;
+  text-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.site-footer .copyright-text a:hover {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.site-footer .social-icons {
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.site-footer .social-icons li {
+  display: inline-block;
+  margin-bottom: 4px;
+}
+
+.site-footer .social-icons a {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  display: inline-block;
+  line-height: 44px;
+  width: 44px;
+  height: 44px;
+  text-align: center;
+  margin-right: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-decoration: none;
+}
+
+.site-footer .social-icons a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+  text-decoration: none;
+}
+
+.site-footer .social-icons a.facebook:hover {
+  background-color: #3b5998;
+}
+
+.site-footer .social-icons a.twitter:hover {
+  background-color: #1da1f2;
+}
+
+.site-footer .social-icons a.instagram:hover {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+
+/* Responsivo específico solo para el footer */
+@media (max-width: 991px) {
+  .site-footer .col-sm-12,
+  .site-footer .col-md-6,
+  .site-footer .col-xs-6,
+  .site-footer .col-md-3,
+  .site-footer .col-md-8,
+  .site-footer .col-sm-6,
+  .site-footer .col-xs-12,
+  .site-footer .col-md-4 {
+    margin-bottom: 30px;
+  }
+}
+
+@media (max-width: 767px) {
+  .site-footer {
+    padding-bottom: 20px;
+  }
+  
+  .site-footer .copyright-text {
+    text-align: center;
+  }
+  
+  .site-footer .social-icons {
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .site-footer .social-icons li {
+    margin-bottom: 10px;
+  }
+}
