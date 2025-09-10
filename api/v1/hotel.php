@@ -11,6 +11,9 @@ header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
+// SOLUCIÓN: Iniciar la sesión al principio del script para poder acceder y modificar $_SESSION.
+session_start();
+
 // Incluir la conexión y el modelo
 require_once '../../config/conexionGlobal.php';
 require_once '../../app/models/hotelModel.php';
@@ -96,6 +99,29 @@ if ($method == 'POST') {
     if (empty($datos['id'])) {
         // --- CREAR ---
         $resultado = $hotelModel->crearHotel($datos);
+
+        // SOLUCIÓN: Si la creación fue exitosa, actualizar la sesión del usuario.
+        if ($resultado['success']) {
+            $_SESSION['hotel_id'] = $resultado['id'];
+            $_SESSION['hotel_nombre'] = $datos['nombre'];
+            $_SESSION['tipo_admin'] = 'hotel'; // Cambiar de 'super' a 'hotel'
+            
+            // Poblar el array $_SESSION['hotel'] para que la homepage lo lea de inmediato
+            $_SESSION['hotel'] = [
+                'id' => $resultado['id'],
+                'nombre' => $datos['nombre'],
+                'nit' => $datos['nit'],
+                'direccion' => $datos['direccion'],
+                'telefono' => $datos['telefono'],
+                'correo' => $datos['correo'],
+                'foto' => $datos['foto'] ?? null,
+                'descripcion' => $datos['descripcion']
+            ];
+
+            // Añadir el nuevo hotel a la lista de hoteles asignados en la sesión
+            $_SESSION['hoteles_asignados'][] = ['id' => $resultado['id'], 'nombre' => $datos['nombre']];
+        }
+
     } else {
         // --- ACTUALIZAR ---
         // Si no se subió una nueva foto, no queremos borrar la existente.

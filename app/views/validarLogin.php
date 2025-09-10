@@ -15,18 +15,12 @@ if (empty($correo) || empty($password)) {
     exit;
 }
 
-session_start();
-$_SESSION['correo'] = $correo;
-
 $conexion = mysqli_connect("localhost", "root", "", "lodgehub");
 
 if (!$conexion) {
     header("location: login.php?mensaje=Error: No se pudo conectar a la base de datos");
     exit;
 }
-
-// Escape del correo para prevenir inyección SQL
-$correo_escaped = mysqli_real_escape_string($conexion, $correo);
 
 // Consulta modificada para sistema multi-hotel
 $consulta = "SELECT 
@@ -43,20 +37,26 @@ $consulta = "SELECT
              FROM tp_usuarios u
              LEFT JOIN ti_personal p ON u.numDocumento = p.numDocumento
              LEFT JOIN tp_hotel h ON p.id_hotel = h.id
-             WHERE u.correo = '$correo_escaped' AND u.sesionCaducada = 1";
+             WHERE u.correo = ? AND u.sesionCaducada = '1'";
 
-$resultado = mysqli_query($conexion, $consulta);
-
-if (!$resultado) {
+$stmt = mysqli_prepare($conexion, $consulta);
+if (!$stmt) {
     mysqli_close($conexion);
-    header("location: login.php?mensaje=Error en la consulta: " . mysqli_error($conexion));
+    header("location: login.php?mensaje=Error: Fallo al preparar la consulta.");
     exit;
 }
 
-$filas = mysqli_num_rows($resultado);
+mysqli_stmt_bind_param($stmt, "s", $correo);
+mysqli_stmt_execute($stmt);
+$resultado = mysqli_stmt_get_result($stmt);
 
-if ($filas > 0) {
-    $usuario = mysqli_fetch_assoc($resultado);
+if ($resultado && mysqli_num_rows($resultado) > 0) {
+    // El usuario existe, ahora procesamos sus datos y hoteles
+    $hoteles_asignados = [];
+    while ($fila = mysqli_fetch_assoc($resultado)) {
+        $hoteles_asignados[] = $fila;
+    }
+    $usuario = $hoteles_asignados[0]; // Tomamos los datos del usuario de la primera fila
     
     // Verificar la contraseña
     $password_bd = $usuario['password'];
@@ -72,11 +72,10 @@ if ($filas > 0) {
         // Actualizar a contraseña encriptada automáticamente
         if ($password_valida) {
             $nueva_hash = password_hash($password, PASSWORD_DEFAULT);
-            $nueva_hash_escaped = mysqli_real_escape_string($conexion, $nueva_hash);
-            $numDoc_escaped = mysqli_real_escape_string($conexion, $usuario['numDocumento']);
-            
-            $actualizar = "UPDATE tp_usuarios SET password = '$nueva_hash_escaped' WHERE numDocumento = '$numDoc_escaped'";
-            mysqli_query($conexion, $actualizar);
+            $update_stmt = mysqli_prepare($conexion, "UPDATE tp_usuarios SET password = ? WHERE numDocumento = ?");
+            mysqli_stmt_bind_param($update_stmt, "ss", $nueva_hash, $usuario['numDocumento']);
+            mysqli_stmt_execute($update_stmt);
+            mysqli_stmt_close($update_stmt);
         }
     }
     
@@ -85,6 +84,7 @@ if ($filas > 0) {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+        $_SESSION['correo'] = $correo;
         
         // Información básica del usuario
         $_SESSION['user'] = [
@@ -99,20 +99,26 @@ if ($filas > 0) {
         $_SESSION['numDocumento'] = $usuario['numDocumento'];
         $_SESSION['nombres'] = $usuario['nombres'];
         
-        // Información del hotel (si aplica)
-        if ($usuario['hotel_id']) {
-            $_SESSION['hotel'] = [
-                'id' => $usuario['hotel_id'],
-                'nombre' => $usuario['hotel_nombre'],
-                'nit' => $usuario['hotel_nit']
-            ];
-            $_SESSION['hotel_id'] = $usuario['hotel_id'];
-            $_SESSION['hotel_nombre'] = $usuario['hotel_nombre'];
+        // Guardar todos los hoteles asignados en la sesión
+        $hoteles_para_sesion = [];
+        foreach ($hoteles_asignados as $hotel_data) {
+            if ($hotel_data['hotel_id']) {
+                $hoteles_para_sesion[] = ['id' => $hotel_data['hotel_id'], 'nombre' => $hotel_data['hotel_nombre'], 'nit' => $hotel_data['hotel_nit'], 'roles' => $hotel_data['roles_especificos']];
+            }
         }
-        
-        // Roles específicos del hotel (si existen)
-        if ($usuario['roles_especificos']) {
-            $_SESSION['roles_especificos'] = $usuario['roles_especificos'];
+        $_SESSION['hoteles_asignados'] = $hoteles_para_sesion;
+
+        // Establecer el primer hotel como el activo por defecto
+        if (!empty($hoteles_para_sesion)) {
+            $hotel_activo = $hoteles_para_sesion[0];
+            $_SESSION['hotel'] = [
+                'id' => $hotel_activo['id'],
+                'nombre' => $hotel_activo['nombre'],
+                'nit' => $hotel_activo['nit']
+            ];
+            $_SESSION['hotel_id'] = $hotel_activo['id'];
+            $_SESSION['hotel_nombre'] = $hotel_activo['nombre'];
+            $_SESSION['roles_especificos'] = $hotel_activo['roles'];
         }
         
         // Validación y redirección por roles
@@ -124,7 +130,7 @@ if ($filas > 0) {
                 // 1. Super Admin (sin hotel asignado) - Ve todos los hoteles
                 // 2. Admin de Hotel (con hotel asignado) - Ve solo su hotel
                 
-                if ($usuario['hotel_id']) {
+                if (!empty($_SESSION['hotel_id'])) {
                     // Administrador de hotel específico
                     $destino = "homepage.php";
                     $_SESSION['tipo_admin'] = 'hotel';
@@ -150,7 +156,7 @@ if ($filas > 0) {
                 
             case 'Colaborador':
                 // Los colaboradores siempre deben estar asignados a un hotel
-                if (!$usuario['hotel_id']) {
+                if (empty($_SESSION['hotel_id'])) {
                     mysqli_free_result($resultado);
                     mysqli_close($conexion);
                     header("location: login.php?mensaje=Error: Colaborador sin hotel asignado");
@@ -178,41 +184,21 @@ if ($filas > 0) {
                 break;
                 
             default:
-                mysqli_free_result($resultado);
+                if ($resultado) mysqli_free_result($resultado);
                 mysqli_close($conexion);
                 error_log("Rol inesperado en base de datos para usuario {$correo}: '{$rol_usuario}'");
                 header("location: login.php?mensaje=Error: Rol de usuario no válido");
                 exit;
         }
         
-        // Verificar si el usuario tiene múltiples hoteles (para casos especiales)
-        if ($rol_usuario !== 'Usuario') {
-            $consulta_hoteles = "SELECT h.id, h.nombre, h.nit, p.roles 
-                                FROM tp_hotel h
-                                INNER JOIN ti_personal p ON h.id = p.id_hotel
-                                WHERE p.numDocumento = '{$usuario['numDocumento']}'
-                                ORDER BY h.nombre";
-            
-            $resultado_hoteles = mysqli_query($conexion, $consulta_hoteles);
-            
-            if ($resultado_hoteles && mysqli_num_rows($resultado_hoteles) > 0) {
-                $hoteles_asignados = [];
-                while ($hotel = mysqli_fetch_assoc($resultado_hoteles)) {
-                    $hoteles_asignados[] = $hotel;
-                }
-                $_SESSION['hoteles_asignados'] = $hoteles_asignados;
-                mysqli_free_result($resultado_hoteles);
-            }
-        }
-        
         // Logging de login exitoso
         $fecha_login = date('Y-m-d H:i:s');
-        $numDoc_escaped = mysqli_real_escape_string($conexion, $usuario['numDocumento']);
-        $hotel_info = $usuario['hotel_id'] ? "Hotel ID: {$usuario['hotel_id']}" : "Sin hotel asignado";
+        $hotel_info = !empty($_SESSION['hotel_id']) ? "Hotel ID: {$_SESSION['hotel_id']}" : "Sin hotel asignado";
         
         error_log("Login exitoso: $correo - $rol_usuario - $hotel_info - {$_SERVER['REMOTE_ADDR']} - $fecha_login");
         
-        mysqli_free_result($resultado);
+        if ($resultado) mysqli_free_result($resultado);
+        mysqli_stmt_close($stmt);
         mysqli_close($conexion);
         
         // Redirección final basada en el rol
@@ -221,7 +207,8 @@ if ($filas > 0) {
         
     } else {
         // Contraseña incorrecta
-        mysqli_free_result($resultado);
+        if ($resultado) mysqli_free_result($resultado);
+        mysqli_stmt_close($stmt);
         mysqli_close($conexion);
         
         $fecha_intento = date('Y-m-d H:i:s');
@@ -232,7 +219,8 @@ if ($filas > 0) {
     }
 } else {
     // Usuario no encontrado o sesión caducada
-    mysqli_free_result($resultado);
+    if ($resultado) mysqli_free_result($resultado);
+    if (isset($stmt)) mysqli_stmt_close($stmt);
     mysqli_close($conexion);
     header("location: login.php?mensaje=Correo o contraseña incorrectos");
     exit;

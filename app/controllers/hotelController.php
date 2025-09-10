@@ -25,6 +25,11 @@ class HotelController {
                 return;
             }
 
+            // Asegurarse de que la sesión esté iniciada
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+
             // VALIDACIÓN CRÍTICA: El administrador debe ser el usuario logueado
             $usuarioLogueado = $_SESSION['user']['numDocumento'] ?? null;
             if ($input['numDocumento'] !== $usuarioLogueado) {
@@ -46,6 +51,9 @@ class HotelController {
                 return;
             }
 
+            // Procesar la imagen si se subió
+            $rutaFoto = $this->procesarImagenHotel($_FILES['foto'] ?? null);
+
             // Preparar datos para insertar
             $datosHotel = [
                 'nit' => trim($input['nit']),
@@ -53,7 +61,7 @@ class HotelController {
                 'direccion' => isset($input['direccion']) ? trim($input['direccion']) : null,
                 'telefono' => isset($input['telefono']) ? trim($input['telefono']) : null,
                 'correo' => isset($input['correo']) ? trim($input['correo']) : null,
-                'foto' => isset($input['foto']) ? trim($input['foto']) : null,
+                'foto' => $rutaFoto, // Usar la ruta de la imagen procesada
                 'descripcion' => isset($input['descripcion']) ? trim($input['descripcion']) : null,
                 'numDocumentoAdmin' => $input['numDocumento']
             ];
@@ -62,6 +70,32 @@ class HotelController {
             
             if ($resultado['success']) {
                 http_response_code(201);
+
+                // SOLUCIÓN: Actualizar la sesión del usuario para reflejar el nuevo hotel
+                if (session_status() === PHP_SESSION_NONE) {
+                    session_start();
+                }
+                // Actualizar la sesión con toda la información del nuevo hotel
+                $_SESSION['hotel_id'] = $resultado['id'];
+                $_SESSION['hotel_nombre'] = $datosHotel['nombre'];
+                $_SESSION['tipo_admin'] = 'hotel'; // Cambiar de 'super' a 'hotel'
+                
+                // Poblar el array $_SESSION['hotel'] para que la homepage lo lea de inmediato
+                $_SESSION['hotel'] = [
+                    'id' => $resultado['id'],
+                    'nombre' => $datosHotel['nombre'],
+                    'nit' => $datosHotel['nit'],
+                    'direccion' => $datosHotel['direccion'],
+                    'telefono' => $datosHotel['telefono'],
+                    'correo' => $datosHotel['correo'],
+                    'foto' => $datosHotel['foto'],
+                    'descripcion' => $datosHotel['descripcion']
+                ];
+
+                // Añadir el nuevo hotel a la lista de hoteles asignados en la sesión
+                $_SESSION['hoteles_asignados'][] = [
+                    'id' => $resultado['id'], 'nombre' => $datosHotel['nombre']
+                ];
             } else {
                 http_response_code(400);
             }
@@ -369,5 +403,57 @@ class HotelController {
             'valido' => empty($errores),
             'errores' => $errores
         ];
+    }
+
+    /**
+     * Procesa la imagen subida para un hotel y la guarda en el servidor.
+     * @param array|null $file El array de la imagen de $_FILES.
+     * @return string|null La ruta relativa de la imagen guardada o null si no se subió/hubo error.
+     */
+    private function procesarImagenHotel($file) {
+        if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
+            return null; // No se subió ninguna imagen o hubo un error inicial
+        }
+
+        // Verificar el tamaño del archivo (máximo 5MB)
+        if ($file['size'] > 5 * 1024 * 1024) {
+            // Podrías registrar este error si quieres
+            return null;
+        }
+
+        // Verificar el tipo de archivo usando finfo para más seguridad
+        $tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif'];
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $tipoMime = $finfo->file($file['tmp_name']);
+
+        if (!in_array($tipoMime, $tiposPermitidos)) {
+            return null;
+        }
+
+        // Generar un nombre único para la imagen para evitar colisiones
+        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $nombreArchivo = 'hotel_' . uniqid() . '_' . time() . '.' . $extension;
+
+        // Definir la ruta de destino. Usamos rutas relativas desde la raíz del proyecto.
+        $directorioDestino = '/lodgehub/public/uploads/hoteles/';
+        $rutaCompletaServidor = $_SERVER['DOCUMENT_ROOT'] . $directorioDestino;
+        $rutaArchivoServidor = $rutaCompletaServidor . $nombreArchivo;
+
+        // Crear el directorio si no existe
+        if (!is_dir($rutaCompletaServidor)) {
+            if (!mkdir($rutaCompletaServidor, 0775, true)) {
+                // No se pudo crear el directorio, registrar error y retornar null
+                error_log("Error: No se pudo crear el directorio de subida en " . $rutaCompletaServidor);
+                return null;
+            }
+        }
+
+        // Mover el archivo al destino final
+        if (move_uploaded_file($file['tmp_name'], $rutaArchivoServidor)) {
+            // Retornar la ruta relativa que se usará en el src de la etiqueta <img>
+            return $directorioDestino . $nombreArchivo;
+        }
+
+        return null;
     }
 }

@@ -214,6 +214,28 @@ $baseURL = '/lodgehub/public'; // Ajusta si el nombre de tu carpeta principal es
     <!-- Scripts de validación y navegación -->
     <script src="<?php echo $baseURL; ?>/assets/js/form-validation.js"></script>
     <script src="<?php echo $baseURL; ?>/assets/js/navigation.js"></script>
+
+    <!-- SOLUCIÓN: Manejar la tecla Enter para que funcione como "Siguiente" -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('userForm');
+            const nextBtn = document.getElementById('nextBtn');
+
+            // Escuchar el evento 'keydown' en todo el formulario
+            form.addEventListener('keydown', function(event) {
+                // Si la tecla presionada es "Enter"
+                if (event.key === 'Enter') {
+                    // Prevenir la acción por defecto (enviar el formulario)
+                    event.preventDefault();
+
+                    // Si el botón "Siguiente" está visible, simular un clic
+                    if (nextBtn.style.display !== 'none') {
+                        nextBtn.click();
+                    }
+                }
+            });
+        });
+    </script>
     
     <!-- Script para compatibilidad de validación de contraseñas  -->
     <script>

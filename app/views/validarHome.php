@@ -278,68 +278,34 @@ function obtenerHotelActualUsuario() {
     $hotelInfo = null;
     
     try {
-        $db = conexionDB();
-        
         switch ($usuario['roles']) {
             case 'Administrador':
-                // Si es admin de hotel específico (tiene hotel asignado en sesión)
+                // La información del hotel activo ya está en la sesión desde el login.
+                // No es necesario hacer más consultas a la base de datos aquí.
                 if (isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id'])) {
                     $hotelInfo = [
                         'id' => $_SESSION['hotel_id'],
-                        'tipo_admin' => 'hotel'
+                        'nombre' => $_SESSION['hotel_nombre'] ?? 'Nombre no disponible',
+                        'nit' => $_SESSION['hotel']['nit'] ?? 'NIT no disponible',
+                        'direccion' => $_SESSION['hotel']['direccion'] ?? 'Dirección no disponible',
+                        'telefono' => $_SESSION['hotel']['telefono'] ?? 'N/A',
+                        'correo' => $_SESSION['hotel']['correo'] ?? 'N/A',
+                        'foto' => $_SESSION['hotel']['foto'] ?? null,
+                        'descripcion' => $_SESSION['hotel']['descripcion'] ?? '',
+                        'tipo_admin' => $_SESSION['tipo_admin'] ?? 'hotel'
                     ];
                 } else {
-                    // Super admin: obtener el primer hotel del sistema o el seleccionado
-                    $sql = "SELECT h.id, h.nombre, h.nit, h.direccion, h.telefono, h.correo, h.foto, h.descripcion
-                            FROM tp_hotel h
-                            ORDER BY h.nombre ASC
-                            LIMIT 1";
-                    
-                    $stmt = $db->prepare($sql);
-                    $stmt->execute();
-                    $hotel = $stmt->fetch();
-                    
-                    if ($hotel) {
-                        $hotelInfo = [
-                            'id' => $hotel['id'],
-                            'nombre' => $hotel['nombre'],
-                            'nit' => $hotel['nit'],
-                            'direccion' => $hotel['direccion'],
-                            'telefono' => $hotel['telefono'],
-                            'correo' => $hotel['correo'],
-                            'foto' => $hotel['foto'],
-                            'descripcion' => $hotel['descripcion'],
-                            'tipo_admin' => 'super'
-                        ];
-                    }
+                    // Es un Super Administrador sin hotel asignado. No se carga ningún hotel.
+                    // Esto permite que el homepage muestre el banner para crear el primer hotel.
+                    $hotelInfo = null;
                 }
                 break;
                 
             case 'Colaborador':
-                // Los colaboradores siempre tienen un hotel asignado
+                // La lógica para colaboradores también puede usar la sesión directamente.
                 if (isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id'])) {
-                    $sql = "SELECT h.id, h.nombre, h.nit, h.direccion, h.telefono, h.correo, h.foto, h.descripcion
-                            FROM tp_hotel h
-                            INNER JOIN ti_personal p ON h.id = p.id_hotel
-                            WHERE p.numDocumento = ? AND h.id = ?";
-                    
-                    $stmt = $db->prepare($sql);
-                    $stmt->execute([$usuario['numDocumento'], $_SESSION['hotel_id']]);
-                    $hotel = $stmt->fetch();
-                    
-                    if ($hotel) {
-                        $hotelInfo = [
-                            'id' => $hotel['id'],
-                            'nombre' => $hotel['nombre'],
-                            'nit' => $hotel['nit'],
-                            'direccion' => $hotel['direccion'],
-                            'telefono' => $hotel['telefono'],
-                            'correo' => $hotel['correo'],
-                            'foto' => $hotel['foto'],
-                            'descripcion' => $hotel['descripcion'],
-                            'tipo_admin' => 'colaborador'
-                        ];
-                    }
+                    $hotelInfo = $_SESSION['hotel'] ?? null;
+                    $hotelInfo['tipo_admin'] = 'colaborador';
                 }
                 break;
                 
@@ -392,7 +358,14 @@ function obtenerContextoUsuarioHotel() {
         session_start();
     }
     
-    $hotelInfo = obtenerHotelActualUsuario();
+    // Simplificado: Usar directamente la información de la sesión.
+    $hotelInfo = $_SESSION['hotel'] ?? null;
+    $tipoAdmin = $_SESSION['tipo_admin'] ?? null;
+
+    // Añadir el tipo de admin a la información del hotel para usarlo en el banner
+    if ($hotelInfo && $tipoAdmin) {
+        $hotelInfo['tipo_admin'] = $tipoAdmin;
+    }
     
     return [
         'usuario' => $_SESSION['user'] ?? null,
