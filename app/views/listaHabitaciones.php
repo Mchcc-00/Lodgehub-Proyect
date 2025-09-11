@@ -42,6 +42,11 @@
             <!-- Filtros y búsqueda -->
             <div class="search-section">
                 <div class="row">
+                    <div class="mb-4 text-end">
+                        <a href="crearHabitacion.php" class="btn btn-success btn-lg">
+                            <i class="fas fa-plus"></i> Nueva Habitación
+                        </a>
+                    </div>
                     <div class="col-md-3">
                         <label class="form-label">Hotel</label>
                         <select id="filtro-hotel" class="form-select">
@@ -77,11 +82,7 @@
             </div>
 
             <!-- Botón crear -->
-            <div class="mb-4 text-end">
-                <a href="?action=crear" class="btn btn-success btn-lg">
-                    <i class="fas fa-plus"></i> Nueva Habitación
-                </a>
-            </div>
+
 
             <!-- Loading -->
             <div id="loading" class="text-center py-5" style="display: none;">
@@ -198,57 +199,57 @@
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
-         
-    <!-- Modal de detalles -->
-    <div class="modal fade" id="modalDetalles" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-bed"></i> Detalles de la Habitación
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" id="detalles-content">
-                    <!-- Contenido cargado dinámicamente -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+
+            <!-- Modal de detalles -->
+            <div class="modal fade" id="modalDetalles" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="fas fa-bed"></i> Detalles de la Habitación
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body" id="detalles-content">
+                            <!-- Contenido cargado dinámicamente -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Modal de confirmación eliminar -->
-    <div class="modal fade" id="modalEliminar" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-exclamation-triangle text-danger"></i>
-                        Confirmar Eliminación
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p>¿Estás seguro de que deseas eliminar esta habitación?</p>
-                    <p class="text-danger mb-0">
-                        <strong>Esta acción no se puede deshacer.</strong>
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" id="btn-confirmar-eliminar" class="btn btn-danger">
-                        <i class="fas fa-trash"></i> Eliminar
-                    </button>
+            <!-- Modal de confirmación eliminar -->
+            <div class="modal fade" id="modalEliminar" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="fas fa-exclamation-triangle text-danger"></i>
+                                Confirmar Eliminación
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>¿Estás seguro de que deseas eliminar esta habitación?</p>
+                            <p class="text-danger mb-0">
+                                <strong>Esta acción no se puede deshacer.</strong>
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" id="btn-confirmar-eliminar" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../../public/assets/js/habitaciones.js"></script>
+            <!-- Scripts -->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="../../public/assets/js/habitaciones.js"></script>
 </body>
 
 </html>

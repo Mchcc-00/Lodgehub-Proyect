@@ -34,7 +34,7 @@ class HabitacionController {
             $tipos = $this->habitacion->obtenerTiposPorHotel($_GET['hotel']);
         }
         
-        include 'views/habitaciones/crear.php';
+        include 'views/crearHabitacion.php';
     }
     
     /**
