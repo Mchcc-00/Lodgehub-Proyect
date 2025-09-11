@@ -125,14 +125,6 @@ if ($hotelInfo) {
                 </div>
             <?php endif; ?>
 
-            <!-- Header del Dashboard con selector de hotel para super admins -->
-            <?php if ($contexto['puede_gestionar_multiples_hoteles']): ?>
-                <div class="dashboard-header">
-                    <h2>Panel de Administración</h2>
-
-                </div>
-            <?php endif; ?>
-
             <!-- Banner de información del hotel -->
             <?php if ($hotelInfo): ?>
                 <section class="hotel-info-banner">
@@ -149,7 +141,7 @@ if ($hotelInfo) {
                             <!-- Indicador del tipo de vista -->
                             <?php if (!empty($mensajeBanner)): ?>
                                 <!-- SOLUCIÓN: Añadir ms-3 para crear un margen a la izquierda -->
-                                <div class="vista-indicator ms-3" style="align-self: center;">
+                                <div class="vista-indicator" style="align-self: center;">
                                     <!-- SOLUCIÓN: Cambiar de 'badge' a 'btn' para que se vea como un botón, manteniendo el color. -->
                                     <span class="btn btn-sm btn-<?php echo $tipoAdmin === 'super' ? 'primary' : 'success'; ?> disabled rounded-pill" style="cursor: default;">
                                         <i class="fas fa-<?php echo $tipoAdmin === 'super' ? 'globe' : 'building'; ?> me-1"></i>
@@ -212,14 +204,13 @@ if ($hotelInfo) {
             <?php elseif ($mostrarBannerSinHotel): ?>
                 <section class="no-hotel-banner">
                     <div class="no-hotel-content">
-                        <i class="fas fa-hotel fa-3x text-white mb-3"></i>
-                        <i class="fas fa-hotel fa-3x text-secondary mb-3"></i>
+                        <i class="fas fa-hotel fa-4x mb-4"></i>
 
                         <?php if ($rol_usuario === 'Administrador'): ?>
                             <h3>¡Crea tu primer hotel en el sistema!</h3>
                             <p class="mb-4">Como administrador, puedes registrar hoteles y comenzar a gestionar reservas, habitaciones y más.</p>
-                            <a href="agregarHoteles.php" class="btn btn-light btn-lg">
-                                <i class="fas fa-plus-circle me-2"></i>Registrar Primer Hotel
+                            <a href="agregarHoteles.php" class="btn btn-lg">
+                                <i class="fas fa-plus-square me-2 gradient-icon"></i>Registrar Primer Hotel
                             </a>
                         <?php else: ?>
                             <h3>No tienes un hotel asignado</h3>

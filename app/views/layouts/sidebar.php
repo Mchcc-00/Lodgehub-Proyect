@@ -116,14 +116,7 @@ function isSubmenuActive($submenu, $currentPage) {
 ?>
 
 <!-- ASIDE/SIDEBAR -->
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-        <h4>LODGEHUB</h4>
-        <button class="btn-collapse-sidebar" onclick="toggleSidebar()">
-            <i class="fas fa-chevron-right"></i>
-        </button>
-    </div>
-    
+<aside class="sidebar" id="sidebar">  
     <nav class="sidebar-nav">
         <ul class="nav flex-column">
             <?php foreach ($menuItems as $item): ?>

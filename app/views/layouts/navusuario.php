@@ -31,7 +31,7 @@
                 <div id="dropdown-menu" class="dropdown-menu">
                     <li>
                         <a class="dropdown-item" href="/lodgehub/app/views/miPerfilMain.php">
-                            <i class="fas fa-user me-2"></i>Mi Perfil
+                            <i class="fas fa-user me-2 gradien"></i>Mi Perfil
                         </a>
                     </li>
                     <li>
