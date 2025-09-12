@@ -97,6 +97,7 @@ body {
 /* ============================================
    SECCIÓN DE BÚSQUEDA Y FILTROS (TARJETÓN)
    ============================================ */
+
 .search-section {
     background: white;
     padding: 2rem;
@@ -434,6 +435,13 @@ body {
 
 .no-habitaciones p {
     margin-bottom: 1.5rem;
+}
+
+.custom-icon{
+    background: linear-gradient(45deg, #00a2ff, #0011fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
 }
 
 /* ============================================

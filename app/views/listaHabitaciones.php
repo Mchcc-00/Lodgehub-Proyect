@@ -41,26 +41,9 @@
 
             <!-- Filtros y búsqueda -->
             <div class="search-section">
-                <div class="row">
-                    <div class="mb-4 text-end">
-                        <a href="crearHabitacion.php" class="btn btn-success btn-lg">
-                            <i class="fas fa-plus"></i> Nueva Habitación
-                        </a>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Hotel</label>
-                        <select id="filtro-hotel" class="form-select">
-                            <option value="">Todos los hoteles</option>
-                            <?php foreach ($hoteles as $hotel): ?>
-                                <option value="<?php echo $hotel['id']; ?>"
-                                    <?php echo (isset($_GET['hotel']) && $_GET['hotel'] == $hotel['id']) ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($hotel['nombre']); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Estado</label>
+                <div class="row align-items-end mb-1">
+                    <div class="col-md-2 mb-2 mb-md-0">
+                        <label for="filtro-estado" class="form-label">Estado</label>
                         <select id="filtro-estado" class="form-select">
                             <option value="">Todos los estados</option>
                             <option value="Disponible">Disponible</option>
@@ -69,19 +52,65 @@
                             <option value="Mantenimiento">Mantenimiento</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Buscar por número</label>
-                        <input type="text" id="filtro-numero" class="form-control" placeholder="Número de habitación">
+                    <div class="col-md-2 mb-2 mb-md-0">
+                        <label for="filtro-estado" class="form-label">Tipo de habitación</label>
+                        <select id="filtro-estado" class="form-select">
+                            <option value="">Todos los tipos</option>
+                            <option value="Disponible">Disponible</option>
+                            <option value="Reservada">Reservada</option>
+                            <option value="Ocupada">Ocupada</option>
+                            <option value="Mantenimiento">Mantenimiento</option>
+                        </select>
                     </div>
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button type="button" id="btn-buscar" class="btn btn-primary w-100">
+                    <div class="col-md-4 mb-2 mb-md-0">
+                        <label for="filtro-numero" class="form-label">Buscar por número</label>
+                        <input type="text" id="filtro-numero" class="form-control md-4" placeholder="Número de habitación">
+                    </div>
+                    <div class="col-md-5 text-md-end">
+                        <button type="button" id="btn-buscar" class="btn btn-primary ms-2">
                             <i class="fas fa-search"></i> Buscar
                         </button>
+                        <a href="crearHabitacion.php" class="btn btn-success ms-2">
+                            <i class="fas fa-plus"></i> Nueva Habitación
+                        </a>
                     </div>
                 </div>
             </div>
-
-            <!-- Botón crear -->
+            <!-- Estadísticas rápidas -->
+            <div class="row mb-3">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h4 id="total-colaboradores">0</h4>
+                        <p class="mb-0">Total</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <h4 id="total-colaboradores-rol">0</h4>
+                        <p class="mb-0">Colaboradores</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h4 id="total-usuarios">0</h4>
+                        <p class="mb-0">Usuarios</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <h4 id="pendientes-password">0</h4>
+                        <p class="mb-0">Cambio Contraseña</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
             <!-- Loading -->
@@ -96,12 +125,9 @@
             <div id="habitaciones-grid" class="habitaciones-grid">
                 <?php if (empty($habitaciones)): ?>
                     <div class="no-habitaciones">
-                        <i class="fas fa-bed fa-5x text-muted"></i>
+                        <i class="fas fa-bed fa-5x custom-icon"></i>
                         <h3 class="mt-3 text-muted">No hay habitaciones</h3>
                         <p class="text-muted">Comienza creando tu primera habitación</p>
-                        <a href="crearHabitacion.php" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Crear Habitación
-                        </a>
                     </div>
                 <?php else: ?>
                     <?php foreach ($habitaciones as $habitacion): ?>
