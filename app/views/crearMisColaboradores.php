@@ -15,16 +15,22 @@
 <body>
 
     <?php
-        // Iniciar sesión si no está iniciada para acceder a las variables de sesión
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
 
         include "layouts/sidebar.php";
         include "layouts/navbar.php";
 
+        // --- INICIO: CONTROL DE ACCESO ---
+        // Solo los administradores pueden acceder a esta página
+        if (!isset($_SESSION['user']['roles']) || $_SESSION['user']['roles'] !== 'Administrador') {
+            echo '<div class="container mt-5"><div class="alert alert-danger text-center"><h4><i class="fas fa-lock"></i> Acceso Denegado</h4><p>No tienes los permisos necesarios para crear colaboradores.</p><a href="homepage.php" class="btn btn-primary mt-3">Volver al Inicio</a></div></div>';
+            exit(); // Detener la ejecución del script
+        }
+        // --- FIN: CONTROL DE ACCESO ---
+
         // VALIDACIÓN: Asegurarse de que un hotel ha sido seleccionado
         $hotelSeleccionado = isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id']);
+        $hotel_id = $_SESSION['hotel_id'] ?? null;
+        $hotel_nombre = $_SESSION['hotel_nombre'] ?? 'No asignado';
     ?>
     <script src="../../public/assets/js/sidebar.js"></script>
     
@@ -60,7 +66,16 @@
             </div>
 
             <form id="colaborador-form" action="../controllers/misColaboradoresControllers.php" method="POST" enctype="multipart/form-data">
+                <!-- Campo oculto para enviar el id_hotel del admin -->
+                <input type="hidden" name="id_hotel_admin" value="<?php echo htmlspecialchars($hotel_id); ?>">
+
                 <div class="form-grid">
+                    <div class="form-group">
+                        <label for="hotel_nombre">Hotel Asignado</label>
+                        <input type="text" id="hotel_nombre" name="hotel_nombre" value="<?php echo htmlspecialchars($hotel_nombre); ?>" readonly>
+                        <small class="form-text text-muted">El colaborador será asignado a este hotel.</small>
+                    </div>
+
                     <div class="form-group">
                         <label for="numDocumento">Número de Documento <span class="required">*</span></label>
                         <input type="text" id="numDocumento" name="numDocumento" required maxlength="15" placeholder="Ej: 1234567890">
@@ -128,8 +143,7 @@
                         <label for="roles">Rol en el Sistema <span class="required">*</span></label>
                         <select id="roles" name="roles" required>
                             <option value="">Seleccione un rol</option>
-                            <option value="Administrador">Administrador</option> 
-                            <option value="Colaborador">Colaborador</option> // colocar automaticamente este rol
+                            <option value="Colaborador" selected>Colaborador</option>
                             <option value="Usuario">Usuario</option>
                         </select>
                         <small class="form-text text-muted">Nivel de acceso en el sistema</small>

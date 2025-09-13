@@ -58,6 +58,14 @@ try {
             }
         }
         
+        /**
+         * Verifica si el usuario logueado es un Administrador.
+         */
+        private function esAdmin() {
+            // La sesión ya se inicia al final de este archivo.
+            return isset($_SESSION['user']['roles']) && $_SESSION['user']['roles'] === 'Administrador';
+        }
+
         public function manejarPeticion() {
             try {
                 $action = $this->obtenerAccion();
@@ -111,6 +119,10 @@ try {
         
         private function crear() {
             try {
+                if (!$this->esAdmin()) {
+                    responderJSON(false, 'Acceso denegado. Permisos insuficientes.', null, 403);
+                }
+
                 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                     responderJSON(false, 'Método no permitido', null, 405);
                 }
@@ -156,6 +168,10 @@ try {
         
         private function listar() {
             try {
+                if (!$this->esAdmin()) {
+                    responderJSON(false, 'Acceso denegado. Permisos insuficientes.', null, 403);
+                }
+
                 $filtros = [
                     'busqueda' => $_GET['busqueda'] ?? '',
                     'rol' => $_GET['rol'] ?? 'all',
@@ -180,6 +196,10 @@ try {
         
         private function obtener() {
             try {
+                if (!$this->esAdmin()) {
+                    responderJSON(false, 'Acceso denegado. Permisos insuficientes.', null, 403);
+                }
+
                 $documento = $_GET['documento'] ?? $_POST['documento'] ?? '';
                 
                 if (empty($documento)) {
@@ -202,6 +222,10 @@ try {
         
         private function checkDocumento() {
             try {
+                if (!$this->esAdmin()) {
+                    responderJSON(false, 'Acceso denegado. Permisos insuficientes.', null, 403);
+                }
+
                 $documento = $_POST['numDocumento'] ?? $_GET['numDocumento'] ?? '';
                 
                 if (empty($documento)) {
@@ -219,6 +243,10 @@ try {
         
         private function checkEmail() {
             try {
+                if (!$this->esAdmin()) {
+                    responderJSON(false, 'Acceso denegado. Permisos insuficientes.', null, 403);
+                }
+
                 $correo = $_POST['correo'] ?? $_GET['correo'] ?? '';
                 
                 if (empty($correo)) {
@@ -240,6 +268,10 @@ try {
         
         private function actualizar() {
             try {
+                if (!$this->esAdmin()) {
+                    responderJSON(false, 'Acceso denegado. Permisos insuficientes.', null, 403);
+                }
+
                 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                     responderJSON(false, 'Método no permitido', null, 405);
                 }
@@ -279,6 +311,10 @@ try {
         
         private function eliminar() {
             try {
+                if (!$this->esAdmin()) {
+                    responderJSON(false, 'Acceso denegado. Permisos insuficientes.', null, 403);
+                }
+
                 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                     responderJSON(false, 'Método no permitido', null, 405);
                 }
@@ -312,6 +348,10 @@ try {
         
         private function cambiarPassword() {
             try {
+                if (!$this->esAdmin()) {
+                    responderJSON(false, 'Acceso denegado. Permisos insuficientes.', null, 403);
+                }
+
                 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                     responderJSON(false, 'Método no permitido', null, 405);
                 }
@@ -347,7 +387,13 @@ try {
         
         private function estadisticas() {
             try {
-                $resultado = $this->colaboradorModel->obtenerEstadisticas();
+                if (!$this->esAdmin()) {
+                    responderJSON(false, 'Acceso denegado. Permisos insuficientes.', null, 403);
+                }
+
+                // Obtener el hotel de la sesión para filtrar las estadísticas
+                $id_hotel_admin = $_SESSION['hotel_id'] ?? null;
+                $resultado = $this->colaboradorModel->obtenerEstadisticas($id_hotel_admin);
                 
                 if ($resultado['success']) {
                     responderJSON(true, 'Estadísticas obtenidas', $resultado['data']);

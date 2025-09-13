@@ -36,20 +36,23 @@ try {
             } else {
                 // Procesar la imagen si se subió una nueva
                 $fotoPath = null;
+                $fotoUrlParaBD = null;
                 if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
-                    $uploadDir = '../../public/uploads/hoteles/';
+                    $uploadDirServer = __DIR__ . '/../../public/uploads/hoteles/';
+                    $uploadUrlWeb = '/lodgehub/public/uploads/hoteles/';
 
                     // Crear directorio si no existe
-                    if (!is_dir($uploadDir)) {
-                        mkdir($uploadDir, 0755, true);
+                    if (!is_dir($uploadDirServer)) {
+                        mkdir($uploadDirServer, 0755, true);
                     }
 
                     $fileExtension = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
                     $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
 
                     if (in_array($fileExtension, $allowedExtensions)) {
-                        $fileName = 'hotel_' . $hotelId . '_' . time() . '.' . $fileExtension;
-                        $fotoPath = $uploadDir . $fileName;
+                        $fileName = 'hotel_' . uniqid() . '_' . time() . '.' . $fileExtension;
+                        $fotoPath = $uploadDirServer . $fileName;
+                        $fotoUrlParaBD = $uploadUrlWeb . $fileName;
 
                         if (!move_uploaded_file($_FILES['foto']['tmp_name'], $fotoPath)) {
                             $error = "Error al subir la imagen.";
@@ -61,10 +64,10 @@ try {
 
                 if (!isset($error)) {
                     // Actualizar en la base de datos
-                    if ($fotoPath) {
+                    if ($fotoUrlParaBD) {
                         // Actualizar con nueva foto
                         $stmt = $db->prepare("UPDATE tp_hotel SET nit = ?, nombre = ?, direccion = ?, telefono = ?, correo = ?, foto = ?, descripcion = ? WHERE id = ?");
-                        $result = $stmt->execute([$nit, $nombre, $direccion, $telefono, $correo, $fotoPath, $descripcion, $hotelId]);
+                        $result = $stmt->execute([$nit, $nombre, $direccion, $telefono, $correo, $fotoUrlParaBD, $descripcion, $hotelId]);
                     } else {
                         // Actualizar sin cambiar la foto
                         $stmt = $db->prepare("UPDATE tp_hotel SET nit = ?, nombre = ?, direccion = ?, telefono = ?, correo = ?, descripcion = ? WHERE id = ?");
@@ -83,8 +86,8 @@ try {
                             $_SESSION['hotel']['telefono'] = $telefono;
                             $_SESSION['hotel']['correo'] = $correo;
                             $_SESSION['hotel']['descripcion'] = $descripcion;
-                            if ($fotoPath) {
-                                $_SESSION['hotel']['foto'] = $fotoPath;
+                            if ($fotoUrlParaBD) {
+                                $_SESSION['hotel']['foto'] = $fotoUrlParaBD;
                             }
                             // También actualizamos la variable de conveniencia
                             $_SESSION['hotel_nombre'] = $nombre;

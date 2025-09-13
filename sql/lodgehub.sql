@@ -191,17 +191,17 @@ INSERT INTO tp_hotel (id, nit, nombre, direccion, telefono, correo, foto, descri
 
 -- Insertar personal del hotel
 INSERT INTO ti_personal (id_hotel, numDocumento, roles) VALUES 
-(1, '1014596349', 'Administrador General'),
-(1, '1000289068', 'Colaborador Recepción'),
-(1, '1234567890', 'Colaborador Mantenimiento'),
-(2, '5555666677', 'Administrador General'),
-(2, '7777888899', 'Colaborador Servicios'),
-(2, '0987654321', 'Colaborador Recepción'),
-(3, '1014596348', 'Administrador General'),
-(3, '7777888899', 'Colaborador Resort'),
-(3, '1000289068', 'Colaborador Spa'),
-(4, '1234567890', 'Administrador General'),
-(4, '0987654321', 'Colaborador Express');
+(1, '1014596349', 'Administrador'),
+(1, '1000289068', 'Colaborador'),
+(1, '1234567890', 'Colaborador'),
+(2, '5555666677', 'Administrador'),
+(2, '7777888899', 'Colaborador'),
+(2, '0987654321', 'Colaborador'),
+(3, '1014596348', 'Administrador'),
+(3, '7777888899', 'Colaborador'),
+(3, '1000289068', 'Colaborador'),
+(4, '1234567890', 'Administrador'),
+(4, '0987654321', 'Colaborador');
 
 -- Insertar tipos de habitación por hotel
 INSERT INTO td_tipoHabitacion (descripcion, cantidad, id_hotel) VALUES 

@@ -27,7 +27,7 @@
         </div>
 
         <!-- Sección de búsqueda y filtros -->
-        <div class="search-section">
+        <div class="search-section" style="position: relative; z-index: 2;">
             <div class="row align-items-center mb-3">
                 <div class="col-md-4">
                     <div class="input-group">

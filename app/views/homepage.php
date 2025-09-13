@@ -373,13 +373,6 @@ if ($hotelInfo) {
                             </div>
                         </div>
                     </div>
-
-                    <div class="pqrs-actions">
-                        <button class="btn btn-primary btn-lg" onclick="redirectTo('pqrs.php?hotel_id=<?php echo $hotel_id_filtro; ?>')">
-                            <i class="fas fa-list me-2"></i>
-                            Ver Todos los PQRS
-                        </button>
-                    </div>
                 </section>
             </div>
         </div>

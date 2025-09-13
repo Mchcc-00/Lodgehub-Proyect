@@ -17,6 +17,14 @@
     <?php
         include "layouts/sidebar.php";
         include "layouts/navbar.php";
+
+        // --- INICIO: CONTROL DE ACCESO ---
+        // Solo los administradores pueden acceder a esta página
+        if (!isset($_SESSION['user']['roles']) || $_SESSION['user']['roles'] !== 'Administrador') {
+            echo '<div class="container mt-5"><div class="alert alert-danger text-center"><h4><i class="fas fa-lock"></i> Acceso Denegado</h4><p>No tienes los permisos necesarios para gestionar colaboradores.</p><a href="homepage.php" class="btn btn-primary mt-3">Volver al Inicio</a></div></div>';
+            exit(); // Detener la ejecución del script
+        }
+        // --- FIN: CONTROL DE ACCESO ---
     ?>
     <script src="../../public/assets/js/sidebar.js"></script>
 
@@ -27,12 +35,12 @@
         </div>
 
         <!-- Sección de búsqueda y filtros -->
-        <div class="search-section">
+        <div class="search-section" style="position: relative; z-index: 2;">
             <div class="row align-items-center mb-3">
                 <div class="col-md-4">
                     <div class="btn-group me-2">
-                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-venus-mars"></i> Sexo
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" >
+                            <i class="fas fa-venus-mars "></i> Sexo
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item filter-option" href="#" data-filter="all">Todos</a></li>
@@ -66,42 +74,6 @@
 
         <div id="error-message" class="error-message" style="display: none;">
             ❌ <strong id="error-text">Error en la operación</strong>
-        </div>
-
-        <!-- Estadísticas rápidas -->
-        <div class="row mb-3">
-            <div class="col-md-3">
-                <div class="card bg-primary text-white">
-                    <div class="card-body text-center">
-                        <h4 id="total-colaboradores">0</h4>
-                        <p class="mb-0">Total</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-info text-white">
-                    <div class="card-body text-center">
-                        <h4 id="total-colaboradores-rol">0</h4>
-                        <p class="mb-0">Colaboradores</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-success text-white">
-                    <div class="card-body text-center">
-                        <h4 id="total-usuarios">0</h4>
-                        <p class="mb-0">Usuarios</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-warning text-white">
-                    <div class="card-body text-center">
-                        <h4 id="pendientes-password">0</h4>
-                        <p class="mb-0">Cambio Contraseña</p>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Tabla de Colaboradores -->
