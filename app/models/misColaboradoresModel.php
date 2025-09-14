@@ -109,6 +109,11 @@ class Colaborador {
                     throw new Exception('Error al ejecutar la consulta: ' . $stmt->error);
                 }
                 
+                // Verificar que el usuario fue creado antes de asignarlo al hotel
+                if ($stmt->affected_rows === 0) {
+                    throw new Exception('No se pudo crear el registro principal del usuario.');
+                }
+
                 // 2. Asignar el nuevo usuario al hotel del administrador en ti_personal
                 $sqlPersonal = "INSERT INTO ti_personal (id_hotel, numDocumento, roles) VALUES (?, ?, ?)";
                 $stmtPersonal = $this->conexion->prepare($sqlPersonal);
@@ -321,32 +326,27 @@ class Colaborador {
             try {
                 // Preparar campos para actualizar
                 $campos = [
-                    'numDocumento = ?',
-                    'tipoDocumento = ?',
-                    'nombres = ?',
-                    'apellidos = ?',
-                    'numTelefono = ?',
-                    'correo = ?',
-                    'sexo = ?',
-                    'fechaNacimiento = ?',
-                    'roles = ?',
-                    'solicitarContraseña = ?'
+                    'numDocumento' => 's', 'tipoDocumento' => 's', 'nombres' => 's',
+                    'apellidos' => 's', 'numTelefono' => 's', 'correo' => 's',
+                    'sexo' => 's', 'fechaNacimiento' => 's', 'roles' => 's',
+                    'solicitarContraseña' => 's'
                 ];
                 
-                $params = [
-                    $datos['numDocumento'],
-                    $datos['tipoDocumento'],
-                    $datos['nombres'],
-                    $datos['apellidos'],
-                    $datos['numTelefono'],
-                    $datos['correo'],
-                    $datos['sexo'],
-                    $datos['fechaNacimiento'],
-                    $datos['roles'],
-                    isset($datos['solicitarContraseña']) && $datos['solicitarContraseña'] ? '1' : '0'
-                ];
-                
-                $types = "ssssssssss";
+                $updateFields = [];
+                $params = [];
+                $types = "";
+
+                foreach ($campos as $campo => $tipo) {
+                    if (isset($datos[$campo])) {
+                        $updateFields[] = "$campo = ?";
+                        if ($campo === 'solicitarContraseña') {
+                            $params[] = ($datos[$campo] === '1' || $datos[$campo] === true) ? '1' : '0';
+                        } else {
+                            $params[] = $datos[$campo];
+                        }
+                        $types .= $tipo;
+                    }
+                }
                 
                 // Si se proporciona nueva contraseña
                 if (!empty($datos['password'])) {
@@ -359,7 +359,7 @@ class Colaborador {
                 $params[] = $numDocumentoOriginal;
                 $types .= "s";
                 
-                $sql = "UPDATE tp_usuarios SET " . implode(", ", $campos) . " WHERE numDocumento = ?";
+                $sql = "UPDATE tp_usuarios SET " . implode(", ", $updateFields) . " WHERE numDocumento = ?";
                 
                 $stmt = $this->conexion->prepare($sql);
                 

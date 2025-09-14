@@ -458,6 +458,7 @@ class ColaboradoresManager {
             if (data.success) {
                 this.mostrarMensaje('success', data.message);
                 this.cargarColaboradores();
+                this.forceHideModal(modal); // Asegurarse de cerrar el modal
             } else {
                 this.mostrarMensaje('error', data.message);
             }

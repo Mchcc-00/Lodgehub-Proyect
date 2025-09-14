@@ -430,13 +430,13 @@ class CrearColaboradorManager {
             const data = await response.json();
             
             if (data.success) {
-                this.mostrarMensaje('success', data.message);
-                this.limpiarFormulario();
+                this.mostrarMensaje('success', data.message + " Redirigiendo a la lista...");
                 
                 // Redireccionar después de 2 segundos
                 setTimeout(() => {
+                    this.limpiarFormulario();
                     window.location.href = 'listaMisColaboradores.php';
-                }, 2000);
+                }, 2500);
             } else {
                 this.mostrarMensaje('error', data.message);
             }

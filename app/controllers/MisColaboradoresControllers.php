@@ -74,20 +74,24 @@ try {
 
         public function manejarPeticion() {
             try {
-                $action = $_GET['action'] ?? null;
+                // La acción puede venir por GET (listar, etc.) o por POST (crear, actualizar, etc.)
+                $action = $_REQUEST['action'] ?? null;
                 $requestData = null;
 
-                // Si es un POST, los datos y la acción pueden venir en el cuerpo JSON
                 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                    $input = file_get_contents('php://input');
-                    $requestData = json_decode($input, true);
-                    // Si la acción no vino por GET, la buscamos en el JSON
-                    if (!$action && isset($requestData['action'])) {
-                        $action = $requestData['action'];
+                    // Si el contenido es JSON, lo decodificamos.
+                    // Si es multipart/form-data (como en nuestro caso), PHP ya pobló $_POST y $_FILES.
+                    if (strpos($_SERVER["CONTENT_TYPE"] ?? '', "application/json") !== false) {
+                        $input = file_get_contents('php://input');
+                        $requestData = json_decode($input, true) ?? [];
+                        // Si la acción no vino por GET, la buscamos en el cuerpo JSON
+                        if (!$action && isset($requestData['action'])) {
+                            $action = $requestData['action'];
+                        }
+                    } else {
+                        $requestData = $_POST;
                     }
                 }
-                
-                // Si no hay acción, la acción por defecto es 'listar'
                 switch ($action) {
                     case 'crear':
                         $this->crear();
@@ -309,7 +313,7 @@ try {
                 }
                 
                 $documentoOriginal = $datos['documentoOriginal'] ?? '';
-                unset($datos['documentoOriginal']);
+                unset($datos['documentoOriginal'], $datos['action']); // Limpiamos datos de control
                 
                 if (empty($documentoOriginal)) {
                     responderJSON(false, 'Documento original requerido', null, 400);
