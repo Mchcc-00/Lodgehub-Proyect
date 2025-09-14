@@ -117,13 +117,12 @@ class Colaborador {
                     throw new Exception('Error al preparar la consulta de personal: ' . $this->conexion->error);
                 }
 
-                // definir un rol por defecto para los nuevos colaboradores
-                $rolHotel = 'Colaborador'; 
+                // Usar el mismo rol que se seleccionó en el formulario
                 $stmtPersonal->bind_param(
                     "iss",
                     $id_hotel_admin,
                     $datos['numDocumento'],
-                    $rolHotel
+                    $datos['roles']
                 );
 
                 if (!$stmtPersonal->execute()) {
@@ -414,11 +413,22 @@ class Colaborador {
             $this->conexion->begin_transaction();
             
             try {
-                // Eliminar foto si existe
+                // 1. Eliminar foto si existe
                 if (!empty($colaborador['data']['foto'])) {
                     $this->eliminarFoto($colaborador['data']['foto']);
                 }
                 
+                // 2. Eliminar la referencia en la tabla de personal del hotel
+                $sqlPersonal = "DELETE FROM ti_personal WHERE numDocumento = ?";
+                $stmtPersonal = $this->conexion->prepare($sqlPersonal);
+                if (!$stmtPersonal) {
+                    throw new Exception('Error al preparar la consulta para eliminar de personal: ' . $this->conexion->error);
+                }
+                $stmtPersonal->bind_param("s", $numDocumento);
+                $stmtPersonal->execute(); // Se ejecuta para eliminar la dependencia
+                $stmtPersonal->close();
+                
+                // 3. Eliminar el usuario de la tabla principal
                 $sql = "DELETE FROM tp_usuarios WHERE numDocumento = ? AND roles IN ('Colaborador', 'Usuario')";
                 $stmt = $this->conexion->prepare($sql);
                 
@@ -437,7 +447,7 @@ class Colaborador {
                     return ['success' => true, 'message' => 'Colaborador eliminado exitosamente'];
                 } else {
                     $this->conexion->rollback();
-                    return ['success' => false, 'message' => 'No se pudo eliminar el colaborador'];
+                    return ['success' => false, 'message' => 'No se pudo eliminar el colaborador. Es posible que no exista o ya haya sido eliminado.'];
                 }
                 
             } catch (Exception $e) {

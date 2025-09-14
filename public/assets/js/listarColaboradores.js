@@ -11,7 +11,6 @@ class ColaboradoresManager {
         this.busquedaActiva = '';
         this.paginaActual = 1;
         this.itemsPorPagina = 10;
-        this.estadisticas = {};
         
         this.init();
     }
@@ -19,7 +18,6 @@ class ColaboradoresManager {
     init() {
         this.cargarEventListeners();
         this.cargarColaboradores();
-        this.cargarEstadisticas();
     }
     
     cargarEventListeners() {
@@ -53,7 +51,6 @@ class ColaboradoresManager {
         if (refreshBtn) {
             refreshBtn.addEventListener('click', () => {
                 this.cargarColaboradores();
-                this.cargarEstadisticas();
             });
         }
         
@@ -99,6 +96,12 @@ class ColaboradoresManager {
                 params.append('busqueda', this.busquedaActiva);
             }
             
+            // Obtener el id_hotel del administrador desde el PHP (si está disponible)
+            const hotelIdElement = document.getElementById('admin-hotel-id');
+            if (hotelIdElement && hotelIdElement.value) {
+                params.append('id_hotel', hotelIdElement.value);
+            }
+
             if (this.filtroActivo !== 'all') {
                 // Solo permitir filtros de Colaborador y Usuario
                 if (['Colaborador', 'Usuario'].includes(this.filtroActivo)) {
@@ -147,56 +150,6 @@ class ColaboradoresManager {
         }
     }
     
-    async cargarEstadisticas() {
-        try {
-            const response = await fetch('../controllers/misColaboradoresControllers.php?action=estadisticas', {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json'
-                }
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                this.estadisticas = data.data;
-                this.actualizarEstadisticas();
-            } else {
-                console.error('Error al cargar estadísticas:', data.message);
-            }
-            
-        } catch (error) {
-            console.error('Error al cargar estadísticas:', error);
-        }
-    }
-    
-    actualizarEstadisticas() {
-        const totalElement = document.getElementById('total-colaboradores');
-        const colaboradoresElement = document.getElementById('total-colaboradores-rol');
-        const usuariosElement = document.getElementById('total-usuarios');
-        const pendientesElement = document.getElementById('pendientes-password');
-        
-        if (totalElement && this.estadisticas.total !== undefined) {
-            totalElement.textContent = this.estadisticas.total || 0;
-        }
-        
-        if (colaboradoresElement && this.estadisticas.colaboradores !== undefined) {
-            colaboradoresElement.textContent = this.estadisticas.colaboradores || 0;
-        }
-        
-        if (usuariosElement && this.estadisticas.usuarios !== undefined) {
-            usuariosElement.textContent = this.estadisticas.usuarios || 0;
-        }
-        
-        if (pendientesElement && this.estadisticas.pendientes_password !== undefined) {
-            pendientesElement.textContent = this.estadisticas.pendientes_password || 0;
-        }
-    }
-    
     renderizarTabla() {
         const tbody = document.getElementById('tabla-colaboradores');
         if (!tbody) {
@@ -233,18 +186,18 @@ class ColaboradoresManager {
                         </span>
                         ${colaborador.solicitarContraseña === '1' ? '<i class="fas fa-exclamation-triangle text-warning ms-1" title="Cambio de contraseña pendiente"></i>' : ''}
                     </td>
-                    <td>
+                    <td class="colaborador-actions">
                         <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-sm btn-outline-info" onclick="colaboradoresManager.verColaborador('${colaborador.numDocumento}')" title="Ver detalles">
+                            <button type="button" class="btn btn-sm btn-outline-info action-btn" data-action="ver" data-documento="${colaborador.numDocumento}" title="Ver detalles">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="colaboradoresManager.editarColaborador('${colaborador.numDocumento}')" title="Editar">
+                            <button type="button" class="btn btn-sm btn-outline-primary action-btn" data-action="editar" data-documento="${colaborador.numDocumento}" title="Editar">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button type="button" class="btn btn-sm btn-outline-warning" onclick="colaboradoresManager.abrirCambiarPassword('${colaborador.numDocumento}')" title="Cambiar contraseña">
+                            <button type="button" class="btn btn-sm btn-outline-warning action-btn" data-action="password" data-documento="${colaborador.numDocumento}" title="Cambiar contraseña">
                                 <i class="fas fa-key"></i>
                             </button>
-                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="colaboradoresManager.eliminarColaborador('${colaborador.numDocumento}', '${this.escapeHtml(colaborador.nombres)} ${this.escapeHtml(colaborador.apellidos)}')" title="Eliminar">
+                            <button type="button" class="btn btn-sm btn-outline-danger action-btn" data-action="eliminar" data-documento="${colaborador.numDocumento}" data-nombre="${this.escapeHtml(colaborador.nombres)} ${this.escapeHtml(colaborador.apellidos)}" title="Eliminar">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -254,6 +207,7 @@ class ColaboradoresManager {
         });
         
         tbody.innerHTML = html;
+        this.asignarEventosBotonesAccion();
     }
     
     renderizarTablaVacia(mensaje = 'No hay colaboradores para mostrar') {
@@ -292,6 +246,34 @@ class ColaboradoresManager {
     aplicarFiltro(filtro) {
         this.filtroActivo = filtro;
         this.cargarColaboradores();
+    }
+
+    asignarEventosBotonesAccion() {
+        const tabla = document.getElementById('tabla-colaboradores');
+        if (!tabla) return;
+
+        tabla.addEventListener('click', (e) => {
+            const boton = e.target.closest('.action-btn');
+            if (!boton) return;
+
+            const action = boton.dataset.action;
+            const documento = boton.dataset.documento;
+
+            switch (action) {
+                case 'ver':
+                    this.verColaborador(documento);
+                    break;
+                case 'editar':
+                    this.editarColaborador(documento);
+                    break;
+                case 'password':
+                    this.abrirCambiarPassword(documento);
+                    break;
+                case 'eliminar':
+                    this.eliminarColaborador(documento, boton.dataset.nombre);
+                    break;
+            }
+        });
     }
     
     async verColaborador(documento) {
@@ -391,6 +373,9 @@ class ColaboradoresManager {
     }
     
     async guardarEdicion() {
+        const modalElement = document.getElementById('editarModal');
+        const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+
         try {
             const form = document.getElementById('form-editar');
             if (!form.checkValidity()) {
@@ -423,16 +408,16 @@ class ColaboradoresManager {
             
             if (data.success) {
                 this.mostrarMensaje('success', data.message);
-                const modal = bootstrap.Modal.getInstance(document.getElementById('editarModal'));
-                modal.hide();
                 this.cargarColaboradores();
-                this.cargarEstadisticas();
             } else {
                 this.mostrarMensaje('error', data.message);
             }
         } catch (error) {
             console.error('Error al guardar edición:', error);
-            this.mostrarMensaje('error', 'Error de conexión');
+            this.mostrarMensaje('error', 'Error de conexión al guardar.');
+        } finally {
+            // Asegurarse de que el modal siempre se oculte
+            this.forceHideModal(modal);
         }
     }
     
@@ -448,6 +433,9 @@ class ColaboradoresManager {
     }
     
     async confirmarEliminacion() {
+        const modalElement = document.getElementById('eliminarModal');
+        const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+
         try {
             if (!this.documentoParaEliminar) {
                 this.mostrarMensaje('error', 'Error: No hay documento seleccionado');
@@ -469,18 +457,16 @@ class ColaboradoresManager {
             
             if (data.success) {
                 this.mostrarMensaje('success', data.message);
-                const modal = bootstrap.Modal.getInstance(document.getElementById('eliminarModal'));
-                modal.hide();
                 this.cargarColaboradores();
-                this.cargarEstadisticas();
             } else {
                 this.mostrarMensaje('error', data.message);
             }
-            
-            this.documentoParaEliminar = null;
         } catch (error) {
             console.error('Error al eliminar:', error);
-            this.mostrarMensaje('error', 'Error de conexión');
+            this.mostrarMensaje('error', 'Error de conexión al eliminar.');
+        } finally {
+            this.documentoParaEliminar = null;
+            this.forceHideModal(modal);
         }
     }
     
@@ -507,6 +493,9 @@ class ColaboradoresManager {
     }
     
     async cambiarPassword() {
+        const modalElement = document.getElementById('cambiarPasswordModal');
+        const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+
         try {
             const form = document.getElementById('form-cambiar-password');
             if (!form.checkValidity()) {
@@ -535,18 +524,37 @@ class ColaboradoresManager {
             
             if (data.success) {
                 this.mostrarMensaje('success', data.message);
-                const modal = bootstrap.Modal.getInstance(document.getElementById('cambiarPasswordModal'));
-                modal.hide();
-                this.cargarEstadisticas(); // Actualizar estadísticas
             } else {
                 this.mostrarMensaje('error', data.message);
             }
         } catch (error) {
             console.error('Error al cambiar contraseña:', error);
-            this.mostrarMensaje('error', 'Error de conexión');
+            this.mostrarMensaje('error', 'Error de conexión al cambiar la contraseña.');
+        } finally {
+            this.forceHideModal(modal);
         }
     }
     
+    /**
+     * Cierra un modal de forma robusta, asegurando la limpieza del backdrop.
+     * Esto previene el problema de la "pantalla congelada".
+     * @param {Object} modalInstance - La instancia del modal de Bootstrap.
+     */
+    forceHideModal(modalInstance) {
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+
+        // Después de un breve retraso, limpia manualmente cualquier residuo que Bootstrap pueda dejar.
+        setTimeout(() => {
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(backdrop => backdrop.remove());
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+        }, 500); // 500ms para dar tiempo a que la transición de Bootstrap termine.
+    }
+
     mostrarMensaje(tipo, mensaje) {
         const successDiv = document.getElementById('success-message');
         const errorDiv = document.getElementById('error-message');
@@ -602,32 +610,4 @@ class ColaboradoresManager {
     }
 }
 
-// Inicializar cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', function() {
-    window.colaboradoresManager = new ColaboradoresManager();
-});
-
-// Funciones globales para compatibilidad con onclick
-window.verColaborador = function(documento) {
-    if (window.colaboradoresManager) {
-        window.colaboradoresManager.verColaborador(documento);
-    }
-};
-
-window.editarColaborador = function(documento) {
-    if (window.colaboradoresManager) {
-        window.colaboradoresManager.editarColaborador(documento);
-    }
-};
-
-window.eliminarColaborador = function(documento, nombre) {
-    if (window.colaboradoresManager) {
-        window.colaboradoresManager.eliminarColaborador(documento, nombre);
-    }
-};
-
-window.abrirCambiarPassword = function(documento) {
-    if (window.colaboradoresManager) {
-        window.colaboradoresManager.abrirCambiarPassword(documento);
-    }
-};
+document.addEventListener('DOMContentLoaded', () => new ColaboradoresManager());

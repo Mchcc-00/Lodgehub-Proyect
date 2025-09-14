@@ -29,6 +29,9 @@
     <script src="../../public/assets/js/sidebar.js"></script>
 
     <div class="container">
+        <!-- Campo oculto para que JS pueda leer el ID del hotel del admin -->
+        <input type="hidden" id="admin-hotel-id" value="<?php echo htmlspecialchars($_SESSION['hotel_id'] ?? ''); ?>">
+
         <div class="header">
             <h1>Lista de Colaboradores</h1>
             <p>Gestiona colaboradores y usuarios del sistema LodgeHub</p>
@@ -38,17 +41,6 @@
         <div class="search-section" style="position: relative; z-index: 2;">
             <div class="row align-items-center mb-3">
                 <div class="col-md-4">
-                    <div class="btn-group me-2">
-                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" >
-                            <i class="fas fa-venus-mars "></i> Sexo
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item filter-option" href="#" data-filter="all">Todos</a></li>
-                            <li><a class="dropdown-item filter-option" href="#" data-filter="Hombre">Hombre</a></li>
-                            <li><a class="dropdown-item filter-option" href="#" data-filter="Mujer">Mujer</a></li>
-                            <li><a class="dropdown-item filter-option" href="#" data-filter="Otro">Otro</a></li>
-                        </ul>
-                    </div>
                     <div class="input-group">
                         <input type="text" class="form-control" id="buscar-input" placeholder="Buscar por documento, nombre o correo...">
                         <button class="btn btn-outline-primary" type="button" id="buscar-btn">
@@ -57,6 +49,23 @@
                     </div>
                 </div>
                 <div class="col-md-8 text-end">
+                    <div class="btn-group me-2">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" >
+                            <i class="fas fa-filter"></i> Filtros
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="all">Todos</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header">Por Rol</h6></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="Colaborador">Colaboradores</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="Usuario">Usuarios</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header">Por Sexo</h6></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="Hombre">Hombre</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="Mujer">Mujer</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="Otro">Otro</a></li>
+                        </ul>
+                    </div>
                     <button class="btn btn-success" id="refresh-btn">
                         <i class="fas fa-sync-alt"></i> Actualizar
                     </button>

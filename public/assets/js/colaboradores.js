@@ -150,13 +150,13 @@ class CrearColaboradorManager {
         try {
             this.mostrarFeedback(feedbackDiv, 'info', 'Verificando documento...');
             
-            const formData = new FormData();
-            formData.append('action', 'checkDocumento');
-            formData.append('numDocumento', documento);
+            const params = new URLSearchParams();
+            params.append('action', 'checkDocumento');
+            params.append('numDocumento', documento);
             
-            const response = await fetch('../controllers/misColaboradoresControllers.php', {
-                method: 'POST',
-                body: formData
+            const response = await fetch(`../controllers/misColaboradoresControllers.php?${params.toString()}`, {
+                method: 'GET',
+                headers: { 'Accept': 'application/json' }
             });
             
             const data = await response.json();
@@ -170,7 +170,7 @@ class CrearColaboradorManager {
                     this.documentoValidado = true;
                 }
             } else {
-                this.mostrarFeedback(feedbackDiv, 'error', 'Error al verificar documento');
+                this.mostrarFeedback(feedbackDiv, 'error', data.message || 'Error al verificar documento');
                 this.documentoValidado = false;
             }
         } catch (error) {
@@ -203,13 +203,13 @@ class CrearColaboradorManager {
         try {
             this.mostrarFeedback(feedbackDiv, 'info', 'Verificando correo...');
             
-            const formData = new FormData();
-            formData.append('action', 'checkEmail');
-            formData.append('correo', correo);
+            const params = new URLSearchParams();
+            params.append('action', 'checkEmail');
+            params.append('correo', correo);
             
-            const response = await fetch('../controllers/misColaboradoresControllers.php', {
-                method: 'POST',
-                body: formData
+            const response = await fetch(`../controllers/misColaboradoresControllers.php?${params.toString()}`, {
+                method: 'GET',
+                headers: { 'Accept': 'application/json' }
             });
             
             const data = await response.json();
@@ -223,7 +223,7 @@ class CrearColaboradorManager {
                     this.correoValidado = true;
                 }
             } else {
-                this.mostrarFeedback(feedbackDiv, 'error', 'Error al verificar correo');
+                this.mostrarFeedback(feedbackDiv, 'error', data.message || 'Error al verificar correo');
                 this.correoValidado = false;
             }
         } catch (error) {

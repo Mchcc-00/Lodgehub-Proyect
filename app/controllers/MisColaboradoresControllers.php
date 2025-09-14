@@ -1,5 +1,11 @@
 <?php
 /**
+ * Iniciar la sesión al principio de todo.
+ */
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+/**
  * Controlador de Colaboradores - CORREGIDO
  * Maneja todas las peticiones relacionadas con la gestión de colaboradores
  */
@@ -68,8 +74,20 @@ try {
 
         public function manejarPeticion() {
             try {
-                $action = $this->obtenerAccion();
+                $action = $_GET['action'] ?? null;
+                $requestData = null;
+
+                // Si es un POST, los datos y la acción pueden venir en el cuerpo JSON
+                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                    $input = file_get_contents('php://input');
+                    $requestData = json_decode($input, true);
+                    // Si la acción no vino por GET, la buscamos en el JSON
+                    if (!$action && isset($requestData['action'])) {
+                        $action = $requestData['action'];
+                    }
+                }
                 
+                // Si no hay acción, la acción por defecto es 'listar'
                 switch ($action) {
                     case 'crear':
                         $this->crear();
@@ -84,15 +102,15 @@ try {
                         break;
                     
                     case 'actualizar':
-                        $this->actualizar();
+                        $this->actualizar($requestData);
                         break;
                     
                     case 'eliminar':
-                        $this->eliminar();
+                        $this->eliminar($requestData);
                         break;
                     
                     case 'cambiarPassword':
-                        $this->cambiarPassword();
+                        $this->cambiarPassword($requestData);
                         break;
                     
                     case 'checkDocumento':
@@ -108,7 +126,7 @@ try {
                         break;
                     
                     default:
-                        responderJSON(false, 'Acción no válida: ' . $action, null, 400);
+                        responderJSON(false, 'Acción no válida: ' . htmlspecialchars($action ?? 'ninguna'), null, 400);
                         break;
                 }
             } catch (Exception $e) {
@@ -127,19 +145,25 @@ try {
                     responderJSON(false, 'Método no permitido', null, 405);
                 }
                 
-                $datos = $this->obtenerDatosFormulario();
+                // Leer datos directamente de $_POST y $_FILES
+                $datos = $_POST;
                 
                 // Validar datos básicos
                 if (empty($datos['numDocumento']) || empty($datos['correo'])) {
                     responderJSON(false, 'Documento y correo son requeridos', null, 400);
                 }
                 
+                // Asegurarse de que el rol sea válido antes de la validación completa
+                if (!in_array($datos['roles'] ?? '', ['Colaborador', 'Usuario'])) {
+                    responderJSON(false, 'El rol seleccionado no es válido.', null, 400);
+                }
+
                 $errores = $this->colaboradorModel->validarDatos($datos);
                 if (!empty($errores)) {
                     responderJSON(false, implode(', ', $errores), null, 400);
                 }
                 
-                // Manejar archivo de foto
+                // Manejar archivo de foto desde $_FILES
                 if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
                     $datos['foto'] = $_FILES['foto'];
                 }
@@ -147,7 +171,7 @@ try {
                 // Añadir el id_hotel del administrador a los datos que se enviarán al modelo
                 // La sesión ya se inicia al final de este archivo.
                 if (isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id'])) {
-                    $datos['id_hotel_admin'] = $_SESSION['hotel_id'];
+                    $datos['id_hotel_admin'] = intval($_SESSION['hotel_id']);
                 } else {
                     responderJSON(false, 'Error: No se pudo identificar el hotel del administrador. Por favor, inicie sesión de nuevo.', null, 403);
                 }
@@ -176,9 +200,17 @@ try {
                     'busqueda' => $_GET['busqueda'] ?? '',
                     'rol' => $_GET['rol'] ?? 'all',
                     'tipoDocumento' => $_GET['tipoDocumento'] ?? 'all',
-                    'sexo' => $_GET['sexo'] ?? 'all',
-                    'id_hotel_admin' => $_SESSION['hotel_id'] ?? null // Pasar el hotel de la sesión
+                    'sexo' => $_GET['sexo'] ?? 'all'
                 ];
+
+                // Asegurarse de que siempre se filtre por el hotel del administrador
+                if (isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id'])) {
+                    $filtros['id_hotel_admin'] = $_SESSION['hotel_id'];
+                } else {
+                    // Si no hay hotel en sesión, no mostrar resultados (o manejar como prefieras)
+                    responderJSON(true, 'No hay un hotel seleccionado para mostrar colaboradores.', []);
+                    return;
+                }
                 
                 $resultado = $this->colaboradorModel->listar($filtros);
                 
@@ -226,7 +258,7 @@ try {
                     responderJSON(false, 'Acceso denegado. Permisos insuficientes.', null, 403);
                 }
 
-                $documento = $_POST['numDocumento'] ?? $_GET['numDocumento'] ?? '';
+                $documento = $_REQUEST['numDocumento'] ?? '';
                 
                 if (empty($documento)) {
                     responderJSON(false, 'Documento requerido', null, 400);
@@ -236,8 +268,8 @@ try {
                 responderJSON(true, 'Verificación completada', ['exists' => $existe]);
                 
             } catch (Exception $e) {
-                logError($e->getMessage(), 'checkDocumento - doc: ' . ($documento ?? 'null'));
-                responderJSON(false, 'Error al verificar documento', null, 500);
+                logError("Excepción en checkDocumento: " . $e->getMessage(), 'doc: ' . ($documento ?? 'null'));
+                responderJSON(false, 'Error del sistema al verificar documento. Detalles: ' . $e->getMessage(), null, 500);
             }
         }
         
@@ -247,7 +279,7 @@ try {
                     responderJSON(false, 'Acceso denegado. Permisos insuficientes.', null, 403);
                 }
 
-                $correo = $_POST['correo'] ?? $_GET['correo'] ?? '';
+                $correo = $_REQUEST['correo'] ?? '';
                 
                 if (empty($correo)) {
                     responderJSON(false, 'Correo requerido', null, 400);
@@ -261,26 +293,19 @@ try {
                 responderJSON(true, 'Verificación completada', ['exists' => $existe]);
                 
             } catch (Exception $e) {
-                logError($e->getMessage(), 'checkEmail - email: ' . ($correo ?? 'null'));
-                responderJSON(false, 'Error al verificar correo', null, 500);
+                logError("Excepción en checkEmail: " . $e->getMessage(), 'email: ' . ($correo ?? 'null'));
+                responderJSON(false, 'Error del sistema al verificar correo. Detalles: ' . $e->getMessage(), null, 500);
             }
         }
         
-        private function actualizar() {
+        private function actualizar($datos) {
             try {
                 if (!$this->esAdmin()) {
                     responderJSON(false, 'Acceso denegado. Permisos insuficientes.', null, 403);
                 }
 
-                if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !$datos) {
                     responderJSON(false, 'Método no permitido', null, 405);
-                }
-                
-                $input = file_get_contents('php://input');
-                $datos = json_decode($input, true);
-                
-                if (!$datos) {
-                    responderJSON(false, 'Datos JSON inválidos', null, 400);
                 }
                 
                 $documentoOriginal = $datos['documentoOriginal'] ?? '';
@@ -309,21 +334,18 @@ try {
             }
         }
         
-        private function eliminar() {
+        private function eliminar($datos) {
             try {
                 if (!$this->esAdmin()) {
                     responderJSON(false, 'Acceso denegado. Permisos insuficientes.', null, 403);
                 }
 
-                if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($datos)) {
                     responderJSON(false, 'Método no permitido', null, 405);
                 }
                 
-                $input = file_get_contents('php://input');
-                $datos = json_decode($input, true);
-                
                 $documento = $datos['documento'] ?? '';
-                
+
                 if (empty($documento)) {
                     responderJSON(false, 'Documento requerido', null, 400);
                 }
@@ -346,19 +368,12 @@ try {
             }
         }
         
-        private function cambiarPassword() {
+        private function cambiarPassword($datos) {
             try {
                 if (!$this->esAdmin()) {
                     responderJSON(false, 'Acceso denegado. Permisos insuficientes.', null, 403);
                 }
 
-                if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                    responderJSON(false, 'Método no permitido', null, 405);
-                }
-                
-                $input = file_get_contents('php://input');
-                $datos = json_decode($input, true);
-                
                 $documento = $datos['documento'] ?? '';
                 $nuevaPassword = $datos['nuevaPassword'] ?? '';
                 $solicitarCambio = isset($datos['solicitarCambio']) ? $datos['solicitarCambio'] : false;
@@ -407,10 +422,6 @@ try {
             }
         }
         
-        private function obtenerAccion() {
-            return $_POST['action'] ?? $_GET['action'] ?? 'listar';
-        }
-        
         private function obtenerDatosFormulario() {
             return [
                 'numDocumento' => $this->limpiarInput($_POST['numDocumento'] ?? ''),
@@ -434,10 +445,6 @@ try {
     
     // Ejecutar el controlador solo si se accede directamente
     if (basename($_SERVER['PHP_SELF']) == 'misColaboradoresControllers.php') {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        
         $controller = new ColaboradorController();
         $controller->manejarPeticion();
     }

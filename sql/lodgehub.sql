@@ -199,7 +199,6 @@ INSERT INTO ti_personal (id_hotel, numDocumento, roles) VALUES
 (2, '0987654321', 'Colaborador'),
 (3, '1014596348', 'Administrador'),
 (3, '7777888899', 'Colaborador'),
-(3, '1000289068', 'Colaborador'),
 (4, '1234567890', 'Administrador'),
 (4, '0987654321', 'Colaborador');
 
