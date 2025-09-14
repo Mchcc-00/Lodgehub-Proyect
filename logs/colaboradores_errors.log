@@ -2,3 +2,5 @@
 [2025-09-14 18:47:50] misColaboradoresModel.php Error: Error en listar(): Column 'roles' in where clause is ambiguous
 [2025-09-14 18:47:57] misColaboradoresModel.php Error: Error en listar(): Column 'roles' in where clause is ambiguous
 [2025-09-14 19:07:27] misColaboradoresModel.php Error: Error en eliminar(): Cannot delete or update a parent row: a foreign key constraint fails (`lodgehub`.`ti_personal`, CONSTRAINT `ti_personal_ibfk_2` FOREIGN KEY (`numDocumento`) REFERENCES `tp_usuarios` (`numDocumento`))
+[2025-09-14 20:12:06] misColaboradoresModel.php Error: Error en eliminar(): Cannot delete or update a parent row: a foreign key constraint fails (`lodgehub`.`tp_hotel`, CONSTRAINT `tp_hotel_ibfk_1` FOREIGN KEY (`numDocumentoAdmin`) REFERENCES `tp_usuarios` (`numDocumento`))
+[2025-09-14 20:12:10] misColaboradoresModel.php Error: Error en eliminar(): Cannot delete or update a parent row: a foreign key constraint fails (`lodgehub`.`tp_hotel`, CONSTRAINT `tp_hotel_ibfk_1` FOREIGN KEY (`numDocumentoAdmin`) REFERENCES `tp_usuarios` (`numDocumento`))

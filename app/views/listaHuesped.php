@@ -62,7 +62,7 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Documento</th>
+                        <th>Num Documento</th>
                         <th>Nombres</th>
                         <th>Apellidos</th>
                         <th>Sexo</th>

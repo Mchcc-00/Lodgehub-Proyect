@@ -1,6 +1,10 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
+// Iniciar sesión para acceder a $_SESSION['hotel_id']
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+
 require_once '../models/HuespedModel.php';
 
 class HuespedController {
@@ -50,6 +54,12 @@ class HuespedController {
             // Validaciones específicas
             $this->validarDatos($datos);
 
+            // Añadir el id_hotel del hotel seleccionado en la sesión
+            if (!isset($_SESSION['hotel_id']) || empty($_SESSION['hotel_id'])) {
+                throw new Exception('No se ha seleccionado un hotel. Por favor, vaya al inicio y seleccione un hotel.');
+            }
+            $datos['id_hotel'] = $_SESSION['hotel_id'];
+
             // Verificar si el huésped ya existe
             if ($this->huespedModel->existeHuesped($datos['numDocumento'])) {
                 throw new Exception('Ya existe un huésped con este número de documento');
@@ -88,15 +98,21 @@ class HuespedController {
             // NUEVO: Soporte para paginación
             $pagina = isset($_GET['pagina']) ? max(1, intval($_GET['pagina'])) : 1;
             $registrosPorPagina = isset($_GET['registros']) ? max(1, min(50, intval($_GET['registros']))) : 10;
+            $id_hotel = $_SESSION['hotel_id'] ?? null;
+
+            if (!$id_hotel) {
+                throw new Exception("No se ha seleccionado un hotel.");
+            }
             
             if (isset($_GET['paginado']) && $_GET['paginado'] === 'true') {
-                $resultado = $this->huespedModel->obtenerHuespedesPaginados($pagina, $registrosPorPagina);
+                $resultado = $this->huespedModel->obtenerHuespedesPaginados($id_hotel, $pagina, $registrosPorPagina);
                 echo json_encode([
                     'success' => true,
                     'data' => $resultado
                 ]);
             } else {
-                $huespedes = $this->huespedModel->obtenerTodosLosHuespedes();
+                // Esta rama ahora también filtra por hotel
+                $huespedes = $this->huespedModel->obtenerTodosLosHuespedes($id_hotel);
                 echo json_encode([
                     'success' => true,
                     'data' => $huespedes
@@ -272,16 +288,23 @@ class HuespedController {
         
         try {
             $termino = isset($_GET['termino']) ? trim($_GET['termino']) : '';
+            $id_hotel = $_SESSION['hotel_id'] ?? null;
             
+            if (!$id_hotel) {
+                throw new Exception("No se ha seleccionado un hotel para la búsqueda.");
+            }
+
             if (empty($termino)) {
                 throw new Exception('Término de búsqueda es requerido');
             }
 
             if (strlen($termino) < 2) {
+                // Devolver lista vacía si la búsqueda es muy corta
+                $huespedes = [];
                 throw new Exception('El término de búsqueda debe tener al menos 2 caracteres');
+            } else {
+                $huespedes = $this->huespedModel->buscarHuespedes($id_hotel, $termino);
             }
-
-            $huespedes = $this->huespedModel->buscarHuespedes($termino);
             
             echo json_encode([
                 'success' => true,

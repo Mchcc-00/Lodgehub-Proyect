@@ -245,7 +245,7 @@ if ($hotelInfo) {
                             </div>
                         </div>
 
-                        <div class="stats-card card-warning" onclick="redirectTo('reservas.php?filter=hoy_terminan&hotel_id=<?php echo $hotel_id_filtro; ?>')">
+                        <div class="stats-card card-warning" onclick="redirectTo('listaReservas.php?filter=hoy_terminan&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-warning">
                                 <i class="fas fa-calendar-minus"></i>
                             </div>
@@ -255,7 +255,7 @@ if ($hotelInfo) {
                             </div>
                         </div>
 
-                        <div class="stats-card card-success" onclick="redirectTo('reservas.php?filter=activas&hotel_id=<?php echo $hotel_id_filtro; ?>')">
+                        <div class="stats-card card-success" onclick="redirectTo('listaReservas.php?filter=activas&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-success">
                                 <i class="fas fa-calendar-check"></i>
                             </div>
@@ -265,7 +265,7 @@ if ($hotelInfo) {
                             </div>
                         </div>
 
-                        <div class="stats-card card-pending" onclick="redirectTo('reservas.php?filter=pendientes&hotel_id=<?php echo $hotel_id_filtro; ?>')">
+                        <div class="stats-card card-pending" onclick="redirectTo('listaReservas.php?filter=pendientes&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-secondary">
                                 <i class="fas fa-clock"></i>
                             </div>
@@ -275,7 +275,7 @@ if ($hotelInfo) {
                             </div>
                         </div>
 
-                        <div class="stats-card card-inactive" onclick="redirectTo('reservas.php?filter=inactivas&hotel_id=<?php echo $hotel_id_filtro; ?>')">
+                        <div class="stats-card card-inactive" onclick="redirectTo('listaReservas.php?filter=inactivas&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-danger">
                                 <i class="fas fa-calendar-times"></i>
                             </div>
@@ -307,7 +307,7 @@ if ($hotelInfo) {
                             </div>
                         </div>
 
-                        <div class="stats-card card-process" onclick="redirectTo('mantenimiento.php?filter=proceso&hotel_id=<?php echo $hotel_id_filtro; ?>')">
+                        <div class="stats-card card-process" onclick="redirectTo('listaMantenimiento.php?filter=proceso&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-warning">
                                 <i class="fas fa-cog fa-spin"></i>
                             </div>
@@ -317,7 +317,7 @@ if ($hotelInfo) {
                             </div>
                         </div>
 
-                        <div class="stats-card card-completed" onclick="redirectTo('mantenimiento.php?filter=finalizados&hotel_id=<?php echo $hotel_id_filtro; ?>')">
+                        <div class="stats-card card-completed" onclick="redirectTo('listaMantenimiento.php?filter=finalizados&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-success">
                                 <i class="fas fa-check-circle"></i>
                             </div>
@@ -351,7 +351,7 @@ if ($hotelInfo) {
                         </div>
 
 
-                        <div class="stats-card pqrs-low" onclick="redirectTo('pqrs.php?filter=baja&hotel_id=<?php echo $hotel_id_filtro; ?>')">
+                        <div class="stats-card pqrs-low" onclick="redirectTo('listaPQRS.php?filter=baja&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-info">
                                 <i class="fas fa-info-circle"></i>
                             </div>
@@ -362,7 +362,7 @@ if ($hotelInfo) {
                             </div>
                         </div>
 
-                        <div class="stats-card pqrs-answered" onclick="redirectTo('pqrs.php?filter=respondidos&hotel_id=<?php echo $hotel_id_filtro; ?>')">
+                        <div class="stats-card pqrs-answered" onclick="redirectTo('listaPQRS.php?filter=respondidos&hotel_id=<?php echo $hotel_id_filtro; ?>')">
                             <div class="stats-icon bg-success">
                                 <i class="fas fa-check-double"></i>
                             </div>

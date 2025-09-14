@@ -17,13 +17,25 @@
     <?php
         include "layouts/sidebar.php";
         include "layouts/navbar.php";
+
+        // VALIDACIÓN: Asegurarse de que un hotel ha sido seleccionado
+        $hotelSeleccionado = isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id']);
+        $hotel_nombre = $_SESSION['hotel_nombre'] ?? 'No asignado';
     ?>
     <script src="../../public/assets/js/sidebar.js"></script>
     
     <div class="container">
-        <div class="header">
+        <?php if (!$hotelSeleccionado): ?>
+            <div class="alert alert-danger mt-4" role="alert">
+                <h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> ¡Acción Requerida!</h4>
+                <p>Para poder registrar un nuevo huésped, primero debes <strong>seleccionar un hotel</strong> desde el panel principal (Home).</p>
+                <hr>
+                <p class="mb-0">Por favor, regresa al <a href="homepage.php" class="alert-link">Home</a> y elige el hotel donde deseas registrar al huésped.</p>
+            </div>
+        <?php else: ?>
+            <div class="header">
             <h1>Agregar Huésped</h1>
-            <p>Registra un nuevo huésped en el sistema</p>
+            <p>¡Registra un nuevo huésped en el sistema!</p>
         </div>
 
         <div class="form-section">
@@ -45,9 +57,15 @@
 
             <form id="huesped-form" action="../controllers/huespedController.php" method="POST">
                 <div class="form-grid">
+                    <div class="form-group ">
+                        <label for="hotel_nombre">Hotel Asignado</label>
+                        <input type="text" id="hotel_nombre" name="hotel_nombre" class="form-control" value="<?php echo htmlspecialchars($hotel_nombre); ?>" readonly>
+                        <small class="form-text text-muted">El huésped será asociado a este hotel.</small>
+                    </div>
+
                     <div class="form-group">
                         <label for="tipoDocumento">Tipo de Documento <span class="required">*</span></label>
-                        <select id="tipoDocumento" name="tipoDocumento" required>
+                        <select id="tipoDocumento" name="tipoDocumento" class="form-control" required>
                             <option value="">Seleccione un tipo</option>
                             <option value="Cedula de Ciudadania">Cédula de Ciudadanía</option>
                             <option value="Tarjeta de Identidad">Tarjeta de Identidad</option>
@@ -59,25 +77,25 @@
 
                     <div class="form-group">
                         <label for="numDocumento">Número de Documento <span class="required">*</span></label>
-                        <input type="text" id="numDocumento" name="numDocumento" required maxlength="15" placeholder="Ej: 1234567890">
+                        <input type="text" id="numDocumento" name="numDocumento" class="form-control" required maxlength="15" placeholder="Ej: 1234567890">
                         <small class="form-text text-muted">Entre 5 y 15 caracteres, solo letras y números</small>
                     </div>
 
                     <div class="form-group">
                         <label for="nombres">Nombres <span class="required">*</span></label>
-                        <input type="text" id="nombres" name="nombres" required maxlength="50" placeholder="Ej: Juan Carlos">
+                        <input type="text" id="nombres" name="nombres" class="form-control" required maxlength="50" placeholder="Ej: Juan Carlos">
                         <small class="form-text text-muted">Entre 2 y 50 caracteres</small>
                     </div>
 
                     <div class="form-group">
                         <label for="apellidos">Apellidos <span class="required">*</span></label>
-                        <input type="text" id="apellidos" name="apellidos" required maxlength="50" placeholder="Ej: Pérez García">
+                        <input type="text" id="apellidos" name="apellidos" class="form-control" required maxlength="50" placeholder="Ej: Pérez García">
                         <small class="form-text text-muted">Entre 2 y 50 caracteres</small>
                     </div>
 
                     <div class="form-group">
                         <label for="sexo">Sexo <span class="required">*</span></label>
-                        <select id="sexo" name="sexo" required>
+                        <select id="sexo" name="sexo" class="form-control" required>
                             <option value="">Seleccione una opción</option>
                             <option value="Hombre">Hombre</option>
                             <option value="Mujer">Mujer</option>
@@ -88,13 +106,13 @@
 
                     <div class="form-group">
                         <label for="numTelefono">Número de Teléfono <span class="required">*</span></label>
-                        <input type="tel" id="numTelefono" name="numTelefono" required maxlength="15" placeholder="Ej: 3001234567">
+                        <input type="tel" id="numTelefono" name="numTelefono" class="form-control" required maxlength="15" placeholder="Ej: 3001234567">
                         <small class="form-text text-muted">Entre 7 y 15 caracteres</small>
                     </div>
 
-                    <div class="form-group full-width">
+                    <div class="form-group">
                         <label for="correo">Correo Electrónico <span class="required">*</span></label>
-                        <input type="email" id="correo" name="correo" required maxlength="30" placeholder="Ej: usuario@ejemplo.com">
+                        <input type="email" id="correo" name="correo" class="form-control" required maxlength="30" placeholder="Ej: usuario@ejemplo.com">
                         <small class="form-text text-muted">Máximo 30 caracteres</small>
                     </div>
                 </div>
@@ -130,6 +148,7 @@
                 </div>
             </form>
         </div>
+        <?php endif; // Fin del bloque de validación ?>
     </div>
 
     <!-- Scripts -->

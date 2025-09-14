@@ -20,7 +20,8 @@ class HuespedModel {
                         nombres, 
                         apellidos, 
                         tipoDocumento, 
-                        sexo
+                        sexo,
+                        id_hotel
                     ) VALUES (
                         :numDocumento, 
                         :numTelefono, 
@@ -28,7 +29,8 @@ class HuespedModel {
                         :nombres, 
                         :apellidos, 
                         :tipoDocumento, 
-                        :sexo
+                        :sexo,
+                        :id_hotel
                     )";
 
             $stmt = $this->db->prepare($sql);
@@ -40,6 +42,7 @@ class HuespedModel {
             $stmt->bindParam(':apellidos', $datos['apellidos'], PDO::PARAM_STR);
             $stmt->bindParam(':tipoDocumento', $datos['tipoDocumento'], PDO::PARAM_STR);
             $stmt->bindParam(':sexo', $datos['sexo'], PDO::PARAM_STR);
+            $stmt->bindParam(':id_hotel', $datos['id_hotel'], PDO::PARAM_INT);
 
             return $stmt->execute();
 
@@ -89,10 +92,16 @@ class HuespedModel {
     /**
      * Obtener todos los huéspedes
      */
-    public function obtenerTodosLosHuespedes() {
+    public function obtenerTodosLosHuespedes($id_hotel) {
         try {
-            $sql = "SELECT * FROM tp_huespedes ORDER BY apellidos, nombres";
+            $sql = "SELECT DISTINCT h.* 
+                    FROM tp_huespedes h
+                    INNER JOIN tp_reservas r ON h.numDocumento = r.hue_numDocumento
+                    WHERE r.id_hotel = :id_hotel
+                    ORDER BY h.apellidos, h.nombres";
+
             $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':id_hotel', $id_hotel, PDO::PARAM_INT);
             $stmt->execute();
             
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -155,17 +164,23 @@ class HuespedModel {
     /**
      * Buscar huéspedes por término de búsqueda
      */
-    public function buscarHuespedes($termino) {
+    public function buscarHuespedes($id_hotel, $termino) {
         try {
-            $sql = "SELECT * FROM tp_huespedes 
-                    WHERE nombres LIKE :termino 
-                    OR apellidos LIKE :termino 
-                    OR numDocumento LIKE :termino 
-                    OR correo LIKE :termino
-                    ORDER BY apellidos, nombres";
+            $sql = "SELECT DISTINCT h.* 
+                    FROM tp_huespedes h
+                    INNER JOIN tp_reservas r ON h.numDocumento = r.hue_numDocumento
+                    WHERE r.id_hotel = :id_hotel 
+                    AND (
+                        h.nombres LIKE :termino 
+                        OR h.apellidos LIKE :termino 
+                        OR h.numDocumento LIKE :termino 
+                        OR h.correo LIKE :termino
+                    )
+                    ORDER BY h.apellidos, h.nombres";
             
             $stmt = $this->db->prepare($sql);
             $terminoBusqueda = '%' . $termino . '%';
+            $stmt->bindParam(':id_hotel', $id_hotel, PDO::PARAM_INT);
             $stmt->bindParam(':termino', $terminoBusqueda, PDO::PARAM_STR);
             $stmt->execute();
             
@@ -180,22 +195,30 @@ class HuespedModel {
     /**
      * Obtener huéspedes paginados
      */
-    public function obtenerHuespedesPaginados($pagina = 1, $registrosPorPagina = 10) {
+    public function obtenerHuespedesPaginados($id_hotel, $pagina = 1, $registrosPorPagina = 10) {
         try {
             $offset = ($pagina - 1) * $registrosPorPagina;
             
             // Obtener el total de registros
-            $sqlTotal = "SELECT COUNT(*) as total FROM tp_huespedes";
+            $sqlTotal = "SELECT COUNT(DISTINCT h.numDocumento) as total 
+                         FROM tp_huespedes h
+                         INNER JOIN tp_reservas r ON h.numDocumento = r.hue_numDocumento
+                         WHERE r.id_hotel = :id_hotel";
             $stmtTotal = $this->db->prepare($sqlTotal);
+            $stmtTotal->bindParam(':id_hotel', $id_hotel, PDO::PARAM_INT);
             $stmtTotal->execute();
             $total = $stmtTotal->fetch(PDO::FETCH_ASSOC)['total'];
             
             // Obtener los registros de la página actual
-            $sql = "SELECT * FROM tp_huespedes 
-                    ORDER BY apellidos, nombres 
+            $sql = "SELECT DISTINCT h.* 
+                    FROM tp_huespedes h
+                    INNER JOIN tp_reservas r ON h.numDocumento = r.hue_numDocumento
+                    WHERE r.id_hotel = :id_hotel
+                    ORDER BY h.apellidos, h.nombres 
                     LIMIT :limit OFFSET :offset";
             
             $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':id_hotel', $id_hotel, PDO::PARAM_INT);
             $stmt->bindParam(':limit', $registrosPorPagina, PDO::PARAM_INT);
             $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
