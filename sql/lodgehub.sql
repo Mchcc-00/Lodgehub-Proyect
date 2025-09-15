@@ -390,6 +390,7 @@ SELECT
     -- Información del huésped
     hue.nombres AS nombreHuesped,
     hue.apellidos AS apellidoHuesped,
+    hue.numDocumento AS huespedDocumento,
     hue.correo AS correoHuesped,
     hue.numTelefono AS telefonoHuesped,
     -- Información de la habitación
@@ -404,11 +405,11 @@ SELECT
     DATEDIFF(r.fechaFin, r.fechainicio) AS diasEstadia,
     (r.cantidadAdultos + r.cantidadNinos + r.cantidadDiscapacitados) AS totalPersonas
 FROM tp_reservas r
-INNER JOIN tp_usuarios u ON r.us_numDocumento = u.numDocumento
-INNER JOIN tp_huespedes hue ON r.hue_numDocumento = hue.numDocumento
-INNER JOIN tp_habitaciones h ON r.id_habitacion = h.id
-INNER JOIN td_tipohabitacion th ON h.tipoHabitacion = th.id
-INNER JOIN tp_hotel hot ON r.id_hotel = hot.id;
+LEFT JOIN tp_usuarios u ON r.us_numDocumento = u.numDocumento
+LEFT JOIN tp_huespedes hue ON r.hue_numDocumento = hue.numDocumento
+LEFT JOIN tp_habitaciones h ON r.id_habitacion = h.id
+LEFT JOIN td_tipohabitacion th ON h.tipoHabitacion = th.id
+LEFT JOIN tp_hotel hot ON r.id_hotel = hot.id;
 
 -- Vista: PQRS con información del usuario y hotel
 CREATE OR REPLACE VIEW v_pqrs_detalle AS
@@ -645,4 +646,3 @@ CREATE INDEX idx_mantenimiento_pendiente ON tp_mantenimiento (id_hotel, estado, 
 
 -- Para PQRS por prioridad y estado
 CREATE INDEX idx_pqrs_gestion ON tp_pqrs (id_hotel, estado, prioridad, fechaRegistro);
-

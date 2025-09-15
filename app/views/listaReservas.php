@@ -1,299 +1,237 @@
-<?php
-require_once('../../config/conexionGlobal.php');
-
-// Inicializar variables
-$reservas = [];
-$mensaje = '';
-$error = '';
-
-try {
-    // Crear conexión PDO
-    $pdo = conexionDB();
-    
-    if (!$pdo) {
-        throw new Exception("Error: No se pudo conectar a la base de datos");
-    }
-    
-    // Consulta SQL optimizada para obtener todas las reservas
-    $sql = "SELECT 
-                r.id,
-                r.pagoFinal,
-                r.fechainicio,
-                r.fechaFin,
-                r.cantidadAdultos,
-                r.cantidadNinos,
-                r.cantidadDiscapacitados,
-                r.motivoReserva,
-                r.metodoPago,
-                r.informacionAdicional,
-                r.estado,
-                r.fechaRegistro,
-                h.nombre AS hotel_nombre,
-                hab.numero AS habitacion_numero,
-                hab.tipo AS habitacion_tipo,
-                CONCAT(u.nombre, ' ', u.apellido) AS usuario_completo,
-                CONCAT(hue.nombre, ' ', hue.apellido) AS huesped_completo,
-                u.numDocumento AS usuario_documento,
-                hue.numDocumento AS huesped_documento
-            FROM tp_reservas r
-            INNER JOIN tp_hotel h ON r.id_hotel = h.id
-            INNER JOIN tp_habitaciones hab ON r.id_habitacion = hab.id
-            INNER JOIN tp_usuarios u ON r.us_numDocumento = u.numDocumento
-            INNER JOIN tp_huespedes hue ON r.hue_numDocumento = hue.numDocumento
-            ORDER BY r.fechaRegistro DESC";
-    
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-    $reservas = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    if (empty($reservas)) {
-        $mensaje = "No hay reservas registradas en el sistema.";
-    }
-    
-} catch (PDOException $e) {
-    $error = "Error en la consulta de base de datos: " . $e->getMessage();
-} catch (Exception $e) {
-    $error = $e->getMessage();
-}
-
-// Función para formatear el estado con colores
-function getEstadoClass($estado) {
-    $estados = [
-        'Activa' => 'activa',
-        'Cancelada' => 'cancelada',
-        'Finalizada' => 'finalizada',
-        'Pendiente' => 'pendiente'
-    ];
-    return $estados[$estado] ?? 'pendiente';
-}
-
-// Función para formatear fechas
-function formatearFecha($fecha, $incluirHora = false) {
-    if ($incluirHora) {
-        return date('d/m/Y H:i', strtotime($fecha));
-    }
-    return date('d/m/Y', strtotime($fecha));
-}
-?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Reservas - LodgeHub</title>
+    <title>Lista de Reservas - LodgeHub</title>
+    <!-- Bootstrap y Font Awesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-    <link href="../../public/assets/css/stylesNav.css" rel="stylesheet"> 
-    <link href="../../public/assets/css/stylesReservas.css" rel="stylesheet"> 
     
+    <!-- Estilos de los layouts -->
+    <link href="../../public/assets/css/stylesNav.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../public/assets/css/stylesReservas.css">
 </head>
 <body>
+
     <?php
         include "layouts/sidebar.php";
         include "layouts/navbar.php";
+
+        // --- INICIO: CONTROL DE ACCESO ---
+        // Solo administradores y colaboradores pueden acceder
+        if (!isset($_SESSION['user']['roles']) || !in_array($_SESSION['user']['roles'], ['Administrador', 'Colaborador'])) {
+            echo '<div class="container mt-5"><div class="alert alert-danger text-center"><h4><i class="fas fa-lock"></i> Acceso Denegado</h4><p>No tienes los permisos necesarios para gestionar las reservas.</p><a href="homepage.php" class="btn btn-primary mt-3">Volver al Inicio</a></div></div>';
+            exit(); // Detener la ejecución del script
+        }
+        // --- FIN: CONTROL DE ACCESO ---
     ?>
     <script src="../../public/assets/js/sidebar.js"></script>
 
     <div class="container">
+
         <div class="header">
-            <h1>📋 Gestión de Reservas</h1>
-            <p>Panel de administración de reservas del sistema LodgeHub</p>
+            <h1><i class="fas fa-calendar-alt"></i> Lista de Reservas</h1>
+            <p>Gestiona todas las reservas registradas en el sistema</p>
         </div>
 
-        <div class="content">
-            <!-- Mostrar errores -->
-            <?php if (!empty($error)): ?>
-                <div class="alert alert-error">
-                    <strong>❌ Error:</strong> <?php echo htmlspecialchars($error); ?>
+        <!-- Sección de búsqueda y filtros -->
+        <div class="search-section" style="position: relative; z-index: 2;">
+            <div class="row align-items-center mb-3">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="buscar-input" placeholder="Buscar por ID, huésped, habitación...">
+                        <button class="btn btn-outline-primary" type="button" id="buscar-btn">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                    </div>
                 </div>
-            <?php endif; ?>
-
-            <!-- Barra de acciones -->
-            <div class="actions-bar">
-                <div>
-                    <a href="crearReservas.php" class="btn">
-                        ➕ Nueva Reserva
+                <div class="col-md-8 text-end">
+                    <div class="btn-group me-2">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" >
+                            <i class="fas fa-filter"></i> Filtros
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="all">Todos</a></li>
+                            <li><h6 class="dropdown-header">Por Estado</h6></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="Activa">Activas</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="Pendiente">Pendientes</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="Finalizada">Finalizadas</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="Cancelada">Canceladas</a></li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-success" id="refresh-btn">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                    <a href="crearReservas.php" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nueva Reserva
                     </a>
-                    <a href="reporteReservas.php" class="btn btn-secondary">
-                        📊 Generar Reporte
-                    </a>
-                </div>
-                <div>
-                    <span>Total de registros: <strong><?php echo count($reservas); ?></strong></span>
                 </div>
             </div>
+        </div>
 
-            <!-- Estadísticas rápidas -->
-            <?php if (!empty($reservas)): ?>
-                <?php
-                $activas = array_filter($reservas, fn($r) => $r['estado'] === 'Activa');
-                $pendientes = array_filter($reservas, fn($r) => $r['estado'] === 'Pendiente');
-                $finalizadas = array_filter($reservas, fn($r) => $r['estado'] === 'Finalizada');
-                $canceladas = array_filter($reservas, fn($r) => $r['estado'] === 'Cancelada');
-                ?>
-                
-                <div class="stats">
-                    <div class="stat-card">
-                        <div class="stat-number"><?php echo count($activas); ?></div>
-                        <div class="stat-label">Activas</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number"><?php echo count($pendientes); ?></div>
-                        <div class="stat-label">Pendientes</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number"><?php echo count($finalizadas); ?></div>
-                        <div class="stat-label">Finalizadas</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number"><?php echo count($canceladas); ?></div>
-                        <div class="stat-label">Canceladas</div>
-                    </div>
-                </div>
-            <?php endif; ?>
+        <!-- Mensajes -->
+        <div id="success-message" class="success-message" style="display: none;">
+            ✅ <strong id="success-text">Operación exitosa</strong>
+        </div>
 
-            <!-- Mensaje informativo -->
-            <?php if (!empty($mensaje) && empty($error)): ?>
-                <div class="alert alert-info">
-                    <strong>ℹ️ Información:</strong> <?php echo htmlspecialchars($mensaje); ?>
-                </div>
-            <?php endif; ?>
+        <div id="error-message" class="error-message" style="display: none;">
+            ❌ <strong id="error-text">Error en la operación</strong>
+        </div>
 
-            <!-- Tabla de reservas -->
-            <?php if (!empty($reservas)): ?>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Hotel</th>
-                                <th>Habitación</th>
-                                <th>Usuario</th>
-                                <th>Huésped</th>
-                                <th>Fechas</th>
-                                <th>Ocupantes</th>
-                                <th>Motivo</th>
-                                <th>Pago</th>
-                                <th>Estado</th>
-                                <th>Registro</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($reservas as $reserva): ?>
-                                <tr>
-                                    <td>
-                                        <strong>#<?php echo htmlspecialchars($reserva['id']); ?></strong>
-                                    </td>
-                                    <td><?php echo htmlspecialchars($reserva['hotel_nombre']); ?></td>
-                                    <td>
-                                        <div class="room-info">
-                                            <span class="room-number">
-                                                Hab. <?php echo htmlspecialchars($reserva['habitacion_numero']); ?>
-                                            </span>
-                                            <span class="room-type">
-                                                <?php echo htmlspecialchars($reserva['habitacion_tipo']); ?>
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <?php echo htmlspecialchars($reserva['usuario_completo']); ?>
-                                        <span class="document-info">
-                                            Doc: <?php echo htmlspecialchars($reserva['usuario_documento']); ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <?php echo htmlspecialchars($reserva['huesped_completo']); ?>
-                                        <span class="document-info">
-                                            Doc: <?php echo htmlspecialchars($reserva['huesped_documento']); ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <strong>Desde:</strong> <?php echo formatearFecha($reserva['fechainicio']); ?><br>
-                                        <strong>Hasta:</strong> <?php echo formatearFecha($reserva['fechaFin']); ?>
-                                    </td>
-                                    <td>
-                                        👥 <?php echo ($reserva['cantidadAdultos'] ?? 0); ?> adultos<br>
-                                        👶 <?php echo ($reserva['cantidadNinos'] ?? 0); ?> niños<br>
-                                        ♿ <?php echo ($reserva['cantidadDiscapacitados'] ?? 0); ?> disc.
-                                    </td>
-                                    <td><?php echo htmlspecialchars($reserva['motivoReserva']); ?></td>
-                                    <td>
-                                        <span class="money">
-                                            $<?php echo number_format($reserva['pagoFinal'], 0, ',', '.'); ?>
-                                        </span><br>
-                                        <small><?php echo htmlspecialchars($reserva['metodoPago']); ?></small>
-                                    </td>
-                                    <td>
-                                        <span class="estado estado-<?php echo getEstadoClass($reserva['estado']); ?>">
-                                            <?php echo htmlspecialchars($reserva['estado']); ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <?php echo formatearFecha($reserva['fechaRegistro'], true); ?>
-                                    </td>
-                                    <td class="acciones">
-                                        <a href="verReserva.php?id=<?php echo $reserva['id']; ?>" 
-                                           class="btn-small btn-view" title="Ver detalles">
-                                            👁️
-                                        </a>
-                                        <a href="editarReserva.php?id=<?php echo $reserva['id']; ?>" 
-                                           class="btn-small btn-edit" title="Editar">
-                                            ✏️
-                                        </a>
-                                        <a href="eliminarReserva.php?id=<?php echo $reserva['id']; ?>" 
-                                           class="btn-small btn-delete" title="Eliminar"
-                                           onclick="return confirm('⚠️ ¿Estás seguro de eliminar la reserva #<?php echo $reserva['id']; ?>?\n\nEsta acción no se puede deshacer.')">
-                                            🗑️
-                                        </a>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+        <!-- Tabla de Reservas -->
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Huésped</th>
+                        <th>Habitación</th>
+                        <th>Fechas</th>
+                        <th>Total Personas</th>
+                        <th>Pago Final</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-reservas">
+                    <tr>
+                        <td colspan="8" class="loading">
+                            <i class="fas fa-spinner fa-spin"></i> Cargando reservas...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        <nav aria-label="Paginación de Reservas" id="paginacion-container" style="display: none;">
+            <ul class="pagination" id="paginacion">
+                <!-- Generado dinámicamente -->
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Modal de edición -->
+    <div class="modal fade" id="editarModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit"></i> Editar Reserva
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-            <?php else: ?>
-                <div class="no-data">
-                    <h3>📋 No hay reservas registradas</h3>
-                    <p>Comienza creando tu primera reserva haciendo clic en el botón "Nueva Reserva".</p>
-                    <br>
-                    <a href="crearReservas.php" class="btn">➕ Crear Primera Reserva</a>
+                <div class="modal-body">
+                    <form id="form-editar">
+                        <input type="hidden" id="edit-id">
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="edit-fechainicio" class="form-label">Fecha de Inicio</label>
+                                    <input type="date" class="form-control" id="edit-fechainicio" name="fechainicio">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="edit-fechaFin" class="form-label">Fecha de Fin</label>
+                                    <input type="date" class="form-control" id="edit-fechaFin" name="fechaFin">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="edit-pagoFinal" class="form-label">Pago Final</label>
+                                    <input type="number" class="form-control" id="edit-pagoFinal" name="pagoFinal" step="0.01">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="edit-estado" class="form-label">Estado</label>
+                                    <select class="form-select" id="edit-estado" name="estado">
+                                        <option value="Activa">Activa</option>
+                                        <option value="Pendiente">Pendiente</option>
+                                        <option value="Finalizada">Finalizada</option>
+                                        <option value="Cancelada">Cancelada</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="edit-informacionAdicional" class="form-label">Información Adicional</label>
+                            <textarea class="form-control" id="edit-informacionAdicional" name="informacionAdicional" rows="3"></textarea>
+                        </div>
+
+                    </form>
                 </div>
-            <?php endif; ?>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="guardar-edicion">
+                        <i class="fas fa-save"></i> Guardar Cambios
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script>
-        // Confirmación mejorada para eliminar
-        function confirmarEliminacion(id, hotel, habitacion) {
-            const mensaje = `⚠️ CONFIRMAR ELIMINACIÓN\n\n` +
-                          `Reserva: #${id}\n` +
-                          `Hotel: ${hotel}\n` +
-                          `Habitación: ${habitacion}\n\n` +
-                          `¿Estás seguro de que deseas eliminar esta reserva?\n` +
-                          `Esta acción no se puede deshacer.`;
-            
-            return confirm(mensaje);
-        }
+    <!-- Modal de visualización completa -->
+    <div class="modal fade" id="verModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="verModalTitle">
+                        <i class="fas fa-file-invoice-dollar"></i> Detalles de la Reserva
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="detalles-reserva">
+                    <!-- Contenido dinámico -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        // Auto-actualizar cada 5 minutos
-        setInterval(function() {
-            location.reload();
-        }, 300000);
+    <!-- Modal de confirmación de eliminación -->
+    <div class="modal fade" id="eliminarModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas eliminar esta reserva?</p>
+                    <div class="alert alert-info">
+                        <strong id="eliminar-info">Información de la Reserva</strong><br>
+                        <small>ID: <span id="eliminar-id">-</span></small>
+                    </div>
+                    <p class="text-danger">
+                        <i class="fas fa-warning"></i> 
+                        Esta acción no se puede deshacer.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmar-eliminacion">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        // Mostrar mensaje de carga al hacer clic en enlaces
-        document.addEventListener('DOMContentLoaded', function() {
-            const links = document.querySelectorAll('a[href*=".php"]');
-            links.forEach(link => {
-                link.addEventListener('click', function() {
-                    if (!this.href.includes('eliminar')) {
-                        document.body.style.opacity = '0.7';
-                        document.body.style.pointerEvents = 'none';
-                    }
-                });
-            });
-        });
-    </script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../public/assets/js/listarReservas.js"></script> <!-- Archivo JS dedicado -->
+
 </body>
 </html>

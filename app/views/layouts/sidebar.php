@@ -1,5 +1,5 @@
 <?php
-require_once 'validarSesion.php';
+require_once __DIR__ . '/../validarSesion.php'; // Ruta corregida
 // Asumiendo que tienes el rol del usuario en una sesión o variable
 $userRole = $_SESSION['user']['roles'] ?? 'Colaborador'; // 'Administrador' o 'Colaborador'
 

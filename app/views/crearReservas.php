@@ -1,5 +1,6 @@
 <?php
 require_once ('../../config/conexionGlobal.php');
+session_start(); // Asegurarse de que la sesión esté iniciada
 
 // Obtener la conexión PDO
 $pdo = conexionDB();
@@ -11,6 +12,12 @@ if (!$pdo) {
 $mensaje = '';
 $tipoMensaje = '';
 
+// VALIDACIÓN: Asegurarse de que un hotel ha sido seleccionado
+$hotelSeleccionado = isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id']);
+$hotel_id_sesion = $_SESSION['hotel_id'] ?? null;
+$hotel_nombre_sesion = $_SESSION['hotel_nombre'] ?? 'No asignado';
+
+
 // Procesar el formulario cuando se envía
 if ($_POST) {
     try {
@@ -18,7 +25,7 @@ if ($_POST) {
         if (empty($_POST['pagoFinal']) || empty($_POST['fechainicio']) || empty($_POST['fechaFin']) || 
             empty($_POST['motivoReserva']) || empty($_POST['id_habitacion']) || empty($_POST['metodoPago']) ||
             empty($_POST['us_numDocumento']) || empty($_POST['hue_numDocumento']) || empty($_POST['estado']) ||
-            empty($_POST['id_hotel'])) {
+            empty($hotel_id_sesion)) { // Usar el hotel de la sesión
             throw new Exception("Todos los campos obligatorios deben ser completados.");
         }
         
@@ -58,8 +65,8 @@ if ($_POST) {
             ':informacionAdicional' => $_POST['informacionAdicional'] ?? null,
             ':us_numDocumento' => $_POST['us_numDocumento'],
             ':hue_numDocumento' => $_POST['hue_numDocumento'],
-            ':estado' => $_POST['estado'],
-            ':id_hotel' => intval($_POST['id_hotel'])
+            ':estado' => $_POST['estado'], // El estado de la reserva
+            ':id_hotel' => intval($hotel_id_sesion) // Usar el ID del hotel de la sesión
         ]);
         
         $mensaje = "Reserva creada exitosamente con ID: " . $pdo->lastInsertId();
@@ -85,11 +92,11 @@ try {
     $habitaciones = $stmtHabitaciones->fetchAll(PDO::FETCH_ASSOC);
     
     // Obtener usuarios
-    $stmtUsuarios = $pdo->query("SELECT numDocumento, nombre, apellido FROM tp_usuarios ORDER BY nombre");
+    $stmtUsuarios = $pdo->query("SELECT numDocumento, nombres, apellidos FROM tp_usuarios ORDER BY nombres");
     $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
     
     // Obtener huéspedes
-    $stmtHuespedes = $pdo->query("SELECT numDocumento, nombre, apellido FROM tp_huespedes ORDER BY nombre");
+    $stmtHuespedes = $pdo->query("SELECT numDocumento, nombres, apellidos FROM tp_huespedes ORDER BY nombres");
     $huespedes = $stmtHuespedes->fetchAll(PDO::FETCH_ASSOC);
     
 } catch(PDOException $e) {
@@ -117,6 +124,15 @@ try {
     <script src="../../public/assets/js/sidebar.js"></script>
 
     <div class="container reservas-container">
+        <?php if (!$hotelSeleccionado): ?>
+            <div class="alert alert-danger mt-4" role="alert">
+                <h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> ¡Acción Requerida!</h4>
+                <p>Para poder registrar una nueva reserva, primero debes <strong>seleccionar un hotel</strong> desde el panel principal (Home).</p>
+                <hr>
+                <p class="mb-0">Por favor, regresa al <a href="homepage.php" class="alert-link">Home</a> y elige el hotel donde deseas trabajar.</p>
+            </div>
+        <?php else: ?>
+
         <!-- Header Section -->
         <div class="header">
             <h1><i class="fas fa-calendar-plus"></i> Crear Nueva Reserva</h1>
@@ -143,18 +159,11 @@ try {
                     <!-- Sección: Ubicación -->
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="id_hotel" class="form-label">
+                            <label for="hotel_nombre" class="form-label">
                                 <i class="fas fa-hotel"></i>
                                 Hotel <span class="required">*</span>
                             </label>
-                            <select name="id_hotel" id="id_hotel" class="form-control" required>
-                                <option value="">Seleccionar hotel</option>
-                                <?php foreach ($hoteles as $hotel): ?>
-                                    <option value="<?php echo $hotel['id']; ?>" <?php echo (isset($_POST['id_hotel']) && $_POST['id_hotel'] == $hotel['id']) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($hotel['nombre']); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
+                            <input type="text" id="hotel_nombre" name="hotel_nombre" class="form-control" value="<?php echo htmlspecialchars($hotel_nombre_sesion); ?>" readonly>
                         </div>
                         
                         <div class="form-group">
@@ -166,7 +175,7 @@ try {
                                 <option value="">Seleccionar habitación</option>
                                 <?php foreach ($habitaciones as $habitacion): ?>
                                     <option value="<?php echo $habitacion['id']; ?>" <?php echo (isset($_POST['id_habitacion']) && $_POST['id_habitacion'] == $habitacion['id']) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($habitacion['hotel_nombre'] . ' - Hab. ' . $habitacion['numero'] . ' (' . $habitacion['tipo'] . ')'); ?>
+                                        <?php echo htmlspecialchars('Hab. ' . $habitacion['numero'] . ' (' . $habitacion['tipo'] . ')'); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -230,7 +239,7 @@ try {
                                 <option value="">Seleccionar usuario</option>
                                 <?php foreach ($usuarios as $usuario): ?>
                                     <option value="<?php echo $usuario['numDocumento']; ?>" <?php echo (isset($_POST['us_numDocumento']) && $_POST['us_numDocumento'] == $usuario['numDocumento']) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($usuario['nombre'] . ' ' . $usuario['apellido'] . ' (' . $usuario['numDocumento'] . ')'); ?>
+                                        <?php echo htmlspecialchars($usuario['nombres'] . ' ' . $usuario['apellidos'] . ' (' . $usuario['numDocumento'] . ')'); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -245,7 +254,7 @@ try {
                                 <option value="">Seleccionar huésped</option>
                                 <?php foreach ($huespedes as $huesped): ?>
                                     <option value="<?php echo $huesped['numDocumento']; ?>" <?php echo (isset($_POST['hue_numDocumento']) && $_POST['hue_numDocumento'] == $huesped['numDocumento']) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($huesped['nombre'] . ' ' . $huesped['apellido'] . ' (' . $huesped['numDocumento'] . ')'); ?>
+                                        <?php echo htmlspecialchars($huesped['nombres'] . ' ' . $huesped['apellidos'] . ' (' . $huesped['numDocumento'] . ')'); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -331,26 +340,7 @@ try {
                 </form>
             </div>
         </div>
-        
-        <!-- Stats Section (opcional) -->
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-number"><?php echo count($hoteles); ?></div>
-                <div class="stat-label">Hoteles Disponibles</div>
-            </div>
-            <div class="stat-card success">
-                <div class="stat-number"><?php echo count($habitaciones); ?></div>
-                <div class="stat-label">Habitaciones Totales</div>
-            </div>
-            <div class="stat-card warning">
-                <div class="stat-number"><?php echo count($usuarios); ?></div>
-                <div class="stat-label">Usuarios Registrados</div>
-            </div>
-            <div class="stat-card danger">
-                <div class="stat-number"><?php echo count($huespedes); ?></div>
-                <div class="stat-label">Huéspedes Registrados</div>
-            </div>
-        </div>
+        <?php endif; // Fin del bloque de validación ?>
     </div>
     
     <script>
