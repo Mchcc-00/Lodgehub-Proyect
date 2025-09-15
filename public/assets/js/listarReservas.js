@@ -72,7 +72,10 @@ class ReservasManager {
         });
 
         try {
-            const response = await fetch(`../controllers/reservasController.php?${params.toString()}`);
+            const response = await fetch(`${CONTROLLER_URL}?${params.toString()}`, {
+                cache: 'no-store',
+                // Ya no se necesita la cabecera X-Requested-With
+            });
             
             if (!response.ok) {
                 throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
@@ -294,7 +297,10 @@ class ReservasManager {
         boton.disabled = true;
 
         try {
-            const response = await fetch(`../controllers/reservasController.php?action=obtener&id=${id}`);
+            const response = await fetch(`${CONTROLLER_URL}?` + new URLSearchParams({
+                action: 'obtener',
+                id: id
+            }));
             
             if (!response.ok) {
                 throw new Error(`Error HTTP: ${response.status}`);
@@ -399,18 +405,13 @@ class ReservasManager {
             
             const id = document.getElementById('edit-id').value;
             const form = document.getElementById('form-editar');
-            const formData = new FormData(form);
-            const datos = Object.fromEntries(formData.entries());
-            datos.action = 'actualizar'; // <-- AÑADIR ESTA LÍNEA
-            datos.id = id;
-
-            const response = await fetch('../controllers/reservasController.php', {
+            const datos = Object.fromEntries(new FormData(form).entries());
+            datos.id = id; // Añadimos el ID a los datos del formulario
+            const response = await fetch(CONTROLLER_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                // El body ahora incluye la acción
-                body: JSON.stringify(datos)
+                body: JSON.stringify({ ...datos, action: 'actualizar' })
             });
-
             if (!response.ok) {
                 throw new Error(`Error HTTP: ${response.status}`);
             }
@@ -460,12 +461,12 @@ class ReservasManager {
             btnConfirmar.disabled = true;
             btnConfirmar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
 
-            const response = await fetch('../controllers/reservasController.php', {
+            const response = await fetch(CONTROLLER_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     action: 'eliminar', 
-                    id: this.reservaParaEliminar 
+                    id: this.reservaParaEliminar
                 })
             });
 

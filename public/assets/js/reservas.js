@@ -21,13 +21,17 @@ class ReservasFormManager {
         const fechaFin = document.getElementById('fechaFin');
 
         if (habitacionSelect) {
-            habitacionSelect.addEventListener('change', () => this.calcularPrecioSugerido());
+            habitacionSelect.addEventListener('change', () => {
+                this.calcularPrecioSugerido();
+                this.verificarDisponibilidad(); // <-- Añadido
+            });
         }
 
         if (fechaInicio) {
             fechaInicio.addEventListener('change', (e) => {
                 this.validarFecha(e.target, true);
                 this.calcularPrecioSugerido();
+                this.verificarDisponibilidad(); // <-- Añadido
                 this.actualizarFechaMinima();
             });
         }
@@ -36,6 +40,7 @@ class ReservasFormManager {
             fechaFin.addEventListener('change', (e) => {
                 this.validarFecha(e.target, false);
                 this.calcularPrecioSugerido();
+                this.verificarDisponibilidad(); // <-- Añadido
             });
         }
 
@@ -223,12 +228,18 @@ class ReservasFormManager {
         }
     }
 
-    validarFormulario(e) {
+    async validarFormulario(e) { // <-- Convertido a async
         const fechaInicio = document.getElementById('fechainicio');
         const fechaFin = document.getElementById('fechaFin');
         const btnCrear = document.getElementById('btn-crear');
         
         let formularioValido = true;
+
+        // Prevenir envío para esperar la validación asíncrona
+        e.preventDefault();
+        // Mostrar estado de carga en el botón
+        btnCrear.disabled = true;
+        btnCrear.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Validando...';
 
         // Validar fechas
         if (fechaInicio && !this.validarFecha(fechaInicio, true)) {
@@ -254,9 +265,15 @@ class ReservasFormManager {
             }
         });
 
+        // Validar disponibilidad de la habitación de forma asíncrona
+        const disponible = await this.verificarDisponibilidad();
+        if (!disponible) {
+            formularioValido = false;
+        }
+
         if (!formularioValido) {
-            e.preventDefault();
-            
+            // e.preventDefault(); // Ya se previno al inicio
+
             // Restaurar botón si había sido deshabilitado
             if (btnCrear) {
                 btnCrear.disabled = false;
@@ -272,11 +289,9 @@ class ReservasFormManager {
                 });
             }
         } else {
-            // Formulario válido, deshabilitar botón para evitar doble envío
-            if (btnCrear) {
-                btnCrear.disabled = true;
-                btnCrear.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
-            }
+            // Si todo es válido, ahora sí se envía el formulario
+            btnCrear.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+            document.getElementById('form-reserva').submit();
         }
 
         return formularioValido;
@@ -324,15 +339,22 @@ class ReservasFormManager {
         const fechaFin = document.getElementById('fechaFin').value;
 
         if (!habitacion || !fechaInicio || !fechaFin) return;
+        
+        // Limpiar error previo de disponibilidad
+        const habitacionSelect = document.getElementById('id_habitacion');
+        this.limpiarError(habitacionSelect);
 
         try {
-            const response = await fetch('../controllers/disponibilidadController.php', {
+            // NOTA: Asegúrate de que este controlador exista y funcione.
+            // Por ahora, el código está listo para usarlo.
+            const response = await fetch('/lodgehub/api.php?resource=reservas', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
+                    action: 'verificarDisponibilidad', // Acción para el controlador
                     id_habitacion: habitacion,
-                    fecha_inicio: fechaInicio,
-                    fecha_fin: fechaFin
+                    fechainicio: fechaInicio,
+                    fechaFin: fechaFin
                 })
             });
 
@@ -340,14 +362,14 @@ class ReservasFormManager {
             
             if (!data.disponible) {
                 const habitacionSelect = document.getElementById('id_habitacion');
-                this.mostrarError(habitacionSelect, 'Habitación no disponible para las fechas seleccionadas');
+                this.mostrarError(habitacionSelect, data.message || 'Habitación no disponible para las fechas seleccionadas');
                 return false;
             }
 
             return true;
         } catch (error) {
             console.warn('Error al verificar disponibilidad:', error);
-            return true; // Asumir disponible si hay error
+            return true; // Asumir disponible si hay error de red para no bloquear al usuario. El backend hará la validación final.
         }
     }
 

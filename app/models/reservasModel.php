@@ -75,55 +75,9 @@ class ReservasModel {
         ];
     }
 
-    private function verificarVistaExiste() {
-        try {
-            $stmt = $this->db->query("SELECT 1 FROM v_reservas_detalle LIMIT 1");
-            return true;
-        } catch (PDOException $e) {
-            return false;
-        }
-    }
-
-    private function crearJoinManual() {
-        return "SELECT 
-            r.id,
-            r.pagoFinal,
-            r.fechainicio,
-            r.fechaFin,
-            r.cantidadAdultos,
-            r.cantidadNinos,
-            r.cantidadDiscapacitados,
-            (r.cantidadAdultos + r.cantidadNinos + r.cantidadDiscapacitados) as totalPersonas,
-            r.motivoReserva,
-            r.metodoPago,
-            r.informacionAdicional,
-            r.estado,
-            r.fechaRegistro,
-            r.id_hotel,
-            r.id_habitacion,
-            CONCAT(h.nombres, ' ', h.apellidos) as nombreHuesped,
-            h.numDocumento as huespedDocumento,
-            CONCAT(u.nombres, ' ', u.apellidos) as nombreUsuario,
-            u.numDocumento as usuarioDocumento,
-            hab.numero as numeroHabitacion,
-            hab.tipo as tipoHabitacion,
-            hot.nombre as nombreHotel,
-            DATEDIFF(r.fechaFin, r.fechainicio) as diasEstadia
-        FROM tp_reservas r
-        LEFT JOIN tp_huespedes h ON r.hue_numDocumento = h.numDocumento
-        LEFT JOIN tp_usuarios u ON r.us_numDocumento = u.numDocumento
-        LEFT JOIN tp_habitaciones hab ON r.id_habitacion = hab.id
-        LEFT JOIN tp_hotel hot ON r.id_hotel = hot.id";
-    }
-
     public function obtenerPorId($id) {
         try {
-            $esVista = $this->verificarVistaExiste();
-            
-            if ($esVista) {
-                $stmt = $this->db->prepare("SELECT * FROM v_reservas_detalle WHERE id = :id");
-            } else {
-                $sql = "SELECT 
+            $sql = "SELECT 
                     r.id,
                     r.pagoFinal,
                     r.fechainicio,
@@ -152,9 +106,8 @@ class ReservasModel {
                 LEFT JOIN tp_usuarios u ON r.us_numDocumento = u.numDocumento
                 LEFT JOIN tp_habitaciones hab ON r.id_habitacion = hab.id
                 LEFT JOIN tp_hotel hot ON r.id_hotel = hot.id
-                WHERE r.id = :id";
-                $stmt = $this->db->prepare($sql);
-            }
+            WHERE r.id = :id";
+            $stmt = $this->db->prepare($sql);
             
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
@@ -209,6 +162,31 @@ class ReservasModel {
                 throw new Exception("No se puede eliminar la reserva porque tiene registros asociados (ej. una factura).");
             }
             return false;
+        }
+    }
+
+    public function verificarDisponibilidad($id_habitacion, $fecha_inicio, $fecha_fin, $excluir_reserva_id = null) {
+        try {
+            $sql = "SELECT COUNT(*) FROM tp_reservas 
+                    WHERE id_habitacion = :id_habitacion 
+                    AND estado IN ('Activa', 'Pendiente')
+                    AND (
+                        (:fecha_inicio < fechaFin AND :fecha_fin > fechainicio)
+                    )";
+            
+            $params = [
+                ':id_habitacion' => $id_habitacion,
+                ':fecha_inicio' => $fecha_inicio,
+                ':fecha_fin' => $fecha_fin
+            ];
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            
+            return $stmt->fetchColumn() == 0;
+        } catch (PDOException $e) {
+            error_log("Error en ReservasModel::verificarDisponibilidad: " . $e->getMessage());
+            return false; // En caso de error, es más seguro asumir que no está disponible.
         }
     }
 }

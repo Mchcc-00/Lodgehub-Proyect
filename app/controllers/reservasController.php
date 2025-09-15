@@ -1,10 +1,9 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once '../models/reservasModel.php';
+require_once __DIR__ . '/../models/reservasModel.php';
 
 class ReservasController {
     private $reservasModel;
@@ -14,22 +13,25 @@ class ReservasController {
     }
 
     private function responder($success, $message, $data = null, $statusCode = 200) {
+        header('Content-Type: application/json; charset=utf-8');
         http_response_code($statusCode);
         echo json_encode(['success' => $success, 'message' => $message, 'data' => $data]);
         exit;
     }
 
     public function manejarPeticion() {
-        $action = $_GET['action'] ?? null;
+        $action = null;
         $input = null;
 
         // Si es POST y el contenido es JSON, decodificamos el cuerpo de la petición
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && strpos($_SERVER["CONTENT_TYPE"] ?? '', "application/json") !== false) {
             $input = json_decode(file_get_contents('php://input'), true);
-            // La acción puede venir en el cuerpo JSON
-            if (isset($input['action'])) {
-                $action = $input['action'];
-            }
+            // Para POST, la acción también puede venir en el cuerpo JSON
+            // (importante para editar y eliminar)
+            $action = $input['action'] ?? null;
+        } else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            // Para GET, la acción viene en la URL
+            $action = $_GET['action'] ?? null;
         }
 
         try {
@@ -45,6 +47,9 @@ class ReservasController {
                     break;
                 case 'eliminar':
                     $this->eliminarReserva($input);
+                    break;
+                case 'verificarDisponibilidad': // <-- AÑADIDO
+                    $this->verificarDisponibilidad($input);
                     break;
                 default:
                     $this->responder(false, 'Acción no válida', null, 400);
@@ -82,7 +87,7 @@ class ReservasController {
         $reserva = $this->reservasModel->obtenerPorId((int)$id);
         if ($reserva) {
             // Validar que la reserva pertenezca al hotel del usuario
-            if ($reserva['id_hotel'] != ($_SESSION['hotel_id'] ?? null)) {
+            if ((int)$reserva['id_hotel'] != (int)($_SESSION['hotel_id'] ?? null)) { // <-- CORREGIDO
                 $this->responder(false, 'Acceso denegado a esta reserva.', null, 403);
             }
             $this->responder(true, 'Reserva obtenida', $reserva);
@@ -100,7 +105,7 @@ class ReservasController {
 
         // Obtener reserva para validar permisos
         $reservaActual = $this->reservasModel->obtenerPorId((int)$id);
-        if (!$reservaActual || $reservaActual['id_hotel'] != ($_SESSION['hotel_id'] ?? null)) {
+        if (!$reservaActual || (int)$reservaActual['id_hotel'] != (int)($_SESSION['hotel_id'] ?? null)) { // <-- CORREGIDO
             $this->responder(false, 'Acceso denegado o reserva no encontrada.', null, 403);
         }
 
@@ -136,7 +141,7 @@ class ReservasController {
 
         // Obtener reserva para validar permisos
         $reservaActual = $this->reservasModel->obtenerPorId((int)$id);
-        if (!$reservaActual || $reservaActual['id_hotel'] != ($_SESSION['hotel_id'] ?? null)) {
+        if (!$reservaActual || (int)$reservaActual['id_hotel'] != (int)($_SESSION['hotel_id'] ?? null)) { // <-- CORREGIDO
             $this->responder(false, 'Acceso denegado o reserva no encontrada.', null, 403);
         }
 
@@ -148,8 +153,24 @@ class ReservasController {
             $this->responder(false, 'Error al eliminar la reserva', null, 500);
         }
     }
+
+    private function verificarDisponibilidad($input) {
+        $id_habitacion = $input['id_habitacion'] ?? null;
+        $fechainicio = $input['fechainicio'] ?? null;
+        $fechaFin = $input['fechaFin'] ?? null;
+
+        if (!$id_habitacion || !$fechainicio || !$fechaFin) {
+            $this->responder(false, 'Datos incompletos para verificar disponibilidad.', null, 400);
+        }
+
+        $disponible = $this->reservasModel->verificarDisponibilidad((int)$id_habitacion, $fechainicio, $fechaFin);
+
+        $this->responder(true, 'Disponibilidad verificada', ['disponible' => $disponible]);
+    }
+
 }
 
+// Se instancia y se ejecuta el controlador al ser llamado directamente.
 $controller = new ReservasController();
 $controller->manejarPeticion();
 ?>

@@ -1,5 +1,19 @@
+<?php
+// --- INICIO: LÓGICA DE ENRUTAMIENTO ---
+// Si esta página es llamada por AJAX (desde nuestro JavaScript),
+// actuará como un controlador y no como una página HTML.
+if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+    // Incluimos y ejecutamos el controlador de reservas de forma segura en el servidor.
+    require_once '../controllers/reservasController.php';
+    // El controlador se encargará de generar la respuesta JSON y terminar la ejecución.
+    exit();
+}
+// Si no es una llamada AJAX, la página se carga normalmente.
+// --- FIN: LÓGICA DE ENRUTAMIENTO ---
+?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -103,7 +117,7 @@
                         <th>Huésped</th>
                         <th>Habitación</th>
                         <th>Fechas</th>
-                        <th>Total Personas</th>
+                        <th>Num Personas</th>
                         <th>Pago Final</th>
                         <th>Estado</th>
                         <th>Acciones</th>
@@ -247,6 +261,12 @@
     </div>
 
     <!-- Scripts -->
+    <script>
+        // Define la URL absoluta y correcta al controlador para que JavaScript la use.
+        // Esto soluciona de raíz los errores 404 al no depender de rutas relativas.
+        // PHP genera la ruta correcta, sin importar dónde esté alojado el proyecto.
+        const CONTROLLER_URL = '/lodgehub/app/controllers/reservasController.php';
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../public/assets/js/listarReservas.js"></script>
 
