@@ -20,7 +20,17 @@ class ReservasController {
     }
 
     public function manejarPeticion() {
-        $action = $_REQUEST['action'] ?? null;
+        $action = $_GET['action'] ?? null;
+        $input = null;
+
+        // Si es POST y el contenido es JSON, decodificamos el cuerpo de la petición
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && strpos($_SERVER["CONTENT_TYPE"] ?? '', "application/json") !== false) {
+            $input = json_decode(file_get_contents('php://input'), true);
+            // La acción puede venir en el cuerpo JSON
+            if (isset($input['action'])) {
+                $action = $input['action'];
+            }
+        }
 
         try {
             switch ($action) {
@@ -31,16 +41,16 @@ class ReservasController {
                     $this->obtenerReserva();
                     break;
                 case 'actualizar':
-                    $this->actualizarReserva();
+                    $this->actualizarReserva($input);
                     break;
                 case 'eliminar':
-                    $this->eliminarReserva();
+                    $this->eliminarReserva($input);
                     break;
                 default:
                     $this->responder(false, 'Acción no válida', null, 400);
             }
         } catch (Exception $e) {
-            error_log("Error en ReservasController (Accion: $action): " . $e->getMessage()); // Log de errores mejorado
+            error_log("Error en ReservasController (Accion: $action): " . $e->getMessage());
             $this->responder(false, 'Error interno del servidor. Por favor, contacte a soporte.', null, 500);
         }
     }
@@ -81,8 +91,7 @@ class ReservasController {
         }
     }
 
-    private function actualizarReserva() {
-        $input = json_decode(file_get_contents('php://input'), true);
+    private function actualizarReserva($input) {
         $id = $input['id'] ?? null;
 
         if (!$id) {
@@ -98,6 +107,7 @@ class ReservasController {
         // Filtrar datos que se pueden actualizar
         $datosActualizables = [];
         $camposPermitidos = ['fechainicio', 'fechaFin', 'pagoFinal', 'estado', 'informacionAdicional'];
+        
         foreach ($camposPermitidos as $campo) {
             if (isset($input[$campo])) {
                 $datosActualizables[$campo] = $input[$campo];
@@ -117,8 +127,7 @@ class ReservasController {
         }
     }
 
-    private function eliminarReserva() {
-        $input = json_decode(file_get_contents('php://input'), true);
+    private function eliminarReserva($input) {
         $id = $input['id'] ?? null;
 
         if (!$id) {

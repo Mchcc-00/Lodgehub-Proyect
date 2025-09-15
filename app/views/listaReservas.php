@@ -22,17 +22,31 @@
         // Solo administradores y colaboradores pueden acceder
         if (!isset($_SESSION['user']['roles']) || !in_array($_SESSION['user']['roles'], ['Administrador', 'Colaborador'])) {
             echo '<div class="container mt-5"><div class="alert alert-danger text-center"><h4><i class="fas fa-lock"></i> Acceso Denegado</h4><p>No tienes los permisos necesarios para gestionar las reservas.</p><a href="homepage.php" class="btn btn-primary mt-3">Volver al Inicio</a></div></div>';
-            exit(); // Detener la ejecución del script
+            echo '</body></html>';
+            exit();
         }
+        
+        // Validar que se haya seleccionado un hotel
+        $hotelSeleccionado = isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id']);
+        $hotel_nombre_sesion = $_SESSION['hotel_nombre'] ?? 'No asignado';
         // --- FIN: CONTROL DE ACCESO ---
     ?>
     <script src="../../public/assets/js/sidebar.js"></script>
 
     <div class="container">
 
+        <?php if (!$hotelSeleccionado): ?>
+            <div class="alert alert-warning mt-4" role="alert">
+                <h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> Hotel No Seleccionado</h4>
+                <p>Para poder gestionar las reservas, primero debes <strong>seleccionar un hotel</strong> desde el panel principal.</p>
+                <hr>
+                <p class="mb-0">Por favor, regresa al <a href="homepage.php" class="alert-link">Home</a> y elige el hotel donde deseas trabajar.</p>
+            </div>
+        <?php else: ?>
+
         <div class="header">
             <h1><i class="fas fa-calendar-alt"></i> Lista de Reservas</h1>
-            <p>Gestiona todas las reservas registradas en el sistema</p>
+            <p>Gestiona todas las reservas del hotel: <strong><?php echo htmlspecialchars($hotel_nombre_sesion); ?></strong></p>
         </div>
 
         <!-- Sección de búsqueda y filtros -->
@@ -53,6 +67,7 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item filter-option" href="#" data-filter="all">Todos</a></li>
+                            <li><hr class="dropdown-divider"></li>
                             <li><h6 class="dropdown-header">Por Estado</h6></li>
                             <li><a class="dropdown-item filter-option" href="#" data-filter="Activa">Activas</a></li>
                             <li><a class="dropdown-item filter-option" href="#" data-filter="Pendiente">Pendientes</a></li>
@@ -106,10 +121,12 @@
 
         <!-- Paginación -->
         <nav aria-label="Paginación de Reservas" id="paginacion-container" style="display: none;">
-            <ul class="pagination" id="paginacion">
+            <ul class="pagination justify-content-center" id="paginacion">
                 <!-- Generado dinámicamente -->
             </ul>
         </nav>
+
+        <?php endif; ?>
     </div>
 
     <!-- Modal de edición -->
@@ -206,7 +223,7 @@
                     <h5 class="modal-title">
                         <i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p>¿Estás seguro de que deseas eliminar esta reserva?</p>
@@ -215,7 +232,7 @@
                         <small>ID: <span id="eliminar-id">-</span></small>
                     </div>
                     <p class="text-danger">
-                        <i class="fas fa-warning"></i> 
+                        <i class="fas fa-exclamation-triangle"></i> 
                         Esta acción no se puede deshacer.
                     </p>
                 </div>
@@ -231,7 +248,7 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../../public/assets/js/listarReservas.js"></script> <!-- Archivo JS dedicado -->
+    <script src="../../public/assets/js/listarReservas.js"></script>
 
 </body>
 </html>

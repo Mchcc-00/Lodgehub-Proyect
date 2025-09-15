@@ -1,6 +1,5 @@
 <?php
 require_once ('../../config/conexionGlobal.php');
-session_start(); // Asegurarse de que la sesión esté iniciada
 
 // Obtener la conexión PDO
 $pdo = conexionDB();
@@ -17,7 +16,6 @@ $hotelSeleccionado = isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id'
 $hotel_id_sesion = $_SESSION['hotel_id'] ?? null;
 $hotel_nombre_sesion = $_SESSION['hotel_nombre'] ?? 'No asignado';
 
-
 // Procesar el formulario cuando se envía
 if ($_POST) {
     try {
@@ -25,7 +23,7 @@ if ($_POST) {
         if (empty($_POST['pagoFinal']) || empty($_POST['fechainicio']) || empty($_POST['fechaFin']) || 
             empty($_POST['motivoReserva']) || empty($_POST['id_habitacion']) || empty($_POST['metodoPago']) ||
             empty($_POST['us_numDocumento']) || empty($_POST['hue_numDocumento']) || empty($_POST['estado']) ||
-            empty($hotel_id_sesion)) { // Usar el hotel de la sesión
+            empty($hotel_id_sesion)) {
             throw new Exception("Todos los campos obligatorios deben ser completados.");
         }
         
@@ -34,8 +32,39 @@ if ($_POST) {
             throw new Exception("La fecha de inicio debe ser anterior a la fecha de fin.");
         }
         
-        if (strtotime($_POST['fechainicio']) < time()) {
+        if (strtotime($_POST['fechainicio']) < strtotime(date('Y-m-d'))) {
             throw new Exception("La fecha de inicio no puede ser anterior a la fecha actual.");
+        }
+        
+        // Validar que la habitación pertenezca al hotel seleccionado
+        $stmtValidacion = $pdo->prepare("SELECT id FROM tp_habitaciones WHERE id = :id_habitacion AND id_hotel = :id_hotel");
+        $stmtValidacion->execute([
+            ':id_habitacion' => intval($_POST['id_habitacion']),
+            ':id_hotel' => intval($hotel_id_sesion)
+        ]);
+        
+        if (!$stmtValidacion->fetch()) {
+            throw new Exception("La habitación seleccionada no pertenece al hotel actual.");
+        }
+        
+        // Verificar que no haya conflictos de fechas para la habitación
+        $stmtConflicto = $pdo->prepare("
+            SELECT COUNT(*) FROM tp_reservas 
+            WHERE id_habitacion = :id_habitacion 
+            AND estado IN ('Activa', 'Pendiente')
+            AND ((fechainicio <= :fecha_inicio AND fechaFin > :fecha_inicio) 
+                OR (fechainicio < :fecha_fin AND fechaFin >= :fecha_fin)
+                OR (fechainicio >= :fecha_inicio AND fechaFin <= :fecha_fin))
+        ");
+        
+        $stmtConflicto->execute([
+            ':id_habitacion' => intval($_POST['id_habitacion']),
+            ':fecha_inicio' => $_POST['fechainicio'],
+            ':fecha_fin' => $_POST['fechaFin']
+        ]);
+        
+        if ($stmtConflicto->fetchColumn() > 0) {
+            throw new Exception("La habitación ya está reservada para las fechas seleccionadas.");
         }
         
         // Preparar la consulta de inserción
@@ -52,11 +81,11 @@ if ($_POST) {
         $stmt = $pdo->prepare($sql);
         
         // Ejecutar la consulta con los datos del formulario
-        $stmt->execute([
+        $resultado = $stmt->execute([
             ':pagoFinal' => floatval($_POST['pagoFinal']),
             ':fechainicio' => $_POST['fechainicio'],
             ':fechaFin' => $_POST['fechaFin'],
-            ':cantidadAdultos' => intval($_POST['cantidadAdultos'] ?? 0),
+            ':cantidadAdultos' => intval($_POST['cantidadAdultos'] ?? 1),
             ':cantidadNinos' => intval($_POST['cantidadNinos'] ?? 0),
             ':cantidadDiscapacitados' => intval($_POST['cantidadDiscapacitados'] ?? 0),
             ':motivoReserva' => $_POST['motivoReserva'],
@@ -65,12 +94,18 @@ if ($_POST) {
             ':informacionAdicional' => $_POST['informacionAdicional'] ?? null,
             ':us_numDocumento' => $_POST['us_numDocumento'],
             ':hue_numDocumento' => $_POST['hue_numDocumento'],
-            ':estado' => $_POST['estado'], // El estado de la reserva
-            ':id_hotel' => intval($hotel_id_sesion) // Usar el ID del hotel de la sesión
+            ':estado' => $_POST['estado'],
+            ':id_hotel' => intval($hotel_id_sesion)
         ]);
         
-        $mensaje = "Reserva creada exitosamente con ID: " . $pdo->lastInsertId();
-        $tipoMensaje = "success";
+        if ($resultado) {
+            $mensaje = "Reserva creada exitosamente con ID: " . $pdo->lastInsertId();
+            $tipoMensaje = "success";
+            // Limpiar el formulario
+            $_POST = [];
+        } else {
+            throw new Exception("Error al insertar la reserva en la base de datos.");
+        }
         
     } catch(Exception $e) {
         $mensaje = "Error al crear la reserva: " . $e->getMessage();
@@ -80,16 +115,19 @@ if ($_POST) {
 
 // Obtener datos para los selects
 try {
-    // Obtener hoteles
-    $stmtHoteles = $pdo->query("SELECT id, nombre FROM tp_hotel ORDER BY nombre");
-    $hoteles = $stmtHoteles->fetchAll(PDO::FETCH_ASSOC);
-    
-    // Obtener habitaciones
-    $stmtHabitaciones = $pdo->query("SELECT h.id, h.numero, h.tipo, ho.nombre as hotel_nombre 
-                                     FROM tp_habitaciones h 
-                                     INNER JOIN tp_hotel ho ON h.id_hotel = ho.id 
-                                     ORDER BY ho.nombre, h.numero");
-    $habitaciones = $stmtHabitaciones->fetchAll(PDO::FETCH_ASSOC);
+    // Obtener habitaciones del hotel actual
+    if ($hotelSeleccionado) {
+        $stmtHabitaciones = $pdo->prepare("
+            SELECT h.id, h.numero, h.tipo, h.precio_noche
+            FROM tp_habitaciones h 
+            WHERE h.id_hotel = :id_hotel 
+            ORDER BY h.numero
+        ");
+        $stmtHabitaciones->execute([':id_hotel' => $hotel_id_sesion]);
+        $habitaciones = $stmtHabitaciones->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        $habitaciones = [];
+    }
     
     // Obtener usuarios
     $stmtUsuarios = $pdo->query("SELECT numDocumento, nombres, apellidos FROM tp_usuarios ORDER BY nombres");
@@ -141,7 +179,7 @@ try {
         
         <!-- Messages Section -->
         <?php if ($mensaje): ?>
-            <div class="alert alert-<?php echo $tipoMensaje === 'success' ? 'success' : 'danger'; ?>">
+            <div class="alert alert-<?php echo $tipoMensaje === 'success' ? 'success' : 'danger'; ?>" role="alert">
                 <i class="fas fa-<?php echo $tipoMensaje === 'success' ? 'check-circle' : 'exclamation-triangle'; ?>"></i>
                 <?php echo htmlspecialchars($mensaje); ?>
             </div>
@@ -155,68 +193,16 @@ try {
             </div>
             
             <div class="form-body">
-                <form method="POST" class="reservas-form">
+                <form method="POST" class="reservas-form" id="form-reserva">
                     <!-- Sección: Ubicación -->
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label for="hotel_nombre" class="form-label">
-                                <i class="fas fa-hotel"></i>
-                                Hotel <span class="required">*</span>
-                            </label>
-                            <input type="text" id="hotel_nombre" name="hotel_nombre" class="form-control" value="<?php echo htmlspecialchars($hotel_nombre_sesion); ?>" readonly>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="id_habitacion" class="form-label">
-                                <i class="fas fa-bed"></i>
-                                Habitación <span class="required">*</span>
-                            </label>
-                            <select name="id_habitacion" id="id_habitacion" class="form-control" required>
-                                <option value="">Seleccionar habitación</option>
-                                <?php foreach ($habitaciones as $habitacion): ?>
-                                    <option value="<?php echo $habitacion['id']; ?>" <?php echo (isset($_POST['id_habitacion']) && $_POST['id_habitacion'] == $habitacion['id']) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars('Hab. ' . $habitacion['numero'] . ' (' . $habitacion['tipo'] . ')'); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <!-- Sección: Fechas -->
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="fechainicio" class="form-label">
-                                <i class="fas fa-calendar-check"></i>
-                                Fecha de Inicio <span class="required">*</span>
-                            </label>
-                            <input type="date" name="fechainicio" id="fechainicio" class="form-control" required value="<?php echo $_POST['fechainicio'] ?? ''; ?>">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="fechaFin" class="form-label">
-                                <i class="fas fa-calendar-times"></i>
-                                Fecha de Fin <span class="required">*</span>
-                            </label>
-                            <input type="date" name="fechaFin" id="fechaFin" class="form-control" required value="<?php echo $_POST['fechaFin'] ?? ''; ?>">
-                        </div>
-                    </div>
-                    
-                    <!-- Sección: Huéspedes -->
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="cantidadAdultos" class="form-label">
-                                <i class="fas fa-users"></i>
-                                Cantidad de Adultos
-                            </label>
-                            <input type="number" name="cantidadAdultos" id="cantidadAdultos" class="form-control" min="0" max="99" value="<?php echo $_POST['cantidadAdultos'] ?? 1; ?>">
-                        </div>
-                        
                         <div class="form-group">
                             <label for="cantidadNinos" class="form-label">
                                 <i class="fas fa-child"></i>
                                 Cantidad de Niños
                             </label>
-                            <input type="number" name="cantidadNinos" id="cantidadNinos" class="form-control" min="0" max="99" value="<?php echo $_POST['cantidadNinos'] ?? 0; ?>">
+                            <input type="number" name="cantidadNinos" id="cantidadNinos" class="form-control" 
+                                   min="0" max="99" value="<?php echo $_POST['cantidadNinos'] ?? 0; ?>">
                         </div>
                         
                         <div class="form-group">
@@ -224,7 +210,8 @@ try {
                                 <i class="fas fa-wheelchair"></i>
                                 Cantidad de Personas con Discapacidad
                             </label>
-                            <input type="number" name="cantidadDiscapacitados" id="cantidadDiscapacitados" class="form-control" min="0" max="99" value="<?php echo $_POST['cantidadDiscapacitados'] ?? 0; ?>">
+                            <input type="number" name="cantidadDiscapacitados" id="cantidadDiscapacitados" class="form-control" 
+                                   min="0" max="99" value="<?php echo $_POST['cantidadDiscapacitados'] ?? 0; ?>">
                         </div>
                     </div>
                     
@@ -238,7 +225,8 @@ try {
                             <select name="us_numDocumento" id="us_numDocumento" class="form-control" required>
                                 <option value="">Seleccionar usuario</option>
                                 <?php foreach ($usuarios as $usuario): ?>
-                                    <option value="<?php echo $usuario['numDocumento']; ?>" <?php echo (isset($_POST['us_numDocumento']) && $_POST['us_numDocumento'] == $usuario['numDocumento']) ? 'selected' : ''; ?>>
+                                    <option value="<?php echo $usuario['numDocumento']; ?>" 
+                                            <?php echo (isset($_POST['us_numDocumento']) && $_POST['us_numDocumento'] == $usuario['numDocumento']) ? 'selected' : ''; ?>>
                                         <?php echo htmlspecialchars($usuario['nombres'] . ' ' . $usuario['apellidos'] . ' (' . $usuario['numDocumento'] . ')'); ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -253,7 +241,8 @@ try {
                             <select name="hue_numDocumento" id="hue_numDocumento" class="form-control" required>
                                 <option value="">Seleccionar huésped</option>
                                 <?php foreach ($huespedes as $huesped): ?>
-                                    <option value="<?php echo $huesped['numDocumento']; ?>" <?php echo (isset($_POST['hue_numDocumento']) && $_POST['hue_numDocumento'] == $huesped['numDocumento']) ? 'selected' : ''; ?>>
+                                    <option value="<?php echo $huesped['numDocumento']; ?>" 
+                                            <?php echo (isset($_POST['hue_numDocumento']) && $_POST['hue_numDocumento'] == $huesped['numDocumento']) ? 'selected' : ''; ?>>
                                         <?php echo htmlspecialchars($huesped['nombres'] . ' ' . $huesped['apellidos'] . ' (' . $huesped['numDocumento'] . ')'); ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -299,7 +288,9 @@ try {
                                 <i class="fas fa-dollar-sign"></i>
                                 Pago Final <span class="required">*</span>
                             </label>
-                            <input type="number" name="pagoFinal" id="pagoFinal" class="form-control" step="0.01" min="0" required value="<?php echo $_POST['pagoFinal'] ?? ''; ?>">
+                            <input type="number" name="pagoFinal" id="pagoFinal" class="form-control" 
+                                   step="0.01" min="0" required value="<?php echo $_POST['pagoFinal'] ?? ''; ?>">
+                            <small class="form-text text-muted" id="precio-sugerido"></small>
                         </div>
                         
                         <div class="form-group">
@@ -323,12 +314,13 @@ try {
                             <i class="fas fa-sticky-note"></i>
                             Información Adicional
                         </label>
-                        <textarea name="informacionAdicional" id="informacionAdicional" class="form-control" rows="4" placeholder="Escriba cualquier información adicional sobre la reserva..."><?php echo $_POST['informacionAdicional'] ?? ''; ?></textarea>
+                        <textarea name="informacionAdicional" id="informacionAdicional" class="form-control" rows="4" 
+                                  placeholder="Escriba cualquier información adicional sobre la reserva..."><?php echo $_POST['informacionAdicional'] ?? ''; ?></textarea>
                     </div>
                     
                     <!-- Botones de Acción -->
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-success btn-lg">
+                        <button type="submit" class="btn btn-success btn-lg" id="btn-crear">
                             <i class="fas fa-save"></i>
                             Crear Reserva
                         </button>
@@ -344,35 +336,50 @@ try {
     </div>
     
     <script>
-        // Script mejorado para filtrar habitaciones por hotel seleccionado
-        document.getElementById('id_hotel').addEventListener('change', function() {
-            const hotelId = this.value;
+        // Calcular precio sugerido basado en habitación y fechas
+        function calcularPrecioSugerido() {
             const habitacionSelect = document.getElementById('id_habitacion');
-            const options = habitacionSelect.getElementsByTagName('option');
+            const fechaInicio = document.getElementById('fechainicio').value;
+            const fechaFin = document.getElementById('fechaFin').value;
+            const precioSugeridoDiv = document.getElementById('precio-sugerido');
             
-            for (let i = 1; i < options.length; i++) {
-                const option = options[i];
-                const text = option.text;
+            if (habitacionSelect.value && fechaInicio && fechaFin) {
+                const precioNoche = parseFloat(habitacionSelect.selectedOptions[0].dataset.precio || 0);
+                const inicio = new Date(fechaInicio);
+                const fin = new Date(fechaFin);
+                const noches = (fin - inicio) / (1000 * 60 * 60 * 24);
                 
-                if (hotelId === '') {
-                    option.style.display = 'block';
+                if (noches > 0 && precioNoche > 0) {
+                    const precioTotal = precioNoche * noches;
+                    precioSugeridoDiv.innerHTML = `Precio sugerido: ${precioTotal.toLocaleString('es-CO')} (${noches} noches × ${precioNoche.toLocaleString('es-CO')})`;
+                    precioSugeridoDiv.style.color = '#28a745';
                 } else {
-                    // Esta es una implementación básica. Idealmente deberías hacer una llamada AJAX
-                    // para obtener solo las habitaciones del hotel seleccionado
-                    option.style.display = 'block';
+                    precioSugeridoDiv.innerHTML = '';
                 }
+            } else {
+                precioSugeridoDiv.innerHTML = '';
             }
-            
-            habitacionSelect.value = '';
-            
-            // Agregar efecto visual al cambio
-            habitacionSelect.style.borderColor = '#0d6efd';
-            setTimeout(() => {
-                habitacionSelect.style.borderColor = '';
-            }, 1000);
+        }
+        
+        // Event listeners para cálculo automático
+        document.getElementById('id_habitacion').addEventListener('change', calcularPrecioSugerido);
+        document.getElementById('fechainicio').addEventListener('change', function() {
+            validarFecha(this, true);
+            calcularPrecioSugerido();
+            // Actualizar fecha mínima para fecha fin
+            const fechaFin = document.getElementById('fechaFin');
+            if (this.value) {
+                const fechaMinima = new Date(this.value);
+                fechaMinima.setDate(fechaMinima.getDate() + 1);
+                fechaFin.min = fechaMinima.toISOString().split('T')[0];
+            }
+        });
+        document.getElementById('fechaFin').addEventListener('change', function() {
+            validarFecha(this, false);
+            calcularPrecioSugerido();
         });
         
-        // Validar fechas en el cliente con mejor UX
+        // Validar fechas en el cliente
         function validarFecha(elemento, esFechaInicio = true) {
             const fecha = new Date(elemento.value);
             const fechaComparacion = esFechaInicio ? 
@@ -430,22 +437,20 @@ try {
             }
         }
         
-        // Event listeners para las fechas
-        document.getElementById('fechainicio').addEventListener('change', function() {
-            validarFecha(this, true);
-        });
-        
-        document.getElementById('fechaFin').addEventListener('change', function() {
-            validarFecha(this, false);
-        });
-        
         // Validación del formulario antes del envío
-        document.querySelector('form').addEventListener('submit', function(e) {
+        document.getElementById('form-reserva').addEventListener('submit', function(e) {
             const fechaInicio = document.getElementById('fechainicio');
             const fechaFin = document.getElementById('fechaFin');
+            const btnCrear = document.getElementById('btn-crear');
+            
+            // Deshabilitar botón para evitar doble envío
+            btnCrear.disabled = true;
+            btnCrear.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
             
             if (!validarFecha(fechaInicio, true) || !validarFecha(fechaFin, false)) {
                 e.preventDefault();
+                btnCrear.disabled = false;
+                btnCrear.innerHTML = '<i class="fas fa-save"></i> Crear Reserva';
                 
                 // Scroll hacia el primer error
                 const primerError = document.querySelector('.error-message');
@@ -467,7 +472,7 @@ try {
                     group.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
                     group.style.opacity = '1';
                     group.style.transform = 'translateY(0)';
-                }, index * 100);
+                }, index * 50);
             });
         });
         
@@ -482,22 +487,71 @@ try {
                 this.style.backgroundColor = '';
             });
         });
-        
-        // Auto-guardar draft (opcional - comentado por ser demo)
-        /*
-        let autoSaveTimer;
-        const inputs = document.querySelectorAll('input, select, textarea');
-        
-        inputs.forEach(input => {
-            input.addEventListener('input', function() {
-                clearTimeout(autoSaveTimer);
-                autoSaveTimer = setTimeout(() => {
-                    // Aquí podrías implementar auto-guardar borrador
-                    console.log('Auto-guardando borrador...');
-                }, 2000);
-            });
-        });
-        */
     </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+                            <label for="hotel_nombre" class="form-label">
+                                <i class="fas fa-hotel"></i>
+                                Hotel <span class="required">*</span>
+                            </label>
+                            <input type="text" id="hotel_nombre" name="hotel_nombre" class="form-control" 
+                                   value="<?php echo htmlspecialchars($hotel_nombre_sesion); ?>" readonly>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="id_habitacion" class="form-label">
+                                <i class="fas fa-bed"></i>
+                                Habitación <span class="required">*</span>
+                            </label>
+                            <select name="id_habitacion" id="id_habitacion" class="form-control" required>
+                                <option value="">Seleccionar habitación</option>
+                                <?php foreach ($habitaciones as $habitacion): ?>
+                                    <option value="<?php echo $habitacion['id']; ?>" 
+                                            data-precio="<?php echo $habitacion['precio_noche'] ?? 0; ?>"
+                                            <?php echo (isset($_POST['id_habitacion']) && $_POST['id_habitacion'] == $habitacion['id']) ? 'selected' : ''; ?>>
+                                        Hab. <?php echo htmlspecialchars($habitacion['numero'] . ' (' . $habitacion['tipo'] . ')'); ?>
+                                        <?php if (isset($habitacion['precio_noche'])): ?>
+                                            - $<?php echo number_format($habitacion['precio_noche'], 0, ',', '.'); ?>/noche
+                                        <?php endif; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Sección: Fechas -->
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="fechainicio" class="form-label">
+                                <i class="fas fa-calendar-check"></i>
+                                Fecha de Inicio <span class="required">*</span>
+                            </label>
+                            <input type="date" name="fechainicio" id="fechainicio" class="form-control" required 
+                                   min="<?php echo date('Y-m-d'); ?>" 
+                                   value="<?php echo $_POST['fechainicio'] ?? ''; ?>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="fechaFin" class="form-label">
+                                <i class="fas fa-calendar-times"></i>
+                                Fecha de Fin <span class="required">*</span>
+                            </label>
+                            <input type="date" name="fechaFin" id="fechaFin" class="form-control" required 
+                                   value="<?php echo $_POST['fechaFin'] ?? ''; ?>">
+                        </div>
+                    </div>
+                    
+                    <!-- Sección: Huéspedes -->
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="cantidadAdultos" class="form-label">
+                                <i class="fas fa-users"></i>
+                                Cantidad de Adultos
+                            </label>
+                            <input type="number" name="cantidadAdultos" id="cantidadAdultos" class="form-control" 
+                                   min="1" max="99" value="<?php echo $_POST['cantidadAdultos'] ?? 1; ?>">
+                        </div>
+                        
+                        <div class="form-group">

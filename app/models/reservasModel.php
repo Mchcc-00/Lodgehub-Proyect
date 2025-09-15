@@ -10,7 +10,26 @@ class ReservasModel {
 
     public function obtenerReservasPaginadas($id_hotel, $pagina, $registrosPorPagina, $filtros) {
         $offset = ($pagina - 1) * $registrosPorPagina;
-        
+
+        // --- INICIO: Construcción de la consulta con JOINs directos ---
+        $selectClause = "SELECT 
+            r.id,
+            r.pagoFinal,
+            r.fechainicio,
+            r.fechaFin,
+            (r.cantidadAdultos + r.cantidadNinos + r.cantidadDiscapacitados) as totalPersonas,
+            r.estado,
+            CONCAT(h.nombres, ' ', h.apellidos) as nombreHuesped,
+            h.numDocumento as huespedDocumento,
+            hab.numero as numeroHabitacion,
+            hot.nombre as nombreHotel";
+
+        $fromClause = " FROM tp_reservas r
+            LEFT JOIN tp_huespedes h ON r.hue_numDocumento = h.numDocumento
+            LEFT JOIN tp_habitaciones hab ON r.id_habitacion = hab.id
+            LEFT JOIN tp_hotel hot ON r.id_hotel = hot.id";
+
+        // Construcción de la cláusula WHERE
         $whereClauses = ["r.id_hotel = :id_hotel"];
         $params = [':id_hotel' => $id_hotel];
 
@@ -20,40 +39,32 @@ class ReservasModel {
         }
 
         if (isset($filtros['busqueda']) && !empty($filtros['busqueda'])) {
-            $whereClauses[] = "(r.id LIKE :busqueda OR r.nombreHuesped LIKE :busqueda OR r.numeroHabitacion LIKE :busqueda)";
+            $whereClauses[] = "(r.id LIKE :busqueda OR CONCAT(h.nombres, ' ', h.apellidos) LIKE :busqueda OR hab.numero LIKE :busqueda)";
             $params[':busqueda'] = '%' . $filtros['busqueda'] . '%';
         }
 
-        $whereSql = implode(' AND ', $whereClauses);
+        $whereSql = " WHERE " . implode(' AND ', $whereClauses);
+        // --- FIN: Construcción de la consulta ---
 
         // Contar total de registros
-        $sqlTotal = "SELECT COUNT(*) FROM v_reservas_detalle r WHERE $whereSql";
+        $sqlTotal = "SELECT COUNT(r.id)" . $fromClause . $whereSql;
         $stmtTotal = $this->db->prepare($sqlTotal);
         $stmtTotal->execute($params);
         $totalRegistros = $stmtTotal->fetchColumn();
 
         // Obtener registros para la página actual
-        $sql = "SELECT * FROM v_reservas_detalle r WHERE $whereSql ORDER BY r.fechainicio DESC LIMIT :limit OFFSET :offset";
+        $sql = $selectClause . $fromClause . $whereSql . " ORDER BY r.fechainicio DESC LIMIT :limit OFFSET :offset";
         $stmt = $this->db->prepare($sql);
 
         // Bind de parámetros de la cláusula WHERE de forma segura
         foreach ($params as $key => $val) {
-            if ($key === ':busqueda') {
-                $stmt->bindValue($key, $val, PDO::PARAM_STR);
-            } else {
-                $stmt->bindValue($key, $val);
-            }
+            $stmt->bindValue($key, $val);
         }
 
         $stmt->bindParam(':limit', $registrosPorPagina, PDO::PARAM_INT);
         $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
         $reservas = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Log para depuración
-        if ($totalRegistros > 0 && empty($reservas)) {
-            error_log("ReservasModel: Se encontraron {$totalRegistros} registros pero el fetch devolvió un array vacío. Pagina: {$pagina}");
-        }
 
         return [
             'reservas' => $reservas,
@@ -64,9 +75,87 @@ class ReservasModel {
         ];
     }
 
+    private function verificarVistaExiste() {
+        try {
+            $stmt = $this->db->query("SELECT 1 FROM v_reservas_detalle LIMIT 1");
+            return true;
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    private function crearJoinManual() {
+        return "SELECT 
+            r.id,
+            r.pagoFinal,
+            r.fechainicio,
+            r.fechaFin,
+            r.cantidadAdultos,
+            r.cantidadNinos,
+            r.cantidadDiscapacitados,
+            (r.cantidadAdultos + r.cantidadNinos + r.cantidadDiscapacitados) as totalPersonas,
+            r.motivoReserva,
+            r.metodoPago,
+            r.informacionAdicional,
+            r.estado,
+            r.fechaRegistro,
+            r.id_hotel,
+            r.id_habitacion,
+            CONCAT(h.nombres, ' ', h.apellidos) as nombreHuesped,
+            h.numDocumento as huespedDocumento,
+            CONCAT(u.nombres, ' ', u.apellidos) as nombreUsuario,
+            u.numDocumento as usuarioDocumento,
+            hab.numero as numeroHabitacion,
+            hab.tipo as tipoHabitacion,
+            hot.nombre as nombreHotel,
+            DATEDIFF(r.fechaFin, r.fechainicio) as diasEstadia
+        FROM tp_reservas r
+        LEFT JOIN tp_huespedes h ON r.hue_numDocumento = h.numDocumento
+        LEFT JOIN tp_usuarios u ON r.us_numDocumento = u.numDocumento
+        LEFT JOIN tp_habitaciones hab ON r.id_habitacion = hab.id
+        LEFT JOIN tp_hotel hot ON r.id_hotel = hot.id";
+    }
+
     public function obtenerPorId($id) {
         try {
-            $stmt = $this->db->prepare("SELECT * FROM v_reservas_detalle WHERE id = :id");
+            $esVista = $this->verificarVistaExiste();
+            
+            if ($esVista) {
+                $stmt = $this->db->prepare("SELECT * FROM v_reservas_detalle WHERE id = :id");
+            } else {
+                $sql = "SELECT 
+                    r.id,
+                    r.pagoFinal,
+                    r.fechainicio,
+                    r.fechaFin,
+                    r.cantidadAdultos,
+                    r.cantidadNinos,
+                    r.cantidadDiscapacitados,
+                    (r.cantidadAdultos + r.cantidadNinos + r.cantidadDiscapacitados) as totalPersonas,
+                    r.motivoReserva,
+                    r.metodoPago,
+                    r.informacionAdicional,
+                    r.estado,
+                    r.fechaRegistro,
+                    r.id_hotel,
+                    r.id_habitacion,
+                    CONCAT(h.nombres, ' ', h.apellidos) as nombreHuesped,
+                    h.numDocumento as huespedDocumento,
+                    CONCAT(u.nombres, ' ', u.apellidos) as nombreUsuario,
+                    u.numDocumento as usuarioDocumento,
+                    hab.numero as numeroHabitacion,
+                    hab.tipo as tipoHabitacion,
+                    hot.nombre as nombreHotel,
+                    DATEDIFF(r.fechaFin, r.fechainicio) as diasEstadia
+                FROM tp_reservas r
+                LEFT JOIN tp_huespedes h ON r.hue_numDocumento = h.numDocumento
+                LEFT JOIN tp_usuarios u ON r.us_numDocumento = u.numDocumento
+                LEFT JOIN tp_habitaciones hab ON r.id_habitacion = hab.id
+                LEFT JOIN tp_hotel hot ON r.id_hotel = hot.id
+                WHERE r.id = :id";
+                $stmt = $this->db->prepare($sql);
+            }
+            
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
             return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -103,11 +192,11 @@ class ReservasModel {
 
     public function eliminarReserva($id) {
         try {
-            // Opcional: Primero verificar si la reserva puede ser eliminada (ej. no está 'Activa')
+            // Opcional: Primero verificar si la reserva puede ser eliminada
             $reserva = $this->obtenerPorId($id);
             if ($reserva && $reserva['estado'] === 'Activa') {
-                 // Opcional: Podrías lanzar una excepción o devolver un mensaje específico
-                 // throw new Exception("No se puede eliminar una reserva activa.");
+                // Opcional: Podrías lanzar una excepción o devolver un mensaje específico
+                // throw new Exception("No se puede eliminar una reserva activa.");
             }
 
             $stmt = $this->db->prepare("DELETE FROM tp_reservas WHERE id = :id");
