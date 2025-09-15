@@ -262,10 +262,20 @@ if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQ
 
     <!-- Scripts -->
     <script>
-        // Define la URL absoluta y correcta al controlador para que JavaScript la use.
-        // Esto soluciona de raíz los errores 404 al no depender de rutas relativas.
-        // PHP genera la ruta correcta, sin importar dónde esté alojado el proyecto.
-        const CONTROLLER_URL = '/lodgehub/app/controllers/reservasController.php';
+        // Generar la URL del controlador dinámicamente basada en la ubicación actual
+        const CONTROLLER_URL = (() => {
+            const currentPath = window.location.pathname;
+            const pathParts = currentPath.split('/');
+            
+            // Remover el último elemento (el archivo actual) y agregar la ruta al controlador
+            pathParts.pop(); // Remueve 'listarReservas.php'
+            pathParts.push('..', 'controllers', 'reservasController.php');
+            
+            return pathParts.join('/');
+        })();
+        
+        // Para debug - remover en producción
+        console.log('CONTROLLER_URL:', CONTROLLER_URL);
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../public/assets/js/listarReservas.js"></script>

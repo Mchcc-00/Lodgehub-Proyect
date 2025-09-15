@@ -31,7 +31,7 @@ class ReservasController {
             $action = $input['action'] ?? null;
         } else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             // Para GET, la acción viene en la URL
-            $action = $_GET['action'] ?? null;
+            $action = $_GET['action'] ?? null; 
         }
 
         try {
