@@ -1,281 +1,210 @@
+<?php
+require_once 'validarSesion.php';
+$currentPage = 'Habitaciones'; // Para activar el item en el sidebar
+?>
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Habitaciones - LodgeHub</title>
+    <!-- Dependencias -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <link href="../../public/assets/css/stylesNav.css" rel="stylesheet">
-    <link href="../../public/assets/css/stylesHabitaciones.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="../../public/assets/css/stylesHabitaciones.css">
 </head>
-
 <body>
+
     <?php
-    include "layouts/sidebar.php";
-    include "layouts/navbar.php";
+        include "layouts/sidebar.php";
+        include "layouts/navbar.php";
+
+        // VALIDACIÓN: Asegurarse de que un hotel ha sido seleccionado
+        $hotelSeleccionado = isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id']);
+        $hotel_id = $_SESSION['hotel_id'] ?? null;
+
+        // Cargar tipos de habitación para el filtro
+        $tiposHabitacion = [];
+        if ($hotelSeleccionado) {
+            require_once '../models/habitacionesModel.php';
+            $habitacionesModel = new HabitacionesModel();
+            $tiposHabitacion = $habitacionesModel->obtenerTiposHabitacion($hotel_id);
+        }
     ?>
     <script src="../../public/assets/js/sidebar.js"></script>
 
-    <!-- Envolvemos el contenido en la estructura main/content-wrapper para la animación del sidebar -->
-    <main class="main-content">
-        <div class="content-wrapper container-fluid"> <!-- Usamos container-fluid para un ancho completo adaptable -->
-            <!-- Header -->
+    <div class="container">
+        <?php if (!$hotelSeleccionado): ?>
+            <div class="alert alert-danger mt-4" role="alert">
+                <h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> ¡Acción Requerida!</h4>
+                <p>Para poder gestionar las habitaciones, primero debes <strong>seleccionar un hotel</strong> desde el panel principal (Home).</p>
+                <hr>
+                <p class="mb-0">Por favor, regresa al <a href="homepage.php" class="alert-link">Home</a> y elige el hotel donde deseas trabajar.</p>
+            </div>
+        <?php else: ?>
             <div class="header">
-                <h1><i class="fas fa-bed"></i> Gestión de Habitaciones</h1>
-                <p>Administra las habitaciones de tus hoteles de manera eficiente</p>
+                <h1><i class="fas fa-bed custom-icon"></i> Gestión de Habitaciones</h1>
+                <p>Administra todas las habitaciones de tu hotel.</p>
             </div>
 
-            <!-- Mensajes -->
-            <div id="success-message" class="success-message">
-                <i class="fas fa-check-circle"></i>
-                <span id="success-text"></span>
-            </div>
-
-            <div id="error-message" class="error-message">
-                <i class="fas fa-exclamation-triangle"></i>
-                <span id="error-text"></span>
-            </div>
-
-            <!-- Filtros y búsqueda -->
+            <!-- Búsqueda y filtros -->
             <div class="search-section">
-                <div class="row align-items-end mb-1">
-                    <div class="col-md-2 mb-2 mb-md-0">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label for="buscar-input" class="form-label">Buscar</label>
+                        <input type="text" class="form-control" id="buscar-input" placeholder="Por número, tipo o descripción...">
+                    </div>
+                    <div class="col-md-3">
                         <label for="filtro-estado" class="form-label">Estado</label>
                         <select id="filtro-estado" class="form-select">
-                            <option value="">Todos los estados</option>
+                            <option value="all">Todos</option>
                             <option value="Disponible">Disponible</option>
-                            <option value="Reservada">Reservada</option>
                             <option value="Ocupada">Ocupada</option>
+                            <option value="Reservada">Reservada</option>
                             <option value="Mantenimiento">Mantenimiento</option>
                         </select>
                     </div>
-                    <div class="col-md-2 mb-2 mb-md-0">
-                        <label for="filtro-estado" class="form-label">Tipo de habitación</label>
-                        <select id="filtro-estado" class="form-select">
-                            <option value="">Todos los tipos</option>
-                            <option value="Disponible">Disponible</option>
-                            <option value="Reservada">Reservada</option>
-                            <option value="Ocupada">Ocupada</option>
-                            <option value="Mantenimiento">Mantenimiento</option>
+                    <div class="col-md-3">
+                        <label for="filtro-tipo" class="form-label">Tipo</label>
+                        <select id="filtro-tipo" class="form-select">
+                            <option value="all">Todos</option>
+                            <?php foreach ($tiposHabitacion as $tipo): ?>
+                                <option value="<?php echo htmlspecialchars($tipo['id']); ?>"><?php echo htmlspecialchars($tipo['descripcion']); ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="col-md-4 mb-2 mb-md-0">
-                        <label for="filtro-numero" class="form-label">Buscar por número</label>
-                        <input type="text" id="filtro-numero" class="form-control md-4" placeholder="Número de habitación">
-                    </div>
-                    <div class="col-md-5 text-md-end">
-                        <button type="button" id="btn-buscar" class="btn btn-primary ms-2">
-                            <i class="fas fa-search"></i> Buscar
-                        </button>
-                        <a href="crearHabitacion.php" class="btn btn-success ms-2">
-                            <i class="fas fa-plus"></i> Nueva Habitación
-                        </a>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <a href="crearHabitacion.php" class="btn btn-success w-100"><i class="fas fa-plus"></i> Nueva</a>
                     </div>
                 </div>
             </div>
-            <!-- Estadísticas rápidas -->
-            <div class="row mb-3">
-            <div class="col-md-3">
-                <div class="card bg-primary text-white">
-                    <div class="card-body text-center">
-                        <h4 id="total-colaboradores">0</h4>
-                        <p class="mb-0">Total</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-info text-white">
-                    <div class="card-body text-center">
-                        <h4 id="total-colaboradores-rol">0</h4>
-                        <p class="mb-0">Colaboradores</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-success text-white">
-                    <div class="card-body text-center">
-                        <h4 id="total-usuarios">0</h4>
-                        <p class="mb-0">Usuarios</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-warning text-white">
-                    <div class="card-body text-center">
-                        <h4 id="pendientes-password">0</h4>
-                        <p class="mb-0">Cambio Contraseña</p>
-                    </div>
-                </div>
-            </div>
-        </div>
 
+            <!-- Mensajes de alerta -->
+            <div id="success-message" class="success-message" style="display: none;">✅ <strong id="success-text"></strong></div>
+            <div id="error-message" class="error-message" style="display: none;">❌ <strong id="error-text"></strong></div>
 
-            <!-- Loading -->
-            <div id="loading" class="text-center py-5" style="display: none;">
+            <!-- Grid de Habitaciones -->
+            <div id="loading" class="text-center p-5" style="display: none;">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Cargando...</span>
                 </div>
                 <p class="mt-2">Cargando habitaciones...</p>
             </div>
-
-            <!-- Grid de habitaciones -->
-            <div id="habitaciones-grid" class="habitaciones-grid">
-                <?php if (empty($habitaciones)): ?>
-                    <div class="no-habitaciones">
-                        <i class="fas fa-bed fa-5x custom-icon"></i>
-                        <h3 class="mt-3 text-muted">No hay habitaciones</h3>
-                        <p class="text-muted">Comienza creando tu primera habitación</p>
-                    </div>
-                <?php else: ?>
-                    <?php foreach ($habitaciones as $habitacion): ?>
-                        <div class="habitacion-card" data-id="<?php echo $habitacion['id']; ?>">
-                            <div class="habitacion-image">
-                                <?php if (!empty($habitacion['foto'])): ?>
-                                    <img src="<?php echo htmlspecialchars($habitacion['foto']); ?>"
-                                        alt="Habitación <?php echo htmlspecialchars($habitacion['numero']); ?>">
-                                <?php else: ?>
-                                    <div class="no-image">
-                                        <i class="fas fa-bed"></i>
-                                        <span>Sin imagen</span>
-                                    </div>
-                                <?php endif; ?>
-
-                                <?php
-                                // Lógica para asignar colores de Bootstrap según el estado
-                                $estado = $habitacion['estado'];
-                                $badge_class = '';
-                                switch ($estado) {
-                                    case 'Disponible':
-                                        $badge_class = 'bg-success';
-                                        break;
-                                    case 'Reservada':
-                                        $badge_class = 'bg-info';
-                                        break;
-                                    case 'Ocupada':
-                                        $badge_class = 'bg-warning text-dark';
-                                        break;
-                                    case 'Mantenimiento':
-                                        $badge_class = 'bg-danger';
-                                        break;
-                                    default:
-                                        $badge_class = 'bg-secondary';
-                                }
-                                ?>
-                                <div class="habitacion-estado">
-                                    <span class="badge rounded-pill fs-6 <?php echo $badge_class; ?>"><?php echo htmlspecialchars($estado); ?></span>
-                                </div>
-                            </div>
-
-                            <div class="habitacion-content">
-                                <div class="habitacion-header">
-                                    <h3 class="habitacion-numero">
-                                        <i class="fas fa-door-open"></i>
-                                        Habitación <?php echo htmlspecialchars($habitacion['numero']); ?>
-                                    </h3>
-                                    <span class="habitacion-hotel">
-                                        <?php echo htmlspecialchars($habitacion['hotel_nombre']); ?>
-                                    </span>
-                                </div>
-
-                                <div class="habitacion-info">
-                                    <div class="info-item">
-                                        <i class="fas fa-tag"></i>
-                                        <span><?php echo htmlspecialchars($habitacion['tipo_descripcion']); ?></span>
-                                    </div>
-                                    <div class="info-item">
-                                        <i class="fas fa-users"></i>
-                                        <span><?php echo $habitacion['capacidad']; ?> personas</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <i class="fas fa-dollar-sign"></i>
-                                        <span>$<?php echo number_format($habitacion['costo'], 0, ',', '.'); ?>/noche</span>
-                                    </div>
-                                </div>
-
-                                <?php if (!empty($habitacion['descripcion'])): ?>
-                                    <div class="habitacion-descripcion">
-                                        <p><?php echo htmlspecialchars(substr($habitacion['descripcion'], 0, 100)); ?>
-                                            <?php echo strlen($habitacion['descripcion']) > 100 ? '...' : ''; ?></p>
-                                    </div>
-                                <?php endif; ?>
-
-                                <?php if ($habitacion['estado'] == 'Mantenimiento' && !empty($habitacion['descripcionMantenimiento'])): ?>
-                                    <div class="habitacion-mantenimiento">
-                                        <i class="fas fa-tools"></i>
-                                        <small><?php echo htmlspecialchars($habitacion['descripcionMantenimiento']); ?></small>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-
-                            <div class="habitacion-actions">
-                                <button type="button" class="btn btn-info btn-sm" onclick="verDetalles(<?php echo $habitacion['id']; ?>)">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <a href="?action=editar&id=<?php echo $habitacion['id']; ?>" class="btn btn-warning btn-sm">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <button type="button" class="btn btn-danger btn-sm" onclick="eliminarHabitacion(<?php echo $habitacion['id']; ?>)">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+            <div class="habitaciones-grid" id="habitaciones-grid">
+                <!-- Las tarjetas de habitaciones se insertarán aquí -->
             </div>
 
-            <!-- Modal de detalles -->
-            <div class="modal fade" id="modalDetalles" tabindex="-1">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">
-                                <i class="fas fa-bed"></i> Detalles de la Habitación
-                            </h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <!-- Paginación -->
+            <nav id="paginacion-container" style="display: none;"><ul class="pagination justify-content-center" id="paginacion"></ul></nav>
+        <?php endif; ?>
+    </div>
+
+    <!-- Modal de Edición -->
+    <div class="modal fade" id="editarModal" tabindex="-1" aria-labelledby="editarModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editarModalLabel"><i class="fas fa-edit"></i> Editar Habitación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-editar-habitacion" novalidate enctype="multipart/form-data">
+                        <input type="hidden" id="edit-id" name="id">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="edit-numero" class="form-label">Número</label>
+                                <input type="text" class="form-control" id="edit-numero" name="numero" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit-tipoHabitacion" class="form-label">Tipo</label>
+                                <select class="form-select" id="edit-tipoHabitacion" name="tipoHabitacion" required>
+                                    <?php foreach ($tiposHabitacion as $tipo): ?>
+                                        <option value="<?php echo htmlspecialchars($tipo['id']); ?>"><?php echo htmlspecialchars($tipo['descripcion']); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit-costo" class="form-label">Costo por Noche</label>
+                                <input type="number" class="form-control" id="edit-costo" name="costo" required min="0">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit-capacidad" class="form-label">Capacidad</label>
+                                <input type="number" class="form-control" id="edit-capacidad" name="capacidad" required min="1">
+                            </div>
+                            <div class="col-md-12">
+                                <label for="edit-descripcion" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="edit-descripcion" name="descripcion" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit-estado" class="form-label">Estado</label>
+                                <select class="form-select" id="edit-estado" name="estado" required>
+                                    <option value="Disponible">Disponible</option>
+                                    <option value="Ocupada">Ocupada</option>
+                                    <option value="Reservada">Reservada</option>
+                                    <option value="Mantenimiento">Mantenimiento</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit-foto" class="form-label">Cambiar Foto</label>
+                                <input type="file" class="form-control" id="edit-foto" name="foto" accept="image/*">
+                            </div>
+                            <div class="col-12" id="edit-foto-preview-container">
+                                <label class="form-label">Foto Actual</label><br>
+                                <img id="edit-foto-preview" src="" alt="Foto actual" style="max-width: 150px; border-radius: 8px;">
+                            </div>
                         </div>
-                        <div class="modal-body" id="detalles-content">
-                            <!-- Contenido cargado dinámicamente -->
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        </div>
-                    </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-guardar-edicion"><i class="fas fa-save"></i> Guardar Cambios</button>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <!-- Modal de confirmación eliminar -->
-            <div class="modal fade" id="modalEliminar" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">
-                                <i class="fas fa-exclamation-triangle text-danger"></i>
-                                Confirmar Eliminación
-                            </h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>¿Estás seguro de que deseas eliminar esta habitación?</p>
-                            <p class="text-danger mb-0">
-                                <strong>Esta acción no se puede deshacer.</strong>
-                            </p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="button" id="btn-confirmar-eliminar" class="btn btn-danger">
-                                <i class="fas fa-trash"></i> Eliminar
-                            </button>
-                        </div>
-                    </div>
+    <!-- Modal de Confirmación de Eliminación -->
+    <div class="modal fade" id="eliminarModal" tabindex="-1" aria-labelledby="eliminarModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="eliminarModalLabel"><i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas eliminar la habitación <strong id="eliminar-numero-habitacion"></strong>?</p>
+                    <p class="text-danger small">Esta acción no se puede deshacer. Si la habitación tiene reservas asociadas, no se podrá eliminar.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btn-confirmar-eliminacion">Eliminar</button>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <!-- Scripts -->
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="../../public/assets/js/habitaciones.js"></script>
+    <!-- Modal de Visualización -->
+    <div class="modal fade" id="verModal" tabindex="-1" aria-labelledby="verModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="verModalLabel"><i class="fas fa-eye"></i> Detalles de la Habitación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="detalles-habitacion">
+                    <!-- Contenido dinámico generado por JS -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../public/assets/js/listarHabitaciones.js"></script>
+
 </body>
-
 </html>

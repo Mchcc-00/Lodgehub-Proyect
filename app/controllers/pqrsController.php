@@ -25,7 +25,8 @@ class PqrsController {
                 'descripcion', 
                 'numDocumento',
                 'prioridad',
-                'categoria'
+                'categoria',
+                'id_hotel' // Campo requerido
             ];
 
             foreach ($camposRequeridos as $campo) {
@@ -41,6 +42,7 @@ class PqrsController {
                 'numDocumento' => $this->sanitizarTexto($_POST['numDocumento']),
                 'prioridad' => $this->sanitizarTexto($_POST['prioridad']),
                 'categoria' => $this->sanitizarTexto($_POST['categoria']),
+                'id_hotel' => intval($_POST['id_hotel']),
                 'estado' => 'Pendiente' // Estado por defecto
             ];
 
@@ -81,15 +83,16 @@ class PqrsController {
             $pagina = isset($_GET['pagina']) ? max(1, intval($_GET['pagina'])) : 1;
             $registrosPorPagina = isset($_GET['registros']) ? max(1, min(50, intval($_GET['registros']))) : 10;
             $filtro = isset($_GET['filtro']) ? $this->sanitizarTexto($_GET['filtro']) : null;
+            $id_hotel = isset($_GET['id_hotel']) ? intval($_GET['id_hotel']) : null;
             
             if (isset($_GET['paginado']) && $_GET['paginado'] === 'true') {
-                $resultado = $this->pqrsModel->obtenerPqrsPaginadas($pagina, $registrosPorPagina, $filtro);
+                $resultado = $this->pqrsModel->obtenerPqrsPaginadas($pagina, $registrosPorPagina, $filtro, $id_hotel);
                 echo json_encode([
                     'success' => true,
                     'data' => $resultado
                 ]);
             } else {
-                $pqrs = $this->pqrsModel->obtenerTodasLasPqrs($filtro);
+                $pqrs = $this->pqrsModel->obtenerTodasLasPqrs($filtro, $id_hotel);
                 echo json_encode([
                     'success' => true,
                     'data' => $pqrs
@@ -243,16 +246,17 @@ class PqrsController {
         
         try {
             $termino = isset($_GET['termino']) ? trim($_GET['termino']) : '';
+            $id_hotel = isset($_GET['id_hotel']) ? intval($_GET['id_hotel']) : null;
             
             if (empty($termino)) {
                 throw new Exception('Término de búsqueda es requerido');
             }
 
-            if (strlen($termino) < 2) {
-                throw new Exception('El término de búsqueda debe tener al menos 2 caracteres');
+            if (strlen($termino) < 2 && strlen($termino) > 0) {
+                throw new Exception('El término de búsqueda debe tener al menos 2 caracteres.');
             }
 
-            $pqrs = $this->pqrsModel->buscarPqrs($termino);
+            $pqrs = $this->pqrsModel->buscarPqrs($termino, $id_hotel);
             
             echo json_encode([
                 'success' => true,

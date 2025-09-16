@@ -19,14 +19,16 @@ class PqrsModel {
                         numDocumento, 
                         prioridad, 
                         categoria, 
-                        estado
+                        estado,
+                        id_hotel
                     ) VALUES (
                         :tipo, 
                         :descripcion, 
                         :numDocumento, 
                         :prioridad, 
                         :categoria, 
-                        :estado
+                        :estado,
+                        :id_hotel
                     )";
 
             $stmt = $this->db->prepare($sql);
@@ -37,6 +39,7 @@ class PqrsModel {
             $stmt->bindParam(':prioridad', $datos['prioridad'], PDO::PARAM_STR);
             $stmt->bindParam(':categoria', $datos['categoria'], PDO::PARAM_STR);
             $stmt->bindParam(':estado', $datos['estado'], PDO::PARAM_STR);
+            $stmt->bindParam(':id_hotel', $datos['id_hotel'], PDO::PARAM_INT);
 
             return $stmt->execute();
 
@@ -129,7 +132,7 @@ class PqrsModel {
     /**
      * Obtener todas las PQRS con filtros opcionales
      */
-    public function obtenerTodasLasPqrs($filtro = null) {
+    public function obtenerTodasLasPqrs($filtro = null, $id_hotel = null) {
         try {
             $sql = "SELECT p.*, 
                            u.nombres as usuario_nombres, 
@@ -138,11 +141,18 @@ class PqrsModel {
                     LEFT JOIN tp_usuarios u ON p.numDocumento = u.numDocumento";
             
             $parametros = [];
+            $where = [];
             
+            if ($id_hotel) {
+                $where[] = "p.id_hotel = :id_hotel";
+                $parametros[':id_hotel'] = $id_hotel;
+            }
             if ($filtro && $filtro !== 'all') {
-                // El filtro puede ser por estado, tipo, etc.
-                $sql .= " WHERE p.estado = :filtro OR p.tipo = :filtro";
+                $where[] = "(p.estado = :filtro OR p.tipo = :filtro)";
                 $parametros[':filtro'] = $filtro;
+            }
+            if (!empty($where)) {
+                $sql .= " WHERE " . implode(' AND ', $where);
             }
             
             $sql .= " ORDER BY p.fechaRegistro DESC";
@@ -151,7 +161,11 @@ class PqrsModel {
             
             foreach ($parametros as $param => $valor) {
                 $stmt->bindParam($param, $valor, PDO::PARAM_STR);
+                if ($param === ':id_hotel') {
+                    $stmt->bindParam($param, $valor, PDO::PARAM_INT);
+                }
             }
+
             
             $stmt->execute();
             
@@ -219,25 +233,38 @@ class PqrsModel {
     /**
      * Buscar PQRS por término de búsqueda
      */
-    public function buscarPqrs($termino) {
+    public function buscarPqrs($termino, $id_hotel = null) {
         try {
             $sql = "SELECT p.*, 
                            u.nombres as usuario_nombres, 
                            u.apellidos as usuario_apellidos
                     FROM tp_pqrs p 
-                    LEFT JOIN tp_usuarios u ON p.numDocumento = u.numDocumento 
-                    WHERE p.id LIKE :termino 
-                    OR p.descripcion LIKE :termino 
-                    OR p.numDocumento LIKE :termino 
-                    OR p.tipo LIKE :termino
-                    OR u.nombres LIKE :termino
-                    OR u.apellidos LIKE :termino
-                    ORDER BY p.fechaRegistro DESC";
+                    LEFT JOIN tp_usuarios u ON p.numDocumento = u.numDocumento";
+            
+            $where = [];
+            $params = [];
+
+            if ($id_hotel) {
+                $where[] = "p.id_hotel = :id_hotel";
+                $params[':id_hotel'] = $id_hotel;
+            }
+
+            if (!empty($termino)) {
+                $where[] = "(p.id LIKE :termino OR p.descripcion LIKE :termino OR p.numDocumento LIKE :termino OR p.tipo LIKE :termino OR u.nombres LIKE :termino OR u.apellidos LIKE :termino)";
+                $params[':termino'] = '%' . $termino . '%';
+            }
+
+            if (!empty($where)) {
+                $sql .= " WHERE " . implode(' AND ', $where);
+            }
+            $sql .= " ORDER BY p.fechaRegistro DESC";
             
             $stmt = $this->db->prepare($sql);
-            $terminoBusqueda = '%' . $termino . '%';
-            $stmt->bindParam(':termino', $terminoBusqueda, PDO::PARAM_STR);
-            $stmt->execute();
+            // La primera llamada a execute() con $params es correcta.
+            $stmt->execute($params);
+            // La segunda llamada es innecesaria y puede causar errores.
+            // La eliminamos.
+            // $stmt->execute(); 
             
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -250,17 +277,25 @@ class PqrsModel {
     /**
      * Obtener PQRS paginadas
      */
-    public function obtenerPqrsPaginadas($pagina = 1, $registrosPorPagina = 10, $filtro = null) {
+    public function obtenerPqrsPaginadas($pagina = 1, $registrosPorPagina = 10, $filtro = null, $id_hotel = null) {
         try {
             $offset = ($pagina - 1) * $registrosPorPagina;
             
             // Construir WHERE clause
             $whereClause = '';
             $parametros = [];
+            $where = [];
             
+            if ($id_hotel) {
+                $where[] = "p.id_hotel = :id_hotel";
+                $parametros[':id_hotel'] = $id_hotel;
+            }
             if ($filtro && $filtro !== 'all') {
-                $whereClause = 'WHERE p.estado = :filtro OR p.tipo = :filtro';
+                $where[] = '(p.estado = :filtro OR p.tipo = :filtro)';
                 $parametros[':filtro'] = $filtro;
+            }
+            if (!empty($where)) {
+                $whereClause = " WHERE " . implode(' AND ', $where);
             }
             
             // Obtener el total de registros
@@ -268,12 +303,7 @@ class PqrsModel {
                         LEFT JOIN tp_usuarios u ON p.numDocumento = u.numDocumento 
                         $whereClause";
             $stmtTotal = $this->db->prepare($sqlTotal);
-            
-            foreach ($parametros as $param => $valor) {
-                $stmtTotal->bindParam($param, $valor, PDO::PARAM_STR);
-            }
-            
-            $stmtTotal->execute();
+            $stmtTotal->execute($parametros);
             $total = $stmtTotal->fetch(PDO::FETCH_ASSOC)['total'];
             
             // Obtener los registros de la página actual
@@ -288,15 +318,20 @@ class PqrsModel {
             
             $stmt = $this->db->prepare($sql);
             
-            // Bind parámetros de filtro
-            foreach ($parametros as $param => $valor) {
-                $stmt->bindParam($param, $valor, PDO::PARAM_STR);
+            // Bind de parámetros de filtro
+            foreach ($parametros as $param => &$valor) { // Usar referencia para bindParam
+                if ($param === ':id_hotel') {
+                    $stmt->bindParam($param, $valor, PDO::PARAM_INT);
+                } else {
+                    $stmt->bindParam($param, $valor, PDO::PARAM_STR);
+                }
             }
-            
+            unset($valor); // Romper la referencia
+
             // Bind parámetros de paginación
             $stmt->bindParam(':limit', $registrosPorPagina, PDO::PARAM_INT);
             $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-            $stmt->execute();
+            $stmt->execute(); // Ejecutar sin argumentos, ya que todo fue bindeado
             
             $pqrs = $stmt->fetchAll(PDO::FETCH_ASSOC);
             

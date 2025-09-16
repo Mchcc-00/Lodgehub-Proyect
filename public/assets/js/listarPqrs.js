@@ -59,12 +59,18 @@ document.addEventListener('DOMContentLoaded', () => {
         currentPage = pagina;
         currentFilter = filtro;
 
+        const hotelId = document.getElementById('hotel-id-context')?.value;
+        if (!hotelId) {
+            tablaPqrs.innerHTML = `<tr><td colspan="9" class="text-center text-warning">⚠️ No se ha seleccionado un hotel.</td></tr>`;
+            return;
+        }
+
         try {
             let url = '';
             if (terminoBusqueda) {
-                url = `${API_URL}?action=buscar&termino=${encodeURIComponent(terminoBusqueda)}`;
+                url = `${API_URL}?action=buscar&termino=${encodeURIComponent(terminoBusqueda)}&id_hotel=${hotelId}`;
             } else {
-                url = `${API_URL}?action=obtener&paginado=true&pagina=${pagina}&registros=${recordsPerPage}`;
+                url = `${API_URL}?action=obtener&paginado=true&pagina=${pagina}&registros=${recordsPerPage}&id_hotel=${hotelId}`;
                 if (filtro && filtro !== 'all') {
                     url += `&filtro=${encodeURIComponent(filtro)}`;
                 }
@@ -278,6 +284,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Carga inicial y revisión de estado desde la URL
     revisarEstadoURL();
     cargarPqrs();
+
+    // Si no hay hotel seleccionado, no hacer nada más
+    const hotelId = document.getElementById('hotel-id-context')?.value;
+    if (!hotelId) {
+        return;
+    }
 
     // Búsqueda
     const ejecutarBusqueda = () => {
@@ -534,4 +546,3 @@ function truncarTexto(texto, longitud = 100) {
 
     return texto.substring(0, longitud) + '...';
 }
-

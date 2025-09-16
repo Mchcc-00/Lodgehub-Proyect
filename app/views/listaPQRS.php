@@ -15,12 +15,28 @@
 <body>
 
     <?php
+        require_once 'validarSesion.php';
         include "layouts/sidebar.php";
         include "layouts/navbar.php";
+
+        // VALIDACIÓN: Asegurarse de que un hotel ha sido seleccionado
+        $hotelSeleccionado = isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id']);
+        $hotel_id = $_SESSION['hotel_id'] ?? null;
     ?>
     <script src="../../public/assets/js/sidebar.js"></script>
 
     <div class="container">
+        <!-- Campo oculto para que JS pueda leer el ID del hotel -->
+        <input type="hidden" id="hotel-id-context" value="<?php echo htmlspecialchars($hotel_id); ?>">
+
+        <?php if (!$hotelSeleccionado): ?>
+            <div class="alert alert-danger mt-4" role="alert">
+                <h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> ¡Acción Requerida!</h4>
+                <p>Para poder gestionar las PQRS, primero debes <strong>seleccionar un hotel</strong> desde el panel principal (Home).</p>
+                <hr>
+                <p class="mb-0">Por favor, regresa al <a href="homepage.php" class="alert-link">Home</a> y elige el hotel donde deseas trabajar.</p>
+            </div>
+        <?php else: ?>
         <div class="header">
             <h1>Lista de PQRS</h1>
             <p>Gestiona todas las Peticiones, Quejas, Reclamos, Sugerencias y Felicitaciones</p>
@@ -108,6 +124,7 @@
                 <!-- Generado dinámicamente -->
             </ul>
         </nav>
+        <?php endif; ?>
     </div>
 
     <!-- Modal de edición -->

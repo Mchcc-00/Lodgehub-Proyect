@@ -15,12 +15,26 @@
 <body>
 
     <?php
+        require_once 'validarSesion.php';
         include "layouts/sidebar.php";
         include "layouts/navbar.php";
+
+        // VALIDACIÓN: Asegurarse de que un hotel ha sido seleccionado
+        $hotelSeleccionado = isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id']);
+        $hotel_id = $_SESSION['hotel_id'] ?? null;
+        $hotel_nombre = $_SESSION['hotel_nombre'] ?? 'No seleccionado';
     ?>
     <script src="../../public/assets/js/sidebar.js"></script>
     
     <div class="container">
+        <?php if (!$hotelSeleccionado): ?>
+            <div class="alert alert-danger mt-4" role="alert">
+                <h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> ¡Acción Requerida!</h4>
+                <p>Para poder crear una PQRS, primero debes <strong>seleccionar un hotel</strong> desde el panel principal (Home).</p>
+                <hr>
+                <p class="mb-0">Por favor, regresa al <a href="homepage.php" class="alert-link">Home</a> y elige el hotel donde deseas trabajar.</p>
+            </div>
+        <?php else: ?>
         <div class="header">
             <h1>Crear PQRS</h1>
             <p>Registra una nueva Petición, Queja, Reclamo, Sugerencia o Felicitación</p>
@@ -44,7 +58,15 @@
             </div>
 
             <form id="pqrs-form" action="../controllers/pqrsController.php" method="POST">
+                <!-- Campo oculto para enviar el id_hotel -->
+                <input type="hidden" name="id_hotel" value="<?php echo htmlspecialchars($hotel_id); ?>">
                 <div class="form-grid">
+                    <div class="form-group">
+                        <label for="hotel_nombre">Hotel</label>
+                        <input type="text" id="hotel_nombre" name="hotel_nombre" value="<?php echo htmlspecialchars($hotel_nombre); ?>" readonly style="background-color: #e9ecef; cursor: not-allowed;">
+                        <small class="form-text text-muted">Hotel donde se registra la PQRS.</small>
+                    </div>
+
                     <div class="form-group">
                         <label for="tipo">Tipo de PQRS <span class="required">*</span></label>
                         <select id="tipo" name="tipo" required>
@@ -135,6 +157,7 @@
                 </div>
             </form>
         </div>
+        <?php endif; ?>
     </div>
 
     <!-- Scripts -->
