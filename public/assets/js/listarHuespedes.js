@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Modales
     const editarModal = new bootstrap.Modal(document.getElementById('editarModal'));
     const eliminarModal = new bootstrap.Modal(document.getElementById('eliminarModal'));
+    const verModal = new bootstrap.Modal(document.getElementById('verModal'));
 
     let currentPage = 1;
     let itemParaEliminar = null;
@@ -88,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+
     const renderizarPaginacion = ({ totalPaginas, pagina }) => {
         paginacionUl.innerHTML = '';
         if (totalPaginas <= 1) {
@@ -131,6 +133,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const target = e.target.closest('button');
         if (!target) return;
         const numDocumento = target.dataset.id;
+
+        if (target.classList.contains('btn-ver')) {
+            try {
+                const response = await fetch(`${API_URL}?action=obtenerPorDocumento&numDocumento=${numDocumento}`);
+                const resultado = await response.json();
+                if (!resultado.success) throw new Error(resultado.message);
+
+                renderizarDetalles(resultado.data);
+                verModal.show();
+
+            } catch (error) {
+                mostrarMensaje(error.message, 'error');
+            }
+        }
 
         if (target.classList.contains('btn-editar')) {
             try {

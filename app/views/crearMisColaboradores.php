@@ -88,8 +88,8 @@
                         <select id="tipoDocumento" name="tipoDocumento" required>
                             <option value="">Seleccione un tipo</option>
                             <option value="Cédula de Ciudadanía">Cédula de Ciudadanía</option>
-                            <option value="Tarjeta de Identidad">Tarjeta de Identidad</option>
-                            <option value="Cedula de Extranjeria">Cédula de Extranjería</option>
+                            <option value="Tarjeta de Identidad">Tarjeta de Identidad</option>                            
+                            <option value="Cédula de Extranjería">Cédula de Extranjería</option>
                             <option value="Pasaporte">Pasaporte</option>
                             <option value="Registro Civil">Registro Civil</option>
                         </select>

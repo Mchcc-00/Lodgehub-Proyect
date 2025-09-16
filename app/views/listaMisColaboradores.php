@@ -147,7 +147,7 @@
                                     <select class="form-select" id="edit-tipoDocumento" name="tipoDocumento" required>
                                         <option value="Cédula de Ciudadanía">Cédula de Ciudadanía</option>
                                         <option value="Tarjeta de Identidad">Tarjeta de Identidad</option>
-                                        <option value="Cedula de Extranjeria">Cédula de Extranjería</option>
+                                        <option value="Cédula de Extranjería">Cédula de Extranjería</option>
                                         <option value="Pasaporte">Pasaporte</option>
                                         <option value="Registro Civil">Registro Civil</option>
                                     </select>
@@ -289,51 +289,6 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-danger" id="confirmar-eliminacion">
                         <i class="fas fa-trash"></i> Eliminar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de cambio de contraseña -->
-    <div class="modal fade" id="cambiarPasswordModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-key"></i> Cambiar Contraseña
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="form-cambiar-password">
-                        <input type="hidden" id="password-documento">
-                        
-                        <div class="mb-3">
-                            <label for="nueva-password" class="form-label">Nueva Contraseña <span class="required">*</span></label>
-                            <input type="password" class="form-control" id="nueva-password" name="nueva-password" required minlength="6">
-                            <small class="form-text text-muted">Mínimo 6 caracteres</small>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="confirmar-password" class="form-label">Confirmar Contraseña <span class="required">*</span></label>
-                            <input type="password" class="form-control" id="confirmar-password" name="confirmar-password" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="solicitar-cambio">
-                                <label class="form-check-label" for="solicitar-cambio">
-                                    Solicitar cambio de contraseña en el próximo inicio de sesión
-                                </label>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="guardar-password">
-                        <i class="fas fa-save"></i> Cambiar Contraseña
                     </button>
                 </div>
             </div>

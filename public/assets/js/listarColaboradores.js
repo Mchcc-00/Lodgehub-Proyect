@@ -65,22 +65,21 @@ class ColaboradoresManager {
             guardarEdicionBtn.addEventListener('click', () => this.guardarEdicion());
         }
         
-        // Modal de eliminación
-        const confirmarEliminacionBtn = document.getElementById('confirmar-eliminacion');
-        if (confirmarEliminacionBtn) {
-            confirmarEliminacionBtn.addEventListener('click', () => this.confirmarEliminacion());
-        }
-        
         // Modal de cambiar contraseña
         const guardarPasswordBtn = document.getElementById('guardar-password');
         if (guardarPasswordBtn) {
             guardarPasswordBtn.addEventListener('click', () => this.cambiarPassword());
         }
         
-        // Validar confirmación de contraseña
         const confirmarPasswordInput = document.getElementById('confirmar-password');
         if (confirmarPasswordInput) {
             confirmarPasswordInput.addEventListener('input', () => this.validarConfirmacionPassword());
+        }
+        
+        // Modal de eliminación
+        const confirmarEliminacionBtn = document.getElementById('confirmar-eliminacion');
+        if (confirmarEliminacionBtn) {
+            confirmarEliminacionBtn.addEventListener('click', () => this.confirmarEliminacion());
         }
     }
     
@@ -108,7 +107,7 @@ class ColaboradoresManager {
                     params.append('rol', this.filtroActivo);
                 } else {
                     // Para otros filtros como tipo documento o sexo
-                    if (this.filtroActivo.includes('Cédula') || this.filtroActivo === 'Pasaporte') {
+                    if (this.filtroActivo.includes('Cédula') || this.filtroActivo.includes('Tarjeta') || this.filtroActivo === 'Pasaporte' || this.filtroActivo.includes('Registro')) {
                         params.append('tipoDocumento', this.filtroActivo);
                     } else if (['Hombre', 'Mujer', 'Otro'].includes(this.filtroActivo)) {
                         params.append('sexo', this.filtroActivo);
@@ -188,16 +187,13 @@ class ColaboradoresManager {
                     </td>
                     <td class="colaborador-actions">
                         <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-sm btn-outline-info action-btn" data-action="ver" data-documento="${colaborador.numDocumento}" title="Ver detalles">
+                            <button type="button" class="btn btn-sm btn-info action-btn" data-action="ver" data-documento="${colaborador.numDocumento}" title="Ver detalles">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button type="button" class="btn btn-sm btn-outline-primary action-btn" data-action="editar" data-documento="${colaborador.numDocumento}" title="Editar">
+                            <button type="button" class="btn btn-sm btn-warning action-btn" data-action="editar" data-documento="${colaborador.numDocumento}" title="Editar">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button type="button" class="btn btn-sm btn-outline-warning action-btn" data-action="password" data-documento="${colaborador.numDocumento}" title="Cambiar contraseña">
-                                <i class="fas fa-key"></i>
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-danger action-btn" data-action="eliminar" data-documento="${colaborador.numDocumento}" data-nombre="${this.escapeHtml(colaborador.nombres)} ${this.escapeHtml(colaborador.apellidos)}" title="Eliminar">
+                            <button type="button" class="btn btn-sm btn-danger action-btn" data-action="eliminar" data-documento="${colaborador.numDocumento}" data-nombre="${this.escapeHtml(colaborador.nombres)} ${this.escapeHtml(colaborador.apellidos)}" title="Eliminar">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -265,9 +261,6 @@ class ColaboradoresManager {
                     break;
                 case 'editar':
                     this.editarColaborador(documento);
-                    break;
-                case 'password':
-                    this.abrirCambiarPassword(documento);
                     break;
                 case 'eliminar':
                     this.eliminarColaborador(documento, boton.dataset.nombre);
@@ -467,71 +460,6 @@ class ColaboradoresManager {
             this.mostrarMensaje('error', 'Error de conexión al eliminar.');
         } finally {
             this.documentoParaEliminar = null;
-            this.forceHideModal(modal);
-        }
-    }
-    
-    abrirCambiarPassword(documento) {
-        document.getElementById('password-documento').value = documento;
-        document.getElementById('nueva-password').value = '';
-        document.getElementById('confirmar-password').value = '';
-        document.getElementById('solicitar-cambio').checked = false;
-        
-        const modal = new bootstrap.Modal(document.getElementById('cambiarPasswordModal'));
-        modal.show();
-    }
-    
-    validarConfirmacionPassword() {
-        const nuevaPassword = document.getElementById('nueva-password').value;
-        const confirmarPassword = document.getElementById('confirmar-password').value;
-        const confirmarInput = document.getElementById('confirmar-password');
-        
-        if (confirmarPassword && nuevaPassword !== confirmarPassword) {
-            confirmarInput.setCustomValidity('Las contraseñas no coinciden');
-        } else {
-            confirmarInput.setCustomValidity('');
-        }
-    }
-    
-    async cambiarPassword() {
-        const modalElement = document.getElementById('cambiarPasswordModal');
-        const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
-
-        try {
-            const form = document.getElementById('form-cambiar-password');
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-            
-            const documento = document.getElementById('password-documento').value;
-            const nuevaPassword = document.getElementById('nueva-password').value;
-            const solicitarCambio = document.getElementById('solicitar-cambio').checked;
-            
-            const response = await fetch('../controllers/misColaboradoresControllers.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'cambiarPassword',
-                    documento: documento,
-                    nuevaPassword: nuevaPassword,
-                    solicitarCambio: solicitarCambio
-                })
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                this.mostrarMensaje('success', data.message);
-            } else {
-                this.mostrarMensaje('error', data.message);
-            }
-        } catch (error) {
-            console.error('Error al cambiar contraseña:', error);
-            this.mostrarMensaje('error', 'Error de conexión al cambiar la contraseña.');
-        } finally {
             this.forceHideModal(modal);
         }
     }

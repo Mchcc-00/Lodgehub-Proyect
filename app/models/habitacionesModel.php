@@ -58,7 +58,16 @@ class HabitacionesModel {
             $sql = "INSERT INTO tp_habitaciones (numero, costo, capacidad, tipoHabitacion, foto, descripcion, estado, id_hotel)
                     VALUES (:numero, :costo, :capacidad, :tipoHabitacion, :foto, :descripcion, :estado, :id_hotel)";
             $stmt = $this->db->prepare($sql);
-            return $stmt->execute($datos);
+            $stmt->bindValue(':numero', $datos[':numero'], PDO::PARAM_STR);
+            $stmt->bindValue(':costo', $datos[':costo']);
+            $stmt->bindValue(':capacidad', $datos[':capacidad'], PDO::PARAM_INT);
+            $stmt->bindValue(':tipoHabitacion', $datos[':tipoHabitacion'], PDO::PARAM_INT);
+            $stmt->bindValue(':foto', $datos[':foto'], PDO::PARAM_STR);
+            $stmt->bindValue(':descripcion', $datos[':descripcion'], PDO::PARAM_STR);
+            $stmt->bindValue(':estado', $datos[':estado'], PDO::PARAM_STR);
+            $stmt->bindValue(':id_hotel', $datos[':id_hotel'], PDO::PARAM_INT);
+            
+            return $stmt->execute();
         } catch (PDOException $e) {
             error_log("Error en HabitacionesModel::crearHabitacion: " . $e->getMessage());
             throw new Exception("Error al crear la habitación: " . $e->getMessage());
@@ -170,7 +179,10 @@ class HabitacionesModel {
 
             $sql = "UPDATE tp_habitaciones SET " . implode(', ', $campos) . " WHERE id = :id";
             $stmt = $this->db->prepare($sql);
-            return $stmt->execute($params);
+            $stmt->execute($params);
+
+            // Devolver true si se afectó al menos una fila, o si no hubo error.
+            return $stmt->rowCount() >= 0;
         } catch (PDOException $e) {
             error_log("Error en HabitacionesModel::actualizarHabitacion: " . $e->getMessage());
             throw new Exception("Error al actualizar la habitación: " . $e->getMessage());

@@ -50,7 +50,7 @@ $currentPage = 'Huespedes';
                     </div>
                     <div class="col-md-6 text-end">
                         <button class="btn btn-secondary" id="refresh-btn"><i class="fas fa-sync-alt"></i> Actualizar</button>
-                        <a href="crearHuesped.php" class="btn btn-success"><i class="fas fa-plus"></i> Crear Huésped</a>
+                        <a href="crearHuesped.php" class="btn btn-primary"><i class="fas fa-plus"></i> Crear Huésped</a>
                     </div>
                 </div>
             </div>

@@ -75,7 +75,7 @@ $currentPage = 'Habitaciones'; // Para activar el item en el sidebar
                         </select>
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
-                        <a href="crearHabitacion.php" class="btn btn-success w-100"><i class="fas fa-plus"></i> Nueva</a>
+                        <a href="crearHabitacion.php" class="btn btn-primary w-100"><i class="fas fa-plus"></i> Nueva</a>
                     </div>
                 </div>
             </div>
