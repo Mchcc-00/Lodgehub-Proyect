@@ -14,323 +14,242 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorText = document.getElementById('error-text');
 
     // Modales
-    const editarModalEl = document.getElementById('editarModal');
-    const editarModal = new bootstrap.Modal(editarModalEl);
-    const eliminarModalEl = document.getElementById('eliminarModal');
-    const eliminarModal = new bootstrap.Modal(eliminarModalEl);
-
-    // Formularios y botones de modales
-    const formEditar = document.getElementById('form-editar');
-    const guardarEdicionBtn = document.getElementById('guardar-edicion');
-    const confirmarEliminacionBtn = document.getElementById('confirmar-eliminacion');
+    const editarModal = new bootstrap.Modal(document.getElementById('editarModal'));
+    const eliminarModal = new bootstrap.Modal(document.getElementById('eliminarModal'));
 
     let currentPage = 1;
-    const recordsPerPage = 10;
-    let huespedParaEliminar = null;
+    let itemParaEliminar = null;
+    let debounceTimer;
 
     // --- FUNCIONES ---
 
-    /**
-     * Muestra un mensaje de éxito o error.
-     * @param {string} mensaje - El mensaje a mostrar.
-     * @param {string} tipo - 'success' o 'error'.
-     */
     const mostrarMensaje = (mensaje, tipo = 'success') => {
-        if (tipo === 'success') {
-            successText.textContent = mensaje;
-            successMessage.style.display = 'block';
-            setTimeout(() => { successMessage.style.display = 'none'; }, 4000);
-        } else {
-            errorText.textContent = mensaje;
-            errorMessage.style.display = 'block';
-            setTimeout(() => { errorMessage.style.display = 'none'; }, 5000);
-        }
+        const elem = tipo === 'success' ? successMessage : errorMessage;
+        const textElem = tipo === 'success' ? successText : errorText;
+        textElem.textContent = mensaje;
+        elem.style.display = 'block';
+        window.scrollTo(0, 0);
+        setTimeout(() => { elem.style.display = 'none'; }, 4000);
     };
 
-    /**
-     * Carga los huéspedes desde el backend.
-     * @param {number} pagina - El número de página a cargar.
-     * @param {string} terminoBusqueda - El término para filtrar la búsqueda.
-     */
     const cargarHuespedes = async (pagina = 1, terminoBusqueda = '') => {
-        tablaHuespedes.innerHTML = `<tr><td colspan="7" class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando huéspedes...</td></tr>`;
-        paginacionContainer.style.display = 'none';
+        if (!tablaHuespedes) return;
+        tablaHuespedes.innerHTML = `<tr><td colspan="6" class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>`;
         currentPage = pagina;
 
         try {
-            let url = '';
-            if (terminoBusqueda) {
-                url = `${API_URL}?action=buscar&termino=${encodeURIComponent(terminoBusqueda)}`;
-            } else {
-                url = `${API_URL}?action=obtener&paginado=true&pagina=${pagina}&registros=${recordsPerPage}`;
-            }
+            let url = `${API_URL}?action=obtener&pagina=${pagina}`;
+            if (terminoBusqueda) url += `&busqueda=${encodeURIComponent(terminoBusqueda)}`;
 
             const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
-            }
-
+            if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
             const resultado = await response.json();
 
             if (resultado.success) {
-                if (terminoBusqueda) {
-                    renderizarTabla(resultado.data);
-                    paginacionContainer.style.display = 'none'; // Ocultar paginación en búsqueda
-                } else {
-                    renderizarTabla(resultado.data.huespedes);
-                    renderizarPaginacion(resultado.data);
-                }
+                renderizarTabla(resultado.data.huespedes);
+                renderizarPaginacion(resultado.data);
             } else {
                 throw new Error(resultado.message || 'Error al cargar los datos.');
             }
         } catch (error) {
-            tablaHuespedes.innerHTML = `<tr><td colspan="7" class="text-danger text-center">❌ Error al cargar los huéspedes: ${error.message}</td></tr>`;
+            tablaHuespedes.innerHTML = `<tr><td colspan="6" class="text-danger text-center">❌ Error: ${error.message}</td></tr>`;
         }
     };
 
-    /**
-     * Renderiza los datos de los huéspedes en la tabla.
-     * @param {Array} huespedes - Array de objetos de huéspedes.
-     */
-    const renderizarTabla = (huespedes) => {
+    const renderizarTabla = (data) => {
         tablaHuespedes.innerHTML = '';
-        if (huespedes.length === 0) {
-            tablaHuespedes.innerHTML = `<tr><td colspan="7" class="text-center">No se encontraron huéspedes.</td></tr>`;
+        if (data.length === 0) {
+            tablaHuespedes.innerHTML = `<tr><td colspan="6" class="text-center">No se encontraron huéspedes.</td></tr>`;
             return;
         }
 
-        huespedes.forEach(huesped => {
+        data.forEach(item => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${huesped.tipoDocumento} ${huesped.numDocumento}</td>
-                <td>${huesped.nombres}</td>
-                <td>${huesped.apellidos}</td>
-                <td>${huesped.sexo}</td>
-                <td>${huesped.numTelefono}</td>
-                <td>${huesped.correo}</td>
+                <td class="huesped-info">
+                    <h6>${item.nombres} ${item.apellidos}</h6>
+                    <small>${item.correo}</small>
+                </td>
                 <td>
-                    <button class="btn btn-sm btn-warning btn-editar" data-id="${huesped.numDocumento}" title="Editar">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn btn-sm btn-danger btn-eliminar" data-id="${huesped.numDocumento}" data-nombre="${huesped.nombres} ${huesped.apellidos}" title="Eliminar">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    <small>${item.tipoDocumento}</small><br>
+                    <strong>${item.numDocumento}</strong>
+                </td>
+                <td>${item.numTelefono}</td>
+                <td>${formatearSexo(item.sexo)}</td>
+                <td>${new Date(item.fechaCreacion).toLocaleDateString()}</td>
+                <td class="acciones-tabla">
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-warning btn-editar" data-id="${item.numDocumento}" title="Editar"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-danger btn-eliminar" data-id="${item.numDocumento}" data-info="${item.nombres} ${item.apellidos}" title="Eliminar"><i class="fas fa-trash"></i></button>
+                    </div>
                 </td>
             `;
             tablaHuespedes.appendChild(tr);
         });
     };
 
-    /**
-     * Renderiza los controles de paginación.
-     * @param {object} datosPaginacion - Objeto con la información de paginación.
-     */
-    const renderizarPaginacion = (datosPaginacion) => {
-        const { total, pagina, totalPaginas } = datosPaginacion;
+    const renderizarPaginacion = ({ totalPaginas, pagina }) => {
         paginacionUl.innerHTML = '';
-
         if (totalPaginas <= 1) {
-            paginacionContainer.style.display = 'none';
+            paginacionContainer.style.visibility = 'hidden';
             return;
         }
+        paginacionContainer.style.visibility = 'visible';
 
-        paginacionContainer.style.display = 'block';
-
-        // Botón "Anterior"
-        paginacionUl.innerHTML += `
-            <li class="page-item ${pagina <= 1 ? 'disabled' : ''}">
-                <a class="page-link" href="#" data-page="${pagina - 1}">Anterior</a>
-            </li>`;
-
-        // Números de página
         for (let i = 1; i <= totalPaginas; i++) {
-            paginacionUl.innerHTML += `
-                <li class="page-item ${i === pagina ? 'active' : ''}">
-                    <a class="page-link" href="#" data-page="${i}">${i}</a>
-                </li>`;
-        }
-
-        // Botón "Siguiente"
-        paginacionUl.innerHTML += `
-            <li class="page-item ${pagina >= totalPaginas ? 'disabled' : ''}">
-                <a class="page-link" href="#" data-page="${pagina + 1}">Siguiente</a>
-            </li>`;
-    };
-
-    /**
-     * Revisa los parámetros de la URL para mostrar mensajes de estado (ej. después de crear).
-     */
-    const revisarEstadoURL = () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const status = urlParams.get('status');
-
-        if (status === 'created') {
-            mostrarMensaje('Huésped registrado exitosamente.', 'success');
-        }
-        
-        // Limpiar la URL para que el mensaje no reaparezca al recargar la página.
-        if (window.history.replaceState) {
-            const urlLimpia = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            window.history.replaceState({ path: urlLimpia }, '', urlLimpia);
+            paginacionUl.innerHTML += `<li class="page-item ${i === pagina ? 'active' : ''}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
         }
     };
 
     // --- MANEJO DE EVENTOS ---
 
-    // Carga inicial y revisión de estado desde la URL
-    revisarEstadoURL();
     cargarHuespedes();
 
-    // Búsqueda
-    const ejecutarBusqueda = () => {
-        const termino = buscarInput.value.trim();
-        if (termino.length > 1 || termino.length === 0) {
-            cargarHuespedes(1, termino);
-        }
-    };
-    buscarBtn.addEventListener('click', ejecutarBusqueda);
+    buscarBtn.addEventListener('click', () => cargarHuespedes(1, buscarInput.value.trim()));
     buscarInput.addEventListener('keyup', (e) => {
-        if (e.key === 'Enter') {
-            ejecutarBusqueda();
-        }
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            if (e.key === 'Enter' || buscarInput.value.length === 0 || buscarInput.value.length > 2) {
+                cargarHuespedes(1, buscarInput.value.trim());
+            }
+        }, 400);
     });
 
-    // Botón de actualizar
     refreshBtn.addEventListener('click', () => {
         buscarInput.value = '';
         cargarHuespedes();
-        mostrarMensaje('Lista actualizada.', 'success');
     });
 
-    // Paginación
     paginacionUl.addEventListener('click', (e) => {
         e.preventDefault();
-        if (e.target.tagName === 'A' && e.target.dataset.page) {
-            const pageNum = parseInt(e.target.dataset.page, 10);
-            if (!isNaN(pageNum)) {
-                cargarHuespedes(pageNum, buscarInput.value.trim());
-            }
+        if (e.target.dataset.page) {
+            cargarHuespedes(parseInt(e.target.dataset.page, 10), buscarInput.value.trim());
         }
     });
 
-    // Event delegation para botones de editar y eliminar
     tablaHuespedes.addEventListener('click', async (e) => {
         const target = e.target.closest('button');
         if (!target) return;
-
         const numDocumento = target.dataset.id;
 
         if (target.classList.contains('btn-editar')) {
-            // --- Editar Huésped ---
             try {
                 const response = await fetch(`${API_URL}?action=obtenerPorDocumento&numDocumento=${numDocumento}`);
                 const resultado = await response.json();
-                if (resultado.success) {
-                    const huesped = resultado.data;
-                    document.getElementById('edit-numDocumento').value = huesped.numDocumento;
-                    document.getElementById('edit-nombres').value = huesped.nombres;
-                    document.getElementById('edit-apellidos').value = huesped.apellidos;
-                    document.getElementById('edit-sexo').value = huesped.sexo;
-                    document.getElementById('edit-numTelefono').value = huesped.numTelefono;
-                    document.getElementById('edit-correo').value = huesped.correo;
-                    editarModal.show();
-                } else {
-                    mostrarMensaje(resultado.message, 'error');
-                }
+                if (!resultado.success) throw new Error(resultado.message);
+                
+                const form = document.getElementById('form-editar-huesped');
+                form.querySelector('#edit-numDocumentoOriginal').value = resultado.data.numDocumento;
+                form.querySelector('#edit-tipoDocumento').value = resultado.data.tipoDocumento;
+                form.querySelector('#edit-numDocumento').value = resultado.data.numDocumento;
+                form.querySelector('#edit-nombres').value = resultado.data.nombres;
+                form.querySelector('#edit-apellidos').value = resultado.data.apellidos;
+                form.querySelector('#edit-correo').value = resultado.data.correo;
+                form.querySelector('#edit-numTelefono').value = resultado.data.numTelefono;
+                form.querySelector('#edit-sexo').value = resultado.data.sexo;
+                editarModal.show();
+
             } catch (error) {
-                mostrarMensaje('Error al cargar datos para edición.', 'error');
+                mostrarMensaje(error.message, 'error');
             }
         }
 
         if (target.classList.contains('btn-eliminar')) {
-            // --- Eliminar Huésped ---
-            const nombre = target.dataset.nombre;
-            huespedParaEliminar = numDocumento;
-            document.getElementById('eliminar-nombre').textContent = nombre;
-            document.getElementById('eliminar-documento').textContent = numDocumento;
+            itemParaEliminar = numDocumento;
+            document.getElementById('eliminar-id').textContent = numDocumento;
+            document.getElementById('eliminar-info').textContent = target.dataset.info;
             eliminarModal.show();
         }
     });
 
-    // Guardar cambios del modal de edición
-    guardarEdicionBtn.addEventListener('click', async () => {
-        const numDocumento = document.getElementById('edit-numDocumento').value;
-        if (!numDocumento) {
-            mostrarMensaje('Error: No se pudo identificar al huésped para la actualización.', 'error');
+    document.getElementById('guardar-edicion').addEventListener('click', async () => {
+        const form = document.getElementById('form-editar-huesped');
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch(`${API_URL}?action=actualizar`, { method: 'POST', body: formData });
+            const resultado = await response.json();
+            if (!response.ok || !resultado.success) throw new Error(resultado.message);
+
+            mostrarMensaje(resultado.message, 'success');
+            editarModal.hide();
+            cargarHuespedes(currentPage, buscarInput.value.trim());
+        } catch (error) {
+            mostrarMensaje(error.message, 'error');
+        }
+    });
+
+    document.getElementById('confirmar-eliminacion').addEventListener('click', async () => {
+        if (!itemParaEliminar) return;
+        const formData = new FormData();
+        formData.append('numDocumento', itemParaEliminar);
+
+        try {
+            const response = await fetch(`${API_URL}?action=eliminar`, { method: 'POST', body: formData });
+            const resultado = await response.json();
+            if (!response.ok || !resultado.success) throw new Error(resultado.message);
+
+            mostrarMensaje(resultado.message, 'success');
+            eliminarModal.hide();
+            cargarHuespedes(currentPage, buscarInput.value.trim());
+        } catch (error) {
+            mostrarMensaje(error.message, 'error');
+        } finally {
+            itemParaEliminar = null;
+        }
+    });
+
+    // Verificación en tiempo real para el modal de edición
+    const verificarExistenciaEdicion = async (campo, valor, feedbackElement, documentoActual) => {
+        if (!valor) {
+            feedbackElement.style.display = 'none';
             return;
         }
-
-        // El backend para huéspedes espera FormData, no JSON.
-        const formData = new FormData(formEditar);
-        // Añadimos el numDocumento manualmente ya que el input hidden no tiene 'name'.
-        formData.append('numDocumento', numDocumento);
-
         try {
-            const response = await fetch(`${API_URL}?action=actualizar`, {
-                method: 'POST',
-                body: formData
-            });
+            const response = await fetch(`${API_URL}?action=verificar&campo=${campo}&valor=${encodeURIComponent(valor)}&documentoActual=${documentoActual}`);
             const resultado = await response.json();
-
-            if (resultado.success) {
-                editarModal.hide();
-                mostrarMensaje('Huésped actualizado exitosamente.', 'success');
-                cargarHuespedes(currentPage, buscarInput.value.trim());
+            if (resultado.success && resultado.data.existe) {
+                feedbackElement.textContent = `Este ${campo} ya está en uso.`;
+                feedbackElement.className = 'correo-feedback invalid';
+                feedbackElement.style.display = 'block';
             } else {
-                mostrarMensaje(resultado.message || 'Ocurrió un error al actualizar.', 'error');
+                feedbackElement.style.display = 'none';
             }
         } catch (error) {
-            console.error('Error al guardar los cambios:', error);
-            mostrarMensaje('Error de comunicación al guardar los cambios.', 'error');
+            console.error(`Error al verificar ${campo}:`, error);
+        }
+    };
+
+    document.getElementById('edit-numDocumento').addEventListener('keyup', (e) => {
+        clearTimeout(debounceTimer);
+        const docOriginal = document.getElementById('edit-numDocumentoOriginal').value;
+        if (e.target.value !== docOriginal) {
+            debounceTimer = setTimeout(() => {
+                verificarExistenciaEdicion('numDocumento', e.target.value, document.getElementById('edit-documento-feedback'), docOriginal);
+            }, 500);
+        } else {
+            document.getElementById('edit-documento-feedback').style.display = 'none';
         }
     });
 
-    // Confirmar eliminación
-    confirmarEliminacionBtn.addEventListener('click', async () => {
-        if (!huespedParaEliminar) return;
-
-        // El backend para huéspedes espera FormData, no JSON.
-        const formData = new FormData();
-        formData.append('numDocumento', huespedParaEliminar);
-
-        try {
-            const response = await fetch(`${API_URL}?action=eliminar`, {
-                method: 'POST',
-                body: formData
-            });
-            const resultado = await response.json();
-
-            if (resultado.success) {
-                eliminarModal.hide();
-                mostrarMensaje('Huésped eliminado exitosamente.', 'success');
-                // Lógica para retroceder de página si queda vacía
-                const filasActuales = tablaHuespedes.getElementsByTagName('tr').length;
-                if (filasActuales === 1 && currentPage > 1) {
-                    currentPage--;
-                }
-                cargarHuespedes(currentPage, buscarInput.value.trim());
-            } else {
-                mostrarMensaje(resultado.message || 'Ocurrió un error desconocido.', 'error');
-            }
-        } catch (error) {
-            console.error('Error en la solicitud de eliminación:', error);
-            mostrarMensaje('Error de comunicación con el servidor.', 'error');
-        } finally {
-            huespedParaEliminar = null;
-        }
+    document.getElementById('edit-correo').addEventListener('keyup', (e) => {
+        clearTimeout(debounceTimer);
+        const docOriginal = document.getElementById('edit-numDocumentoOriginal').value;
+        debounceTimer = setTimeout(() => {
+            verificarExistenciaEdicion('correo', e.target.value, document.getElementById('edit-correo-feedback'), docOriginal);
+        }, 500);
     });
 
-    // Limpiar datos del modal de eliminación cuando se cierra
-    eliminarModalEl.addEventListener('hidden.bs.modal', () => {
-        huespedParaEliminar = null;
-        document.getElementById('eliminar-nombre').textContent = '';
-        document.getElementById('eliminar-documento').textContent = '';
-    });
 
-    // Limpiar formulario de edición cuando se cierra
-    editarModalEl.addEventListener('hidden.bs.modal', () => {
-        formEditar.reset();
-        document.getElementById('edit-numDocumento').value = '';
-    });
+    // --- FUNCIONES UTILITARIAS ---
 
+    function formatearSexo(sexo) {
+        const badges = {
+            'Hombre': 'badge-hombre',
+            'Mujer': 'badge-mujer',
+            'Otro': 'badge-otro',
+            'Prefiero no decirlo': 'badge-no-decir'
+        };
+        return `<span class="badge ${badges[sexo] || 'bg-secondary'}">${sexo}</span>`;
+    }
 });

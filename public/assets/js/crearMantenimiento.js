@@ -1,8 +1,6 @@
-Codocument.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     const API_URL = '../controllers/mantenimientoController.php';
     const form = document.getElementById('form-crear-mantenimiento');
-    const selectHabitacion = document.getElementById('id_habitacion');
-    const selectResponsable = document.getElementById('numDocumento');
     const selectFrecuencia = document.getElementById('frecuencia');
     const grupoCantFrecuencia = document.getElementById('grupo-cantFrecuencia');
     const successMessage = document.getElementById('success-message');
@@ -13,6 +11,10 @@ Codocument.addEventListener('DOMContentLoaded', () => {
     const previewSection = document.getElementById('mantenimiento-preview');
     const previewContent = document.getElementById('preview-content');
 
+    // Obtener los selects después de la simplificación
+    const selectHabitacion = document.getElementById('id_habitacion');
+    const selectResponsable = document.getElementById('numDocumento');
+
     const mostrarMensaje = (mensaje, tipo = 'success') => {
         const elem = tipo === 'success' ? successMessage : errorMessage;
         const textElem = tipo === 'success' ? successText : errorText;
@@ -20,54 +22,6 @@ Codocument.addEventListener('DOMContentLoaded', () => {
         elem.style.display = 'block';
         setTimeout(() => { elem.style.display = 'none'; }, 5000);
     };
-
-    const cargarHabitaciones = async () => {
-        try {
-            const response = await fetch(`${API_URL}?action=obtenerHabitaciones`);
-            const resultado = await response.json();
-
-            if (resultado.success) {
-                selectHabitacion.innerHTML = '<option value="">Selecciona una habitación</option>';
-                resultado.data.forEach(hab => {
-                    const option = document.createElement('option');
-                    option.value = hab.id;
-                    option.textContent = `N° ${hab.numero} - ${hab.tipo_descripcion}`;
-                    selectHabitacion.appendChild(option);
-                });
-            } else {
-                selectHabitacion.innerHTML = '<option value="">Error al cargar habitaciones</option>';
-            }
-        } catch (error) {
-            console.error('Error al cargar habitaciones:', error);
-            selectHabitacion.innerHTML = '<option value="">Error de conexión</option>';
-        }
-    };
-
-    const cargarColaboradores = async () => {
-        try {
-            const response = await fetch(`${API_URL}?action=obtenerColaboradores`);
-            const resultado = await response.json();
-
-            if (resultado.success) {
-                selectResponsable.innerHTML = '<option value="">Selecciona un responsable</option>';
-                resultado.data.forEach(col => {
-                    const option = document.createElement('option');
-                    option.value = col.numDocumento;
-                    option.textContent = `${col.nombres} ${col.apellidos}`;
-                    selectResponsable.appendChild(option);
-                });
-            } else {
-                selectResponsable.innerHTML = '<option value="">Error al cargar responsables</option>';
-            }
-        } catch (error) {
-            console.error('Error al cargar colaboradores:', error);
-            selectResponsable.innerHTML = '<option value="">Error de conexión</option>';
-        }
-    };
-
-    // Cargar datos iniciales
-    cargarHabitaciones();
-    cargarColaboradores();
 
     // Mostrar/ocultar campo de frecuencia
     selectFrecuencia.addEventListener('change', (e) => {

@@ -19,11 +19,22 @@ $currentPage = 'Mantenimiento'; // Para activar el item en el sidebar
     <?php
         include "layouts/sidebar.php";
         include "layouts/navbar.php";
-
+        
         // VALIDACIÓN: Asegurarse de que un hotel ha sido seleccionado
         $hotelSeleccionado = isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id']);
         $hotel_id = $_SESSION['hotel_id'] ?? null;
         $hotel_nombre = $_SESSION['hotel_nombre'] ?? 'No asignado';
+        $usuario_actual_id = $_SESSION['user']['numDocumento'] ?? null;
+
+        // Cargar datos para los selects si hay un hotel seleccionado
+        $habitaciones = [];
+        $colaboradores = [];
+        if ($hotelSeleccionado) {
+            require_once '../models/mantenimientoModel.php';
+            $mantenimientoModel = new MantenimientoModel();
+            $habitaciones = $mantenimientoModel->obtenerHabitaciones($hotel_id);
+            $colaboradores = $mantenimientoModel->obtenerColaboradores($hotel_id);
+        }
     ?>
     <script src="../../public/assets/js/sidebar.js"></script>
     
@@ -65,7 +76,16 @@ $currentPage = 'Mantenimiento'; // Para activar el item en el sidebar
                     <div class="form-group">
                         <label for="id_habitacion" class="form-label">Habitación <span class="required">*</span></label>
                         <select id="id_habitacion" name="id_habitacion" class="form-select" required>
-                            <option value="">Cargando habitaciones...</option>
+                            <option value="">Selecciona una habitación</option>
+                            <?php if (!empty($habitaciones)): ?>
+                                <?php foreach ($habitaciones as $habitacion): ?>
+                                    <option value="<?php echo htmlspecialchars($habitacion['id']); ?>">
+                                        <?php echo htmlspecialchars('N° ' . $habitacion['numero'] . ' - ' . $habitacion['tipo_descripcion']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <option value="" disabled>No hay habitaciones disponibles en este hotel.</option>
+                            <?php endif; ?>
                         </select>
                         <div class="invalid-feedback">Por favor, selecciona una habitación.</div>
                     </div>
@@ -93,7 +113,16 @@ $currentPage = 'Mantenimiento'; // Para activar el item en el sidebar
                     <div class="form-group">
                         <label for="numDocumento" class="form-label">Responsable <span class="required">*</span></label>
                         <select id="numDocumento" name="numDocumento" class="form-select" required>
-                            <option value="">Cargando colaboradores...</option>
+                            <option value="">Selecciona un responsable</option>
+                            <?php if (!empty($colaboradores)): ?>
+                                <?php foreach ($colaboradores as $colaborador): ?>
+                                    <option value="<?php echo htmlspecialchars($colaborador['numDocumento']); ?>" <?php echo ($colaborador['numDocumento'] == $usuario_actual_id) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($colaborador['nombres'] . ' ' . $colaborador['apellidos']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <option value="" disabled>No hay colaboradores en este hotel.</option>
+                            <?php endif; ?>
                         </select>
                         <div class="invalid-feedback">Por favor, asigna un responsable.</div>
                     </div>

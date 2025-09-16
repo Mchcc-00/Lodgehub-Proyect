@@ -1,271 +1,191 @@
 <?php
-require_once __DIR__ . '/../../config/conexionGlobal.php'; // Ruta corregida
+require_once __DIR__ . '/../../config/conexionGlobal.php';
 
 class HuespedModel {
     private $db;
 
     public function __construct() {
         $this->db = conexionDB();
+        if (!$this->db) {
+            throw new Exception("Error al conectar con la base de datos.");
+        }
     }
 
-    /**
-     * Crear un nuevo huésped
-     */
+    public function obtenerHuespedesPaginados($id_hotel, $pagina, $registrosPorPagina, $filtros) {
+        try {
+            $offset = ($pagina - 1) * $registrosPorPagina;
+
+            $selectClause = "SELECT h.numDocumento, h.tipoDocumento, h.nombres, h.apellidos, h.numTelefono, h.correo, h.sexo, h.fechaCreacion";
+            $fromClause = " FROM tp_huespedes h";
+            $whereClauses = ["h.id_hotel = :id_hotel"];
+            $params = [':id_hotel' => $id_hotel];
+
+            if (!empty($filtros['busqueda'])) {
+                $busqueda = '%' . trim($filtros['busqueda']) . '%';
+                $whereClauses[] = "(h.nombres LIKE :busqueda OR h.apellidos LIKE :busqueda OR h.numDocumento LIKE :busqueda OR h.correo LIKE :busqueda)";
+                $params[':busqueda'] = $busqueda;
+            }
+
+            $whereSql = " WHERE " . implode(' AND ', $whereClauses);
+
+            $sqlTotal = "SELECT COUNT(*) as total" . $fromClause . $whereSql;
+            $stmtTotal = $this->db->prepare($sqlTotal);
+            $stmtTotal->execute($params);
+            $totalRegistros = (int)$stmtTotal->fetch(PDO::FETCH_ASSOC)['total'];
+
+            $sql = $selectClause . $fromClause . $whereSql . " ORDER BY h.apellidos, h.nombres LIMIT :limit OFFSET :offset";
+            $stmt = $this->db->prepare($sql);
+
+            foreach ($params as $key => &$val) {
+                $stmt->bindParam($key, $val);
+            }
+            $stmt->bindParam(':limit', $registrosPorPagina, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            $huespedes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'huespedes' => $huespedes,
+                'pagina' => (int)$pagina,
+                'total' => $totalRegistros,
+                'totalPaginas' => ceil($totalRegistros / $registrosPorPagina)
+            ];
+        } catch (PDOException $e) {
+            error_log("Error en HuespedModel::obtenerHuespedesPaginados: " . $e->getMessage());
+            throw new Exception("Error al obtener los huéspedes.");
+        }
+    }
+
+    public function obtenerPorDocumento($numDocumento) {
+        try {
+            $stmt = $this->db->prepare("SELECT * FROM tp_huespedes WHERE numDocumento = :numDocumento");
+            $stmt->bindParam(':numDocumento', $numDocumento, PDO::PARAM_STR);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error en HuespedModel::obtenerPorDocumento: " . $e->getMessage());
+            return false;
+        }
+    }
+
     public function crearHuesped($datos) {
         try {
-            $sql = "INSERT INTO tp_huespedes (
-                        numDocumento, 
-                        numTelefono, 
-                        correo, 
-                        nombres, 
-                        apellidos, 
-                        tipoDocumento, 
-                        sexo,
-                        id_hotel
-                    ) VALUES (
-                        :numDocumento, 
-                        :numTelefono, 
-                        :correo, 
-                        :nombres, 
-                        :apellidos, 
-                        :tipoDocumento, 
-                        :sexo,
-                        :id_hotel
-                    )";
-
+            $sql = "INSERT INTO tp_huespedes (numDocumento, tipoDocumento, nombres, apellidos, numTelefono, correo, sexo, id_hotel)
+                    VALUES (:numDocumento, :tipoDocumento, :nombres, :apellidos, :numTelefono, :correo, :sexo, :id_hotel)";
             $stmt = $this->db->prepare($sql);
-            
-            $stmt->bindParam(':numDocumento', $datos['numDocumento'], PDO::PARAM_STR);
-            $stmt->bindParam(':numTelefono', $datos['numTelefono'], PDO::PARAM_STR);
-            $stmt->bindParam(':correo', $datos['correo'], PDO::PARAM_STR);
-            $stmt->bindParam(':nombres', $datos['nombres'], PDO::PARAM_STR);
-            $stmt->bindParam(':apellidos', $datos['apellidos'], PDO::PARAM_STR);
-            $stmt->bindParam(':tipoDocumento', $datos['tipoDocumento'], PDO::PARAM_STR);
-            $stmt->bindParam(':sexo', $datos['sexo'], PDO::PARAM_STR);
+            $stmt->bindParam(':numDocumento', $datos['numDocumento']);
+            $stmt->bindParam(':tipoDocumento', $datos['tipoDocumento']);
+            $stmt->bindParam(':nombres', $datos['nombres']);
+            $stmt->bindParam(':apellidos', $datos['apellidos']);
+            $stmt->bindParam(':numTelefono', $datos['numTelefono']);
+            $stmt->bindParam(':correo', $datos['correo']);
+            $stmt->bindParam(':sexo', $datos['sexo']);
             $stmt->bindParam(':id_hotel', $datos['id_hotel'], PDO::PARAM_INT);
-
             return $stmt->execute();
-
         } catch (PDOException $e) {
-            error_log("Error al crear huésped: " . $e->getMessage());
-            throw new Exception("Error al crear el huésped: " . $e->getMessage());
-        }
-    }
-
-    /**
-     * Verificar si existe un huésped con el número de documento dado
-     */
-    public function existeHuesped($numDocumento) {
-        try {
-            $sql = "SELECT COUNT(*) as total FROM tp_huespedes WHERE numDocumento = :numDocumento";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':numDocumento', $numDocumento, PDO::PARAM_STR);
-            $stmt->execute();
-            
-            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-            return $resultado['total'] > 0;
-
-        } catch (PDOException $e) {
-            error_log("Error al verificar huésped: " . $e->getMessage());
-            throw new Exception("Error al verificar la existencia del huésped");
-        }
-    }
-
-    /**
-     * Obtener un huésped por número de documento
-     */
-    public function obtenerHuespedPorDocumento($numDocumento) {
-        try {
-            $sql = "SELECT * FROM tp_huespedes WHERE numDocumento = :numDocumento";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':numDocumento', $numDocumento, PDO::PARAM_STR);
-            $stmt->execute();
-            
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-
-        } catch (PDOException $e) {
-            error_log("Error al obtener huésped: " . $e->getMessage());
-            throw new Exception("Error al obtener el huésped");
-        }
-    }
-
-    /**
-     * Obtener todos los huéspedes
-     */
-    public function obtenerTodosLosHuespedes($id_hotel) {
-        try {
-            $sql = "SELECT DISTINCT h.* 
-                    FROM tp_huespedes h
-                    INNER JOIN tp_reservas r ON h.numDocumento = r.hue_numDocumento
-                    WHERE r.id_hotel = :id_hotel
-                    ORDER BY h.apellidos, h.nombres";
-
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':id_hotel', $id_hotel, PDO::PARAM_INT);
-            $stmt->execute();
-            
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        } catch (PDOException $e) {
-            error_log("Error al obtener huéspedes: " . $e->getMessage());
-            throw new Exception("Error al obtener los huéspedes");
-        }
-    }
-
-    /**
-     * Actualizar un huésped
-     */
-    public function actualizarHuesped($numDocumento, $datos) {
-        try {
-            // Construir la consulta SQL dinámicamente
-            $campos = [];
-            $parametros = [];
-            
-            foreach ($datos as $campo => $valor) {
-                $campos[] = "$campo = :$campo";
-                $parametros[":$campo"] = $valor;
+            error_log("Error en HuespedModel::crearHuesped: " . $e->getMessage());
+            if ($e->getCode() == '23000') { // Error de clave duplicada
+                if (strpos($e->getMessage(), 'PRIMARY') !== false) {
+                    throw new Exception("El número de documento ya está registrado.");
+                }
+                if (strpos($e->getMessage(), 'uk_correo') !== false) {
+                    throw new Exception("El correo electrónico ya está registrado.");
+                }
             }
-            
-            $sql = "UPDATE tp_huespedes SET " . implode(', ', $campos) . " WHERE numDocumento = :numDocumento";
-            $parametros[':numDocumento'] = $numDocumento;
-            
+            throw new Exception("Error al crear el huésped.");
+        }
+    }
+
+    public function actualizarHuesped($numDocumentoOriginal, $datos) {
+        try {
+            $sql = "UPDATE tp_huespedes SET
+                        numDocumento = :numDocumento,
+                        tipoDocumento = :tipoDocumento,
+                        nombres = :nombres,
+                        apellidos = :apellidos,
+                        numTelefono = :numTelefono,
+                        correo = :correo,
+                        sexo = :sexo
+                    WHERE numDocumento = :numDocumentoOriginal";
             $stmt = $this->db->prepare($sql);
-            
-            // Bind de parámetros
-            foreach ($parametros as $param => $valor) {
-                $stmt->bindParam($param, $parametros[$param], PDO::PARAM_STR);
-            }
-            
+            $stmt->bindParam(':numDocumento', $datos['numDocumento']);
+            $stmt->bindParam(':tipoDocumento', $datos['tipoDocumento']);
+            $stmt->bindParam(':nombres', $datos['nombres']);
+            $stmt->bindParam(':apellidos', $datos['apellidos']);
+            $stmt->bindParam(':numTelefono', $datos['numTelefono']);
+            $stmt->bindParam(':correo', $datos['correo']);
+            $stmt->bindParam(':sexo', $datos['sexo']);
+            $stmt->bindParam(':numDocumentoOriginal', $numDocumentoOriginal);
             return $stmt->execute();
-
         } catch (PDOException $e) {
-            error_log("Error al actualizar huésped: " . $e->getMessage());
-            throw new Exception("Error al actualizar el huésped");
+            error_log("Error en HuespedModel::actualizarHuesped: " . $e->getMessage());
+            if ($e->getCode() == '23000') {
+                throw new Exception("El nuevo número de documento o correo ya está en uso.");
+            }
+            throw new Exception("Error al actualizar el huésped.");
         }
     }
 
-    /**
-     * Eliminar un huésped
-     */
     public function eliminarHuesped($numDocumento) {
         try {
-            $sql = "DELETE FROM tp_huespedes WHERE numDocumento = :numDocumento";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':numDocumento', $numDocumento, PDO::PARAM_STR);
-            
-            return $stmt->execute();
+            // Verificar si el huésped tiene reservas
+            $stmtCheck = $this->db->prepare("SELECT COUNT(*) FROM tp_reservas WHERE hue_numDocumento = :numDocumento");
+            $stmtCheck->bindParam(':numDocumento', $numDocumento);
+            $stmtCheck->execute();
+            if ($stmtCheck->fetchColumn() > 0) {
+                throw new Exception("No se puede eliminar el huésped porque tiene reservas asociadas.");
+            }
 
+            $stmt = $this->db->prepare("DELETE FROM tp_huespedes WHERE numDocumento = :numDocumento");
+            $stmt->bindParam(':numDocumento', $numDocumento);
+            return $stmt->execute();
         } catch (PDOException $e) {
-            error_log("Error al eliminar huésped: " . $e->getMessage());
-            throw new Exception("Error al eliminar el huésped");
+            error_log("Error en HuespedModel::eliminarHuesped: " . $e->getMessage());
+            throw new Exception("Error al eliminar el huésped.");
         }
     }
 
-    /**
-     * Buscar huéspedes por término de búsqueda
-     */
     public function buscarHuespedes($id_hotel, $termino) {
         try {
-            $sql = "SELECT DISTINCT h.* 
-                    FROM tp_huespedes h
-                    INNER JOIN tp_reservas r ON h.numDocumento = r.hue_numDocumento
-                    WHERE r.id_hotel = :id_hotel 
-                    AND (
-                        h.nombres LIKE :termino 
-                        OR h.apellidos LIKE :termino 
-                        OR h.numDocumento LIKE :termino 
-                        OR h.correo LIKE :termino
-                    )
-                    ORDER BY h.apellidos, h.nombres";
-            
+            $sql = "SELECT numDocumento, nombres, apellidos 
+                    FROM tp_huespedes 
+                    WHERE id_hotel = :id_hotel 
+                    AND (nombres LIKE :termino OR apellidos LIKE :termino OR numDocumento LIKE :termino)
+                    ORDER BY apellidos, nombres LIMIT 10";
             $stmt = $this->db->prepare($sql);
             $terminoBusqueda = '%' . $termino . '%';
             $stmt->bindParam(':id_hotel', $id_hotel, PDO::PARAM_INT);
             $stmt->bindParam(':termino', $terminoBusqueda, PDO::PARAM_STR);
             $stmt->execute();
-            
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
         } catch (PDOException $e) {
-            error_log("Error al buscar huéspedes: " . $e->getMessage());
-            throw new Exception("Error al buscar huéspedes");
+            error_log("Error en HuespedModel::buscarHuespedes: " . $e->getMessage());
+            return [];
         }
     }
 
-    /**
-     * Obtener huéspedes paginados
-     */
-    public function obtenerHuespedesPaginados($id_hotel, $pagina = 1, $registrosPorPagina = 10) {
+    public function verificarExistencia($campo, $valor, $id_hotel, $documentoActual = null) {
         try {
-            $offset = ($pagina - 1) * $registrosPorPagina;
-            
-            // Obtener el total de registros
-            $sqlTotal = "SELECT COUNT(DISTINCT h.numDocumento) as total 
-                         FROM tp_huespedes h
-                         INNER JOIN tp_reservas r ON h.numDocumento = r.hue_numDocumento
-                         WHERE r.id_hotel = :id_hotel";
-            $stmtTotal = $this->db->prepare($sqlTotal);
-            $stmtTotal->bindParam(':id_hotel', $id_hotel, PDO::PARAM_INT);
-            $stmtTotal->execute();
-            $total = $stmtTotal->fetch(PDO::FETCH_ASSOC)['total'];
-            
-            // Obtener los registros de la página actual
-            $sql = "SELECT DISTINCT h.* 
-                    FROM tp_huespedes h
-                    INNER JOIN tp_reservas r ON h.numDocumento = r.hue_numDocumento
-                    WHERE r.id_hotel = :id_hotel
-                    ORDER BY h.apellidos, h.nombres 
-                    LIMIT :limit OFFSET :offset";
-            
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':id_hotel', $id_hotel, PDO::PARAM_INT);
-            $stmt->bindParam(':limit', $registrosPorPagina, PDO::PARAM_INT);
-            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-            $stmt->execute();
-            
-            $huespedes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            return [
-                'huespedes' => $huespedes,
-                'total' => $total,
-                'pagina' => $pagina,
-                'registrosPorPagina' => $registrosPorPagina,
-                'totalPaginas' => ceil($total / $registrosPorPagina)
-            ];
-
-        } catch (PDOException $e) {
-            error_log("Error al obtener huéspedes paginados: " . $e->getMessage());
-            throw new Exception("Error al obtener huéspedes paginados");
-        }
-    }
-
-    /**
-     * Verificar si un correo ya está registrado (excluyendo el huésped actual)
-     */
-    public function correoExiste($correo, $numDocumentoExcluir = null) {
-        try {
-            $sql = "SELECT COUNT(*) as total FROM tp_huespedes WHERE correo = :correo";
-            $parametros = [':correo' => $correo];
-            
-            if ($numDocumentoExcluir) {
-                $sql .= " AND numDocumento != :numDocumento";
-                $parametros[':numDocumento'] = $numDocumentoExcluir;
+            if ($campo !== 'numDocumento' && $campo !== 'correo') {
+                return ['existe' => false];
             }
-            
-            $stmt = $this->db->prepare($sql);
-            
-            foreach ($parametros as $param => $valor) {
-                $stmt->bindParam($param, $valor, PDO::PARAM_STR);
+
+            $sql = "SELECT COUNT(*) as count FROM tp_huespedes WHERE $campo = :valor AND id_hotel = :id_hotel";
+            $params = [':valor' => $valor, ':id_hotel' => $id_hotel];
+
+            if ($documentoActual) {
+                $sql .= " AND numDocumento != :documentoActual";
+                $params[':documentoActual'] = $documentoActual;
             }
-            
-            $stmt->execute();
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            return $resultado['total'] > 0;
 
+            return ['existe' => $resultado['count'] > 0];
         } catch (PDOException $e) {
-            error_log("Error al verificar correo: " . $e->getMessage());
-            throw new Exception("Error al verificar el correo");
+            error_log("Error en HuespedModel::verificarExistencia: " . $e->getMessage());
+            return ['existe' => false, 'error' => 'Error de base de datos.'];
         }
     }
 }

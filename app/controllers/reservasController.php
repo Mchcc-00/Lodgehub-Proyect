@@ -1,176 +1,184 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-require_once __DIR__ . '/../models/reservasModel.php';
+require_once '../models/reservasModel.php';
 
 class ReservasController {
     private $reservasModel;
+    private $id_hotel;
 
     public function __construct() {
         $this->reservasModel = new ReservasModel();
+        
+        // Asegurarse de que la sesión esté iniciada y obtener el id del hotel
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $this->id_hotel = $_SESSION['hotel_id'] ?? null;
     }
 
-    private function responder($success, $message, $data = null, $statusCode = 200) {
-        header('Content-Type: application/json; charset=utf-8');
-        http_response_code($statusCode);
-        echo json_encode(['success' => $success, 'message' => $message, 'data' => $data]);
+    private function responderJson($datos) {
+        header('Content-Type: application/json');
+        echo json_encode($datos);
         exit;
     }
 
-    public function manejarPeticion() {
-        $action = null;
-        $input = null;
-
-        // Si es POST y el contenido es JSON, decodificamos el cuerpo de la petición
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && strpos($_SERVER["CONTENT_TYPE"] ?? '', "application/json") !== false) {
-            $input = json_decode(file_get_contents('php://input'), true);
-            // Para POST, la acción también puede venir en el cuerpo JSON
-            // (importante para editar y eliminar)
-            $action = $input['action'] ?? null;
-        } else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            // Para GET, la acción viene en la URL
-            $action = $_GET['action'] ?? null; 
+    private function validarHotel() {
+        if (!$this->id_hotel) {
+            $this->responderJson(['success' => false, 'message' => 'No se ha seleccionado un hotel. Por favor, inicie sesión de nuevo.']);
         }
+    }
 
+    public function obtener() {
+        $this->validarHotel();
         try {
-            switch ($action) {
-                case 'listar':
-                    $this->listarReservas();
-                    break;
-                case 'obtener':
-                    $this->obtenerReserva();
-                    break;
-                case 'actualizar':
-                    $this->actualizarReserva($input);
-                    break;
-                case 'eliminar':
-                    $this->eliminarReserva($input);
-                    break;
-                case 'verificarDisponibilidad': // <-- AÑADIDO
-                    $this->verificarDisponibilidad($input);
-                    break;
-                default:
-                    $this->responder(false, 'Acción no válida', null, 400);
+            $pagina = isset($_GET['pagina']) ? max(1, intval($_GET['pagina'])) : 1;
+            $registrosPorPagina = 10;
+            
+            $filtros = [
+                'estado' => $_GET['estado'] ?? 'all',
+                'busqueda' => $_GET['busqueda'] ?? null,
+            ];
+
+            $resultado = $this->reservasModel->obtenerReservasPaginadas($this->id_hotel, $pagina, $registrosPorPagina, $filtros);
+            $this->responderJson(['success' => true, 'data' => $resultado]);
+            
+        } catch (Exception $e) {
+            $this->responderJson(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function obtenerPorId() {
+        $this->validarHotel();
+        try {
+            $id = $_GET['id'] ?? null;
+            if (!$id) throw new Exception('ID de reserva no proporcionado.');
+
+            $reserva = $this->reservasModel->obtenerPorId($id);
+            
+            if ($reserva) {
+                $this->responderJson(['success' => true, 'data' => $reserva]);
+            } else {
+                $this->responderJson(['success' => false, 'message' => 'Reserva no encontrada.']);
             }
         } catch (Exception $e) {
-            error_log("Error en ReservasController (Accion: $action): " . $e->getMessage());
-            $this->responder(false, 'Error interno del servidor. Por favor, contacte a soporte.', null, 500);
+            $this->responderJson(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
-    private function listarReservas() {
-        $id_hotel = $_SESSION['hotel_id'] ?? null;
-        if (!$id_hotel) {
-            $this->responder(false, 'No se ha seleccionado un hotel.', null, 403);
-        }
+    public function actualizar() {
+        $this->validarHotel();
+        try {
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Método no permitido.');
+            
+            $id = $_POST['id'] ?? null;
+            if (!$id) throw new Exception('ID de reserva no proporcionado.');
 
-        $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
-        $registrosPorPagina = isset($_GET['registros']) ? (int)$_GET['registros'] : 10;
-        
-        $filtros = [
-            'estado' => $_GET['filtro'] ?? 'all',
-            'busqueda' => $_GET['busqueda'] ?? ''
-        ];
-
-        $resultado = $this->reservasModel->obtenerReservasPaginadas($id_hotel, $pagina, $registrosPorPagina, $filtros);
-        $this->responder(true, 'Reservas obtenidas', $resultado);
-    }
-
-    private function obtenerReserva() {
-        $id = $_GET['id'] ?? null;
-        if (!$id) {
-            $this->responder(false, 'ID de reserva no proporcionado', null, 400);
-        }
-
-        $reserva = $this->reservasModel->obtenerPorId((int)$id);
-        if ($reserva) {
-            // Validar que la reserva pertenezca al hotel del usuario
-            if ((int)$reserva['id_hotel'] != (int)($_SESSION['hotel_id'] ?? null)) { // <-- CORREGIDO
-                $this->responder(false, 'Acceso denegado a esta reserva.', null, 403);
+            $datos = [];
+            $camposPermitidos = ['fechainicio', 'fechaFin', 'pagoFinal', 'estado', 'informacionAdicional'];
+            foreach ($camposPermitidos as $campo) {
+                if (isset($_POST[$campo])) {
+                    $datos[$campo] = trim($_POST[$campo]);
+                }
             }
-            $this->responder(true, 'Reserva obtenida', $reserva);
-        } else {
-            $this->responder(false, 'Reserva no encontrada', null, 404);
-        }
-    }
 
-    private function actualizarReserva($input) {
-        $id = $input['id'] ?? null;
-
-        if (!$id) {
-            $this->responder(false, 'ID de reserva no proporcionado', null, 400);
-        }
-
-        // Obtener reserva para validar permisos
-        $reservaActual = $this->reservasModel->obtenerPorId((int)$id);
-        if (!$reservaActual || (int)$reservaActual['id_hotel'] != (int)($_SESSION['hotel_id'] ?? null)) { // <-- CORREGIDO
-            $this->responder(false, 'Acceso denegado o reserva no encontrada.', null, 403);
-        }
-
-        // Filtrar datos que se pueden actualizar
-        $datosActualizables = [];
-        $camposPermitidos = ['fechainicio', 'fechaFin', 'pagoFinal', 'estado', 'informacionAdicional'];
-        
-        foreach ($camposPermitidos as $campo) {
-            if (isset($input[$campo])) {
-                $datosActualizables[$campo] = $input[$campo];
+            $resultado = $this->reservasModel->actualizarReserva($id, $datos);
+            if ($resultado) {
+                $this->responderJson(['success' => true, 'message' => 'Reserva actualizada correctamente.']);
+            } else {
+                throw new Exception('No se pudo actualizar la reserva.');
             }
-        }
-
-        if (empty($datosActualizables)) {
-            $this->responder(false, 'No hay datos para actualizar', null, 400);
-        }
-
-        $resultado = $this->reservasModel->actualizarReserva((int)$id, $datosActualizables);
-
-        if ($resultado) {
-            $this->responder(true, 'Reserva actualizada correctamente');
-        } else {
-            $this->responder(false, 'Error al actualizar la reserva', null, 500);
+        } catch (Exception $e) {
+            $this->responderJson(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
-    private function eliminarReserva($input) {
-        $id = $input['id'] ?? null;
+    public function eliminar() {
+        $this->validarHotel();
+        try {
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Método no permitido.');
+            $id = $_POST['id'] ?? null;
+            if (!$id) throw new Exception('ID de reserva no proporcionado.');
 
-        if (!$id) {
-            $this->responder(false, 'ID de reserva no proporcionado', null, 400);
-        }
-
-        // Obtener reserva para validar permisos
-        $reservaActual = $this->reservasModel->obtenerPorId((int)$id);
-        if (!$reservaActual || (int)$reservaActual['id_hotel'] != (int)($_SESSION['hotel_id'] ?? null)) { // <-- CORREGIDO
-            $this->responder(false, 'Acceso denegado o reserva no encontrada.', null, 403);
-        }
-
-        $resultado = $this->reservasModel->eliminarReserva((int)$id);
-
-        if ($resultado) {
-            $this->responder(true, 'Reserva eliminada correctamente');
-        } else {
-            $this->responder(false, 'Error al eliminar la reserva', null, 500);
+            $resultado = $this->reservasModel->eliminarReserva($id);
+            if ($resultado) {
+                $this->responderJson(['success' => true, 'message' => 'Reserva eliminada correctamente.']);
+            } else {
+                throw new Exception('No se pudo eliminar la reserva.');
+            }
+        } catch (Exception $e) {
+            $this->responderJson(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
-    private function verificarDisponibilidad($input) {
-        $id_habitacion = $input['id_habitacion'] ?? null;
-        $fechainicio = $input['fechainicio'] ?? null;
-        $fechaFin = $input['fechaFin'] ?? null;
+    public function crear() {
+        $this->validarHotel();
+        try {
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Método no permitido.');
 
-        if (!$id_habitacion || !$fechainicio || !$fechaFin) {
-            $this->responder(false, 'Datos incompletos para verificar disponibilidad.', null, 400);
+            $camposRequeridos = ['id_hotel', 'us_numDocumento', 'hue_numDocumento', 'fechainicio', 'fechaFin', 'id_habitacion', 'pagoFinal'];
+            foreach ($camposRequeridos as $campo) {
+                if (!isset($_POST[$campo]) || empty(trim($_POST[$campo]))) {
+                    throw new Exception("El campo '{$campo}' es obligatorio.");
+                }
+            }
+
+            // Validar que el id_hotel del formulario coincida con el de la sesión
+            if ((int)$_POST['id_hotel'] !== (int)$this->id_hotel) {
+                throw new Exception("Inconsistencia en los datos del hotel.");
+            }
+
+            $datos = [
+                'id_hotel' => $this->id_hotel,
+                'us_numDocumento' => $_POST['us_numDocumento'],
+                'hue_numDocumento' => $_POST['hue_numDocumento'],
+                'fechainicio' => $_POST['fechainicio'],
+                'fechaFin' => $_POST['fechaFin'],
+                'id_habitacion' => (int)$_POST['id_habitacion'],
+                'pagoFinal' => (float)$_POST['pagoFinal'],
+                'cantidadAdultos' => isset($_POST['cantidadAdultos']) ? (int)$_POST['cantidadAdultos'] : 1,
+                'cantidadNinos' => isset($_POST['cantidadNinos']) ? (int)$_POST['cantidadNinos'] : 0,
+                'motivoReserva' => $_POST['motivoReserva'] ?? 'Personal',
+                'metodoPago' => $_POST['metodoPago'] ?? 'Efectivo',
+                'informacionAdicional' => isset($_POST['informacionAdicional']) ? trim($_POST['informacionAdicional']) : null,
+                'estado' => 'Activa' // O 'Pendiente' según tu lógica de negocio
+            ];
+
+            $resultado = $this->reservasModel->crearReserva($datos);
+
+            if ($resultado) {
+                $this->responderJson(['success' => true, 'message' => 'Reserva creada correctamente.']);
+            } else {
+                throw new Exception('No se pudo crear la reserva.');
+            }
+
+        } catch (Exception $e) {
+            $this->responderJson(['success' => false, 'message' => $e->getMessage()]);
         }
-
-        $disponible = $this->reservasModel->verificarDisponibilidad((int)$id_habitacion, $fechainicio, $fechaFin);
-
-        $this->responder(true, 'Disponibilidad verificada', ['disponible' => $disponible]);
     }
 
+    public function habitacionesDisponibles() {
+        $this->validarHotel();
+        try {
+            $habitaciones = $this->reservasModel->obtenerHabitacionesDisponibles($this->id_hotel, $_GET['fechainicio'], $_GET['fechaFin']);
+            $this->responderJson(['success' => true, 'data' => $habitaciones]);
+        } catch (Exception $e) {
+            $this->responderJson(['success' => false, 'message' => 'Error al obtener habitaciones disponibles.']);
+        }
+    }
 }
 
-// Se instancia y se ejecuta el controlador al ser llamado directamente.
-$controller = new ReservasController();
-$controller->manejarPeticion();
+// Manejo de rutas/acciones
+if (isset($_GET['action'])) {
+    $controller = new ReservasController();
+    $action = $_GET['action'];
+
+    if (method_exists($controller, $action)) {
+        $controller->$action();
+    } else {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'Acción no válida.']);
+    }
+}
 ?>

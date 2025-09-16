@@ -1,486 +1,193 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+require_once __DIR__ . '/../models/huespedModel.php';
 
-// Iniciar sesión para acceder a $_SESSION['hotel_id']
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
-
-require_once '../models/HuespedModel.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 class HuespedController {
-    private $huespedModel;
+    private $model;
 
     public function __construct() {
-        $this->huespedModel = new HuespedModel();
+        $this->model = new HuespedModel();
     }
 
-    public function crearHuesped() {
-        header('Content-Type: application/json');
-        
+    public function manejarPeticion() {
+        $action = $_GET['action'] ?? null;
+
         try {
-            // Validar método HTTP
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                throw new Exception('Método no permitido');
-            }
-
-            // Validar que todos los campos requeridos estén presentes
-            $camposRequeridos = [
-                'tipoDocumento',
-                'numDocumento', 
-                'nombres',
-                'apellidos',
-                'sexo',
-                'numTelefono',
-                'correo'
-            ];
-
-            foreach ($camposRequeridos as $campo) {
-                if (!isset($_POST[$campo]) || empty(trim($_POST[$campo]))) {
-                    throw new Exception("El campo {$campo} es requerido");
-                }
-            }
-
-            // Sanitizar y validar datos
-            $datos = [
-                'tipoDocumento' => $this->sanitizarTexto($_POST['tipoDocumento']),
-                'numDocumento' => $this->sanitizarTexto($_POST['numDocumento']),
-                'nombres' => $this->sanitizarTexto($_POST['nombres']),
-                'apellidos' => $this->sanitizarTexto($_POST['apellidos']),
-                'sexo' => $this->sanitizarTexto($_POST['sexo']),
-                'numTelefono' => $this->sanitizarTexto($_POST['numTelefono']),
-                'correo' => $this->sanitizarEmail($_POST['correo'])
-            ];
-
-            // Validaciones específicas
-            $this->validarDatos($datos);
-
-            // Añadir el id_hotel del hotel seleccionado en la sesión
             if (!isset($_SESSION['hotel_id']) || empty($_SESSION['hotel_id'])) {
-                throw new Exception('No se ha seleccionado un hotel. Por favor, vaya al inicio y seleccione un hotel.');
-            }
-            $datos['id_hotel'] = $_SESSION['hotel_id'];
-
-            // Verificar si el huésped ya existe
-            if ($this->huespedModel->existeHuesped($datos['numDocumento'])) {
-                throw new Exception('Ya existe un huésped con este número de documento');
-            }
-
-            // Verificar si el correo ya está registrado
-            if ($this->huespedModel->correoExiste($datos['correo'])) {
-                throw new Exception('Ya existe un huésped con este correo electrónico');
-            }
-
-            // Crear el huésped
-            $resultado = $this->huespedModel->crearHuesped($datos);
-
-            if ($resultado) {
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Huésped creado exitosamente',
-                    'data' => $datos
-                ]);
-            } else {
-                throw new Exception('Error al crear el huésped en la base de datos');
-            }
-
-        } catch (Exception $e) {
-            echo json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]);
-        }
-    }
-
-    public function obtenerHuespedes() {
-        header('Content-Type: application/json');
-        
-        try {
-            // NUEVO: Soporte para paginación
-            $pagina = isset($_GET['pagina']) ? max(1, intval($_GET['pagina'])) : 1;
-            $registrosPorPagina = isset($_GET['registros']) ? max(1, min(50, intval($_GET['registros']))) : 10;
-            $id_hotel = $_SESSION['hotel_id'] ?? null;
-
-            if (!$id_hotel) {
                 throw new Exception("No se ha seleccionado un hotel.");
             }
-            
-            if (isset($_GET['paginado']) && $_GET['paginado'] === 'true') {
-                $resultado = $this->huespedModel->obtenerHuespedesPaginados($id_hotel, $pagina, $registrosPorPagina);
-                echo json_encode([
-                    'success' => true,
-                    'data' => $resultado
-                ]);
-            } else {
-                // Esta rama ahora también filtra por hotel
-                $huespedes = $this->huespedModel->obtenerTodosLosHuespedes($id_hotel);
-                echo json_encode([
-                    'success' => true,
-                    'data' => $huespedes
-                ]);
+            $id_hotel = $_SESSION['hotel_id'];
+
+            switch ($action) {
+                case 'obtener':
+                    $this->obtenerHuespedes($id_hotel);
+                    break;
+                case 'crear':
+                    $this->crearHuesped($id_hotel);
+                    break;
+                case 'obtenerPorDocumento':
+                    $this->obtenerPorDocumento();
+                    break;
+                case 'actualizar':
+                    $this->actualizarHuesped();
+                    break;
+                case 'eliminar':
+                    $this->eliminarHuesped();
+                    break;
+                case 'buscar':
+                    $this->buscarHuespedes($id_hotel);
+                    break;
+                case 'verificar':
+                    $this->verificarExistencia($id_hotel);
+                    break;
+                default:
+                    throw new Exception("Acción no válida.");
             }
-            
         } catch (Exception $e) {
-            echo json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]);
+            $this->responder(['success' => false, 'message' => $e->getMessage()], 400);
         }
     }
 
-    public function obtenerHuesped($numDocumento) {
-        header('Content-Type: application/json');
-        
-        try {
-            if (empty($numDocumento)) {
-                throw new Exception('Número de documento es requerido');
-            }
-
-            $huesped = $this->huespedModel->obtenerHuespedPorDocumento($numDocumento);
-            
-            if ($huesped) {
-                echo json_encode([
-                    'success' => true,
-                    'data' => $huesped
-                ]);
-            } else {
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Huésped no encontrado'
-                ]);
-            }
-            
-        } catch (Exception $e) {
-            echo json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]);
-        }
-    }
-
-    public function actualizarHuesped() {
-        header('Content-Type: application/json');
-        
-        try {
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                throw new Exception('Método no permitido');
-            }
-
-            // Validar que el número de documento esté presente
-            if (!isset($_POST['numDocumento']) || empty(trim($_POST['numDocumento']))) {
-                throw new Exception('Número de documento es requerido');
-            }
-
-            $numDocumento = $this->sanitizarTexto($_POST['numDocumento']);
-
-            // Verificar si el huésped existe
-            if (!$this->huespedModel->existeHuesped($numDocumento)) {
-                throw new Exception('El huésped no existe');
-            }
-
-            // Preparar datos para actualizar (solo los campos que se envíen)
-            $datos = [];
-            $camposPermitidos = ['nombres', 'apellidos', 'numTelefono', 'correo', 'sexo'];
-
-            foreach ($camposPermitidos as $campo) {
-                if (isset($_POST[$campo]) && !empty(trim($_POST[$campo]))) {
-                    if ($campo === 'correo') {
-                        $datos[$campo] = $this->sanitizarEmail($_POST[$campo]);
-                    } else {
-                        $datos[$campo] = $this->sanitizarTexto($_POST[$campo]);
-                    }
-                }
-            }
-
-            if (empty($datos)) {
-                throw new Exception('No hay datos para actualizar');
-            }
-
-            // Validar datos
-            $this->validarDatosActualizacion($datos);
-
-            // CORREGIDO: Verificar si el correo ya está registrado por otro huésped
-            if (isset($datos['correo'])) {
-                if ($this->huespedModel->correoExiste($datos['correo'], $numDocumento)) {
-                    throw new Exception('Ya existe otro huésped con este correo electrónico');
-                }
-            }
-
-            $resultado = $this->huespedModel->actualizarHuesped($numDocumento, $datos);
-
-            if ($resultado) {
-                // Obtener los datos actualizados para devolverlos
-                $huespedActualizado = $this->huespedModel->obtenerHuespedPorDocumento($numDocumento);
-                
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Huésped actualizado exitosamente',
-                    'data' => $huespedActualizado
-                ]);
-            } else {
-                throw new Exception('Error al actualizar el huésped');
-            }
-
-        } catch (Exception $e) {
-            echo json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]);
-        }
-    }
-
-    public function eliminarHuesped() {
-    header('Content-Type: application/json');
-    try {
-        // Depuración: log del documento recibido
-        // error_log('Intentando eliminar: ' . ($_POST['numDocumento'] ?? 'NO RECIBIDO'));
-
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            throw new Exception('Método no permitido');
-        }
-
-        if (!isset($_POST['numDocumento']) || empty(trim($_POST['numDocumento']))) {
-            error_log('No se recibió numDocumento en POST');
-            throw new Exception('Número de documento es requerido');
-        }
-
-        $numDocumento = $this->sanitizarTexto($_POST['numDocumento']);
-        error_log('Documento a eliminar (sanitizado): ' . $numDocumento);
-
-        // Verificar si el huésped existe
-        if (!$this->huespedModel->existeHuesped($numDocumento)) {
-            error_log('El huésped no existe en la base de datos');
-            throw new Exception('El huésped no existe');
-        }
-
-        // Verificar si se puede eliminar
-        if (method_exists($this->huespedModel, 'puedeEliminar')) {
-            if (!$this->huespedModel->puedeEliminar($numDocumento)) {
-                error_log('No se puede eliminar porque tiene reservas activas');
-                throw new Exception('No se puede eliminar el huésped porque tiene reservas activas');
-            }
-        }
-
-        $resultado = $this->huespedModel->eliminarHuesped($numDocumento);
-
-        error_log('Resultado de eliminación: ' . ($resultado ? 'OK' : 'FALLÓ'));
-
-        if ($resultado) {
-            echo json_encode([
-                'success' => true,
-                'message' => 'Huésped eliminado exitosamente'
-            ]);
-        } else {
-            throw new Exception('Error al eliminar el huésped');
-        }
-
-    } catch (Exception $e) {
-        error_log('Error en eliminarHuesped: ' . $e->getMessage());
-        echo json_encode([
-            'success' => false,
-            'message' => $e->getMessage()
-        ]);
-    }
-}
-
-    // NUEVO: Buscar huéspedes
-    public function buscarHuespedes() {
-        header('Content-Type: application/json');
-        
-        try {
-            $termino = isset($_GET['termino']) ? trim($_GET['termino']) : '';
-            $id_hotel = $_SESSION['hotel_id'] ?? null;
-            
-            if (!$id_hotel) {
-                throw new Exception("No se ha seleccionado un hotel para la búsqueda.");
-            }
-
-            if (empty($termino)) {
-                throw new Exception('Término de búsqueda es requerido');
-            }
-
-            if (strlen($termino) < 2) {
-                // Devolver lista vacía si la búsqueda es muy corta
-                $huespedes = [];
-                throw new Exception('El término de búsqueda debe tener al menos 2 caracteres');
-            } else {
-                $huespedes = $this->huespedModel->buscarHuespedes($id_hotel, $termino);
-            }
-            
-            echo json_encode([
-                'success' => true,
-                'data' => $huespedes,
-                'total' => count($huespedes)
-            ]);
-            
-        } catch (Exception $e) {
-            echo json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]);
-        }
-    }
-
-    private function sanitizarTexto($texto) {
-        return htmlspecialchars(trim($texto), ENT_QUOTES, 'UTF-8');
-    }
-
-    private function sanitizarEmail($email) {
-        return filter_var(trim($email), FILTER_SANITIZE_EMAIL);
-    }
-
-    private function validarDatos($datos) {
-        // Validar tipo de documento
-        $tiposPermitidos = [
-            'Cedula de Ciudadania',      // CORREGIDO: Sin tildes para coincidir con BD
-            'Tarjeta de Identidad',
-            'Cedula de Extranjeria',     // CORREGIDO: Sin tildes
-            'Pasaporte',
-            'Registro Civil'
+    private function obtenerHuespedes($id_hotel) {
+        $pagina = filter_input(INPUT_GET, 'pagina', FILTER_VALIDATE_INT, ['options' => ['default' => 1]]);
+        $registrosPorPagina = 10;
+        $filtros = [
+            'busqueda' => filter_input(INPUT_GET, 'busqueda', FILTER_SANITIZE_STRING)
         ];
 
-        if (!in_array($datos['tipoDocumento'], $tiposPermitidos)) {
-            throw new Exception('Tipo de documento no válido');
+        $resultado = $this->model->obtenerHuespedesPaginados($id_hotel, $pagina, $registrosPorPagina, $filtros);
+        $this->responder(['success' => true, 'data' => $resultado]);
+    }
+
+    private function crearHuesped($id_hotel) {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            throw new Exception("Método no permitido.");
         }
 
-        // Validar sexo
-        $sexosPermitidos = ['Hombre', 'Mujer', 'Otro', 'Prefiero no decirlo'];
-        if (!in_array($datos['sexo'], $sexosPermitidos)) {
-            throw new Exception('Sexo no válido');
+        $datos = $this->sanitizarDatosHuesped($_POST);
+        $datos['id_hotel'] = $id_hotel;
+
+        $errores = $this->validarDatos($datos);
+        if (!empty($errores)) {
+            throw new Exception(implode(", ", $errores));
         }
 
-        // Validar número de documento
-        if (strlen($datos['numDocumento']) < 5 || strlen($datos['numDocumento']) > 15) {
-            throw new Exception('El número de documento debe tener entre 5 y 15 caracteres');
-        }
-
-        if (!preg_match('/^[0-9A-Za-z]+$/', $datos['numDocumento'])) {
-            throw new Exception('El número de documento solo puede contener letras y números');
-        }
-
-        // CORREGIDO: Validar nombres y apellidos con soporte para acentos
-        if (strlen($datos['nombres']) < 2 || strlen($datos['nombres']) > 50) {
-            throw new Exception('Los nombres deben tener entre 2 y 50 caracteres');
-        }
-
-        if (strlen($datos['apellidos']) < 2 || strlen($datos['apellidos']) > 50) {
-            throw new Exception('Los apellidos deben tener entre 2 y 50 caracteres');
-        }
-
-        // CORREGIDO: Regex mejorado para acentos
-        if (!preg_match('/^[a-zA-ZÀ-ÿñÑ\s]+$/u', $datos['nombres'])) {
-            throw new Exception('Los nombres solo pueden contener letras y espacios');
-        }
-
-        if (!preg_match('/^[a-zA-ZÀ-ÿñÑ\s]+$/u', $datos['apellidos'])) {
-            throw new Exception('Los apellidos solo pueden contener letras y espacios');
-        }
-
-        // CORREGIDO: Validar teléfono más estricto
-        if (strlen($datos['numTelefono']) < 7 || strlen($datos['numTelefono']) > 15) {
-            throw new Exception('El número de teléfono debe tener entre 7 y 15 caracteres');
-        }
-
-        if (!preg_match('/^[0-9+\-\s()]{7,15}$/', $datos['numTelefono'])) {
-            throw new Exception('El formato del teléfono no es válido');
-        }
-
-        // Validar correo
-        if (!filter_var($datos['correo'], FILTER_VALIDATE_EMAIL)) {
-            throw new Exception('El formato del correo electrónico no es válido');
-        }
-
-        if (strlen($datos['correo']) > 30) {
-            throw new Exception('El correo electrónico no puede tener más de 30 caracteres');
+        if ($this->model->crearHuesped($datos)) {
+            $this->responder(['success' => true, 'message' => 'Huésped creado exitosamente.']);
+        } else {
+            throw new Exception("No se pudo crear el huésped.");
         }
     }
 
-    private function validarDatosActualizacion($datos) {
-        // Validar campos individuales solo si están presentes
-        if (isset($datos['nombres'])) {
-            if (strlen($datos['nombres']) < 2 || strlen($datos['nombres']) > 50) {
-                throw new Exception('Los nombres deben tener entre 2 y 50 caracteres');
-            }
-            if (!preg_match('/^[a-zA-ZÀ-ÿñÑ\s]+$/u', $datos['nombres'])) {
-                throw new Exception('Los nombres solo pueden contener letras y espacios');
-            }
+    private function obtenerPorDocumento() {
+        $numDocumento = filter_input(INPUT_GET, 'numDocumento', FILTER_SANITIZE_STRING);
+        if (!$numDocumento) {
+            throw new Exception("Número de documento no proporcionado.");
         }
-
-        if (isset($datos['apellidos'])) {
-            if (strlen($datos['apellidos']) < 2 || strlen($datos['apellidos']) > 50) {
-                throw new Exception('Los apellidos deben tener entre 2 y 50 caracteres');
-            }
-            if (!preg_match('/^[a-zA-ZÀ-ÿñÑ\s]+$/u', $datos['apellidos'])) {
-                throw new Exception('Los apellidos solo pueden contener letras y espacios');
-            }
-        }
-
-        if (isset($datos['numTelefono'])) {
-            if (strlen($datos['numTelefono']) < 7 || strlen($datos['numTelefono']) > 15) {
-                throw new Exception('El número de teléfono debe tener entre 7 y 15 caracteres');
-            }
-            if (!preg_match('/^[0-9+\-\s()]{7,15}$/', $datos['numTelefono'])) {
-                throw new Exception('El formato del teléfono no es válido');
-            }
-        }
-
-        if (isset($datos['correo'])) {
-            if (!filter_var($datos['correo'], FILTER_VALIDATE_EMAIL)) {
-                throw new Exception('El formato del correo electrónico no es válido');
-            }
-            if (strlen($datos['correo']) > 30) {
-                throw new Exception('El correo electrónico no puede tener más de 30 caracteres');
-            }
-        }
-
-        if (isset($datos['sexo'])) {
-            $sexosPermitidos = ['Hombre', 'Mujer', 'Otro', 'Prefiero no decirlo'];
-            if (!in_array($datos['sexo'], $sexosPermitidos)) {
-                throw new Exception('Sexo no válido');
-            }
+        $huesped = $this->model->obtenerPorDocumento($numDocumento);
+        if ($huesped) {
+            $this->responder(['success' => true, 'data' => $huesped]);
+        } else {
+            throw new Exception("Huésped no encontrado.");
         }
     }
-}
 
-// Manejo de rutas MEJORADO
-if (isset($_GET['action'])) {
-    $controller = new HuespedController();
-    
-    switch ($_GET['action']) {
-        case 'crear':
-            $controller->crearHuesped();
-            break;
-        case 'obtener':
-            $controller->obtenerHuespedes();
-            break;
-        case 'obtenerPorDocumento':
-            $numDocumento = $_GET['numDocumento'] ?? '';
-            $controller->obtenerHuesped($numDocumento);
-            break;
-        case 'actualizar':
-            $controller->actualizarHuesped();
-            break;
-        case 'eliminar':
-            $controller->eliminarHuesped();
-            break;
-        case 'buscar':           // NUEVO
-            $controller->buscarHuespedes();
-            break;
-        default:
-            echo json_encode([
-                'success' => false,
-                'message' => 'Acción no válida'
-            ]);
+    private function actualizarHuesped() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            throw new Exception("Método no permitido.");
+        }
+
+        $numDocumentoOriginal = $_POST['numDocumentoOriginal'] ?? null;
+        if (!$numDocumentoOriginal) {
+            throw new Exception("Falta el documento original para la actualización.");
+        }
+
+        $datos = $this->sanitizarDatosHuesped($_POST);
+        $errores = $this->validarDatos($datos, true);
+        if (!empty($errores)) {
+            throw new Exception(implode(", ", $errores));
+        }
+
+        if ($this->model->actualizarHuesped($numDocumentoOriginal, $datos)) {
+            $this->responder(['success' => true, 'message' => 'Huésped actualizado exitosamente.']);
+        } else {
+            throw new Exception("No se pudo actualizar el huésped.");
+        }
     }
-} else {
-    // Si no hay action, asumir que es crear (POST directo)
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $controller = new HuespedController();
-        $controller->crearHuesped();
-    } else {
-        echo json_encode([
-            'success' => false,
-            'message' => 'Método no permitido'
-        ]);
+
+    private function eliminarHuesped() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            throw new Exception("Método no permitido.");
+        }
+        $numDocumento = $_POST['numDocumento'] ?? null;
+        if (!$numDocumento) {
+            throw new Exception("Número de documento no proporcionado.");
+        }
+
+        if ($this->model->eliminarHuesped($numDocumento)) {
+            $this->responder(['success' => true, 'message' => 'Huésped eliminado exitosamente.']);
+        }
+        // La excepción en caso de error se lanza desde el modelo
+    }
+
+    private function buscarHuespedes($id_hotel) {
+        $termino = filter_input(INPUT_GET, 'termino', FILTER_SANITIZE_STRING);
+        if (strlen($termino) < 2) {
+            $this->responder(['success' => true, 'data' => []]);
+            return;
+        }
+        $huespedes = $this->model->buscarHuespedes($id_hotel, $termino);
+        $this->responder(['success' => true, 'data' => $huespedes]);
+    }
+
+    private function verificarExistencia($id_hotel) {
+        $campo = filter_input(INPUT_GET, 'campo', FILTER_SANITIZE_STRING);
+        $valor = filter_input(INPUT_GET, 'valor', FILTER_SANITIZE_STRING);
+        $documentoActual = filter_input(INPUT_GET, 'documentoActual', FILTER_SANITIZE_STRING);
+
+        $resultado = $this->model->verificarExistencia($campo, $valor, $id_hotel, $documentoActual);
+        $this->responder(['success' => true, 'data' => $resultado]);
+    }
+
+    private function sanitizarDatosHuesped($postData) {
+        return [
+            'numDocumento' => filter_var($postData['numDocumento'] ?? '', FILTER_SANITIZE_STRING),
+            'tipoDocumento' => filter_var($postData['tipoDocumento'] ?? '', FILTER_SANITIZE_STRING),
+            'nombres' => filter_var($postData['nombres'] ?? '', FILTER_SANITIZE_STRING),
+            'apellidos' => filter_var($postData['apellidos'] ?? '', FILTER_SANITIZE_STRING),
+            'numTelefono' => filter_var($postData['numTelefono'] ?? '', FILTER_SANITIZE_STRING),
+            'correo' => filter_var($postData['correo'] ?? '', FILTER_SANITIZE_EMAIL),
+            'sexo' => filter_var($postData['sexo'] ?? '', FILTER_SANITIZE_STRING),
+        ];
+    }
+
+    private function validarDatos($datos, $esActualizacion = false) {
+        $errores = [];
+        if (empty($datos['numDocumento'])) $errores[] = "El número de documento es obligatorio.";
+        if (empty($datos['tipoDocumento'])) $errores[] = "El tipo de documento es obligatorio.";
+        if (empty($datos['nombres'])) $errores[] = "Los nombres son obligatorios.";
+        if (empty($datos['apellidos'])) $errores[] = "Los apellidos son obligatorios.";
+        if (empty($datos['numTelefono'])) $errores[] = "El teléfono es obligatorio.";
+        if (empty($datos['correo']) || !filter_var($datos['correo'], FILTER_VALIDATE_EMAIL)) {
+            $errores[] = "El correo no es válido.";
+        }
+        if (empty($datos['sexo'])) $errores[] = "El sexo es obligatorio.";
+
+        return $errores;
+    }
+
+    private function responder($data, $statusCode = 200) {
+        http_response_code($statusCode);
+        header('Content-Type: application/json');
+        echo json_encode($data);
+        exit;
     }
 }
+
+$controller = new HuespedController();
+$controller->manejarPeticion();
+
 ?>
