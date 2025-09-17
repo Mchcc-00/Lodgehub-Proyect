@@ -80,6 +80,12 @@ if ($userRole === 'Administrador') {
                     'text' => 'Info Hotel'
                 ],
                 [
+                    'page' => 'Huéspedes',
+                    'href' => 'listaHuesped.php',
+                    'icon' => 'fas fa-user-friends',
+                    'text' => 'Huéspedes'
+                ],
+                [
                     'page' => 'reservas',
                     'href' => 'listaReservas.php',
                     'icon' => 'fas fa-calendar-check',
@@ -90,6 +96,12 @@ if ($userRole === 'Administrador') {
                     'href' => 'listaHabitaciones.php',
                     'icon' => 'fas fa-bed',
                     'text' => 'Habitaciones'
+                ],
+                [
+                    'page' => 'Mantenimiento',
+                    'href' => 'listaMantenimiento.php',
+                    'icon' => 'fas fa-tools',
+                    'text' => 'Mantenimiento'
                 ]
             ]
         ],

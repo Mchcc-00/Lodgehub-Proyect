@@ -39,11 +39,6 @@
                             <i class="fas fa-hotel me-2"></i>Mi hotel
                         </a>
                     <li>
-                    <li>
-                        <a class="dropdown-item" href="#">
-                            <i class="fas fa-cog me-2"></i>Configuración
-                        </a>
-                    </li>
                         <hr class="dropdown-divider">
                     </li>
                     <li>

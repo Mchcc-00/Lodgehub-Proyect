@@ -116,6 +116,21 @@ document.addEventListener('DOMContentLoaded', () => {
             ? `<img src="${hab.foto}" alt="Habitación ${hab.numero}" class="img-fluid rounded mb-3" onerror="this.src='../../public/assets/img/default_room.png';">`
             : '<p class="text-muted text-center p-5 border rounded bg-light">No hay foto disponible.</p>';
 
+        let detallesEstado = '';
+        if (hab.estado === 'Ocupada' && hab.id_reserva) {
+            detallesEstado = `
+                <div class="alert alert-warning mt-3">
+                    <h6 class="alert-heading"><i class="fas fa-user-clock"></i> Detalles de la Ocupación</h6>
+                    <p class="mb-1"><strong>Huésped:</strong> ${hab.reserva_huesped || 'No especificado'}</p>
+                    <p class="mb-0"><strong>Check-out:</strong> ${new Date(hab.reserva_fecha_fin + 'T00:00:00').toLocaleDateString()}</p>
+                </div>`;
+        } else if (hab.estado === 'Mantenimiento' && hab.id_mantenimiento) {
+            detallesEstado = `
+                <div class="alert alert-danger mt-3">
+                    <h6 class="alert-heading"><i class="fas fa-tools"></i> Detalles del Mantenimiento</h6>
+                    <p class="mb-0"><strong>Tipo:</strong> ${hab.mantenimiento_tipo} - ${hab.mantenimiento_descripcion || 'Sin descripción.'}</p>
+                </div>`;
+        }
         container.innerHTML = `
             <div class="row">
                 <div class="col-md-5">
@@ -131,6 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <hr>
                     <h5><i class="fas fa-info-circle me-2 text-info"></i>Descripción</h5>
                     <p>${hab.descripcion || '<em>Sin descripción.</em>'}</p>
+                    ${detallesEstado}
                 </div>
             </div>
         `;

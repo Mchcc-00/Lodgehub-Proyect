@@ -67,7 +67,15 @@ class HabitacionesModel {
             $stmt->bindValue(':estado', $datos[':estado'], PDO::PARAM_STR);
             $stmt->bindValue(':id_hotel', $datos[':id_hotel'], PDO::PARAM_INT);
             
-            return $stmt->execute();
+            $exito = $stmt->execute();
+            if ($exito) {
+                // Actualizar contador del tipo de habitación
+                require_once 'tipoHabitacionModel.php';
+                $tipoModel = new TipoHabitacionModel();
+                $tipoModel->actualizarContador($datos[':tipoHabitacion']);
+            }
+            return $exito;
+
         } catch (PDOException $e) {
             error_log("Error en HabitacionesModel::crearHabitacion: " . $e->getMessage());
             throw new Exception("Error al crear la habitación: " . $e->getMessage());
@@ -81,16 +89,34 @@ class HabitacionesModel {
         try {
             $offset = ($pagina - 1) * $registrosPorPagina;
 
-            $selectClause = "SELECT h.id, h.numero, h.costo, h.capacidad, h.estado, h.foto, th.descripcion as tipo_descripcion";
-            $fromClause = " FROM tp_habitaciones h JOIN td_tipohabitacion th ON h.tipoHabitacion = th.id";
+            // Modificamos el SELECT para determinar el estado dinámicamente
+            $selectClause = "SELECT 
+                                h.id, 
+                                h.numero, 
+                                h.costo, 
+                                h.capacidad, 
+                                -- Si hay una reserva activa hoy, el estado es 'Ocupada', si no, usamos el estado de la tabla.
+                                CASE
+                                    WHEN m.id IS NOT NULL THEN 'Mantenimiento'
+                                    WHEN h.estado = 'Mantenimiento' THEN 'Mantenimiento' -- Mantenemos la lógica original por si acaso
+                                    WHEN r.id IS NOT NULL THEN 'Ocupada' 
+                                    ELSE h.estado 
+                                END as estado, 
+                                h.foto, 
+                                th.descripcion as tipo_descripcion";
+            
+            // Modificamos el FROM para incluir el LEFT JOIN con las reservas activas para hoy
+            $fromClause = " FROM tp_habitaciones h 
+                           JOIN td_tipohabitacion th ON h.tipoHabitacion = th.id
+                           LEFT JOIN tp_reservas r ON h.id = r.id_habitacion 
+                                                  AND r.estado IN ('Activa', 'Pendiente') 
+                                                  AND CURDATE() >= r.fechainicio 
+                                                  AND CURDATE() < r.fechaFin
+                           LEFT JOIN tp_mantenimiento m ON h.id = m.id_habitacion AND m.estado = 'Pendiente'";
             
             $whereClauses = ["h.id_hotel = :id_hotel"];
             $params = [':id_hotel' => (int)$id_hotel];
 
-            if (!empty($filtros['estado']) && $filtros['estado'] !== 'all') {
-                $whereClauses[] = "h.estado = :estado";
-                $params[':estado'] = $filtros['estado'];
-            }
             if (!empty($filtros['tipo']) && $filtros['tipo'] !== 'all') {
                 $whereClauses[] = "h.tipoHabitacion = :tipo";
                 $params[':tipo'] = (int)$filtros['tipo'];
@@ -102,6 +128,14 @@ class HabitacionesModel {
 
             $whereSql = " WHERE " . implode(' AND ', $whereClauses);
 
+            // El filtro de estado ahora debe aplicarse sobre el resultado del CASE
+            // Usaremos HAVING en lugar de WHERE para este filtro.
+            $havingClause = "";
+            if (!empty($filtros['estado']) && $filtros['estado'] !== 'all') {
+                $havingClause = " HAVING estado = :estado";
+                $params[':estado'] = $filtros['estado'];
+            }
+
             // Contar total de registros
             $sqlTotal = "SELECT COUNT(h.id)" . $fromClause . $whereSql;
             $stmtTotal = $this->db->prepare($sqlTotal);
@@ -109,7 +143,7 @@ class HabitacionesModel {
             $totalRegistros = (int)$stmtTotal->fetchColumn();
 
             // Obtener registros para la página actual
-            $sql = $selectClause . $fromClause . $whereSql . " ORDER BY h.numero ASC LIMIT :limit OFFSET :offset";
+            $sql = $selectClause . $fromClause . $whereSql . " GROUP BY h.id " . $havingClause . " ORDER BY h.numero ASC LIMIT :limit OFFSET :offset";
             $stmt = $this->db->prepare($sql);
 
             foreach ($params as $key => $val) {
@@ -137,10 +171,33 @@ class HabitacionesModel {
      */
     public function obtenerPorId($id) {
         try {
-            $sql = "SELECT h.*, th.descripcion as tipo_descripcion 
-                    FROM tp_habitaciones h 
-                    JOIN td_tipohabitacion th ON h.tipoHabitacion = th.id 
-                    WHERE h.id = :id";
+            // Consulta mejorada para obtener el estado real y detalles de reserva/mantenimiento
+            $sql = "SELECT 
+                        h.id, h.numero, h.costo, h.capacidad, h.foto, h.descripcion,
+                        th.descripcion as tipo_descripcion,
+                        CASE
+                            WHEN m.id IS NOT NULL THEN 'Mantenimiento'
+                            WHEN r.id IS NOT NULL THEN 'Ocupada'
+                            ELSE h.estado
+                        END as estado,
+                        r.id as id_reserva,
+                        r.fechaFin as reserva_fecha_fin,
+                        CONCAT(hues.nombres, ' ', hues.apellidos) as reserva_huesped,
+                        m.id as id_mantenimiento,
+                        m.problemaDescripcion as mantenimiento_descripcion,
+                        m.tipo as mantenimiento_tipo
+                    FROM 
+                        tp_habitaciones h
+                    JOIN 
+                        td_tipohabitacion th ON h.tipoHabitacion = th.id
+                    LEFT JOIN 
+                        tp_reservas r ON h.id = r.id_habitacion AND r.estado IN ('Activa', 'Pendiente') AND CURDATE() >= r.fechainicio AND CURDATE() < r.fechaFin
+                    LEFT JOIN
+                        tp_huespedes hues ON r.hue_numDocumento = hues.numDocumento
+                    LEFT JOIN 
+                        tp_mantenimiento m ON h.id = m.id_habitacion AND m.estado = 'Pendiente'
+                    WHERE h.id = :id
+                    GROUP BY h.id";
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':id', (int)$id, PDO::PARAM_INT);
             $stmt->execute();
@@ -155,6 +212,14 @@ class HabitacionesModel {
      * Actualiza una habitación.
      */
     public function actualizarHabitacion($id, $datos) {
+        // Antes de actualizar, obtener el tipo de habitación antiguo si se va a cambiar
+        $tipoAntiguo = null;
+        if (isset($datos['tipoHabitacion'])) {
+            $stmtAntiguo = $this->db->prepare("SELECT tipoHabitacion FROM tp_habitaciones WHERE id = :id");
+            $stmtAntiguo->execute([':id' => $id]);
+            $tipoAntiguo = $stmtAntiguo->fetchColumn();
+        }
+
         try {
             $campos = [];
             $params = [':id' => (int)$id];
@@ -180,7 +245,18 @@ class HabitacionesModel {
             $sql = "UPDATE tp_habitaciones SET " . implode(', ', $campos) . " WHERE id = :id";
             $stmt = $this->db->prepare($sql);
             $stmt->execute($params);
+            $rowCount = $stmt->rowCount();
 
+            if ($rowCount >= 0) { // Si la consulta fue exitosa
+                require_once 'tipoHabitacionModel.php';
+                $tipoModel = new TipoHabitacionModel();
+                // Si el tipo cambió, actualizar contadores del tipo antiguo y nuevo
+                if ($tipoAntiguo && isset($datos['tipoHabitacion']) && $tipoAntiguo != $datos['tipoHabitacion']) {
+                    $tipoModel->actualizarContador($tipoAntiguo);
+                    $tipoModel->actualizarContador($datos['tipoHabitacion']);
+                }
+            }
+            
             // Devolver true si se afectó al menos una fila, o si no hubo error.
             return $stmt->rowCount() >= 0;
         } catch (PDOException $e) {
@@ -194,6 +270,12 @@ class HabitacionesModel {
      */
     public function eliminarHabitacion($id) {
         try {
+            // Antes de eliminar, obtener el tipo de habitación para actualizar el contador después
+            $stmtTipo = $this->db->prepare("SELECT tipoHabitacion FROM tp_habitaciones WHERE id = :id");
+            $stmtTipo->bindValue(':id', (int)$id, PDO::PARAM_INT);
+            $stmtTipo->execute();
+            $id_tipo = $stmtTipo->fetchColumn();
+
             // Primero, verificar si la habitación tiene reservas asociadas
             $stmtCheck = $this->db->prepare("SELECT COUNT(*) FROM tp_reservas WHERE id_habitacion = :id");
             $stmtCheck->bindValue(':id', (int)$id, PDO::PARAM_INT);
@@ -204,7 +286,15 @@ class HabitacionesModel {
 
             $stmt = $this->db->prepare("DELETE FROM tp_habitaciones WHERE id = :id");
             $stmt->bindValue(':id', (int)$id, PDO::PARAM_INT);
-            return $stmt->execute();
+            $exito = $stmt->execute();
+
+            if ($exito && $id_tipo) {
+                // Actualizar contador del tipo de habitación
+                require_once 'tipoHabitacionModel.php';
+                $tipoModel = new TipoHabitacionModel();
+                $tipoModel->actualizarContador($id_tipo);
+            }
+            return $exito;
         } catch (PDOException $e) {
             error_log("Error en HabitacionesModel::eliminarHabitacion: " . $e->getMessage());
             throw new Exception("Error al eliminar la habitación: " . $e->getMessage());

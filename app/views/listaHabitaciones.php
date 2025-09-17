@@ -4,6 +4,7 @@ $currentPage = 'Habitaciones'; // Para activar el item en el sidebar
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,23 +15,24 @@ $currentPage = 'Habitaciones'; // Para activar el item en el sidebar
     <link href="../../public/assets/css/stylesNav.css" rel="stylesheet">
     <link rel="stylesheet" href="../../public/assets/css/stylesHabitaciones.css">
 </head>
+
 <body>
 
     <?php
-        include "layouts/sidebar.php";
-        include "layouts/navbar.php";
+    include "layouts/sidebar.php";
+    include "layouts/navbar.php";
 
-        // VALIDACIÓN: Asegurarse de que un hotel ha sido seleccionado
-        $hotelSeleccionado = isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id']);
-        $hotel_id = $_SESSION['hotel_id'] ?? null;
+    // VALIDACIÓN: Asegurarse de que un hotel ha sido seleccionado
+    $hotelSeleccionado = isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id']);
+    $hotel_id = $_SESSION['hotel_id'] ?? null;
 
-        // Cargar tipos de habitación para el filtro
-        $tiposHabitacion = [];
-        if ($hotelSeleccionado) {
-            require_once '../models/habitacionesModel.php';
-            $habitacionesModel = new HabitacionesModel();
-            $tiposHabitacion = $habitacionesModel->obtenerTiposHabitacion($hotel_id);
-        }
+    // Cargar tipos de habitación para el filtro
+    $tiposHabitacion = [];
+    if ($hotelSeleccionado) {
+        require_once '../models/habitacionesModel.php';
+        $habitacionesModel = new HabitacionesModel();
+        $tiposHabitacion = $habitacionesModel->obtenerTiposHabitacion($hotel_id);
+    }
     ?>
     <script src="../../public/assets/js/sidebar.js"></script>
 
@@ -44,7 +46,7 @@ $currentPage = 'Habitaciones'; // Para activar el item en el sidebar
             </div>
         <?php else: ?>
             <div class="header">
-                <h1><i class="fas fa-bed custom-icon"></i> Gestión de Habitaciones</h1>
+                <h1> Gestión de Habitaciones</h1>
                 <p>Administra todas las habitaciones de tu hotel.</p>
             </div>
 
@@ -75,7 +77,10 @@ $currentPage = 'Habitaciones'; // Para activar el item en el sidebar
                         </select>
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
-                        <a href="crearHabitacion.php" class="btn btn-primary w-100"><i class="fas fa-plus"></i> Nueva</a>
+                        <a href="crearHabitacion.php" class="btn btn-primary w-100"><i class="fas fa-plus"></i> Nueva habitacion</a>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <a href="listaTipoHabitacion.php" class="btn btn-primary w-100"><i class="fas fa-tags"></i> Tipos de Hab.</a>
                     </div>
                 </div>
             </div>
@@ -96,7 +101,9 @@ $currentPage = 'Habitaciones'; // Para activar el item en el sidebar
             </div>
 
             <!-- Paginación -->
-            <nav id="paginacion-container" style="display: none;"><ul class="pagination justify-content-center" id="paginacion"></ul></nav>
+            <nav id="paginacion-container" style="display: none;">
+                <ul class="pagination justify-content-center" id="paginacion"></ul>
+            </nav>
         <?php endif; ?>
     </div>
 
@@ -207,4 +214,5 @@ $currentPage = 'Habitaciones'; // Para activar el item en el sidebar
     <script src="../../public/assets/js/listarHabitaciones.js"></script>
 
 </body>
+
 </html>

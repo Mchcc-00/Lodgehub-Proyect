@@ -18,7 +18,7 @@
                     <img src="/lodgehub/public/img/LogoClaroLHSinTitulo.png" alt="LODGEHUB">
                     <div class="logo">LODGEHUB</div>
                 </a>
-            </div>            
+            </div>
 
             <!-- Breadcrumb -->
             <nav aria-label="breadcrumb" class="mx-auto d-none d-lg-block">
@@ -42,9 +42,11 @@
                             <li><a class="dropdown-item" href="miPerfil.php">
                                     <i class="fas fa-user me-2"></i>Mi Perfil
                                 </a></li>
-                            <li><a class="dropdown-item" href="#">
-                                    <i class="fas fa-cog me-2"></i>Configuración
-                                </a></li>
+                            <li>
+                                <a class="dropdown-item" href="/lodgehub/app/views/homepage.php">
+                                    <i class="fas fa-hotel me-2"></i>Mi hotel
+                                </a>
+                            <li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
