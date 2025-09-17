@@ -4,6 +4,7 @@ $currentPage = 'Huespedes';
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,7 @@ $currentPage = 'Huespedes';
     <link href="../../public/assets/css/stylesNav.css" rel="stylesheet">
     <link rel="stylesheet" href="../../public/assets/css/stylesHuesped.css">
 </head>
+
 <body>
 
     <?php
@@ -32,7 +34,7 @@ $currentPage = 'Huespedes';
             </div>
         <?php else: ?>
             <div class="header">
-                <h1><i class="fas fa-users"></i> Lista de Huéspedes</h1>
+                <h1><i class="fas fa-user-friends"></i> Lista de Huéspedes</h1>
                 <p>Gestiona todos los huéspedes registrados en tu hotel.</p>
             </div>
 
@@ -190,4 +192,5 @@ $currentPage = 'Huespedes';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../public/assets/js/listarHuespedes.js"></script>
 </body>
+
 </html>

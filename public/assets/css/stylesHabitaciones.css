@@ -437,12 +437,6 @@ body {
     margin-bottom: 1.5rem;
 }
 
-.custom-icon{
-    background: linear-gradient(45deg, #00a2ff, #0011fd);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-
-}
 
 /* ============================================
    LOADING

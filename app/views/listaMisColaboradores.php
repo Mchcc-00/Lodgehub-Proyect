@@ -33,8 +33,8 @@
         <input type="hidden" id="admin-hotel-id" value="<?php echo htmlspecialchars($_SESSION['hotel_id'] ?? ''); ?>">
 
         <div class="header">
-            <h1>Lista de Colaboradores</h1>
-            <p>Gestiona colaboradores y usuarios del sistema LodgeHub</p>
+            <h1><i class="fas fa-users"></i> Lista de Colaboradores</h1>
+            <p>¡Gestiona colaboradores para que te ayuden con tu hotel!</p>
         </div>
 
         <!-- Sección de búsqueda y filtros -->
