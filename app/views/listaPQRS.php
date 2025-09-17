@@ -38,7 +38,7 @@
             </div>
         <?php else: ?>
         <div class="header">
-            <h1>Lista de PQRS</h1>
+            <h1><i class="fas fa-comments"></i> Lista de PQRS</h1>
             <p>Gestiona todas las Peticiones, Quejas, Reclamos, Sugerencias y Felicitaciones</p>
         </div>
 

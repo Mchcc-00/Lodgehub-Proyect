@@ -24,7 +24,7 @@ $currentPage = 'Mantenimiento'; // Para activar el item en el sidebar
 
     <div class="container">
         <div class="header">
-            <h1>Gestión de Mantenimiento</h1>
+            <h1><i class="fas fa-tools"></i> Gestión de Mantenimiento</h1>
             <p>Administra las tareas de mantenimiento de las habitaciones y áreas del hotel.</p>
         </div>
 
