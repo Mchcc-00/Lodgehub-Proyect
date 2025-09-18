@@ -15,8 +15,8 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 session_start();
 
 // Incluir la conexión y el modelo
-require_once '../../config/conexionGlobal.php';
-require_once '../../app/models/hotelModel.php';
+require_once '../config/conexionGlobal.php';
+require_once '../app/models/hotelModel.php';
 
 $db = conexionDB();
 $hotelModel = new HotelModel();
@@ -50,7 +50,7 @@ function procesarImagen($campoArchivo) {
         $nombreUnico = $nombreSeguro . '_' . uniqid() . '.' . $extension;
         
         // Ruta de destino
-        $rutaDestino = __DIR__ . '../../public/uploads/hoteles/' . $nombreUnico;
+        $rutaDestino = __DIR__ . '../public/uploads/hoteles/' . $nombreUnico;
         
         // Crear el directorio si no existe
         if (!is_dir(dirname($rutaDestino))) {
