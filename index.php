@@ -30,7 +30,7 @@
 
 <body>
     <!-- Aquí iría tu navUsuario.php -->
-    
+    <h2>PornHub</h2>
     <div class="container">
         <div class="header">
             <div class="img">
