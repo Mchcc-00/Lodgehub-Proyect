@@ -15,7 +15,7 @@
     <?php
         $paginaActual = "Página Principal";
         // --- INICIO: Cargar datos de hoteles desde la BD ---
-        require_once '/app/models/hotelModel.php';
+        require_once 'app/models/hotelModel.php';
         
         $hotelModel = new HotelModel();
         $hotelesResult = $hotelModel->obtenerHoteles();
