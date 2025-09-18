@@ -144,9 +144,9 @@ require_once 'validarSesion.php';
     </div>
 
     <!-- Scripts -->
-    <script src="../../public/assets/js/sidebar.js"></script>
+    <script src="/public/assets/js/sidebar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../../public/assets/js/hotelScript.js"></script>
+    <script src="/public/assets/js/hotelScript.js"></script>
 
     <script>
         // Script para manejar el colapso del sidebar
