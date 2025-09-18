@@ -38,8 +38,10 @@ try {
                 $fotoPath = null;
                 $fotoUrlParaBD = null;
                 if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
-                    $uploadDirServer = __DIR__ . '/../../public/uploads/hoteles/';
-                    $uploadUrlWeb = '/lodgehub/public/uploads/hoteles/';
+                    // SOLUCIÓN: Usar rutas dinámicas y correctas
+                    $directorioRaizProyecto = dirname(__DIR__, 2); // Sube dos niveles para llegar a la raíz
+                    $uploadDirServer = $directorioRaizProyecto . '/public/uploads/hoteles/';
+                    $uploadUrlWeb = '/public/uploads/hoteles/'; // Ruta web correcta para producción
 
                     // Crear directorio si no existe
                     if (!is_dir($uploadDirServer)) {
@@ -75,7 +77,6 @@ try {
                     }
 
                     if ($result) {
-                        $exito = "Hotel actualizado correctamente.";
 
                         // SOLUCIÓN: Actualizar la información del hotel en la sesión
                         // para que los cambios se reflejen inmediatamente en el homepage.
@@ -92,6 +93,11 @@ try {
                             // También actualizamos la variable de conveniencia
                             $_SESSION['hotel_nombre'] = $nombre;
                         }
+
+                        // SOLUCIÓN: Redirigir a la página principal con un mensaje de éxito
+                        $mensajeExito = urlencode("Hotel actualizado correctamente.");
+                        header("Location: homepage.php?status=hotel_success&message={$mensajeExito}");
+                        exit();
                     } else {
                         $error = "Error al actualizar el hotel.";
                     }
