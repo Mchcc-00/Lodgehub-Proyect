@@ -435,7 +435,7 @@ class HotelController {
         $nombreArchivo = 'hotel_' . uniqid() . '_' . time() . '.' . $extension;
 
         // Definir la ruta de destino. Usamos rutas relativas desde la raíz del proyecto.
-        $directorioDestino = '/lodgehub/public/uploads/hoteles/';
+        $directorioDestino = '/public/uploads/hoteles/';
         $rutaCompletaServidor = $_SERVER['DOCUMENT_ROOT'] . $directorioDestino;
         $rutaArchivoServidor = $rutaCompletaServidor . $nombreArchivo;
 

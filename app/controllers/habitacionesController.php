@@ -215,7 +215,7 @@ class HabitacionesController {
         $nombreArchivo = 'hab_' . uniqid() . '_' . time() . '.' . $extension;
         
         // Ruta relativa desde la raíz del servidor web
-        $directorioUploads = '/lodgehub/public/uploads/habitaciones/';
+        $directorioUploads = '/public/uploads/habitaciones/';
         $rutaCompletaServidor = $_SERVER['DOCUMENT_ROOT'] . $directorioUploads;
 
         // Crear directorio si no existe

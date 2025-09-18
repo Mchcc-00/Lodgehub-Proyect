@@ -1,5 +1,5 @@
 <?php
-require_once ('../../config/conexionGlobal.php');
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/conexionGlobal.php';
 session_start();
 
 // Verificar que los datos lleguen por POST

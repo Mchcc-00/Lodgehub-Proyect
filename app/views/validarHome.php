@@ -1,6 +1,6 @@
 <?php
 // validarHome.php - Validación y configuración para homepage con sistema multi-hotel
-require_once '../../config/conexionGlobal.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/conexionGlobal.php';
 
 class DashboardData {
     private $db;
