@@ -49,10 +49,11 @@ function procesarImagen($campoArchivo) {
         $nombreSeguro = preg_replace("/[^A-Za-z0-9\-_]/", '', $nombreOriginal);
         $nombreUnico = $nombreSeguro . '_' . uniqid() . '.' . $extension;
         
-        // Ruta de destino
-        $rutaDestino = __DIR__ . '/public/uploads/hoteles/' . $nombreUnico;
+        // SOLUCIÓN: Construir la ruta de destino desde la raíz del documento del servidor.
+        $directorioDestino = $_SERVER['DOCUMENT_ROOT'] . '/public/uploads/hoteles/';
+        $rutaDestino = $directorioDestino . $nombreUnico;
         
-        // Crear el directorio si no existe
+        // Crear el directorio si no existe (más robusto)
         if (!is_dir(dirname($rutaDestino))) {
             mkdir(dirname($rutaDestino), 0755, true);
         }
