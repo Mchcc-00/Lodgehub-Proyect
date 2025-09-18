@@ -3,7 +3,7 @@
  * Este bloque de código solo se ejecuta cuando el formulario se envía (petición POST).
  */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    require_once __DIR__ . '../../Controllers/UsuarioController.php';
+    require_once __DIR__ . '../Controllers/UsuarioController.php';
     $controller = new UsuarioController();
     $controller->registrarPublico();
     // Redirige a login.php con mensaje
