@@ -129,9 +129,9 @@ if ($hotelInfo) {
             <?php if ($hotelInfo): ?>
                 <section class="hotel-info-banner">
                     <div class="hotel-photo">
-                        <img src="<?php echo !empty($hotelInfo['foto']) ? htmlspecialchars($hotelInfo['foto']) : '../public/assets/img/default_hotel.png'; ?>"
+                        <img src="<?php echo !empty($hotelInfo['foto']) ? htmlspecialchars($hotelInfo['foto']) : '/public/assets/img/default_hotel.png'; ?>"
                             alt="Foto del hotel <?php echo htmlspecialchars($hotelInfo['nombre']); ?>"
-                            onerror="this.onerror=null;this.src='../public/assets/img/default_hotel.png';">
+                            onerror="this.onerror=null;this.src='/public/assets/img/default_hotel.png';">
                     </div>
 
                     <div class="hotel-main-info">
