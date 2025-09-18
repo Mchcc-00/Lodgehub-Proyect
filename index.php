@@ -30,11 +30,10 @@
 
 <body>
     <!-- Aquí iría tu navUsuario.php -->
-    <h2>PornHub</h2>
     <div class="container">
         <div class="header">
             <div class="img">
-            <img src="/public/img/LogoClaroLHSinTitulo.png" alt="LODGEHUB">
+            <img src="public/img/LogoClaroLHSinTitulo.png" alt="LODGEHUB">
             <h1>LodgeHub</h1>
             </div>
             <p>¡Descubre los mejores hoteles para tu próxima estadía!</p>
@@ -65,10 +64,10 @@
         function crearTarjetaHotel(hotel) {
             return `
                 <div class="hotel-card" data-hotel-id="${hotel.id}">
-                    <img src="${hotel.foto || '/public/assets/uploads/hoteles/hotel1.png'}" 
+                    <img src="${hotel.foto || 'public/assets/uploads/hoteles/hotel1.png'}" 
                          alt="${hotel.nombre}" 
                          class="hotel-image"
-                         onerror="this.onerror=null;this.src='/public/assets/uploads/hoteles/hotel1.png';">
+                         onerror="this.onerror=null;this.src='public/assets/uploads/hoteles/hotel1.png';">
                     <div class="hotel-info">
                         <h3 class="hotel-name">${hotel.nombre}</h3>
                         <div class="hotel-address">
