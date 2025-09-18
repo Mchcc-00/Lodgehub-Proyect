@@ -1,14 +1,18 @@
 <?php
 /**
  * Este bloque de código solo se ejecuta cuando el formulario se envía (petición POST).
-*/
-require_once __DIR__ . '/../../app/controllers/UsuarioController.php';
-$controller = new UsuarioController();
-$controller->registrarPublico(); // El controlador ya maneja la redirección y el método POST
+ */
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_once __DIR__ . '/../../app/controllers/UsuarioController.php';
+    $controller = new UsuarioController();
+    $controller->registrarPublico();
+    // Redirige a login.php con mensaje
+    header('Location: /app/views/login.php?mensaje=Usuario+registrado+correctamente');
+    exit();
+    exit();
+}
 
 ?>
-<!DOCTYPE html>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
