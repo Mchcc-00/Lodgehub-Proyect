@@ -125,13 +125,13 @@ if ($method == 'POST') {
 
     } else {
         // --- ACTUALIZAR ---
-        // Si no se subió una nueva foto, no queremos borrar la existente.
-        if (!isset($datos['foto'])) {
-            $hotelActual = $hotelModel->obtenerHotelPorId($datos['id']);
-            if ($hotelActual['success']) {
-                $datos['foto'] = $hotelActual['data']['foto'];
-            }
+        // SOLUCIÓN: Si no se subió una nueva foto (la URL es null),
+        // eliminamos el campo 'foto' del array de datos para no sobrescribir
+        // el valor existente en la base de datos.
+        if (isset($datos['foto']) && $datos['foto'] === null) {
+            unset($datos['foto']);
         }
+
         $resultado = $hotelModel->actualizarHotel($datos['id'], $datos);
     }
 

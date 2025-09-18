@@ -135,23 +135,28 @@ class HotelModel {
     // Actualizar hotel
     public function actualizarHotel($id, $datos) {
         try {
-            $query = "UPDATE " . $this->table . " 
-                     SET nit = :nit, nombre = :nombre, direccion = :direccion, 
-                         telefono = :telefono, correo = :correo, foto = :foto, 
-                         descripcion = :descripcion, numDocumentoAdmin = :numDocumentoAdmin
-                     WHERE id = :id";
+            // Construir la consulta dinámicamente
+            $setParts = [];
+            foreach ($datos as $key => $value) {
+                if ($key !== 'id') { // El id no se actualiza, se usa en el WHERE
+                    $setParts[] = "$key = :$key";
+                }
+            }
+
+            if (empty($setParts)) {
+                return ['success' => false, 'message' => 'No hay datos para actualizar.'];
+            }
+
+            $query = "UPDATE " . $this->table . " SET " . implode(', ', $setParts) . " WHERE id = :id";
             
             $stmt = $this->db->prepare($query);
             
+            // Vincular el ID
             $stmt->bindParam(':id', $id);
-            $stmt->bindParam(':nit', $datos['nit']);
-            $stmt->bindParam(':nombre', $datos['nombre']);
-            $stmt->bindParam(':direccion', $datos['direccion']);
-            $stmt->bindParam(':telefono', $datos['telefono']);
-            $stmt->bindParam(':correo', $datos['correo']);
-            $stmt->bindParam(':foto', $datos['foto']);
-            $stmt->bindParam(':descripcion', $datos['descripcion']);
-            $stmt->bindParam(':numDocumentoAdmin', $datos['numDocumentoAdmin']);
+            // Vincular el resto de los datos
+            foreach ($datos as $key => &$value) {
+                if ($key !== 'id') $stmt->bindParam(":$key", $value);
+            }
             
             if ($stmt->execute()) {
                 return [
