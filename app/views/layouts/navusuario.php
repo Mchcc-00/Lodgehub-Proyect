@@ -1,7 +1,7 @@
 <nav class="navbar">
     <div class="nav-left">
         <a href="/index.php" class="nav-logo">
-            <img src="public/img/LogoClaroLHSinTitulo.png" alt="LODGEHUB">
+            <img src="/public/img/LogoClaroLHSinTitulo.png" alt="LODGEHUB">
             <div class="logo">LODGEHUB</div>
         </a>
     </div>

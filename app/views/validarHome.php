@@ -17,14 +17,16 @@ class DashboardData {
      * Construye la condición WHERE para filtrar por hotel
      */
     private function getHotelFilter() {
-        // Super administradores pueden ver todo
+        // Si el rol es Administrador y no hay un hotel_id seleccionado (vista global),
+        // no se debe devolver ningún dato específico de un hotel en el dashboard.
         if ($this->user_role === 'Administrador' && empty($this->hotel_id)) {
-            return "";
+            // Devolver una condición que siempre es falsa para no mostrar datos de ningún hotel.
+            return " AND 1=0";
         }
         
-        // Otros usuarios solo ven su hotel
+        // Administradores de hotel y colaboradores solo ven los datos de su hotel asignado.
         if ($this->hotel_id) {
-            return " AND id_hotel = " . intval($this->hotel_id);
+            return " AND id_hotel = " . intval($this->hotel_id); // intval() para seguridad
         }
         
         // Si no hay hotel asignado y no es super admin, no mostrar nada
