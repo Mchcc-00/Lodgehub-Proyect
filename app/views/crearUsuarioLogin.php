@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Usuario</title>
-    <link rel="stylesheet" href="public/assets/css/stylesUsuarios.css">
+    <link rel="stylesheet" href="/public/assets/css/stylesUsuarios.css">
 </head>
 <body>
     <div class="page-background">
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="borde-container-login">
             <!-- Contenedor del logo -->
             <div class="logo-container">
-                <img src="public/img/LogoClaroLH.png" alt="LogoClaroLH">
+                <img src="/public/img/LogoClaroLH.png" alt="LogoClaroLH">
                 <h6>Lodgehub</h6>
             </div>
 
