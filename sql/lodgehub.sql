@@ -186,10 +186,10 @@ INSERT INTO tp_usuarios (numDocumento, tipoDocumento, nombres, apellidos, numTel
 
 -- Insertar hoteles
 INSERT INTO tp_hotel (id, nit, nombre, direccion, telefono, correo, foto, descripcion, numDocumentoAdmin) VALUES 
-(null, '900123456-1', 'Hotel Lodge Hub Premium', 'Calle 123 #45-67, Bogotá, Colombia', '6013334444', 'info@lodgehub.com', '/lodgehub/public/uploads/hoteles/hotel1.png', 'Hotel de lujo ubicado en el corazón de la ciudad, ofreciendo servicios de alta calidad y comodidad excepcional.', '1014596349'),
-(null, '900987654-2', 'Lodge Hub Business', 'Carrera 15 #80-25, Medellín, Colombia', '6044445555', 'medellin@lodgehub.com', '/lodgehub/public/uploads/hoteles/hotel2.png', 'Hotel especializado en turismo de negocios con salas de conferencias y servicios corporativos.', '5555666677'),
-(null, '900555777-3', 'Lodge Hub Resort', 'Km 5 Vía Cartagena-Barú, Cartagena, Colombia', '6055556666', 'cartagena@lodgehub.com', '/lodgehub/public/uploads/hoteles/hotel3.png', 'Resort frente al mar con spa, piscinas y actividades recreativas para toda la familia.', '1014596348'),
-(null, '900111222-4', 'Lodge Hub Express', 'Avenida El Dorado #50-30, Bogotá, Colombia', '6011112222', 'express@lodgehub.com', '/lodgehub/public/uploads/hoteles/hotel4.png', 'Hotel económico con servicios básicos de calidad para viajeros de negocios.', '1234567890');
+(null, '900123456-1', 'Hotel Lodge Hub Premium', 'Calle 123 #45-67, Bogotá, Colombia', '6013334444', 'info@lodgehub.com', '/public/uploads/hoteles/hotel1.png', 'Hotel de lujo ubicado en el corazón de la ciudad, ofreciendo servicios de alta calidad y comodidad excepcional.', '1014596349'),
+(null, '900987654-2', 'Lodge Hub Business', 'Carrera 15 #80-25, Medellín, Colombia', '6044445555', 'medellin@lodgehub.com', '/public/uploads/hoteles/hotel2.png', 'Hotel especializado en turismo de negocios con salas de conferencias y servicios corporativos.', '5555666677'),
+(null, '900555777-3', 'Lodge Hub Resort', 'Km 5 Vía Cartagena-Barú, Cartagena, Colombia', '6055556666', 'cartagena@lodgehub.com', '/public/uploads/hoteles/hotel3.png', 'Resort frente al mar con spa, piscinas y actividades recreativas para toda la familia.', '1014596348'),
+(null, '900111222-4', 'Lodge Hub Express', 'Avenida El Dorado #50-30, Bogotá, Colombia', '6011112222', 'express@lodgehub.com', '/public/uploads/hoteles/hotel4.png', 'Hotel económico con servicios básicos de calidad para viajeros de negocios.', '1234567890');
 
 -- Insertar personal del hotel
 INSERT INTO ti_personal (id_hotel, numDocumento, roles) VALUES 

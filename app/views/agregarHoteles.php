@@ -36,7 +36,7 @@ require_once 'validarSesion.php';
             </div>
 
             <div class="form-content">
-                <form id="hotel-form" action="/lodgehub/api/v1/hotel.php" method="POST" enctype="multipart/form-data">
+                <form id="hotel-form" action="/api/v1/hotel.php" method="POST" enctype="multipart/form-data">
                     <input type="hidden" id="hotelId" name="id">
 
                     <div class="form-grid">
