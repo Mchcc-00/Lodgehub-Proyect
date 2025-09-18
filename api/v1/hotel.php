@@ -15,8 +15,8 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 session_start();
 
 // Incluir la conexión y el modelo
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/conexionGlobal.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/app/models/hotelModel.php';
+require_once '../config/conexionGlobal.php';
+require_once '../app/models/hotelModel.php';
 
 $db = conexionDB();
 $hotelModel = new HotelModel();
@@ -49,11 +49,10 @@ function procesarImagen($campoArchivo) {
         $nombreSeguro = preg_replace("/[^A-Za-z0-9\-_]/", '', $nombreOriginal);
         $nombreUnico = $nombreSeguro . '_' . uniqid() . '.' . $extension;
         
-        // SOLUCIÓN: Construir la ruta de destino desde la raíz del documento del servidor.
-        $directorioDestino = $_SERVER['DOCUMENT_ROOT'] . '/public/uploads/hoteles/';
-        $rutaDestino = $directorioDestino . $nombreUnico;
+        // Ruta de destino
+        $rutaDestino = __DIR__ . '../public/uploads/hoteles/' . $nombreUnico;
         
-        // Crear el directorio si no existe (más robusto)
+        // Crear el directorio si no existe
         if (!is_dir(dirname($rutaDestino))) {
             mkdir(dirname($rutaDestino), 0755, true);
         }
@@ -91,9 +90,10 @@ if ($method == 'POST') {
         exit;
     }
 
-    // SOLUCIÓN: Asignar siempre el resultado de la URL de la imagen a $datos['foto'].
-    // Será la URL de la nueva imagen o null si no se subió ninguna.
-    $datos['foto'] = $resultadoImagen['url'];
+    // Si se subió una nueva imagen, usamos su URL.
+    if ($resultadoImagen['url'] !== null) {
+        $datos['foto'] = $resultadoImagen['url'];
+    }
 
     // Decidir si es CREAR o ACTUALIZAR
     if (empty($datos['id'])) {
@@ -124,12 +124,13 @@ if ($method == 'POST') {
 
     } else {
         // --- ACTUALIZAR ---
-        // SOLUCIÓN: Si no se subió una nueva foto (la URL es null),
-        // eliminamos el campo 'foto' del array de datos para no sobrescribir el valor existente.
-        if ($datos['foto'] === null) {
-            unset($datos['foto']);
+        // Si no se subió una nueva foto, no queremos borrar la existente.
+        if (!isset($datos['foto'])) {
+            $hotelActual = $hotelModel->obtenerHotelPorId($datos['id']);
+            if ($hotelActual['success']) {
+                $datos['foto'] = $hotelActual['data']['foto'];
+            }
         }
-
         $resultado = $hotelModel->actualizarHotel($datos['id'], $datos);
     }
 
