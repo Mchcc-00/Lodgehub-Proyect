@@ -1,5 +1,5 @@
 <?php
-require_once('../config/conexionGlobal.php');
+require_once('config/conexionGlobal.php');
 $db = conexionDB();
 
 if (!isset($_POST['correo']) || !isset($_POST['password'])) {
@@ -15,7 +15,7 @@ if (empty($correo) || empty($password)) {
     exit;
 }
 
-$conexion = mysqli_connect("localhost", "root", "", "lodgehub");
+$conexion = mysqli_connect("localhost", "u705727716_lodgehubUser", "/Lodgehub2025", "u705727716_lodgehub");
 
 if (!$conexion) {
     header("location: login.php?mensaje=Error: No se pudo conectar a la base de datos");
