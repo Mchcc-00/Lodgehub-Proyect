@@ -91,10 +91,9 @@ if ($method == 'POST') {
         exit;
     }
 
-    // Si se subió una nueva imagen, usamos su URL.
-    if ($resultadoImagen['url'] !== null) {
-        $datos['foto'] = $resultadoImagen['url'];
-    }
+    // SOLUCIÓN: Asignar siempre el resultado de la URL de la imagen a $datos['foto'].
+    // Será la URL de la nueva imagen o null si no se subió ninguna.
+    $datos['foto'] = $resultadoImagen['url'];
 
     // Decidir si es CREAR o ACTUALIZAR
     if (empty($datos['id'])) {
@@ -126,9 +125,8 @@ if ($method == 'POST') {
     } else {
         // --- ACTUALIZAR ---
         // SOLUCIÓN: Si no se subió una nueva foto (la URL es null),
-        // eliminamos el campo 'foto' del array de datos para no sobrescribir
-        // el valor existente en la base de datos.
-        if (isset($datos['foto']) && $datos['foto'] === null) {
+        // eliminamos el campo 'foto' del array de datos para no sobrescribir el valor existente.
+        if ($datos['foto'] === null) {
             unset($datos['foto']);
         }
 
