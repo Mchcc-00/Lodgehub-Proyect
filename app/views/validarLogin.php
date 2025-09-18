@@ -150,7 +150,8 @@ if ($resultado && mysqli_num_rows($resultado) > 0) {
                 // 1. Super Admin (sin hotel asignado) - Ve todos los hoteles
                 // 2. Admin de Hotel (con hotel asignado) - Ve solo su hotel
 
-                if (!empty($_SESSION['hotel_id'])) {
+                // SOLUCIÓN: Un administrador es quien tiene rol 'Administrador' en ti_personal
+                if (!empty($_SESSION['hotel_id']) && $_SESSION['roles_especificos'] === 'Administrador de Hotel') {
                     // Administrador de hotel específico
                     $destino = "homepage.php";
                     $_SESSION['tipo_admin'] = 'hotel';
@@ -194,7 +195,11 @@ if ($resultado && mysqli_num_rows($resultado) > 0) {
                     exit;
                 }
 
-                $destino = "homepage.php";
+                // SOLUCIÓN: Si el colaborador es "Administrador de Hotel", tratarlo como tal.
+                if ($_SESSION['roles_especificos'] === 'Administrador de Hotel') {
+                    $_SESSION['tipo_admin'] = 'hotel';
+                }
+
                 $_SESSION['permisos'] = [
                     'leer',
                     'actualizar',
@@ -206,6 +211,7 @@ if ($resultado && mysqli_num_rows($resultado) > 0) {
                     'gestionar_mantenimiento'
                 ];
                 $_SESSION['nivel_acceso'] = 2;
+                $destino = "homepage.php";
                 break;
 
             case 'Usuario':

@@ -42,11 +42,11 @@ class HotelModel {
             // 2. Asignar el administrador al hotel en la tabla ti_personal
             $queryPersonal = "INSERT INTO ti_personal (id_hotel, numDocumento, roles) VALUES (:id_hotel, :numDocumento, :roles)";
             $stmtPersonal = $this->db->prepare($queryPersonal);
-
-            $rolAdmin = 'Administrador'; // Rol por defecto para el creador del hotel
+            
+            $rolEspecifico = 'Administrador de Hotel'; // SOLUCIÓN: Rol específico para el dueño del hotel
             $stmtPersonal->bindParam(':id_hotel', $hotelId);
             $stmtPersonal->bindParam(':numDocumento', $datos['numDocumentoAdmin']);
-            $stmtPersonal->bindParam(':roles', $rolAdmin);
+            $stmtPersonal->bindParam(':roles', $rolEspecifico);
 
             if (!$stmtPersonal->execute()) {
                 throw new PDOException("Error al asignar el administrador al hotel.");
@@ -54,6 +54,15 @@ class HotelModel {
 
             // Si todo fue bien, confirmar la transacción
             $this->db->commit();
+
+            // SOLUCIÓN: Actualizar el rol principal del usuario a 'Colaborador'
+            // para que en futuros logins, el sistema sepa que ya gestiona un hotel.
+            $queryUpdateUser = "UPDATE tp_usuarios SET roles = 'Colaborador' WHERE numDocumento = :numDocumento AND roles = 'Administrador'";
+            $stmtUpdateUser = $this->db->prepare($queryUpdateUser);
+            $stmtUpdateUser->bindParam(':numDocumento', $datos['numDocumentoAdmin']);
+            $stmtUpdateUser->execute();
+            // No es necesario verificar el resultado de esto, es una operación de "mejor esfuerzo".
+
 
             return [
                 'success' => true,
