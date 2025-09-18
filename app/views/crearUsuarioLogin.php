@@ -12,7 +12,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
-$baseURL = 'public'; // Ajusta si el nombre de tu carpeta principal es diferente
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -20,7 +19,7 @@ $baseURL = 'public'; // Ajusta si el nombre de tu carpeta principal es diferente
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Usuario</title>
-    <link rel="stylesheet" href="<?php echo $baseURL; ?>/assets/css/stylesUsuarios.css">
+    <link rel="stylesheet" href="public/assets/css/stylesUsuarios.css">
 </head>
 <body>
     <div class="page-background">
@@ -33,7 +32,7 @@ $baseURL = 'public'; // Ajusta si el nombre de tu carpeta principal es diferente
         <div class="borde-container-login">
             <!-- Contenedor del logo -->
             <div class="logo-container">
-                <img src="<?php echo $baseURL; ?>/img/LogoClaroLH.png" alt="LogoClaroLH">
+                <img src="public/img/LogoClaroLH.png" alt="LogoClaroLH">
                 <h6>Lodgehub</h6>
             </div>
 
