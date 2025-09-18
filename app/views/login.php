@@ -70,7 +70,7 @@
 
 
                     <a href="recuperarContraseña.php" class="account-link">¿Olvidaste tu contraseña?</a>
-                    <a href="crearUsuariologin.php" class="account-link">¿No tienes una cuenta? ¡Crea una!</a>
+                    <a href="crearUsuarioLogin.php" class="account-link">¿No tienes una cuenta? ¡Crea una!</a>
 
                     <button type="submit" class="login-button">Ingresar</button>
 
