@@ -15,8 +15,8 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 session_start();
 
 // Incluir la conexión y el modelo
-require_once '../config/conexionGlobal.php';
-require_once '../app/models/hotelModel.php';
+require_once __DIR__ . '/../../config/conexionGlobal.php';
+require_once __DIR__ . '/../../app/models/hotelModel.php';
 
 $db = conexionDB();
 $hotelModel = new HotelModel();
@@ -49,8 +49,9 @@ function procesarImagen($campoArchivo) {
         $nombreSeguro = preg_replace("/[^A-Za-z0-9\-_]/", '', $nombreOriginal);
         $nombreUnico = $nombreSeguro . '_' . uniqid() . '.' . $extension;
         
-        // Ruta de destino
-        $rutaDestino = __DIR__ . '../public/uploads/hoteles/' . $nombreUnico;
+        // SOLUCIÓN: Construir la ruta de destino desde la raíz del proyecto.
+        $directorioRaizProyecto = dirname(__DIR__, 2); // Sube dos niveles desde /api/v1 para llegar a /lodgehub
+        $rutaDestino = $directorioRaizProyecto . '/public/uploads/hoteles/' . $nombreUnico;
         
         // Crear el directorio si no existe
         if (!is_dir(dirname($rutaDestino))) {
