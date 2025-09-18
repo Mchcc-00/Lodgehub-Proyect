@@ -133,6 +133,24 @@ if ($method == 'POST') {
             }
         }
         $resultado = $hotelModel->actualizarHotel($datos['id'], $datos);
+
+        // SOLUCIÓN: Si la actualización fue exitosa, actualizar la sesión.
+        if ($resultado['success']) {
+            // Verificar si el hotel actualizado es el que está activo en la sesión
+            if (isset($_SESSION['hotel_id']) && $_SESSION['hotel_id'] == $datos['id']) {
+                // Actualizar los datos del hotel en la sesión para que se reflejen de inmediato
+                $_SESSION['hotel_nombre'] = $datos['nombre']; // Actualizar el nombre por si cambió
+                
+                // Reconstruir el array $_SESSION['hotel'] con los datos actualizados
+                $_SESSION['hotel']['nombre'] = $datos['nombre'];
+                $_SESSION['hotel']['nit'] = $datos['nit'];
+                $_SESSION['hotel']['direccion'] = $datos['direccion'];
+                $_SESSION['hotel']['telefono'] = $datos['telefono'];
+                $_SESSION['hotel']['correo'] = $datos['correo'];
+                $_SESSION['hotel']['descripcion'] = $datos['descripcion'];
+                $_SESSION['hotel']['foto'] = $datos['foto']; // ¡Aquí se actualiza la URL de la foto!
+            }
+        }
     }
 
     if ($resultado['success']) {
