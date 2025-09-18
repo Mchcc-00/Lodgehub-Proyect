@@ -25,7 +25,7 @@
             $hoteles_data = $hotelesResult['data'];
         }
         // --- FIN: Cargar datos de hoteles desde la BD ---
-        include "/app/views/layouts/navusuario.php";
+        include "app/views/layouts/navusuario.php";
     ?>
 
 <body>
