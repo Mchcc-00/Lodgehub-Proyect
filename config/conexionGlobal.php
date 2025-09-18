@@ -6,9 +6,9 @@
 
 // Configuración de la base de datos
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'lodgehub');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_NAME', 'u705727716_lodgehub');
+define('DB_USER', 'u705727716_lodgehubUser');
+define('DB_PASS', '/Lodgehub2025');
 define('DB_CHARSET', 'utf8');
 
 /**
