@@ -1,7 +1,7 @@
 // Script para gestión de hoteles
 class HotelManager {
   constructor() {
-    this.apiUrl = "/lodgehub/api/v1/hotel.php"; // Ruta correcta de la API
+    this.apiUrl = "/api/v1/hotel.php"; // SOLUCIÓN: Ruta de API corregida para producción
     this.currentEditingId = null;
     this.initializeEventListeners();
     // this.loadHotels(); // La lista de hoteles ya no se muestra en esta página.
@@ -68,9 +68,7 @@ class HotelManager {
 
       if (result.success) {
         // Redirección a la página principal con un mensaje de éxito.
-        window.location.href = `/lodgehub/app/views/homepage.php?status=hotel_success&message=${encodeURIComponent(
-          result.message
-        )}`;
+        window.location.href = `/app/views/homepage.php?status=hotel_success&message=${encodeURIComponent(result.message)}`;
       } else {
         if (result.errors) {
           this.displayErrors(result.errors);

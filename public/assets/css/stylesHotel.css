@@ -112,6 +112,17 @@ textarea.form-input {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* SOLUCIÓN: Estilos para la previsualización de la imagen en el formulario de creación */
+.image-preview {
+    max-width: 200px;
+    max-height: 150px;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: 2px solid #e1e5e9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    object-fit: cover; /* Asegura que la imagen se vea bien sin distorsionarse */
+}
+
 .alert {
     padding: 15px 20px;
     margin-bottom: 20px;
