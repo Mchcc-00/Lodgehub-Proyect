@@ -1,5 +1,5 @@
 <?php
-require_once('../config/conexionGlobal.php');
+require_once('/config/conexionGlobal.php');
 $db = conexionDB();
 
 if (!isset($_POST['correo']) || !isset($_POST['password'])) {
