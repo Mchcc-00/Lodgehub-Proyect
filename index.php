@@ -15,7 +15,7 @@
     <?php
         $paginaActual = "Página Principal";
         // --- INICIO: Cargar datos de hoteles desde la BD ---
-        require_once 'app/models/hotelModel.php';
+        require_once '/app/models/hotelModel.php';
         
         $hotelModel = new HotelModel();
         $hotelesResult = $hotelModel->obtenerHoteles();
@@ -25,7 +25,7 @@
             $hoteles_data = $hotelesResult['data'];
         }
         // --- FIN: Cargar datos de hoteles desde la BD ---
-        include "app/views/layouts/navusuario.php";
+        include "/app/views/layouts/navusuario.php";
     ?>
 
 <body>
@@ -34,7 +34,7 @@
     <div class="container">
         <div class="header">
             <div class="img">
-            <img src="public/img/LogoClaroLHSinTitulo.png" alt="LODGEHUB">
+            <img src="/public/img/LogoClaroLHSinTitulo.png" alt="LODGEHUB">
             <h1>PornHub</h1>
             </div>
             <p>¡Descubre los mejores hoteles para tu próxima estadía!</p>
@@ -65,10 +65,10 @@
         function crearTarjetaHotel(hotel) {
             return `
                 <div class="hotel-card" data-hotel-id="${hotel.id}">
-                    <img src="${hotel.foto || 'public/assets/uploads/hoteles/hotel1.png'}" 
+                    <img src="${hotel.foto || '/public/assets/uploads/hoteles/hotel1.png'}" 
                          alt="${hotel.nombre}" 
                          class="hotel-image"
-                         onerror="this.onerror=null;this.src='public/assets/uploads/hoteles/hotel1.png';">
+                         onerror="this.onerror=null;this.src='/public/assets/uploads/hoteles/hotel1.png';">
                     <div class="hotel-info">
                         <h3 class="hotel-name">${hotel.nombre}</h3>
                         <div class="hotel-address">
@@ -85,7 +85,7 @@
                                 NIT: ${hotel.nit}
                             </div>
                         </div>
-                        <a href="app/views/plazaHotel.php?id=${hotel.id}" class="view-info-btn">
+                        <a href="/app/views/plazaHotel.php?id=${hotel.id}" class="view-info-btn">
                             Ver Información Completa
                         </a>
                     </div>
