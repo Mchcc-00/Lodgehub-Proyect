@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Usuario</title>
+    <title>Crear Usuario - LodgeHub</title>
     <link rel="stylesheet" href="/public/assets/css/stylesUsuarios.css">
 </head>
 <body>
@@ -211,8 +211,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <!-- Scripts de validación y navegación -->
-    <script src="<?php echo $baseURL; ?>/assets/js/form-validation.js"></script>
-    <script src="<?php echo $baseURL; ?>/assets/js/navigation.js"></script>
+    <script src="/public/assets/js/form-validation.js"></script>
+    <script src="/public/assets/js/navigation.js"></script>
 
     <!-- SOLUCIÓN: Manejar la tecla Enter para que funcione como "Siguiente" -->
     <script>
