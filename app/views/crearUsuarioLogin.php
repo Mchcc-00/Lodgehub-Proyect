@@ -20,7 +20,7 @@ $baseURL = '/lodgehub/public'; // Ajusta si el nombre de tu carpeta principal es
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Usuario</title>
-    <link rel="stylesheet" href="<?php echo $baseURL; ?>/assets/css/stylesUsuarios.css">
+    <link rel="stylesheet" href="<?php echo $baseURL; ?>/public/assets/css/stylesUsuarios.css">
 </head>
 <body>
     <div class="page-background">
@@ -33,7 +33,7 @@ $baseURL = '/lodgehub/public'; // Ajusta si el nombre de tu carpeta principal es
         <div class="borde-container-login">
             <!-- Contenedor del logo -->
             <div class="logo-container">
-                <img src="<?php echo $baseURL; ?>/img/LogoClaroLH.png" alt="LogoClaroLH">
+                <img src="<?php echo $baseURL; ?>/public/img/LogoClaroLH.png" alt="LogoClaroLH">
                 <h6>Lodgehub</h6>
             </div>
 
