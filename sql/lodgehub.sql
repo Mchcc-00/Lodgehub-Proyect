@@ -229,41 +229,41 @@ INSERT INTO td_tipoHabitacion (descripcion, cantidad, id_hotel) VALUES
 -- Insertar habitaciones
 INSERT INTO tp_habitaciones (numero, costo, capacidad, tipoHabitacion, foto, descripcion, estado, id_hotel) VALUES 
 
-('101', 120000.00, 1, 1, '/lodgehub/public/uploads/habitaciones/hab1.png', 'Habitación individual premium con baño privado, TV LED 42", WiFi de alta velocidad', 'Disponible', 1),
-('102', 120000.00, 1, 1, '/lodgehub/public/uploads/habitaciones/hab2.png', 'Habitación individual con vista a la ciudad y minibar', 'Disponible', 1),
-('103', 120000.00, 1, 1, '/lodgehub/public/uploads/habitaciones/hab3.png', 'Habitación individual con escritorio ejecutivo', 'Disponible', 1),
-('201', 180000.00, 2, 2, '/lodgehub/public/uploads/habitaciones/hab4.png', 'Habitación doble con cama king, balcón y vista panorámica', 'Disponible', 1),
-('202', 180000.00, 2, 2, '/lodgehub/public/uploads/habitaciones/hab5.png', 'Habitación doble con dos camas queen y sala de estar', 'Disponible', 1),
-('203', 180000.00, 2, 2, '/lodgehub/public/uploads/habitaciones/hab6.png', 'Habitación doble con jacuzzi y vista a la ciudad', 'Ocupada', 1),
-('301', 350000.00, 3, 3, '/lodgehub/public/uploads/habitaciones/hab1.png', 'Suite junior con sala independiente, minibar y terraza', 'Disponible', 1),
-('302', 350000.00, 3, 3, '/lodgehub/public/uploads/habitaciones/hab2.png', 'Suite junior con área de trabajo y sofá cama', 'Disponible', 1),
-('401', 500000.00, 4, 4, '/lodgehub/public/uploads/habitaciones/hab3.png', 'Suite ejecutiva con sala de reuniones, jacuzzi y balcón amplio', 'Disponible', 1),
-('501', 800000.00, 6, 5, '/lodgehub/public/uploads/habitaciones/hab4.png', 'Suite presidencial con salón, comedor, cocina y terraza', 'Disponible', 1),
+('101', 120000.00, 1, 1, '/public/uploads/habitaciones/hab1.png', 'Habitación individual premium con baño privado, TV LED 42", WiFi de alta velocidad', 'Disponible', 1),
+('102', 120000.00, 1, 1, '/public/uploads/habitaciones/hab2.png', 'Habitación individual con vista a la ciudad y minibar', 'Disponible', 1),
+('103', 120000.00, 1, 1, '/public/uploads/habitaciones/hab3.png', 'Habitación individual con escritorio ejecutivo', 'Disponible', 1),
+('201', 180000.00, 2, 2, '/public/uploads/habitaciones/hab4.png', 'Habitación doble con cama king, balcón y vista panorámica', 'Disponible', 1),
+('202', 180000.00, 2, 2, '/public/uploads/habitaciones/hab5.png', 'Habitación doble con dos camas queen y sala de estar', 'Disponible', 1),
+('203', 180000.00, 2, 2, '/public/uploads/habitaciones/hab6.png', 'Habitación doble con jacuzzi y vista a la ciudad', 'Ocupada', 1),
+('301', 350000.00, 3, 3, '/public/uploads/habitaciones/hab1.png', 'Suite junior con sala independiente, minibar y terraza', 'Disponible', 1),
+('302', 350000.00, 3, 3, '/public/uploads/habitaciones/hab2.png', 'Suite junior con área de trabajo y sofá cama', 'Disponible', 1),
+('401', 500000.00, 4, 4, '/public/uploads/habitaciones/hab3.png', 'Suite ejecutiva con sala de reuniones, jacuzzi y balcón amplio', 'Disponible', 1),
+('501', 800000.00, 6, 5, '/public/uploads/habitaciones/hab4.png', 'Suite presidencial con salón, comedor, cocina y terraza', 'Disponible', 1),
 
 
-('B101', 100000.00, 1, 6, '/lodgehub/public/uploads/habitaciones/hab5.png', 'Habitación individual business con escritorio amplio y silla ergonómica', 'Disponible', 2),
-('B102', 100000.00, 1, 6, '/lodgehub/public/uploads/habitaciones/hab6.png', 'Habitación individual con vista al valle de Aburrá', 'Disponible', 2),
-('B201', 150000.00, 2, 7, '/lodgehub/public/uploads/habitaciones/hab1.png', 'Habitación doble business con área de trabajo para dos personas', 'Disponible', 2),
-('B202', 150000.00, 2, 7, '/lodgehub/public/uploads/habitaciones/hab2.png', 'Habitación doble con conexión empresarial de alta velocidad', 'Disponible', 2),
-('B301', 400000.00, 4, 8, '/lodgehub/public/uploads/habitaciones/hab3.png', 'Suite ejecutiva con sala de juntas para 8 personas', 'Disponible', 2),
-('B302', 400000.00, 4, 8, '/lodgehub/public/uploads/habitaciones/hab4.png', 'Suite ejecutiva con equipos de videoconferencia', 'Disponible', 2),
-('SALA1', 0.00, 12, 9, '/lodgehub/public/uploads/habitaciones/hab5.png', 'Sala de juntas principal con proyector y sistema de audio', 'Disponible', 2),
+('B101', 100000.00, 1, 6, '/public/uploads/habitaciones/hab5.png', 'Habitación individual business con escritorio amplio y silla ergonómica', 'Disponible', 2),
+('B102', 100000.00, 1, 6, '/public/uploads/habitaciones/hab6.png', 'Habitación individual con vista al valle de Aburrá', 'Disponible', 2),
+('B201', 150000.00, 2, 7, '/public/uploads/habitaciones/hab1.png', 'Habitación doble business con área de trabajo para dos personas', 'Disponible', 2),
+('B202', 150000.00, 2, 7, '/public/uploads/habitaciones/hab2.png', 'Habitación doble con conexión empresarial de alta velocidad', 'Disponible', 2),
+('B301', 400000.00, 4, 8, '/public/uploads/habitaciones/hab3.png', 'Suite ejecutiva con sala de juntas para 8 personas', 'Disponible', 2),
+('B302', 400000.00, 4, 8, '/public/uploads/habitaciones/hab4.png', 'Suite ejecutiva con equipos de videoconferencia', 'Disponible', 2),
+('SALA1', 0.00, 12, 9, '/public/uploads/habitaciones/hab5.png', 'Sala de juntas principal con proyector y sistema de audio', 'Disponible', 2),
 
 
-('C101', 200000.00, 2, 10, '/lodgehub/public/uploads/habitaciones/hab6.png', 'Habitación standard con vista parcial al océano y aire acondicionado', 'Disponible', 3),
-('C102', 200000.00, 2, 10, '/lodgehub/public/uploads/habitaciones/hab1.png', 'Habitación standard con balcón y acceso directo a jardines', 'Disponible', 3),
-('C201', 280000.00, 2, 11, '/lodgehub/public/uploads/habitaciones/hab2.png', 'Habitación superior con vista completa al océano y balcón amplio', 'Disponible', 3),
-('C202', 280000.00, 2, 11, '/lodgehub/public/uploads/habitaciones/hab3.png', 'Habitación superior con hamaca y vista al atardecer', 'Disponible', 3),
-('C301', 450000.00, 4, 12, '/lodgehub/public/uploads/habitaciones/hab4.png', 'Villa familiar con piscina privada, jardín y área de BBQ', 'Disponible', 3),
-('C302', 450000.00, 4, 12, '/lodgehub/public/uploads/habitaciones/hab5.png', 'Villa familiar con sala, comedor y cocina equipada', 'Disponible', 3),
-('C401', 700000.00, 6, 13, '/lodgehub/public/uploads/habitaciones/hab6.png', 'Master suite con jacuzzi, terraza panorámica y mayordomo', 'Disponible', 3),
-('C501', 1200000.00, 8, 14, '/lodgehub/public/uploads/habitaciones/hab1.png', 'Penthouse con vista 360°, piscina privada y servicio exclusivo', 'Disponible', 3),
+('C101', 200000.00, 2, 10, '/public/uploads/habitaciones/hab6.png', 'Habitación standard con vista parcial al océano y aire acondicionado', 'Disponible', 3),
+('C102', 200000.00, 2, 10, '/public/uploads/habitaciones/hab1.png', 'Habitación standard con balcón y acceso directo a jardines', 'Disponible', 3),
+('C201', 280000.00, 2, 11, '/public/uploads/habitaciones/hab2.png', 'Habitación superior con vista completa al océano y balcón amplio', 'Disponible', 3),
+('C202', 280000.00, 2, 11, '/public/uploads/habitaciones/hab3.png', 'Habitación superior con hamaca y vista al atardecer', 'Disponible', 3),
+('C301', 450000.00, 4, 12, '/public/uploads/habitaciones/hab4.png', 'Villa familiar con piscina privada, jardín y área de BBQ', 'Disponible', 3),
+('C302', 450000.00, 4, 12, '/public/uploads/habitaciones/hab5.png', 'Villa familiar con sala, comedor y cocina equipada', 'Disponible', 3),
+('C401', 700000.00, 6, 13, '/public/uploads/habitaciones/hab6.png', 'Master suite con jacuzzi, terraza panorámica y mayordomo', 'Disponible', 3),
+('C501', 1200000.00, 8, 14, '/public/uploads/habitaciones/hab1.png', 'Penthouse con vista 360°, piscina privada y servicio exclusivo', 'Disponible', 3),
 
 
-('E101', 80000.00, 1, 15, '/lodgehub/public/uploads/habitaciones/hab2.png', 'Habitación individual económica con servicios básicos de calidad', 'Disponible', 4),
-('E102', 80000.00, 1, 15, '/lodgehub/public/uploads/habitaciones/hab3.png', 'Habitación individual con WiFi y TV cable', 'Disponible', 4),
-('E201', 110000.00, 2, 16, '/lodgehub/public/uploads/habitaciones/hab4.png', 'Habitación doble económica con baño privado', 'Disponible', 4),
-('E202', 110000.00, 2, 16, '/lodgehub/public/uploads/habitaciones/hab5.png', 'Habitación doble con escritorio y área de trabajo', 'Disponible', 4);
+('E101', 80000.00, 1, 15, '/public/uploads/habitaciones/hab2.png', 'Habitación individual económica con servicios básicos de calidad', 'Disponible', 4),
+('E102', 80000.00, 1, 15, '/public/uploads/habitaciones/hab3.png', 'Habitación individual con WiFi y TV cable', 'Disponible', 4),
+('E201', 110000.00, 2, 16, '/public/uploads/habitaciones/hab4.png', 'Habitación doble económica con baño privado', 'Disponible', 4),
+('E202', 110000.00, 2, 16, '/public/uploads/habitaciones/hab5.png', 'Habitación doble con escritorio y área de trabajo', 'Disponible', 4);
 
 -- Insertar huéspedes
 INSERT INTO tp_huespedes (numDocumento, numTelefono, correo, nombres, apellidos, tipoDocumento, sexo, id_hotel) VALUES 

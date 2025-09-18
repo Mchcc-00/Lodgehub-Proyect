@@ -95,22 +95,21 @@ if ($hotelInfo) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home </title>
-    <link rel="stylesheet" href="../../public/assets/css/styleHomepage.css">
-    <link rel="stylesheet" href="../../public/assets/css/stylesNav.css">
+    <title>Home - LodgeHub</title>
+    <link rel="stylesheet" href="/public/assets/css/styleHomepage.css">
+    <link rel="stylesheet" href="/public/assets/css/stylesNav.css">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
 </head>
-
 <body>
     <?php
     include "layouts/sidebar.php";
     include "layouts/navbar.php";
     ?>
-    <script src="../../public/assets/js/sidebar.js"></script>
+    <script src="/public/assets/js/sidebar.js"></script>
 
     <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content" id="mainContent">
@@ -129,9 +128,9 @@ if ($hotelInfo) {
             <?php if ($hotelInfo): ?>
                 <section class="hotel-info-banner">
                     <div class="hotel-photo">
-                        <img src="<?php echo !empty($hotelInfo['foto']) ? htmlspecialchars($hotelInfo['foto']) : '/public/assets/img/colaborador_1010101020_1757505114.jpg'; ?>"
+                        <img src="<?php echo !empty($hotelInfo['foto']) ? htmlspecialchars($hotelInfo['foto']) : '/public/img/default_hotel_banner.png'; ?>"
                             alt="Foto del hotel <?php echo htmlspecialchars($hotelInfo['nombre']); ?>"
-                            onerror="this.onerror=null;this.src='/public/assets/img/colaborador_1010101020_1757505114.jpg';">
+                            onerror="this.onerror=null;this.src='/public/img/default_hotel_banner.png';">
                     </div>
 
                     <div class="hotel-main-info">
