@@ -14,8 +14,8 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <!-- Logo/Brand -->
             <div class="nav-left">
-                <a href="/lodgehub/index.php" class="nav-logo">
-                    <img src="/lodgehub/public/img/LogoClaroLHSinTitulo.png" alt="LODGEHUB">
+                <a href="/index.php" class="nav-logo">
+                    <img src="/public/img/LogoClaroLHSinTitulo.png" alt="LODGEHUB">
                     <div class="logo">LODGEHUB</div>
                 </a>
             </div>
@@ -43,14 +43,14 @@
                                     <i class="fas fa-user me-2"></i>Mi Perfil
                                 </a></li>
                             <li>
-                                <a class="dropdown-item" href="/lodgehub/app/views/homepage.php">
+                                <a class="dropdown-item" href="/app/views/homepage.php">
                                     <i class="fas fa-hotel me-2"></i>Mi hotel
                                 </a>
                             <li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item text-danger" href="/lodgehub/app/views/cerrarSesion.php">
+                            <li><a class="dropdown-item text-danger" href="/app/views/cerrarSesion.php">
                                     <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
                                 </a></li>
                         </ul>
