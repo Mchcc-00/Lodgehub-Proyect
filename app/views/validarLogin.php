@@ -210,7 +210,7 @@ if ($resultado && mysqli_num_rows($resultado) > 0) {
 
             case 'Usuario':
                 // Los usuarios finales no necesitan hotel asignado
-                $destino = "../../index.php";
+                $destino = "../index.php";
                 $_SESSION['permisos'] = [
                     'leer',
                     'actualizar_perfil',
