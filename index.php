@@ -65,10 +65,10 @@
         function crearTarjetaHotel(hotel) {
             return `
                 <div class="hotel-card" data-hotel-id="${hotel.id}">
-                    <img src="${hotel.foto || 'public/assets/img/default_hotel.png'}" 
+                    <img src="${hotel.foto || 'public/assets/uploads/hoteles/hotel1.png'}" 
                          alt="${hotel.nombre}" 
                          class="hotel-image"
-                         onerror="this.onerror=null;this.src='public/assets/img/default_hotel.png';">
+                         onerror="this.onerror=null;this.src='public/assets/uploads/hoteles/hotel1.png';">
                     <div class="hotel-info">
                         <h3 class="hotel-name">${hotel.nombre}</h3>
                         <div class="hotel-address">
