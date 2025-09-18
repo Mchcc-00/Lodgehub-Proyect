@@ -4,28 +4,41 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\SMTP;
 
-require '../../PHPMailer/Exception.php';
-require '../../PHPMailer/PHPMailer.php';
-require '../../PHPMailer/SMTP.php';
+// 1. Cargar dependencias y configuración
+require_once __DIR__ . '/../../config/conexionGlobal.php';
+require_once __DIR__ . '/../../PHPMailer/Exception.php';
+require_once __DIR__ . '/../../PHPMailer/PHPMailer.php';
+require_once __DIR__ . '/../../PHPMailer/SMTP.php';
 
+// 2. Validar la petición
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['correo'])) {
+    header("Location: login.php?mensaje=Petición no válida.");
+    exit;
+}
 
+// 3. Sanitizar y obtener el correo
+$correo = filter_var(trim($_POST['correo']), FILTER_SANITIZE_EMAIL);
+if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+    header("Location: recuperarContraseña.php?mensaje=Correo no válido.");
+    exit;
+}
 
-require_once ('../../config/conexionGlobal.php');
+// 4. Conectar a la BD con PDO y buscar al usuario
 $db = conexionDB();
+$stmt = $db->prepare("SELECT numDocumento, nombres, apellidos FROM tp_usuarios WHERE correo = :correo AND sesionCaducada = '1'");
+$stmt->execute([':correo' => $correo]);
+$usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$correo = $_POST['correo'];
-session_start();
-$_SESSION['correo'] = $correo;
+if ($usuario) {
+    // 5. Generar un token de recuperación seguro (opcional pero recomendado)
+    // Por simplicidad, usaremos el numDocumento como en tu código original.
+    $numDocumento = $usuario['numDocumento'];
 
-$conexion = mysqli_connect("localhost","root","","lodgehub");
-
-$consulta = "SELECT * FROM tp_usuarios where correo = '$correo' and sesionCaducada = 1";
-$resultado = mysqli_query($conexion, $consulta);
-$row = mysqli_fetch_assoc($resultado);
-
-$filas = mysqli_num_rows($resultado);
-
-if($filas > 0){
+    // 6. Construir la URL de recuperación dinámicamente
+    $protocolo = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
+    $host = $_SERVER['HTTP_HOST'];
+    $rutaBase = str_replace('/app/views/recovery.php', '', $_SERVER['SCRIPT_NAME']); // Obtiene la ruta base del proyecto
+    $urlRecuperacion = "{$protocolo}://{$host}{$rutaBase}/app/views/contraseña.php?id=" . urlencode($numDocumento);
     
     $mail = new PHPMailer(true);
 
@@ -55,11 +68,8 @@ if($filas > 0){
         $mail->isHTML(true);
         $mail->Subject = 'Recuperacion de Contrasena - LodgeHub';
         
-        // Obtener el ID del usuario
-        $numDocumento = isset($row['numDocumento']) ? $row['numDocumento'] : '';
-        
         // HTML Template con imagen corregida
-        $htmlBody = '
+        $htmlBody = ' 
         <!DOCTYPE html>
         <html lang="es">
         <head>
@@ -305,7 +315,7 @@ if($filas > 0){
                         Haz clic en el botón de abajo para continuar con el proceso de recuperación.
                     </p>
                     
-                    <a href="http://localhost/lodgehub/app/views/Contraseña.php?id='.$numDocumento.'" class="cta-button">
+                    <a href="' . htmlspecialchars($urlRecuperacion) . '" class="cta-button">
                         Recuperar Contraseña
                     </a>
                     
@@ -339,19 +349,17 @@ if($filas > 0){
         ;
 
         $mail->Body = $htmlBody;
-        $mail->AltBody = 'Hola, este es un mensaje de recuperación de contraseña. Por favor visita: http://localhost/lodgehub/app/views/Contraseña.php?id='.$numDocumento;
+        $mail->AltBody = 'Hola, este es un mensaje de recuperación de contraseña. Por favor visita: ' . $urlRecuperacion;
 
         $mail->send();
         header("location: login.php?mensaje=Correo enviado correctamente");
+        exit;
     } catch (Exception $e) {
         header("location: login.php?mensaje=Error al enviar el correo: {$mail->ErrorInfo}");
+        exit;
     }
-
 } else {
     header("location: login.php?mensaje=El correo no existe o no es válido");
+    exit;
 }
-
-mysqli_free_result($resultado);
-mysqli_close($conexion);
-
 ?>
