@@ -13,7 +13,7 @@
 
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item active" aria-current="page"><a href="/lodgehub/index.php"><?php echo $paginaActual; ?></a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="/index.php"><?php echo $paginaActual; ?></a></li>
         </ol>
     </nav>
 
@@ -30,19 +30,19 @@
                 </button>
                 <div id="dropdown-menu" class="dropdown-menu">
                     <li>
-                        <a class="dropdown-item" href="/lodgehub/app/views/miPerfilMain.php">
+                        <a class="dropdown-item" href="/app/views/miPerfilMain.php">
                             <i class="fas fa-user me-2 gradien"></i>Mi Perfil
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="/lodgehub/app/views/homepage.php">
+                        <a class="dropdown-item" href="/app/views/homepage.php">
                             <i class="fas fa-hotel me-2"></i>Mi hotel
                         </a>
                     <li>
                         <hr class="dropdown-divider">
                     </li>
                     <li>
-                        <a class="dropdown-item text-danger" href="/lodgehub/app/views/cerrarSesion.php">
+                        <a class="dropdown-item text-danger" href="/app/views/cerrarSesion.php">
                             <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
                         </a>
                     </li>
@@ -59,7 +59,7 @@
             </script>
         <?php
         } else {
-            echo '<a href="/lodgehub/app/views/login.php" class="profile-btn">👤 Iniciar sesión</a>';
+            echo '<a href="/app/views/login.php" class="profile-btn">👤 Iniciar sesión</a>';
         }
         ?>
     </div>
