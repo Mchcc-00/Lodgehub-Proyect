@@ -182,7 +182,7 @@ if ($hotelInfo) {
                             <?php if (in_array($rol_usuario, ['Administrador', 'Colaborador'])): ?>
                             <?php endif; ?>
 
-                            <?php if ($rol_usuario === 'Administrador'): ?>
+                            <?php if ($rol_usuario === 'Administrador' || ($tipoAdmin ?? '') === 'hotel'): ?>
                                 <a href="editarHotel.php?id=<?php echo $hotelInfo['id']; ?>" class="btn btn-outline-warning">
                                     <i class="fas fa-edit me-2"></i>Editar Hotel
                                 </a>

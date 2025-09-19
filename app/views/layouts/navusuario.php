@@ -30,19 +30,19 @@
                 </button>
                 <div id="dropdown-menu" class="dropdown-menu">
                     <li>
-                        <a class="dropdown-item" href="app/views/miPerfilMain.php">
+                        <a class="dropdown-item" href="/app/views/miPerfilMain.php">
                             <i class="fas fa-user me-2 gradien"></i>Mi Perfil
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="app/views/homepage.php">
+                        <a class="dropdown-item" href="/app/views/homepage.php">
                             <i class="fas fa-hotel me-2"></i>Mi hotel
                         </a>
                     <li>
                         <hr class="dropdown-divider">
                     </li>
                     <li>
-                        <a class="dropdown-item text-danger" href="app/views/cerrarSesion.php">
+                        <a class="dropdown-item text-danger" href="/app/views/cerrarSesion.php">
                             <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
                         </a>
                     </li>
@@ -59,7 +59,7 @@
             </script>
         <?php
         } else {
-            echo '<a href="app/views/login.php" class="profile-btn">👤 Iniciar sesión</a>';
+            echo '<a href="/app/views/login.php" class="profile-btn">👤 Iniciar sesión</a>';
         }
         ?>
     </div>
