@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../validarSesion.php'; // Ruta corregida
 // Asumiendo que tienes el rol del usuario en una sesión o variable
 $userRole = $_SESSION['user']['roles'] ?? 'Colaborador'; // 'Administrador' o 'Colaborador'
+$tipoAdmin = $_SESSION['tipo_admin'] ?? 'colaborador'; // 'super', 'hotel', 'colaborador'
 
 // Verificar si hay un hotel seleccionado en la sesión
 $hotelSeleccionado = isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id']);
@@ -9,7 +10,7 @@ $hotelSeleccionado = isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id'
 // Configurar los elementos del menú según el rol
 $menuItems = [];
 
-if ($userRole === 'Administrador') {
+if ($userRole === 'Administrador' || $tipoAdmin === 'hotel') {
     $menuItems = [
         [
             'page' => 'home',

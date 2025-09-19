@@ -53,7 +53,7 @@ $currentPage = 'Reservas'; // Para activar el item en el sidebar
 
             <form id="form-crear-reserva" novalidate>
                 <!-- Campos ocultos -->
-                <input type="hidden" name="id_hotel" value="<?php echo htmlspecialchars($hotel_id); ?>">
+                <input type="hidden" id="id_hotel" name="id_hotel" value="<?php echo htmlspecialchars($hotel_id); ?>">
                 <input type="hidden" name="us_numDocumento" value="<?php echo htmlspecialchars($us_numDocumento); ?>">
 
                 <div class="form-grid">

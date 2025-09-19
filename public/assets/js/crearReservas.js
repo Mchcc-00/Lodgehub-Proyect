@@ -80,8 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const buscarHabitacionesDisponibles = async () => {
         const fechaInicio = fechaInicioInput.value;
         const fechaFin = fechaFinInput.value;
+        const hotelId = document.getElementById('id_hotel').value; // Leer el ID del hotel
 
-        if (!fechaInicio || !fechaFin || new Date(fechaFin) <= new Date(fechaInicio)) {
+        if (!fechaInicio || !fechaFin || new Date(fechaFin) <= new Date(fechaInicio) || !hotelId) {
             habitacionSelect.innerHTML = '<option value="">Fechas no válidas</option>';
             habitacionSelect.disabled = true;
             return;
@@ -91,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         habitacionSelect.disabled = true;
 
         try {
-            const response = await fetch(`../controllers/reservasController.php?action=habitacionesDisponibles&fechainicio=${fechaInicio}&fechaFin=${fechaFin}`);
+            const response = await fetch(`../controllers/reservasController.php?action=habitacionesDisponibles&fechainicio=${fechaInicio}&fechaFin=${fechaFin}&id_hotel=${hotelId}`);
             const resultado = await response.json();
 
             habitacionSelect.innerHTML = '';
