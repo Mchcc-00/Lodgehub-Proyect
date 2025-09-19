@@ -75,8 +75,13 @@ try {
 
     switch ($rol_principal) {
         case 'Administrador':
-            // Es un administrador que aún no ha creado su hotel.
-            $_SESSION['tipo_admin'] = 'super'; // O 'nuevo_admin'
+            // Si el administrador ya tiene hoteles, se comporta como un 'Administrador de Hotel'.
+            // Si no tiene, es un 'Super Administrador' que necesita crear su primer hotel.
+            if (!empty($hoteles_asignados)) {
+                $_SESSION['tipo_admin'] = 'hotel';
+            } else {
+                $_SESSION['tipo_admin'] = 'super';
+            }
             $_SESSION['nivel_acceso'] = 3;
             $destino = "homepage.php";
             break;
