@@ -1,270 +1,118 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/conexionGlobal.php';
-$db = conexionDB();
+/**
+ * validarLogin.php - Lógica de autenticación de usuarios.
+ * Refactorizado para usar PDO y una lógica de sesión más clara.
+ */
 
-if (!isset($_POST['correo']) || !isset($_POST['password'])) {
-    header("location: login.php?mensaje=Error: Datos incompletos");
+// 1. Iniciar sesión y cargar dependencias
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../../config/conexionGlobal.php';
+
+// 2. Validar la entrada
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST['correo']) || empty($_POST['password'])) {
+    header("Location: login.php?mensaje=Error: Correo y contraseña son obligatorios");
     exit;
 }
 
 $correo = trim($_POST['correo']);
 $password = trim($_POST['password']);
 
-if (empty($correo) || empty($password)) {
-    header("location: login.php?mensaje=Error: Correo y contraseña son obligatorios");
-    exit;
-}
+try {
+    // 3. Buscar al usuario por correo
+    $db = conexionDB();
+    $stmt = $db->prepare("SELECT numDocumento, nombres, apellidos, correo, password, roles FROM tp_usuarios WHERE correo = :correo AND sesionCaducada = '1'");
+    $stmt->execute([':correo' => $correo]);
+    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$conexion = mysqli_connect("localhost", "u705727716_lodgehubUser", "/Lodgehub2025", "u705727716_lodgehub");
-
-if (!$conexion) {
-    header("location: login.php?mensaje=Error: No se pudo conectar a la base de datos");
-    exit;
-}
-
-// Consulta modificada para sistema multi-hotel
-$consulta = "SELECT 
-                u.numDocumento, 
-                u.correo, 
-                u.password, 
-                u.nombres, 
-                u.apellidos, 
-                u.roles,
-                h.id AS hotel_id,
-                h.nombre AS hotel_nombre,
-                h.nit AS hotel_nit,
-                h.direccion AS hotel_direccion,
-                h.telefono AS hotel_telefono,
-                h.correo AS hotel_correo,
-                h.foto AS hotel_foto,
-                h.descripcion AS hotel_descripcion,
-                p.roles as roles_especificos
-             FROM tp_usuarios u
-             LEFT JOIN ti_personal p ON u.numDocumento = p.numDocumento -- Corregido: LEFT JOIN para incluir usuarios sin hotel
-             LEFT JOIN tp_hotel h ON p.id_hotel = h.id
-             WHERE u.correo = ? AND u.sesionCaducada = '1'";
-
-$stmt = mysqli_prepare($conexion, $consulta);
-if (!$stmt) {
-    mysqli_close($conexion);
-    header("location: login.php?mensaje=Error: Fallo al preparar la consulta.");
-    exit;
-}
-
-mysqli_stmt_bind_param($stmt, "s", $correo);
-mysqli_stmt_execute($stmt);
-$resultado = mysqli_stmt_get_result($stmt);
-
-if ($resultado && mysqli_num_rows($resultado) > 0) {
-    // El usuario existe, ahora procesamos sus datos y hoteles
-    $hoteles_asignados = [];
-    while ($fila = mysqli_fetch_assoc($resultado)) {
-        $hoteles_asignados[] = $fila;
+    // 4. Verificar usuario y contraseña
+    if (!$usuario || !password_verify($password, $usuario['password'])) {
+        error_log("Intento de login fallido para: $correo desde {$_SERVER['REMOTE_ADDR']}");
+        header("Location: login.php?mensaje=Correo o contraseña incorrectos");
+        exit;
     }
-    $usuario = $hoteles_asignados[0]; // Tomamos los datos del usuario de la primera fila
 
-    // Verificar la contraseña
-    $password_bd = $usuario['password'];
-    $password_valida = false;
+    // 5. Iniciar y poblar la sesión con datos del usuario
+    $_SESSION['user'] = [
+        'numDocumento' => $usuario['numDocumento'],
+        'correo' => $usuario['correo'],
+        'nombres' => $usuario['nombres'],
+        'apellidos' => $usuario['apellidos'],
+        'roles' => $usuario['roles'] // Rol principal de tp_usuarios
+    ];
+    // Para compatibilidad con código antiguo
+    $_SESSION['numDocumento'] = $usuario['numDocumento'];
+    $_SESSION['nombres'] = $usuario['nombres'];
 
-    if (substr($password_bd, 0, 3) === '$2y') {
-        // Contraseña encriptada - usar password_verify
-        $password_valida = password_verify($password, $password_bd);
+    // 6. Buscar hoteles asignados al usuario
+    $stmt = $db->prepare(
+        "SELECT h.id, h.nombre, h.nit, h.direccion, h.telefono, h.correo, h.foto, h.descripcion, p.roles as roles_especificos
+         FROM ti_personal p
+         JOIN tp_hotel h ON p.id_hotel = h.id
+         WHERE p.numDocumento = :numDocumento"
+    );
+    $stmt->execute([':numDocumento' => $usuario['numDocumento']]);
+    $hoteles_asignados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $_SESSION['hoteles_asignados'] = $hoteles_asignados;
+
+    // 7. Establecer el primer hotel como activo por defecto
+    if (!empty($hoteles_asignados)) {
+        $hotel_activo = $hoteles_asignados[0];
+        $_SESSION['hotel'] = $hotel_activo;
+        $_SESSION['hotel_id'] = $hotel_activo['id'];
+        $_SESSION['hotel_nombre'] = $hotel_activo['nombre'];
+        $_SESSION['roles_especificos'] = $hotel_activo['roles_especificos'];
     } else {
-        // Contraseña en texto plano (para compatibilidad con contraseñas viejas)
-        $password_valida = ($password === $password_bd);
-
-        // Actualizar a contraseña encriptada automáticamente
-        if ($password_valida) {
-            $nueva_hash = password_hash($password, PASSWORD_DEFAULT);
-            $update_stmt = mysqli_prepare($conexion, "UPDATE tp_usuarios SET password = ? WHERE numDocumento = ?");
-            mysqli_stmt_bind_param($update_stmt, "ss", $nueva_hash, $usuario['numDocumento']);
-            mysqli_stmt_execute($update_stmt);
-            mysqli_stmt_close($update_stmt);
-        }
+        // Limpiar datos de hotel si no hay ninguno asignado
+        unset($_SESSION['hotel'], $_SESSION['hotel_id'], $_SESSION['hotel_nombre'], $_SESSION['roles_especificos']);
     }
 
-    if ($password_valida) {
-        // Login exitoso - Establecer sesión con información del hotel
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        $_SESSION['correo'] = $correo;
+    // 8. Determinar permisos y destino según el rol principal
+    $rol_principal = $usuario['roles'];
+    $destino = 'login.php?mensaje=Error: Rol no reconocido'; // Destino por defecto
 
-        // Información básica del usuario
-        $_SESSION['user'] = [
-            'numDocumento' => $usuario['numDocumento'],
-            'correo' => $usuario['correo'],
-            'nombres' => $usuario['nombres'],
-            'apellidos' => $usuario['apellidos'],
-            'roles' => $usuario['roles']
-        ];
+    switch ($rol_principal) {
+        case 'Administrador':
+            // Es un administrador que aún no ha creado su hotel.
+            $_SESSION['tipo_admin'] = 'super'; // O 'nuevo_admin'
+            $_SESSION['nivel_acceso'] = 3;
+            $destino = "homepage.php";
+            break;
 
-        // Para compatibilidad con código existente
-        $_SESSION['numDocumento'] = $usuario['numDocumento'];
-        $_SESSION['nombres'] = $usuario['nombres'];
-
-        // Guardar todos los hoteles asignados en la sesión
-        $hoteles_para_sesion = [];
-        foreach ($hoteles_asignados as $hotel_data) {
-            if ($hotel_data['hotel_id']) {
-                $hoteles_para_sesion[] = [
-                    'id' => $hotel_data['hotel_id'],
-                    'nombre' => $hotel_data['hotel_nombre'],
-                    'nit' => $hotel_data['hotel_nit'],
-                    'roles' => $hotel_data['roles_especificos'],
-                    'direccion' => $hotel_data['hotel_direccion'],
-                    'telefono' => $hotel_data['hotel_telefono'],
-                    'correo' => $hotel_data['hotel_correo'],
-                    'foto' => $hotel_data['hotel_foto'],
-                    'descripcion' => $hotel_data['hotel_descripcion']
-                ];
-            }
-        }
-        $_SESSION['hoteles_asignados'] = $hoteles_para_sesion;
-
-        // Establecer el primer hotel como el activo por defecto
-        if (!empty($hoteles_para_sesion)) {
-            $hotel_activo = $hoteles_para_sesion[0];
-            $_SESSION['hotel'] = [
-                'id' => $hotel_activo['id'],
-                'nombre' => $hotel_activo['nombre'],
-                'nit' => $hotel_activo['nit'],
-                'direccion' => $hotel_activo['direccion'],
-                'telefono' => $hotel_activo['telefono'],
-                'correo' => $hotel_activo['correo'],
-                'foto' => $hotel_activo['foto'],
-                'descripcion' => $hotel_activo['descripcion']
-            ];
-            $_SESSION['hotel_id'] = $hotel_activo['id'];
-            $_SESSION['hotel_nombre'] = $hotel_activo['nombre'];
-            $_SESSION['roles_especificos'] = $hotel_activo['roles'];
-        }
-
-        // Validación y redirección por roles
-        $rol_usuario = trim($usuario['roles']);
-
-        switch ($rol_usuario) {
-            case 'Administrador':
-                // Los administradores pueden ser:
-                // 1. Super Admin (sin hotel asignado) - Ve todos los hoteles
-                // 2. Admin de Hotel (con hotel asignado) - Ve solo su hotel
-
-                // SOLUCIÓN: Un administrador es quien tiene rol 'Administrador' en ti_personal
-                if (!empty($_SESSION['hotel_id']) && $_SESSION['roles_especificos'] === 'Administrador de Hotel') {
-                    // Administrador de hotel específico
-                    $destino = "homepage.php";
-                    $_SESSION['tipo_admin'] = 'hotel';
-                    $_SESSION['permisos'] = [
-                        'crear',
-                        'leer',
-                        'actualizar',
-                        'eliminar',
-                        'gestionar_usuarios_hotel',
-                        'gestionar_reservas_hotel',
-                        'gestionar_habitaciones_hotel',
-                        'ver_reportes_hotel',
-                        'configurar_hotel'
-                    ];
-                } else {
-                    // Super administrador (puede manejar múltiples hoteles)
-                    $destino = "homepage.php";
-                    $_SESSION['tipo_admin'] = 'super';
-                    $_SESSION['permisos'] = [
-                        'crear',
-                        'leer',
-                        'actualizar',
-                        'eliminar',
-                        'gestionar_usuarios',
-                        'gestionar_reservas',
-                        'gestionar_habitaciones',
-                        'ver_reportes',
-                        'configurar_sistema',
-                        'gestionar_hoteles'
-                    ];
-                }
-                $_SESSION['nivel_acceso'] = 3;
-                break;
-
-            case 'Colaborador':
-                // Los colaboradores siempre deben estar asignados a un hotel
-                if (empty($_SESSION['hotel_id'])) {
-                    mysqli_free_result($resultado);
-                    mysqli_close($conexion);
-                    header("location: login.php?mensaje=Error: Colaborador sin hotel asignado");
-                    exit;
-                }
-
-                // SOLUCIÓN: Si el colaborador es "Administrador de Hotel", tratarlo como tal.
-                if ($_SESSION['roles_especificos'] === 'Administrador de Hotel') {
-                    $_SESSION['tipo_admin'] = 'hotel';
-                }
-
-                $_SESSION['permisos'] = [
-                    'leer',
-                    'actualizar',
-                    'crear_reservas',
-                    'gestionar_checkin',
-                    'gestionar_checkout',
-                    'ver_disponibilidad',
-                    'gestionar_servicios',
-                    'gestionar_mantenimiento'
-                ];
-                $_SESSION['nivel_acceso'] = 2;
-                $destino = "homepage.php";
-                break;
-
-            case 'Usuario':
-                // Los usuarios finales no necesitan hotel asignado
-                $destino = "../index.php";
-                $_SESSION['permisos'] = [
-                    'leer',
-                    'actualizar_perfil',
-                    'ver_reservas',
-                    'crear_reserva_propia',
-                    'cancelar_reserva_propia'
-                ];
-                $_SESSION['nivel_acceso'] = 1;
-                break;
-
-            default:
-                if ($resultado) mysqli_free_result($resultado);
-                mysqli_close($conexion);
-                error_log("Rol inesperado en base de datos para usuario {$correo}: '{$rol_usuario}'");
-                header("location: login.php?mensaje=Error: Rol de usuario no válido");
+        case 'Colaborador':
+            // Es un usuario que ya está vinculado a uno o más hoteles.
+            if (empty($hoteles_asignados)) {
+                // Caso anómalo: es colaborador pero no tiene hotel.
+                header("Location: login.php?mensaje=Error: Colaborador sin hotel asignado.");
                 exit;
-        }
+            }
+            // Verificar si es "Administrador de Hotel"
+            if ($_SESSION['roles_especificos'] === 'Administrador de Hotel') {
+                $_SESSION['tipo_admin'] = 'hotel';
+                $_SESSION['nivel_acceso'] = 3;
+            } else {
+                $_SESSION['tipo_admin'] = 'colaborador';
+                $_SESSION['nivel_acceso'] = 2;
+            }
+            $destino = "homepage.php";
+            break;
 
-        // Logging de login exitoso
-        $fecha_login = date('Y-m-d H:i:s');
-        $hotel_info = !empty($_SESSION['hotel_id']) ? "Hotel ID: {$_SESSION['hotel_id']}" : "Sin hotel asignado";
-
-        error_log("Login exitoso: $correo - $rol_usuario - $hotel_info - {$_SERVER['REMOTE_ADDR']} - $fecha_login");
-
-        if ($resultado) mysqli_free_result($resultado);
-        mysqli_stmt_close($stmt);
-        mysqli_close($conexion);
-
-        // Redirección final basada en el rol
-        header("location: $destino");
-        exit;
-    } else {
-        // Contraseña incorrecta
-        if ($resultado) mysqli_free_result($resultado);
-        mysqli_stmt_close($stmt);
-        mysqli_close($conexion);
-
-        $fecha_intento = date('Y-m-d H:i:s');
-        error_log("Intento de login fallido para: $correo en $fecha_intento desde {$_SERVER['REMOTE_ADDR']}");
-
-        header("location: login.php?mensaje=Correo o contraseña incorrectos");
-        exit;
+        case 'Usuario':
+            // Usuario final, cliente.
+            $_SESSION['nivel_acceso'] = 1;
+            $destino = "../../index.php"; // Redirigir a la página pública principal
+            break;
     }
-} else {
-    // Usuario no encontrado o sesión caducada
-    if ($resultado) mysqli_free_result($resultado);
-    if (isset($stmt)) mysqli_stmt_close($stmt);
-    mysqli_close($conexion);
+
+    // 9. Logging y redirección
+    error_log("Login exitoso: {$correo} - Rol: {$rol_principal} - IP: {$_SERVER['REMOTE_ADDR']}");
+    header("Location: $destino");
+    exit;
+
+} catch (PDOException $e) {
+    error_log("Error de base de datos en login: " . $e->getMessage());
     header("location: login.php?mensaje=Correo o contraseña incorrectos");
     exit;
 }
