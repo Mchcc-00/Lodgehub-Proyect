@@ -161,7 +161,14 @@ class ReservasController {
     public function habitacionesDisponibles() {
         $this->validarHotel();
         try {
-            $habitaciones = $this->reservasModel->obtenerHabitacionesDisponibles($this->id_hotel, $_GET['fechainicio'], $_GET['fechaFin']);
+            // SOLUCIÓN: Usar el id_hotel que viene de la petición GET, no el de la sesión.
+            // Esto asegura que siempre se busque en el hotel correcto, tal como lo envía el JavaScript.
+            $id_hotel_peticion = $_GET['id_hotel'] ?? null;
+            if (!$id_hotel_peticion) {
+                throw new Exception('El ID del hotel no fue proporcionado en la petición.');
+            }
+
+            $habitaciones = $this->reservasModel->obtenerHabitacionesDisponibles($id_hotel_peticion, $_GET['fechainicio'], $_GET['fechaFin']);
             $this->responderJson(['success' => true, 'data' => $habitaciones]);
         } catch (Exception $e) {
             $this->responderJson(['success' => false, 'message' => 'Error al obtener habitaciones disponibles.']);
