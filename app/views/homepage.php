@@ -182,9 +182,10 @@ if ($hotelInfo) {
                             <?php if (in_array($rol_usuario, ['Administrador', 'Colaborador'])): ?>
                             <?php endif; ?>
 
-                            <?php if ($rol_usuario === 'Administrador'): ?>
+                            <!-- SOLUCIÓN: Mostrar el botón si el usuario es el administrador de ESTE hotel. -->
+                            <?php if (isset($hotelInfo['numDocumentoAdmin']) && $hotelInfo['numDocumentoAdmin'] == $usuario['numDocumento']): ?>
                                 <a href="editarHotel.php?id=<?php echo $hotelInfo['id']; ?>" class="btn btn-outline-warning">
-                                    <i class="fas fa-edit me-2"></i>Editar Hotel
+                                    <i class="fas fa-edit me-2"></i>Editar mi Hotel
                                 </a>
                             <?php endif; ?>
                         </div>
