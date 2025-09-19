@@ -374,7 +374,8 @@ function obtenerContextoUsuarioHotel() {
         'hotel' => $hotelInfo,
         'puede_gestionar_multiples_hoteles' => isset($_SESSION['tipo_admin']) && $_SESSION['tipo_admin'] === 'super',
         'hotel_id_filtro' => $hotelInfo ? $hotelInfo['id'] : null,
-        'rol_usuario' => $_SESSION['user']['roles'] ?? 'Usuario'
+        'rol_usuario' => $_SESSION['user']['roles'] ?? 'Usuario',
+        'tipo_admin' => $tipoAdmin
     ];
 }
 ?>
