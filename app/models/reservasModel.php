@@ -175,11 +175,12 @@ class ReservasModel {
                     AND h.id NOT IN (
                         SELECT id_habitacion FROM tp_reservas
                         WHERE estado IN ('Activa', 'Pendiente')
-                        AND (
-                            (fechainicio <= :fecha_inicio AND fechaFin > :fecha_inicio) OR
-                            (fechainicio < :fecha_fin AND fechaFin >= :fecha_fin) OR
-                            (fechainicio >= :fecha_inicio AND fechaFin <= :fecha_fin)
-                        )
+                        /* SOLUCIÓN: La lógica de solapamiento de fechas es más simple y robusta así:
+                           Una habitación está ocupada si su reserva existente (fechaFin) termina DESPUÉS de que la nueva reserva (fecha_inicio) comienza
+                           Y si su reserva existente (fechainicio) comienza ANTES de que la nueva reserva (fecha_fin) termine.
+                        */
+                        AND fechaFin > :fecha_inicio 
+                        AND fechainicio < :fecha_fin
                     )
                     ORDER BY h.numero ASC";
             $stmt = $this->db->prepare($sql);
