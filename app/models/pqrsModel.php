@@ -33,15 +33,17 @@ class PqrsModel {
 
             $stmt = $this->db->prepare($sql);
             
-            $stmt->bindParam(':tipo', $datos['tipo'], PDO::PARAM_STR);
-            $stmt->bindParam(':descripcion', $datos['descripcion'], PDO::PARAM_STR);
-            $stmt->bindParam(':numDocumento', $datos['numDocumento'], PDO::PARAM_STR);
-            $stmt->bindParam(':prioridad', $datos['prioridad'], PDO::PARAM_STR);
-            $stmt->bindParam(':categoria', $datos['categoria'], PDO::PARAM_STR);
-            $stmt->bindParam(':estado', $datos['estado'], PDO::PARAM_STR);
-            $stmt->bindParam(':id_hotel', $datos['id_hotel'], PDO::PARAM_INT);
-
-            return $stmt->execute();
+            // SOLUCIÓN: Usar execute() con un array de parámetros es la forma correcta y más segura en PDO.
+            // Esto reemplaza las múltiples llamadas a bindParam.
+            return $stmt->execute([
+                ':tipo' => $datos['tipo'],
+                ':descripcion' => $datos['descripcion'],
+                ':numDocumento' => $datos['numDocumento'],
+                ':prioridad' => $datos['prioridad'],
+                ':categoria' => $datos['categoria'],
+                ':estado' => $datos['estado'],
+                ':id_hotel' => $datos['id_hotel']
+            ]);
 
         } catch (PDOException $e) {
             error_log("Error al crear PQRS: " . $e->getMessage());
