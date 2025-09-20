@@ -166,18 +166,21 @@ class ReservasModel {
      * Obtiene las habitaciones disponibles de un hotel para un select.
      */
     public function obtenerHabitacionesDisponibles($id_hotel, $fecha_inicio, $fecha_fin) {
-        try {
+        try { // SOLUCIÓN: Se unifica la lógica de disponibilidad para que sea consistente con habitacionesModel.
             $sql = "SELECT h.id, h.numero, h.capacidad, h.costo, th.descripcion as tipo_descripcion 
                     FROM tp_habitaciones h
                     JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
                     WHERE h.id_hotel = :id_hotel 
-                    AND h.estadoMantenimiento = 'Activo'
+                    AND h.estado != 'Mantenimiento' -- Excluir habitaciones marcadas manualmente en mantenimiento
+                    AND h.estadoMantenimiento = 'Activo' -- Excluir las que están inactivas por mantenimiento
+                    -- Excluir habitaciones que tienen un mantenimiento PENDIENTE asignado
+                    AND h.id NOT IN (SELECT id_habitacion FROM tp_mantenimiento WHERE estado = 'Pendiente')
+                    -- Excluir habitaciones que tienen una reserva que se SOLAPA con las fechas buscadas
                     AND h.id NOT IN (
                         SELECT id_habitacion FROM tp_reservas
                         WHERE estado IN ('Activa', 'Pendiente')
-                        -- SOLUCIÓN: Lógica de solapamiento de fechas corregida.
-                        -- Una habitación está ocupada si el rango de una reserva existente se cruza con el nuevo rango de fechas.
-                        -- (InicioReservaExistente < FinNuevaReserva) Y (FinReservaExistente > InicioNuevaReserva)
+                        -- Lógica de solapamiento de fechas:
+                        -- (InicioReservaExistente < FinNueva) Y (FinReservaExistente > InicioNueva)
                         AND fechainicio < :fecha_fin
                         AND fechaFin > :fecha_inicio
                     )
