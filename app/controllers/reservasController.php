@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
+// SOLUCIÓN: Corregir el nombre del archivo para que coincida con las mayúsculas/minúsculas (reservasModel.php)
 require_once '../models/reservasModel.php';
 
 class ReservasController {
