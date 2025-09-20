@@ -7,7 +7,9 @@
 
 require_once '../../config/conexionGlobal.php';
 
-class Colaborador {
+// SOLUCIÓN: Cambiar el nombre de la clase a "MisColaboradoresModel" para que sea consistente
+// con el resto del proyecto y el controlador pueda encontrarla.
+class MisColaboradoresModel {
     private $conexion;
     
     public function __construct() {
