@@ -76,7 +76,7 @@
                     <button class="btn btn-success" id="refresh-btn">
                         <i class="fas fa-sync-alt"></i> Actualizar
                     </button>
-                    <a href="crearPqrs.php" class="btn btn-primary">
+                    <a href="crearPQRS.php" class="btn btn-primary">
                         <i class="fas fa-plus"></i> Nueva PQRS
                     </a>
                 </div>
