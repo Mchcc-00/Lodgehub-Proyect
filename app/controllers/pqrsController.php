@@ -1,7 +1,8 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-require_once '../models/PqrsModel.php';
+// SOLUCIÓN: Corregir el nombre del archivo para que coincida con las mayúsculas/minúsculas (pqrsModel.php)
+require_once '../models/pqrsModel.php';
 
 class PqrsController {
     private $pqrsModel;
