@@ -166,24 +166,29 @@ class ReservasModel {
      * Obtiene las habitaciones disponibles de un hotel para un select.
      */
     public function obtenerHabitacionesDisponibles($id_hotel, $fecha_inicio, $fecha_fin) {
-        try { // SOLUCIÓN: Se unifica la lógica de disponibilidad para que sea consistente con habitacionesModel.
-            $sql = "SELECT h.id, h.numero, h.capacidad, h.costo, th.descripcion as tipo_descripcion 
+        try {
+            // SOLUCIÓN: Se reescribe la consulta usando LEFT JOIN en lugar de NOT IN.
+            // Este método es más eficiente y robusto, y es una mejor práctica de SQL para este tipo de filtros.
+            $sql = "SELECT h.id, h.numero, h.capacidad, h.costo, th.descripcion as tipo_descripcion
                     FROM tp_habitaciones h
                     JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
-                    WHERE h.id_hotel = :id_hotel 
-                    AND h.estado != 'Mantenimiento' -- Excluir habitaciones marcadas manualmente en mantenimiento
-                    AND h.estadoMantenimiento = 'Activo' -- Excluir las que están inactivas por mantenimiento
-                    -- Excluir habitaciones que tienen un mantenimiento PENDIENTE asignado
-                    AND h.id NOT IN (SELECT id_habitacion FROM tp_mantenimiento WHERE estado = 'Pendiente')
-                    -- Excluir habitaciones que tienen una reserva que se SOLAPA con las fechas buscadas
-                    AND h.id NOT IN (
-                        SELECT id_habitacion FROM tp_reservas
-                        WHERE estado IN ('Activa', 'Pendiente')
-                        -- Lógica de solapamiento de fechas:
-                        -- (InicioReservaExistente < FinNueva) Y (FinReservaExistente > InicioNueva)
-                        AND fechainicio < :fecha_fin
-                        AND fechaFin > :fecha_inicio
-                    )
+                    
+                    -- Unir con reservas que se solapan en el rango de fechas solicitado
+                    LEFT JOIN tp_reservas r ON h.id = r.id_habitacion
+                        AND r.estado IN ('Activa', 'Pendiente')
+                        AND r.fechainicio < :fecha_fin
+                        AND r.fechaFin > :fecha_inicio
+                    
+                    -- Unir con mantenimientos pendientes
+                    LEFT JOIN tp_mantenimiento m ON h.id = m.id_habitacion AND m.estado = 'Pendiente'
+                    
+                    WHERE h.id_hotel = :id_hotel
+                      AND h.estado != 'Mantenimiento'
+                      AND h.estadoMantenimiento = 'Activo'
+                      AND r.id IS NULL -- La clave: solo trae habitaciones SIN reservas que se solapen
+                      AND m.id IS NULL -- Y SIN mantenimientos pendientes
+                    
+                    GROUP BY h.id -- Asegura que cada habitación aparezca solo una vez
                     ORDER BY h.numero ASC";
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':id_hotel', (int)$id_hotel, PDO::PARAM_INT);
