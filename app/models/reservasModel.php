@@ -171,6 +171,7 @@ class ReservasModel {
             // Este método es más eficiente y robusto, y es una mejor práctica de SQL para este tipo de filtros.
             $sql = "SELECT h.id, h.numero, h.capacidad, h.costo, th.descripcion as tipo_descripcion
                     FROM tp_habitaciones h
+                    -- SOLUCIÓN: Corregir el nombre de la tabla para que coincida con el SQL (td_tipoHabitacion con H mayúscula)
                     JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
                     
                     -- Unir con reservas que se solapan en el rango de fechas solicitado
