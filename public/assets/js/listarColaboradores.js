@@ -115,7 +115,8 @@ class ColaboradoresManager {
                 }
             }
             
-            const url = `../controllers/misColaboradoresControllers.php?${params.toString()}`;
+            // SOLUCIÓN: Corregir el nombre del archivo para que coincida con las mayúsculas/minúsculas del controlador.
+            const url = `../controllers/MisColaboradoresControllers.php?${params.toString()}`;
             
             console.log('Cargando desde URL:', url);
             
