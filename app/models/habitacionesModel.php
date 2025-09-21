@@ -16,7 +16,7 @@ class HabitacionesModel {
      */
     public function obtenerTiposHabitacion($id_hotel) {
         try {
-            $sql = "SELECT id, descripcion FROM td_tipohabitacion WHERE id_hotel = :id_hotel ORDER BY descripcion ASC";
+            $sql = "SELECT id, descripcion FROM td_tipoHabitacion WHERE id_hotel = :id_hotel ORDER BY descripcion ASC";
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':id_hotel', (int)$id_hotel, PDO::PARAM_INT);
             $stmt->execute();
@@ -107,7 +107,7 @@ class HabitacionesModel {
             
             // Modificamos el FROM para incluir el LEFT JOIN con las reservas activas para hoy
             $fromClause = " FROM tp_habitaciones h 
-                           JOIN td_tipohabitacion th ON h.tipoHabitacion = th.id
+                           JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
                            LEFT JOIN tp_reservas r ON h.id = r.id_habitacion 
                                                   AND r.estado IN ('Activa', 'Pendiente') 
                                                   AND CURDATE() >= r.fechainicio 
@@ -184,7 +184,7 @@ class HabitacionesModel {
                         r.fechaFin as reserva_fecha_fin,
                         CONCAT(hues.nombres, ' ', hues.apellidos) as reserva_huesped,
                         m.id as id_mantenimiento, 
-                        m.problemaDescripcion as mantenimiento_descripcion,
+                        m.problemaDescripcion as mantenimiento_descripcion, 
                         m.tipo as mantenimiento_tipo
                     FROM 
                         tp_habitaciones h

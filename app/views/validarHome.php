@@ -214,7 +214,7 @@ class DashboardData {
                         SUM(CASE WHEN estado = 'Reservada' THEN 1 ELSE 0 END) as reservadas,
                         SUM(CASE WHEN estado = 'Mantenimiento' THEN 1 ELSE 0 END) as en_mantenimiento
                     FROM tp_habitaciones 
-                    WHERE estadoMantenimiento = 'Activo' {$hotelFilter}";
+                    WHERE 1=1 {$hotelFilter}";
             
             $stmt = $this->db->prepare($sql);
             $stmt->execute();

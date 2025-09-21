@@ -185,7 +185,6 @@ class ReservasModel {
                     
                     WHERE h.id_hotel = :id_hotel
                       AND h.estado != 'Mantenimiento'
-                      AND h.estadoMantenimiento = 'Activo'
                       AND r.id IS NULL -- La clave: solo trae habitaciones SIN reservas que se solapen
                       AND m.id IS NULL -- Y SIN mantenimientos pendientes
                     
