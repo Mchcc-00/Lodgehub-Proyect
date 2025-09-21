@@ -111,7 +111,7 @@ class HabitacionesModel {
                                                   AND r.estado IN ('Activa', 'Pendiente') 
                                                   AND CURDATE() >= r.fechainicio 
                                                   AND CURDATE() < r.fechaFin
-                           LEFT JOIN tp_mantenimiento m ON h.id = m.id_habitacion AND m.estado = 'Pendiente'";
+                           LEFT JOIN tp_mantenimiento m ON h.id = m.id_habitacion AND m.estado != 'Finalizado'";
             
             $whereClauses = ["h.id_hotel = :id_hotel"];
             $params = [':id_hotel' => (int)$id_hotel];
@@ -195,9 +195,9 @@ class HabitacionesModel {
                     LEFT JOIN 
                         tp_reservas r ON h.id = r.id_habitacion AND r.estado IN ('Activa', 'Pendiente') AND CURDATE() >= r.fechainicio AND CURDATE() < r.fechaFin
                     LEFT JOIN
-                        tp_huespedes hues ON r.hue_numDocumento = hues.numDocumento
+                        tp_huespedes hues ON r.hue_numDocumento = hues.numDocumento 
                     LEFT JOIN 
-                        tp_mantenimiento m ON h.id = m.id_habitacion AND m.estado = 'Pendiente'
+                        tp_mantenimiento m ON h.id = m.id_habitacion AND m.estado != 'Finalizado'
                     WHERE h.id = :id
                     GROUP BY h.id";
             $stmt = $this->db->prepare($sql);
