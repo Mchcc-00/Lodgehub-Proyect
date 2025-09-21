@@ -23,7 +23,7 @@ class HabitacionesModel {
                 LEFT JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id";
 
             // Cláusula WHERE
-            $whereClauses = ["m.id_hotel = :id_hotel"];
+            $whereClauses = ["h.id_hotel = :id_hotel"];
             $params = [':id_hotel' => (int)$id_hotel];
 
             if (isset($filtros['estado']) && !empty($filtros['estado']) && $filtros['estado'] !== 'all') {
