@@ -154,7 +154,7 @@ class CrearColaboradorManager {
             params.append('action', 'checkDocumento');
             params.append('numDocumento', documento);
             
-            const response = await fetch(`/lodgehub/app/controllers/MisColaboradoresControllers.php?${params.toString()}`, {
+            const response = await fetch(`/app/controllers/MisColaboradoresControllers.php?${params.toString()}`, {
                 method: 'GET',
                 headers: { 'Accept': 'application/json' }
             });
@@ -207,7 +207,7 @@ class CrearColaboradorManager {
             params.append('action', 'checkEmail');
             params.append('correo', correo);
             
-            const response = await fetch(`/lodgehub/app/controllers/MisColaboradoresControllers.php?${params.toString()}`, {
+            const response = await fetch(`/app/controllers/MisColaboradoresControllers.php?${params.toString()}`, {
                 method: 'GET',
                 headers: { 'Accept': 'application/json' }
             });
@@ -422,7 +422,7 @@ class CrearColaboradorManager {
             const formData = new FormData(this.form);
             formData.append('action', 'crear');
             
-            const response = await fetch('/lodgehub/app/controllers/MisColaboradoresControllers.php', {
+            const response = await fetch('/app/controllers/MisColaboradoresControllers.php', {
                 method: 'POST',
                 body: formData
             });
