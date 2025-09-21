@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '../models/habitacionesModel.php';
+require_once __DIR__ . '/../models/habitacionesModel.php';
 
 class HabitacionesController {
     private $modelo;
