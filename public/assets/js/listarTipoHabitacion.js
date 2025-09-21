@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- CONSTANTES Y VARIABLES ---
-    const API_URL = '../controllers/tipoHabitacionController.php';
+    const API_URL = '/lodgehub/app/controllers/tipoHabitacionController.php';
     const tablaTiposHabitacion = document.getElementById('tabla-tipos-habitacion');
     const paginacionContainer = document.getElementById('paginacion-container');
     const paginacionUl = document.getElementById('paginacion');

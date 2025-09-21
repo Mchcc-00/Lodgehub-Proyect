@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- CONSTANTES Y VARIABLES ---
-    const API_URL = '../controllers/pqrsController.php';
+    const API_URL = '/lodgehub/app/controllers/pqrsController.php';
     const tablaPqrs = document.getElementById('tabla-pqrs');
     const paginacionContainer = document.getElementById('paginacion-container');
     const paginacionUl = document.getElementById('paginacion');

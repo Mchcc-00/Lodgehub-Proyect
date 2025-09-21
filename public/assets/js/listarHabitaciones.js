@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_URL = '../controllers/habitacionesController.php';
+    const API_URL = '/lodgehub/app/controllers/habitacionesController.php';
     const grid = document.getElementById('habitaciones-grid');
     const loadingIndicator = document.getElementById('loading');
     const paginationContainer = document.getElementById('paginacion');
