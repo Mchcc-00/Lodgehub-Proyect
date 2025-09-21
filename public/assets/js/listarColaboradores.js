@@ -272,7 +272,7 @@ class ColaboradoresManager {
     
     async verColaborador(documento) {
         try {
-            const response = await fetch(`../controllers/misColaboradoresControllers.php?action=obtener&documento=${encodeURIComponent(documento)}`);
+            const response = await fetch(`../controllers/MisColaboradoresControllers.php?action=obtener&documento=${encodeURIComponent(documento)}`);
             const data = await response.json();
             
             if (data.success && data.data) {
@@ -330,7 +330,7 @@ class ColaboradoresManager {
     
     async editarColaborador(documento) {
         try {
-            const response = await fetch(`../controllers/misColaboradoresControllers.php?action=obtener&documento=${encodeURIComponent(documento)}`);
+            const response = await fetch(`../controllers/MisColaboradoresControllers.php?action=obtener&documento=${encodeURIComponent(documento)}`);
             const data = await response.json();
             
             if (data.success && data.data) {
@@ -387,13 +387,12 @@ class ColaboradoresManager {
                 return;
             }
             
-            const response = await fetch('../controllers/misColaboradoresControllers.php', {
+            const response = await fetch('../controllers/MisColaboradoresControllers.php?action=actualizar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    action: 'actualizar',
                     ...datos
                 })
             });
@@ -436,13 +435,12 @@ class ColaboradoresManager {
                 return;
             }
             
-            const response = await fetch('../controllers/misColaboradoresControllers.php', {
+            const response = await fetch('../controllers/MisColaboradoresControllers.php?action=eliminar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    action: 'eliminar',
                     documento: this.documentoParaEliminar
                 })
             });
