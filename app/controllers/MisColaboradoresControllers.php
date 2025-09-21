@@ -1,11 +1,5 @@
 <?php
 /**
- * Iniciar la sesión al principio de todo.
- */
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-/**
  * Controlador de Colaboradores - CORREGIDO
  * Maneja todas las peticiones relacionadas con la gestión de colaboradores
  */
@@ -57,7 +51,8 @@ try {
         
         public function __construct() {
             try {
-                $this->colaboradorModel = new Colaborador();
+                // SOLUCIÓN: Usar el nombre de clase correcto "MisColaboradoresModel" que definimos en el modelo.
+                $this->colaboradorModel = new MisColaboradoresModel();
             } catch (Exception $e) {
                 logError("Error al inicializar modelo: " . $e->getMessage());
                 responderJSON(false, "Error de conexión con la base de datos", null, 500);
@@ -68,7 +63,10 @@ try {
          * Verifica si el usuario logueado es un Administrador.
          */
         private function esAdmin() {
-            // La sesión ya se inicia al final de este archivo.
+            // Asegurarse de que la sesión esté iniciada antes de verificar.
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
             return isset($_SESSION['user']['roles']) && $_SESSION['user']['roles'] === 'Administrador';
         }
 
@@ -173,7 +171,10 @@ try {
                 }
                 
                 // Añadir el id_hotel del administrador a los datos que se enviarán al modelo
-                // La sesión ya se inicia al final de este archivo.
+                // Asegurarse de que la sesión esté iniciada.
+                if (session_status() === PHP_SESSION_NONE) {
+                    session_start();
+                }
                 if (isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id'])) {
                     $datos['id_hotel_admin'] = intval($_SESSION['hotel_id']);
                 } else {
@@ -208,6 +209,10 @@ try {
                 ];
 
                 // Asegurarse de que siempre se filtre por el hotel del administrador
+                if (session_status() === PHP_SESSION_NONE) {
+                    session_start();
+                }
+
                 if (isset($_SESSION['hotel_id']) && !empty($_SESSION['hotel_id'])) {
                     $filtros['id_hotel_admin'] = $_SESSION['hotel_id'];
                 } else {
