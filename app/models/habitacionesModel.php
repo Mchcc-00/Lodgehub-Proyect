@@ -106,7 +106,7 @@ class HabitacionesModel {
             
             // Modificamos el FROM para incluir el LEFT JOIN con las reservas activas para hoy
             $fromClause = " FROM tp_habitaciones h 
-                           JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
+                           LEFT JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
                            LEFT JOIN tp_reservas r ON h.id = r.id_habitacion 
                                                   AND r.estado IN ('Activa', 'Pendiente') 
                                                   AND CURDATE() >= r.fechainicio 
@@ -178,8 +178,8 @@ class HabitacionesModel {
                         h.id, h.numero, h.costo, h.capacidad, h.foto, h.descripcion,
                         th.descripcion as tipo_descripcion,
                         CASE
-                            WHEN m.id IS NOT NULL THEN 'Mantenimiento'
-                            WHEN r.id IS NOT NULL THEN 'Ocupada' 
+                            WHEN m.id IS NOT NULL OR h.estado = 'Mantenimiento' THEN 'Mantenimiento'
+                            WHEN r.id IS NOT NULL THEN 'Ocupada'
                             ELSE h.estado 
                         END as estado,
                         r.id as id_reserva,
@@ -190,7 +190,7 @@ class HabitacionesModel {
                         m.tipo as mantenimiento_tipo
                     FROM 
                         tp_habitaciones h
-                    JOIN 
+                    LEFT JOIN 
                         td_tipohabitacion th ON h.tipoHabitacion = th.id
                     LEFT JOIN 
                         tp_reservas r ON h.id = r.id_habitacion AND r.estado IN ('Activa', 'Pendiente') AND CURDATE() >= r.fechainicio AND CURDATE() < r.fechaFin
