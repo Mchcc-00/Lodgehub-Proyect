@@ -97,8 +97,8 @@ class HabitacionesModel {
                                 h.capacidad, 
                                 -- Si hay una reserva activa hoy, el estado es 'Ocupada', si no, usamos el estado de la tabla.
                                 CASE
-                                    WHEN m.id IS NOT NULL OR h.estado = 'Mantenimiento' THEN 'Mantenimiento'
                                     WHEN r.id IS NOT NULL THEN 'Ocupada'
+                                    WHEN m.id IS NOT NULL OR h.estado = 'Mantenimiento' THEN 'Mantenimiento'
                                     ELSE h.estado 
                                 END as estado, 
                                 h.foto,
