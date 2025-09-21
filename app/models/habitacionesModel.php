@@ -139,7 +139,7 @@ class HabitacionesModel {
             // Contamos el total de habitaciones que coinciden con los filtros WHERE.
             // El filtro HAVING (por estado dinámico) se aplica después, por lo que el conteo total puede no ser exacto
             // al filtrar por estado, pero asegura que la paginación funcione y se muestren los datos.
-            $sqlTotal = "SELECT COUNT(h.id)" . $fromClause . $whereSql;
+            $sqlTotal = "SELECT COUNT(DISTINCT h.id)" . $fromClause . $whereSql;
             $stmtTotal = $this->db->prepare($sqlTotal);
             $stmtTotal->execute(array_filter($params, fn($key) => $key !== ':estado', ARRAY_FILTER_USE_KEY));
             $totalRegistros = (int)$stmtTotal->fetchColumn();
