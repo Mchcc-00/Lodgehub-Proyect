@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_URL = '../controllers/huespedController.php';
+    const API_URL = '/app/controllers/huespedController.php';
     const form = document.getElementById('form-crear-huesped');
     const successMessage = document.getElementById('success-message');
     const successText = document.getElementById('success-text');

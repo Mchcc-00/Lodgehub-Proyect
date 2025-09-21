@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
         validarUsuarioBtn.disabled = true;
 
         try {
-            const response = await fetch(`/lodgehub/app/controllers/pqrsController.php?action=validarUsuario&numDocumento=${encodeURIComponent(numDocumento)}`);
+            const response = await fetch(`/app/controllers/pqrsController.php?action=validarUsuario&numDocumento=${encodeURIComponent(numDocumento)}`);
             const result = await response.json();
 
             if (result.success) {
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData(form);
             
             // Enviar datos al servidor
-            const formAction = form.action || '/lodgehub/app/controllers/pqrsController.php';
+            const formAction = form.action || '/app/controllers/pqrsController.php';
             
             const response = await fetch(formAction, {
                 method: 'POST',
@@ -333,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Función para cargar todas las PQRS
 async function cargarPqrs(pagina = 1, registrosPorPagina = 10, filtro = null) {
     try {
-        let url = `/lodgehub/app/controllers/pqrsController.php?action=obtener&paginado=true&pagina=${pagina}&registros=${registrosPorPagina}`;
+        let url = `/app/controllers/pqrsController.php?action=obtener&paginado=true&pagina=${pagina}&registros=${registrosPorPagina}`;
         if (filtro) {
             url += `&filtro=${encodeURIComponent(filtro)}`;
         }
@@ -355,7 +355,7 @@ async function cargarPqrs(pagina = 1, registrosPorPagina = 10, filtro = null) {
 // Función para obtener una PQRS por ID
 async function obtenerPqrsPorId(id) {
     try {
-        const url = `/lodgehub/app/controllers/pqrsController.php?action=obtenerPorId&id=${encodeURIComponent(id)}`;
+        const url = `/app/controllers/pqrsController.php?action=obtenerPorId&id=${encodeURIComponent(id)}`;
         const response = await fetch(url);
         const result = await response.json();
         
@@ -383,7 +383,7 @@ async function actualizarPqrs(id, datos) {
             }
         });
         
-        const response = await fetch('/lodgehub/app/controllers/pqrsController.php?action=actualizar', {
+        const response = await fetch('/app/controllers/pqrsController.php?action=actualizar', {
             method: 'POST',
             body: formData
         });
@@ -407,7 +407,7 @@ async function eliminarPqrs(id) {
         const formData = new FormData();
         formData.append('id', id);
         
-        const response = await fetch('/lodgehub/app/controllers/pqrsController.php?action=eliminar', {
+        const response = await fetch('/app/controllers/pqrsController.php?action=eliminar', {
             method: 'POST',
             body: formData
         });
@@ -428,7 +428,7 @@ async function eliminarPqrs(id) {
 // Función para buscar PQRS
 async function buscarPqrs(termino) {
     try {
-        const url = `/lodgehub/app/controllers/pqrsController.php?action=buscar&termino=${encodeURIComponent(termino)}`;
+        const url = `/app/controllers/pqrsController.php?action=buscar&termino=${encodeURIComponent(termino)}`;
         const response = await fetch(url);
         const result = await response.json();
         

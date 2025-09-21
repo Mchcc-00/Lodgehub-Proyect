@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_URL = '../controllers/tipoHabitacionController.php';
+    const API_URL = '/app/controllers/tipoHabitacionController.php';
     const form = document.getElementById('form-crear-tipo-habitacion');
     if (!form) return; // Salir si el formulario no existe en la página
 

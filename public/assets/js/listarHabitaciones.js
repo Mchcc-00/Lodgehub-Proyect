@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_URL = '/lodgehub/app/controllers/habitacionesController.php';
+    const API_URL = '/app/controllers/habitacionesController.php';
     const grid = document.getElementById('habitaciones-grid');
     const loadingIndicator = document.getElementById('loading');
     const paginationContainer = document.getElementById('paginacion');
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         grid.innerHTML = habitaciones.map(hab => `
             <div class="habitacion-card" data-estado="${hab.estado}">
                 <div class="habitacion-image">
-                    ${hab.foto ? `<img src="${hab.foto}" alt="Habitación ${hab.numero}" onerror="this.src='../../public/assets/img/default_room.png';">` : '<div class="no-image"><i class="fas fa-image"></i><span>Sin foto</span></div>'}
+                    ${hab.foto ? `<img src="${hab.foto}" alt="Habitación ${hab.numero}" onerror="this.src='/public/assets/img/default_room.png';">` : '<div class="no-image"><i class="fas fa-image"></i><span>Sin foto</span></div>'}
                     <div class="habitacion-estado">
                         <span class="badge bg-${getEstadoColor(hab.estado)}">${hab.estado}</span>
                     </div>
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderizarDetallesHabitacion = (hab) => {
         const container = document.getElementById('detalles-habitacion');
         const fotoHtml = hab.foto 
-            ? `<img src="${hab.foto}" alt="Habitación ${hab.numero}" class="img-fluid rounded mb-3" onerror="this.src='../../public/assets/img/default_room.png';">`
+            ? `<img src="${hab.foto}" alt="Habitación ${hab.numero}" class="img-fluid rounded mb-3" onerror="this.src='/public/assets/img/default_room.png';">`
             : '<p class="text-muted text-center p-5 border rounded bg-light">No hay foto disponible.</p>';
 
         let detallesEstado = '';

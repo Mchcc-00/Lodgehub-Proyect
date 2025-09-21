@@ -116,7 +116,7 @@ class ColaboradoresManager {
             }
             
             // SOLUCIÓN: Corregir el nombre del archivo para que coincida con las mayúsculas/minúsculas del controlador.
-            const url = `../controllers/MisColaboradoresControllers.php?${params.toString()}`;
+            const url = `/app/controllers/MisColaboradoresControllers.php?${params.toString()}`;
             
             console.log('Cargando desde URL:', url);
             
@@ -272,7 +272,7 @@ class ColaboradoresManager {
     
     async verColaborador(documento) {
         try {
-            const response = await fetch(`../controllers/MisColaboradoresControllers.php?action=obtener&documento=${encodeURIComponent(documento)}`);
+            const response = await fetch(`/app/controllers/MisColaboradoresControllers.php?action=obtener&documento=${encodeURIComponent(documento)}`);
             const data = await response.json();
             
             if (data.success && data.data) {
@@ -330,7 +330,7 @@ class ColaboradoresManager {
     
     async editarColaborador(documento) {
         try {
-            const response = await fetch(`../controllers/MisColaboradoresControllers.php?action=obtener&documento=${encodeURIComponent(documento)}`);
+            const response = await fetch(`/app/controllers/MisColaboradoresControllers.php?action=obtener&documento=${encodeURIComponent(documento)}`);
             const data = await response.json();
             
             if (data.success && data.data) {
@@ -387,7 +387,7 @@ class ColaboradoresManager {
                 return;
             }
             
-            const response = await fetch('../controllers/MisColaboradoresControllers.php?action=actualizar', {
+            const response = await fetch('/app/controllers/MisColaboradoresControllers.php?action=actualizar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -435,7 +435,7 @@ class ColaboradoresManager {
                 return;
             }
             
-            const response = await fetch('../controllers/MisColaboradoresControllers.php?action=eliminar', {
+            const response = await fetch('/app/controllers/MisColaboradoresControllers.php?action=eliminar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(form);
 
         try {
-            const response = await fetch('../controllers/habitacionesController.php?action=crear', {
+            const response = await fetch('/app/controllers/habitacionesController.php?action=crear', {
                 method: 'POST',
                 body: formData
             });

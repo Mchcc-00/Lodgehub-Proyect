@@ -65,7 +65,7 @@
                 <div id="error-text" style="margin-top: 5px; font-size: 0.9rem;"></div>
             </div>
 
-            <form id="colaborador-form" action="../controllers/MisColaboradoresControllers.php" method="POST" enctype="multipart/form-data">
+            <form id="colaborador-form" action="../controllers/misColaboradoresControllers.php" method="POST" enctype="multipart/form-data">
                 <!-- Campo oculto para enviar el id_hotel del admin -->
                 <input type="hidden" name="id_hotel_admin" value="<?php echo htmlspecialchars($hotel_id); ?>">
 

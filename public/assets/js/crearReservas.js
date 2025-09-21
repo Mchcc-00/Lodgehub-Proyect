@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         try {
-            const response = await fetch(`../controllers/huespedController.php?action=buscar&termino=${encodeURIComponent(termino)}`);
+            const response = await fetch(`/app/controllers/huespedController.php?action=buscar&termino=${encodeURIComponent(termino)}`);
             const resultado = await response.json();
             sugerenciasHuesped.innerHTML = '';
             if (resultado.success && resultado.data.length > 0) {
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         habitacionSelect.disabled = true;
 
         try {
-            const response = await fetch(`../controllers/reservasController.php?action=habitacionesDisponibles&fechainicio=${fechaInicio}&fechaFin=${fechaFin}&id_hotel=${hotelId}`);
+            const response = await fetch(`/app/controllers/reservasController.php?action=habitacionesDisponibles&fechainicio=${fechaInicio}&fechaFin=${fechaFin}&id_hotel=${hotelId}`);
             const resultado = await response.json();
 
             habitacionSelect.innerHTML = '';
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
 
         try {
-            const response = await fetch('../controllers/reservasController.php?action=crear', {
+            const response = await fetch('/app/controllers/reservasController.php?action=crear', {
                 method: 'POST',
                 body: formData
             });
