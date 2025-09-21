@@ -111,7 +111,7 @@ class HabitacionesModel {
                                                   AND r.estado IN ('Activa', 'Pendiente') 
                                                   AND CURDATE() >= r.fechainicio 
                                                   AND CURDATE() < r.fechaFin
-                           LEFT JOIN tp_mantenimiento m ON h.id = m.id_habitacion AND m.estado != 'Finalizado'";
+                           LEFT JOIN tp_mantenimiento m ON h.id = m.id_habitacion AND m.estado = 'Pendiente'";
             
             $whereClauses = ["h.id_hotel = :id_hotel"];
             $params = [':id_hotel' => (int)$id_hotel];
