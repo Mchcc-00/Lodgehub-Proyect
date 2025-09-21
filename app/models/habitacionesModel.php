@@ -102,7 +102,7 @@ class HabitacionesModel {
                                     WHEN r.id IS NOT NULL THEN 'Ocupada' 
                                     ELSE h.estado 
                                 END as estado, 
-                                h.foto, 
+                                h.foto,
                                 th.descripcion as tipo_descripcion";
             
             // Modificamos el FROM para incluir el LEFT JOIN con las reservas activas para hoy
@@ -183,7 +183,7 @@ class HabitacionesModel {
                         r.id as id_reserva,
                         r.fechaFin as reserva_fecha_fin,
                         CONCAT(hues.nombres, ' ', hues.apellidos) as reserva_huesped,
-                        m.id as id_mantenimiento,
+                        m.id as id_mantenimiento, 
                         m.problemaDescripcion as mantenimiento_descripcion,
                         m.tipo as mantenimiento_tipo
                     FROM 

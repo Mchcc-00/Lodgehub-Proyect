@@ -224,7 +224,7 @@ class MantenimientoModel {
     public function obtenerHabitaciones($id_hotel) {
         try {
             $sql = "SELECT h.id, h.numero, th.descripcion as tipo_descripcion 
-                    FROM tp_habitaciones h
+                    FROM tp_habitaciones h 
                     JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
                     WHERE h.id_hotel = :id_hotel ORDER BY h.numero ASC";
             $stmt = $this->db->prepare($sql);
