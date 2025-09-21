@@ -453,7 +453,7 @@ try {
     }
     
     // Ejecutar el controlador solo si se accede directamente
-    if (basename($_SERVER['PHP_SELF']) == 'misColaboradoresControllers.php') {
+    if (basename($_SERVER['PHP_SELF']) == 'MisColaboradoresControllers.php') {
         $controller = new ColaboradorController();
         $controller->manejarPeticion();
     }
