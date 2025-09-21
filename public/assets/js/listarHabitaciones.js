@@ -1,272 +1,281 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- CONSTANTES Y VARIABLES ---
     const API_URL = '/app/controllers/habitacionesController.php';
-    const grid = document.getElementById('habitaciones-grid');
-    const loadingIndicator = document.getElementById('loading');
-    const paginationContainer = document.getElementById('paginacion');
+    const habitacionesGrid = document.getElementById('habitaciones-grid');
+    const paginacionContainer = document.getElementById('paginacion-container');
+    const paginacionUl = document.getElementById('paginacion');
     const buscarInput = document.getElementById('buscar-input');
     const filtroEstado = document.getElementById('filtro-estado');
     const filtroTipo = document.getElementById('filtro-tipo');
+    const loadingDiv = document.getElementById('loading');
+    const successMessage = document.getElementById('success-message');
+    const errorMessage = document.getElementById('error-message');
+    const successText = document.getElementById('success-text');
+    const errorText = document.getElementById('error-text');
 
     // Modales
-    const editarModal = new bootstrap.Modal(document.getElementById('editarModal'));
-    const eliminarModal = new bootstrap.Modal(document.getElementById('eliminarModal'));
-    const verModal = new bootstrap.Modal(document.getElementById('verModal'));
+    const editarModalEl = document.getElementById('editarModal');
+    const editarModal = new bootstrap.Modal(editarModalEl);
+    const verModalEl = document.getElementById('verModal');
+    const verModal = new bootstrap.Modal(verModalEl);
+    const eliminarModalEl = document.getElementById('eliminarModal');
+    const eliminarModal = new bootstrap.Modal(eliminarModalEl);
+
+    // Formularios y botones de modales
+    const formEditar = document.getElementById('form-editar-habitacion');
+    const btnGuardarEdicion = document.getElementById('btn-guardar-edicion');
+    const btnConfirmarEliminacion = document.getElementById('btn-confirmar-eliminacion');
 
     let currentPage = 1;
+    const recordsPerPage = 8;
     let habitacionParaEliminar = null;
+    let debounceTimer;
+
+    // --- FUNCIONES ---
 
     const mostrarMensaje = (mensaje, tipo = 'success') => {
-        const successMessage = document.getElementById('success-message');
-        const errorMessage = document.getElementById('error-message');
-        const successText = document.getElementById('success-text');
-        const errorText = document.getElementById('error-text');
-
-        if (tipo === 'success') {
-            successText.textContent = mensaje;
-            successMessage.style.display = 'flex';
-            setTimeout(() => { successMessage.style.display = 'none'; }, 4000);
-        } else {
-            errorText.textContent = mensaje;
-            errorMessage.style.display = 'flex';
-            setTimeout(() => { errorMessage.style.display = 'none'; }, 5000);
-        }
+        const elem = tipo === 'success' ? successMessage : errorMessage;
+        const textElem = tipo === 'success' ? successText : errorText;
+        textElem.textContent = mensaje;
+        elem.style.display = 'block';
+        setTimeout(() => { elem.style.display = 'none'; }, 4000);
     };
 
     const cargarHabitaciones = async (pagina = 1) => {
         currentPage = pagina;
-        loadingIndicator.style.display = 'block';
-        grid.innerHTML = '';
-        paginationContainer.parentElement.style.display = 'none';
+        loadingDiv.style.display = 'block';
+        habitacionesGrid.innerHTML = '';
+        paginacionContainer.style.display = 'none';
 
         const busqueda = buscarInput.value.trim();
         const estado = filtroEstado.value;
         const tipo = filtroTipo.value;
 
         try {
-            const params = new URLSearchParams({
-                action: 'obtener',
-                pagina: currentPage,
-                busqueda: busqueda,
-                estado: estado,
-                tipo: tipo
-            });
+            let url = `${API_URL}?action=obtener&pagina=${pagina}&registros=${recordsPerPage}&estado=${estado}&tipo=${tipo}`;
+            if (busqueda) {
+                url += `&busqueda=${encodeURIComponent(busqueda)}`;
+            }
 
-            const response = await fetch(`${API_URL}?${params.toString()}`);
+            const response = await fetch(url);
             if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-
+            
             const resultado = await response.json();
+
             if (resultado.success) {
-                renderizarHabitaciones(resultado.data.habitaciones);
+                renderizarGrid(resultado.data.habitaciones);
                 renderizarPaginacion(resultado.data);
             } else {
                 throw new Error(resultado.message || 'Error al cargar los datos.');
             }
         } catch (error) {
-            grid.innerHTML = `<div class="no-habitaciones"><i class="fas fa-exclamation-triangle fa-3x"></i><h3>Error al cargar</h3><p>${error.message}</p></div>`;
+            habitacionesGrid.innerHTML = `<div class="col-12 alert alert-danger">❌ Error al cargar las habitaciones: ${error.message}</div>`;
         } finally {
-            loadingIndicator.style.display = 'none';
+            loadingDiv.style.display = 'none';
         }
     };
 
-    const renderizarHabitaciones = (habitaciones) => {
+    const renderizarGrid = (habitaciones) => {
+        habitacionesGrid.innerHTML = '';
         if (habitaciones.length === 0) {
-            grid.innerHTML = '<div class="no-habitaciones"><i class="fas fa-door-closed fa-3x"></i><h3>No se encontraron habitaciones</h3><p>Intenta ajustar los filtros o crea una nueva habitación.</p></div>';
+            habitacionesGrid.innerHTML = `<div class="col-12 alert alert-info text-center">No se encontraron habitaciones con los filtros seleccionados.</div>`;
             return;
         }
 
-        grid.innerHTML = habitaciones.map(hab => `
-            <div class="habitacion-card" data-estado="${hab.estado}">
-                <div class="habitacion-image">
-                    ${hab.foto ? `<img src="${hab.foto}" alt="Habitación ${hab.numero}" onerror="this.src='/public/assets/img/default_room.png';">` : '<div class="no-image"><i class="fas fa-image"></i><span>Sin foto</span></div>'}
-                    <div class="habitacion-estado">
-                        <span class="badge bg-${getEstadoColor(hab.estado)}">${hab.estado}</span>
+        const estadoClases = {
+            'Disponible': 'border-success',
+            'Ocupada': 'border-danger',
+            'Reservada': 'border-warning',
+            'Mantenimiento': 'border-info'
+        };
+        const estadoBadges = {
+            'Disponible': 'bg-success',
+            'Ocupada': 'bg-danger',
+            'Reservada': 'bg-warning text-dark',
+            'Mantenimiento': 'bg-info text-dark'
+        };
+
+        habitaciones.forEach(hab => {
+            const card = document.createElement('div');
+            card.className = 'col';
+            const foto = hab.foto ? hab.foto : '../../public/assets/img/room-placeholder.png';
+            const costoFormateado = parseFloat(hab.costo).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
+
+            card.innerHTML = `
+                <div class="habitacion-card ${estadoClases[hab.estado] || 'border-secondary'}">
+                    <img src="${foto}" class="card-img-top" alt="Habitación ${hab.numero}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="card-title">Habitación N° ${hab.numero}</h5>
+                            <span class="badge ${estadoBadges[hab.estado] || 'bg-secondary'}">${hab.estado}</span>
+                        </div>
+                        <p class="card-text text-muted">${hab.tipo_descripcion}</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-users"></i> Capacidad: ${hab.capacidad} personas</li>
+                            <li><i class="fas fa-dollar-sign"></i> Costo: ${costoFormateado} / noche</li>
+                        </ul>
+                    </div>
+                    <div class="card-footer">
+                        <div class="btn-group w-100" role="group">
+                            <button class="btn btn-sm btn-outline-info btn-ver" data-id="${hab.id}" title="Ver Detalles"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-sm btn-outline-warning btn-editar" data-id="${hab.id}" title="Editar"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-outline-danger btn-eliminar" data-id="${hab.id}" data-numero="${hab.numero}" title="Eliminar"><i class="fas fa-trash"></i></button>
+                        </div>
                     </div>
                 </div>
-                <div class="habitacion-content">
-                    <div class="habitacion-header">
-                        <h5 class="habitacion-numero"><i class="fas fa-door-open"></i> Habitación ${hab.numero}</h5>
-                    </div>
-                    <div class="habitacion-info">
-                        <div class="info-item">
-                            <i class="fas fa-tag"></i>
-                            <span>${hab.tipo_descripcion}</span>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-users"></i>
-                            <span>Capacidad: ${hab.capacidad} personas</span>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-dollar-sign"></i>
-                            <span>${new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(hab.costo)} / noche</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="habitacion-actions">
-                    <button class="btn btn-sm btn-info btn-ver" data-id="${hab.id}" title="Ver Detalles"><i class="fas fa-eye"></i></button>
-                    <button class="btn btn-sm btn-warning btn-editar" data-id="${hab.id}" title="Editar"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-sm btn-danger btn-eliminar" data-id="${hab.id}" data-numero="${hab.numero}" title="Eliminar"><i class="fas fa-trash"></i></button>
-                </div>
-            </div>
-        `).join('');
+            `;
+            habitacionesGrid.appendChild(card);
+        });
+    };
+
+    const renderizarPaginacion = (datosPaginacion) => {
+        const { pagina, totalPaginas } = datosPaginacion;
+        paginacionUl.innerHTML = '';
+
+        if (totalPaginas <= 1) {
+            paginacionContainer.style.display = 'none';
+            return;
+        }
+
+        paginacionContainer.style.display = 'block';
+
+        const crearBoton = (texto, pageNum, disabled = false, active = false) => {
+            const li = document.createElement('li');
+            li.className = `page-item ${disabled ? 'disabled' : ''} ${active ? 'active' : ''}`;
+            const a = document.createElement('a');
+            a.className = 'page-link';
+            a.href = '#';
+            a.dataset.page = pageNum;
+            a.textContent = texto;
+            li.appendChild(a);
+            return li;
+        };
+
+        paginacionUl.appendChild(crearBoton('Anterior', pagina - 1, pagina <= 1));
+
+        for (let i = 1; i <= totalPaginas; i++) {
+            paginacionUl.appendChild(crearBoton(i, i, false, i === pagina));
+        }
+
+        paginacionUl.appendChild(crearBoton('Siguiente', pagina + 1, pagina >= totalPaginas));
     };
 
     const renderizarDetallesHabitacion = (hab) => {
-        const container = document.getElementById('detalles-habitacion');
-        const fotoHtml = hab.foto 
-            ? `<img src="${hab.foto}" alt="Habitación ${hab.numero}" class="img-fluid rounded mb-3" onerror="this.src='/public/assets/img/default_room.png';">`
-            : '<p class="text-muted text-center p-5 border rounded bg-light">No hay foto disponible.</p>';
+        const detallesContainer = document.getElementById('detalles-habitacion');
+        const foto = hab.foto ? hab.foto : '../../public/assets/img/room-placeholder.png';
+        const costoFormateado = parseFloat(hab.costo).toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
 
-        let detallesEstado = '';
-        if (hab.estado === 'Ocupada' && hab.id_reserva) {
-            detallesEstado = `
-                <div class="alert alert-warning mt-3">
-                    <h6 class="alert-heading"><i class="fas fa-user-clock"></i> Detalles de la Ocupación</h6>
-                    <p class="mb-1"><strong>Huésped:</strong> ${hab.reserva_huesped || 'No especificado'}</p>
-                    <p class="mb-0"><strong>Check-out:</strong> ${new Date(hab.reserva_fecha_fin + 'T00:00:00').toLocaleDateString()}</p>
-                </div>`;
-        } else if (hab.estado === 'Mantenimiento' && hab.id_mantenimiento) {
-            detallesEstado = `
-                <div class="alert alert-danger mt-3">
-                    <h6 class="alert-heading"><i class="fas fa-tools"></i> Detalles del Mantenimiento</h6>
-                    <p class="mb-0"><strong>Tipo:</strong> ${hab.mantenimiento_tipo} - ${hab.mantenimiento_descripcion || 'Sin descripción.'}</p>
-                </div>`;
-        }
-        container.innerHTML = `
+        detallesContainer.innerHTML = `
             <div class="row">
                 <div class="col-md-5">
-                    ${fotoHtml}
+                    <img src="${foto}" class="img-fluid rounded" alt="Habitación ${hab.numero}">
                 </div>
                 <div class="col-md-7">
                     <h4>Habitación N° ${hab.numero}</h4>
-                    <p class="mb-2"><strong>Tipo:</strong> ${hab.tipo_descripcion}</p>
-                    <p class="mb-2"><strong>Estado:</strong> <span class="badge bg-${getEstadoColor(hab.estado)}">${hab.estado}</span></p>
+                    <p><strong>Tipo:</strong> ${hab.tipo_descripcion}</p>
+                    <p><strong>Estado:</strong> ${hab.estado}</p>
+                    <p><strong>Capacidad:</strong> ${hab.capacidad} personas</p>
+                    <p><strong>Costo por Noche:</strong> ${costoFormateado}</p>
                     <hr>
-                    <p class="mb-2"><i class="fas fa-users me-2 text-primary"></i><strong>Capacidad:</strong> ${hab.capacidad} personas</p>
-                    <p class="mb-2"><i class="fas fa-dollar-sign me-2 text-success"></i><strong>Costo:</strong> ${new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(hab.costo)} / noche</p>
-                    <hr>
-                    <h5><i class="fas fa-info-circle me-2 text-info"></i>Descripción</h5>
-                    <p>${hab.descripcion || '<em>Sin descripción.</em>'}</p>
-                    ${detallesEstado}
+                    <p><strong>Descripción:</strong></p>
+                    <p>${hab.descripcion || 'No hay descripción disponible.'}</p>
                 </div>
             </div>
         `;
     };
 
-    const renderizarPaginacion = ({ pagina, totalPaginas }) => {
-        if (totalPaginas <= 1) {
-            paginationContainer.parentElement.style.display = 'none';
-            return;
-        }
-        paginationContainer.parentElement.style.display = 'block';
-        paginationContainer.innerHTML = '';
-
-        // Botón "Anterior"
-        paginationContainer.innerHTML += `<li class="page-item ${pagina <= 1 ? 'disabled' : ''}"><a class="page-link" href="#" data-page="${pagina - 1}">Anterior</a></li>`;
-
-        // Números de página
-        for (let i = 1; i <= totalPaginas; i++) {
-            paginationContainer.innerHTML += `<li class="page-item ${i === pagina ? 'active' : ''}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
-        }
-
-        // Botón "Siguiente"
-        paginationContainer.innerHTML += `<li class="page-item ${pagina >= totalPaginas ? 'disabled' : ''}"><a class="page-link" href="#" data-page="${pagina + 1}">Siguiente</a></li>`;
+    // --- MANEJO DE EVENTOS ---
+    const aplicarFiltros = () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            cargarHabitaciones(1);
+        }, 300);
     };
 
-    const getEstadoColor = (estado) => {
-        const colores = {
-            'Disponible': 'success',
-            'Ocupada': 'warning',
-            'Reservada': 'info',
-            'Mantenimiento': 'danger'
-        };
-        return colores[estado] || 'secondary';
-    };
+    buscarInput.addEventListener('keyup', aplicarFiltros);
+    filtroEstado.addEventListener('change', aplicarFiltros);
+    filtroTipo.addEventListener('change', aplicarFiltros);
 
-    // Event Listeners
-    buscarInput.addEventListener('keyup', (e) => {
-        if (e.key === 'Enter') cargarHabitaciones(1);
-    });
-    filtroEstado.addEventListener('change', () => cargarHabitaciones(1));
-    filtroTipo.addEventListener('change', () => cargarHabitaciones(1));
-
-    paginationContainer.addEventListener('click', (e) => {
+    paginacionUl.addEventListener('click', (e) => {
         e.preventDefault();
         if (e.target.tagName === 'A' && e.target.dataset.page) {
             const pageNum = parseInt(e.target.dataset.page, 10);
-            if (!isNaN(pageNum)) cargarHabitaciones(pageNum);
+            if (!isNaN(pageNum)) {
+                cargarHabitaciones(pageNum);
+            }
         }
     });
 
-    grid.addEventListener('click', (e) => {
+    habitacionesGrid.addEventListener('click', async (e) => {
         const target = e.target.closest('button');
         if (!target) return;
 
         const id = target.dataset.id;
+
         if (target.classList.contains('btn-ver')) {
-            abrirModalVer(id);
-        } else if (target.classList.contains('btn-editar')) {
-            abrirModalEdicion(id);
-        } else if (target.classList.contains('btn-eliminar')) {
-            abrirModalEliminar(id, target.dataset.numero);
+            try {
+                const response = await fetch(`${API_URL}?action=obtenerPorId&id=${id}`);
+                const resultado = await response.json();
+                if (resultado.success) {
+                    renderizarDetallesHabitacion(resultado.data);
+                    verModal.show();
+                } else {
+                    mostrarMensaje(resultado.message, 'error');
+                }
+            } catch (error) {
+                mostrarMensaje('Error al cargar detalles de la habitación.', 'error');
+            }
+        }
+
+        if (target.classList.contains('btn-editar')) {
+            try {
+                const response = await fetch(`${API_URL}?action=obtenerPorId&id=${id}`);
+                const resultado = await response.json();
+                if (resultado.success) {
+                    const hab = resultado.data;
+                    document.getElementById('edit-id').value = hab.id;
+                    document.getElementById('edit-numero').value = hab.numero;
+                    document.getElementById('edit-tipoHabitacion').value = hab.tipoHabitacion;
+                    document.getElementById('edit-costo').value = hab.costo;
+                    document.getElementById('edit-capacidad').value = hab.capacidad;
+                    document.getElementById('edit-descripcion').value = hab.descripcion || '';
+                    document.getElementById('edit-estado').value = hab.estado;
+                    
+                    const previewImg = document.getElementById('edit-foto-preview');
+                    const previewContainer = document.getElementById('edit-foto-preview-container');
+                    if (hab.foto) {
+                        previewImg.src = hab.foto;
+                        previewContainer.style.display = 'block';
+                    } else {
+                        previewContainer.style.display = 'none';
+                    }
+                    
+                    editarModal.show();
+                } else {
+                    mostrarMensaje(resultado.message, 'error');
+                }
+            } catch (error) {
+                mostrarMensaje('Error al cargar datos para edición.', 'error');
+            }
+        }
+
+        if (target.classList.contains('btn-eliminar')) {
+            const numero = target.dataset.numero;
+            habitacionParaEliminar = id;
+            document.getElementById('eliminar-numero-habitacion').textContent = numero;
+            eliminarModal.show();
         }
     });
 
-    const abrirModalEdicion = async (id) => {
-        try {
-            const response = await fetch(`${API_URL}?action=obtenerPorId&id=${id}`);
-            const resultado = await response.json();
-            if (!resultado.success) throw new Error(resultado.message);
-
-            const hab = resultado.data;
-            document.getElementById('edit-id').value = hab.id;
-            document.getElementById('edit-numero').value = hab.numero;
-            document.getElementById('edit-tipoHabitacion').value = hab.tipoHabitacion;
-            document.getElementById('edit-costo').value = hab.costo;
-            document.getElementById('edit-capacidad').value = hab.capacidad;
-            document.getElementById('edit-descripcion').value = hab.descripcion || '';
-            document.getElementById('edit-estado').value = hab.estado;
-            
-            const previewImg = document.getElementById('edit-foto-preview');
-            const previewContainer = document.getElementById('edit-foto-preview-container');
-            if (hab.foto) {
-                previewImg.src = hab.foto;
-                previewContainer.style.display = 'block';
-            } else {
-                previewContainer.style.display = 'none';
-            }
-
-            editarModal.show();
-        } catch (error) {
-            mostrarMensaje(`Error al cargar datos para editar: ${error.message}`, 'error');
-        }
-    };
-
-    const abrirModalVer = async (id) => {
-        try {
-            const response = await fetch(`${API_URL}?action=obtenerPorId&id=${id}`);
-            const resultado = await response.json();
-            if (!resultado.success) throw new Error(resultado.message);
-    
-            renderizarDetallesHabitacion(resultado.data);
-            verModal.show();
-        } catch (error) {
-            mostrarMensaje(`Error al cargar detalles: ${error.message}`, 'error');
-        }
-    };
-
-
-    document.getElementById('btn-guardar-edicion').addEventListener('click', async () => {
-        const form = document.getElementById('form-editar-habitacion');
-        if (!form.checkValidity()) {
-            form.reportValidity();
+    btnGuardarEdicion.addEventListener('click', async () => {
+        if (!formEditar.checkValidity()) {
+            formEditar.classList.add('was-validated');
             return;
         }
 
-        const formData = new FormData(form);
-        const submitBtn = document.getElementById('btn-guardar-edicion');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+        const formData = new FormData(formEditar);
+        btnGuardarEdicion.disabled = true;
+        btnGuardarEdicion.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
 
         try {
             const response = await fetch(`${API_URL}?action=actualizar`, {
@@ -276,38 +285,27 @@ document.addEventListener('DOMContentLoaded', () => {
             const resultado = await response.json();
 
             if (resultado.success) {
-                mostrarMensaje(resultado.message, 'success');
                 editarModal.hide();
+                mostrarMensaje('Habitación actualizada exitosamente.', 'success');
                 cargarHabitaciones(currentPage);
             } else {
-                throw new Error(resultado.message);
+                mostrarMensaje(resultado.message, 'error');
             }
         } catch (error) {
-            mostrarMensaje(`Error al actualizar: ${error.message}`, 'error');
+            mostrarMensaje('Error de comunicación con el servidor.', 'error');
         } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalText;
+            btnGuardarEdicion.disabled = false;
+            btnGuardarEdicion.innerHTML = '<i class="fas fa-save"></i> Guardar Cambios';
         }
     });
 
-    const abrirModalEliminar = (id, numero) => {
-        habitacionParaEliminar = id;
-        document.getElementById('eliminar-numero-habitacion').textContent = numero;
-        eliminarModal.show();
-    };
-
-    document.getElementById('btn-confirmar-eliminacion').addEventListener('click', async () => {
+    btnConfirmarEliminacion.addEventListener('click', async () => {
         if (!habitacionParaEliminar) return;
 
-        const submitBtn = document.getElementById('btn-confirmar-eliminacion');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
+        const formData = new FormData();
+        formData.append('id', habitacionParaEliminar);
 
         try {
-            const formData = new FormData();
-            formData.append('id', habitacionParaEliminar);
-
             const response = await fetch(`${API_URL}?action=eliminar`, {
                 method: 'POST',
                 body: formData
@@ -315,29 +313,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const resultado = await response.json();
 
             if (resultado.success) {
-                mostrarMensaje(resultado.message, 'success');
                 eliminarModal.hide();
+                mostrarMensaje('Habitación eliminada exitosamente.', 'success');
                 cargarHabitaciones(currentPage);
             } else {
-                throw new Error(resultado.message);
+                mostrarMensaje(resultado.message, 'error');
             }
         } catch (error) {
-            mostrarMensaje(`Error al eliminar: ${error.message}`, 'error');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = 'Eliminar';
-            habitacionParaEliminar = null;
+            mostrarMensaje('Error de comunicación al eliminar.', 'error');
         }
     });
 
-    // Limpiar formulario de edición al cerrar el modal
-    document.getElementById('editarModal').addEventListener('hidden.bs.modal', () => {
-        document.getElementById('form-editar-habitacion').reset();
+    editarModalEl.addEventListener('hidden.bs.modal', () => {
+        formEditar.reset();
+        formEditar.classList.remove('was-validated');
         document.getElementById('edit-foto').value = '';
     });
 
     // Carga inicial
-    if (document.getElementById('habitaciones-grid')) {
-        cargarHabitaciones();
-    }
+    cargarHabitaciones();
 });
