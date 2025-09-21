@@ -136,10 +136,20 @@ class HabitacionesModel {
                 $params[':estado'] = $filtros['estado'];
             }
 
-            // Contar total de registros
-            $sqlTotal = "SELECT COUNT(h.id)" . $fromClause . $whereSql;
+            // Contar total de registros - CORREGIDO
+            // Si hay un filtro de estado, la consulta de conteo debe ser más compleja
+            // para poder filtrar por el 'estado' calculado.
+            $sqlTotal = "";
+            if ($havingClause) {
+                // Subconsulta para contar con el filtro HAVING
+                $sqlTotal = "SELECT COUNT(*) FROM (" . $selectClause . $fromClause . $whereSql . " GROUP BY h.id " . $havingClause . ") as subquery";
+            } else {
+                // Conteo simple si no hay filtro de estado
+                $sqlTotal = "SELECT COUNT(h.id)" . $fromClause . $whereSql;
+            }
+
             $stmtTotal = $this->db->prepare($sqlTotal);
-            $stmtTotal->execute($params);
+            $stmtTotal->execute(array_filter($params, fn($key) => strpos($sqlTotal, $key) !== false, ARRAY_FILTER_USE_KEY));
             $totalRegistros = (int)$stmtTotal->fetchColumn();
 
             // Obtener registros para la página actual
