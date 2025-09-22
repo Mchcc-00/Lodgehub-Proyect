@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (result.success) {
                 // Redireccionar inmediatamente a la lista con un parámetro de éxito
-                window.location.href = 'listaPqrs.php?status=created';
+                window.location.href = 'listaPQRS.php?status=created';
             } else {
                 showErrorMessage(result.message || 'Error al crear la PQRS');
             }
