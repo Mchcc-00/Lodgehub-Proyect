@@ -185,9 +185,14 @@ class MantenimientoController {
     }
 
     public function obtenerColaboradores() {
-        $this->validarHotel();
+        // SOLUCIÓN: Usar el id_hotel de la petición AJAX para ser consistente con obtenerHabitaciones.
+        $hotelId = $_GET['id_hotel'] ?? null;
+        if (!$hotelId) {
+            $this->responderJson(['success' => false, 'message' => 'No se especificó un hotel.']);
+            return; // Añadir return para detener la ejecución
+        }
         try {
-            $colaboradores = $this->mantenimientoModel->obtenerColaboradores($this->id_hotel);
+            $colaboradores = $this->mantenimientoModel->obtenerColaboradores((int)$hotelId);
             $this->responderJson(['success' => true, 'data' => $colaboradores]);
         } catch (Exception $e) {
             $this->responderJson(['success' => false, 'message' => 'Error al obtener colaboradores.']);
