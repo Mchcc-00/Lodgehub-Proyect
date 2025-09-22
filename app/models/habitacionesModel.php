@@ -128,22 +128,32 @@ class HabitacionesModel {
 
             $whereSql = " WHERE " . implode(' AND ', $whereClauses);
 
-            // El filtro de estado ahora debe aplicarse sobre el resultado del CASE
-            // Usaremos HAVING en lugar de WHERE para este filtro.
+            // SOLUCIÓN: El filtro de estado debe aplicarse sobre el resultado del CASE.
+            // Usaremos HAVING en lugar de WHERE para este filtro, ya que WHERE no puede usar alias de columna.
             $havingClause = "";
             if (!empty($filtros['estado']) && $filtros['estado'] !== 'all') {
                 $havingClause = " HAVING estado = :estado";
                 $params[':estado'] = $filtros['estado'];
             }
 
-            // Contar total de registros
-            $sqlTotal = "SELECT COUNT(h.id)" . $fromClause . $whereSql;
+            // SOLUCIÓN: Contar total de registros aplicando todos los filtros, incluido el de estado.
+            // Para ello, construimos una subconsulta que refleja la consulta principal.
+            $sqlTotal = "SELECT COUNT(*) FROM (
+                            SELECT h.id, 
+                            CASE
+                                WHEN m.id IS NOT NULL THEN 'Mantenimiento'
+                                WHEN h.estado = 'Mantenimiento' THEN 'Mantenimiento'
+                                WHEN r.id IS NOT NULL THEN 'Ocupada' 
+                                ELSE h.estado 
+                            END as estado
+                            " . $fromClause . $whereSql . " GROUP BY h.id " . $havingClause . "
+                         ) as subquery";
             $stmtTotal = $this->db->prepare($sqlTotal);
             $stmtTotal->execute($params);
             $totalRegistros = (int)$stmtTotal->fetchColumn();
 
             // Obtener registros para la página actual
-            $sql = $selectClause . $fromClause . $whereSql . " GROUP BY h.id " . $havingClause . " ORDER BY h.numero ASC LIMIT :limit OFFSET :offset";
+            $sql = $selectClause . $fromClause . $whereSql . " GROUP BY h.id" . $havingClause . " ORDER BY h.numero ASC LIMIT :limit OFFSET :offset";
             $stmt = $this->db->prepare($sql);
 
             foreach ($params as $key => $val) {
