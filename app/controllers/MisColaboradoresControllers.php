@@ -67,7 +67,11 @@ try {
             if (session_status() === PHP_SESSION_NONE) {
                 session_start();
             }
-            return isset($_SESSION['user']['roles']) && $_SESSION['user']['roles'] === 'Administrador';
+            // SOLUCIÓN: Hacer la validación más flexible para que coincida con la de la vista.
+            // Un administrador puede ser 'super' (sin hotel) o 'hotel' (gestionando un hotel).
+            // Ambos deben tener acceso a las funciones del controlador.
+            $esAdmin = isset($_SESSION['tipo_admin']) && in_array($_SESSION['tipo_admin'], ['super', 'hotel']);
+            return $esAdmin;
         }
 
         public function manejarPeticion() {
