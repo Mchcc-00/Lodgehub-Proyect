@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewContent = document.getElementById('preview-content');
 
     // Obtener los selects después de la simplificación
-    const selectHabitacion = document.getElementById('id_habitacion');
+    const selectHabitacion = document.getElementById('id_habitaciones');
     const selectResponsable = document.getElementById('numDocumento');
 
     const mostrarMensaje = (mensaje, tipo = 'success') => {
