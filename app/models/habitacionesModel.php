@@ -109,9 +109,10 @@ class HabitacionesModel {
             $fromClause = " FROM tp_habitaciones h 
                            JOIN td_tipohabitacion th ON h.tipoHabitacion = th.id
                            LEFT JOIN tp_reservas r ON h.id = r.id_habitacion 
-                                                  AND r.estado IN ('Activa', 'Pendiente') 
-                                                  AND CURDATE() >= r.fechainicio 
-                                                  AND CURDATE() < r.fechaFin
+                                                  AND r.estado IN ('Activa', 'Pendiente', 'Confirmada') 
+                                                  -- Lógica de solapamiento de fechas
+                                                  AND NOT (r.fechaFin <= :fecha_inicio_filtro OR r.fechainicio >= :fecha_fin_filtro)
+
                            LEFT JOIN tp_mantenimiento m ON h.id = m.id_habitacion AND m.estado = 'Pendiente'";
             
             $whereClauses = ["h.id_hotel = :id_hotel"];
@@ -126,6 +127,12 @@ class HabitacionesModel {
                 $params[':busqueda'] = '%' . trim($filtros['busqueda']) . '%';
             }
 
+            // Añadir parámetros para el filtro de fechas, si no se proveen, usar la fecha actual para no romper la lógica existente
+            // Esto es importante para que la lista general de habitaciones siga funcionando.
+            $params[':fecha_inicio_filtro'] = $filtros['fechainicio'] ?? date('Y-m-d');
+            $params[':fecha_fin_filtro'] = $filtros['fechaFin'] ?? date('Y-m-d');
+
+
             $whereSql = " WHERE " . implode(' AND ', $whereClauses);
 
             // El filtro de estado ahora debe aplicarse sobre el resultado del CASE
@@ -137,7 +144,13 @@ class HabitacionesModel {
             }
 
             // Contar total de registros
-            $sqlTotal = "SELECT COUNT(h.id)" . $fromClause . $whereSql;
+            // Para contar correctamente, necesitamos aplicar el group by y luego contar
+            $sqlTotal = "SELECT COUNT(*) FROM (SELECT h.id " . $fromClause . $whereSql . " GROUP BY h.id " . $havingClause . ") as subquery";
+
+            // Eliminar los parámetros de fecha del array de parámetros para el conteo total,
+            // ya que la subconsulta los necesita pero la consulta externa no.
+            $paramsConteo = $params;
+
             $stmtTotal = $this->db->prepare($sqlTotal);
             $stmtTotal->execute($params);
             $totalRegistros = (int)$stmtTotal->fetchColumn();
