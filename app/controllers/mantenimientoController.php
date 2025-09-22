@@ -1,8 +1,8 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
-require_once '../models/mantenimientoModel.php'; // Modelo principal que ya usamos
+// SOLUCIÓN: Usar __DIR__ para asegurar que la ruta al modelo sea siempre correcta.
+require_once __DIR__ . '/../models/mantenimientoModel.php'; 
 
 class MantenimientoController {
     private $mantenimientoModel;
