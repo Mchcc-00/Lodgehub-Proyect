@@ -190,15 +190,18 @@ class MantenimientoController {
     }
 }
 
-// Manejo de rutas/acciones
-if (isset($_GET['action'])) {
+// SOLUCIÓN: El manejador de peticiones debe estar fuera de la clase y debe instanciar
+// el controlador para luego llamar al método que procesa la acción.
+// Esto asegura que las llamadas AJAX desde el JavaScript sean procesadas.
+if (isset($_REQUEST['action'])) {
     $controller = new MantenimientoController();
-    $action = $_GET['action'];
+    $action = $_REQUEST['action'];
 
     if (method_exists($controller, $action)) {
         $controller->$action();
     } else {
         header('Content-Type: application/json');
+        http_response_code(400);
         echo json_encode(['success' => false, 'message' => 'Acción no válida.']);
     }
 }
