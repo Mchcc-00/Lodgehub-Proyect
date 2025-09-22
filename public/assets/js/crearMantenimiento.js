@@ -23,6 +23,58 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { elem.style.display = 'none'; }, 5000);
     };
 
+    /**
+     * SOLUCIÓN: Carga los datos iniciales (habitaciones y colaboradores) desde el servidor.
+     */
+    const cargarDatosIniciales = async () => {
+        const hotelId = document.querySelector('input[name="id_hotel"]')?.value;
+        if (!hotelId) {
+            selectHabitacion.innerHTML = '<option value="" disabled>Selecciona un hotel primero</option>';
+            selectResponsable.innerHTML = '<option value="" disabled>Selecciona un hotel primero</option>';
+            return;
+        }
+
+        try {
+            // Cargar Habitaciones
+            const responseHabitaciones = await fetch(`${API_URL}?action=obtenerHabitaciones&id_hotel=${hotelId}`);
+            const resultadoHabitaciones = await responseHabitaciones.json();
+
+            selectHabitacion.innerHTML = ''; // Limpiar
+            if (resultadoHabitaciones.success && resultadoHabitaciones.data.length > 0) {
+                selectHabitacion.innerHTML = '<option value="">Selecciona una habitación</option>';
+                resultadoHabitaciones.data.forEach(hab => {
+                    const option = new Option(`N° ${hab.numero} - ${hab.tipo_descripcion}`, hab.id);
+                    selectHabitacion.add(option);
+                });
+            } else {
+                selectHabitacion.innerHTML = '<option value="" disabled>No hay habitaciones disponibles</option>';
+            }
+
+            // Cargar Colaboradores
+            const responseColaboradores = await fetch(`${API_URL}?action=obtenerColaboradores&id_hotel=${hotelId}`);
+            const resultadoColaboradores = await responseColaboradores.json();
+            const usuarioActualId = document.body.dataset.usuarioActualId || null;
+
+            selectResponsable.innerHTML = ''; // Limpiar
+            if (resultadoColaboradores.success && resultadoColaboradores.data.length > 0) {
+                selectResponsable.innerHTML = '<option value="">Selecciona un responsable</option>';
+                resultadoColaboradores.data.forEach(col => {
+                    const option = new Option(`${col.nombres} ${col.apellidos}`, col.numDocumento);
+                    if (col.numDocumento === usuarioActualId) {
+                        option.selected = true;
+                    }
+                    selectResponsable.add(option);
+                });
+            } else {
+                selectResponsable.innerHTML = '<option value="" disabled>No hay responsables asignados</option>';
+            }
+
+        } catch (error) {
+            console.error('Error al cargar datos iniciales:', error);
+            mostrarMensaje('No se pudieron cargar los datos para el formulario.', 'error');
+        }
+    };
+
     // Mostrar/ocultar campo de frecuencia
     selectFrecuencia.addEventListener('change', (e) => {
         grupoCantFrecuencia.style.display = e.target.value === 'Sí' ? 'block' : 'none';
