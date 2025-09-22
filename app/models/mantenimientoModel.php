@@ -235,8 +235,7 @@ class MantenimientoModel {
             $sql = "SELECT h.id, h.numero, th.descripcion as tipo_descripcion 
                     FROM tp_habitaciones h
                     JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
-                    WHERE h.id_hotel = :id_hotel AND h.estado = 'Disponible'
-                      AND h.id NOT IN (SELECT id_habitacion FROM tp_mantenimiento WHERE estado = 'Pendiente')
+                    WHERE h.id_hotel = :id_hotel AND h.estado = 'Disponible' AND h.estadoMantenimiento = 'Activo'
                     ORDER BY h.numero ASC";
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':id_hotel', (int)$id_hotel, PDO::PARAM_INT);
