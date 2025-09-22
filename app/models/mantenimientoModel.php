@@ -226,10 +226,12 @@ class MantenimientoModel {
             $sql = "SELECT h.id, h.numero, th.descripcion as tipo_descripcion 
                     FROM tp_habitaciones h
                     JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
-                    WHERE h.id_hotel = :id_hotel 
-                    -- SOLUCIÓN: Excluir habitaciones que ya están en mantenimiento.
-                    -- No se puede crear un nuevo mantenimiento para una habitación que ya tiene uno pendiente.
-                    AND h.estado != 'Mantenimiento'
+                    WHERE h.id_hotel = :id_hotel
+                    -- SOLUCIÓN DEFINITIVA: Excluir habitaciones que ya tienen un mantenimiento 'Pendiente'.
+                    -- Esto es más robusto que solo verificar el campo 'estado' de la habitación.
+                    AND h.id NOT IN (
+                        SELECT id_habitacion FROM tp_mantenimiento WHERE estado = 'Pendiente' AND id_hotel = :id_hotel
+                    )
                     ORDER BY h.numero ASC";
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':id_hotel', (int)$id_hotel, PDO::PARAM_INT);
