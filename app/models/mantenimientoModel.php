@@ -246,7 +246,13 @@ class MantenimientoModel {
      * Obtiene los colaboradores de un hotel para un select.
      */
     public function obtenerColaboradores($id_hotel) {
-        $sql = "SELECT u.numDocumento, u.nombres, u.apellidos FROM tp_usuarios u JOIN ti_personal p ON u.numDocumento = p.numDocumento WHERE p.id_hotel = :id_hotel AND u.roles = 'Colaborador' ORDER BY u.nombres ASC";
+        // SOLUCIÓN: La consulta debe incluir tanto a los 'Colaboradores' como al 'Administrador de Hotel'.
+        // El rol 'Administrador de Hotel' se encuentra en la tabla ti_personal.
+        $sql = "SELECT u.numDocumento, u.nombres, u.apellidos 
+                FROM tp_usuarios u 
+                JOIN ti_personal p ON u.numDocumento = p.numDocumento 
+                WHERE p.id_hotel = :id_hotel 
+                  AND p.roles IN ('Colaborador', 'Administrador de Hotel') ORDER BY u.nombres ASC";
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':id_hotel', (int)$id_hotel, PDO::PARAM_INT);
         $stmt->execute();
