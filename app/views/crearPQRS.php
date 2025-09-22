@@ -150,7 +150,7 @@
                         <i class="fas fa-eye"></i>
                         Vista Previa
                     </button>
-                    <a href="listaPqrs.php" class="btn btn-outline-primary">
+                    <a href="listaPQRS.php" class="btn btn-outline-primary">
                         <i class="fas fa-list"></i>
                         Ver PQRS
                     </a>

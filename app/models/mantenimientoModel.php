@@ -210,7 +210,16 @@ class MantenimientoModel {
             $stmt->bindValue(':id_hotel', $datos['id_hotel'], PDO::PARAM_INT);
             $stmt->bindValue(':observaciones', $datos['observaciones'], PDO::PARAM_STR);
 
-            return $stmt->execute();
+            $exito = $stmt->execute();
+
+            // Si se crea el mantenimiento, actualizamos el estado de la habitación a 'Mantenimiento'
+            if ($exito) {
+                $stmtUpdateHab = $this->db->prepare("UPDATE tp_habitaciones SET estado = 'Mantenimiento' WHERE id = :id_habitacion");
+                $stmtUpdateHab->bindValue(':id_habitacion', $datos['id_habitacion'], PDO::PARAM_INT);
+                $stmtUpdateHab->execute();
+            }
+
+            return $exito;
 
         } catch (PDOException $e) {
             error_log("Error en MantenimientoModel::crearMantenimiento: " . $e->getMessage());
