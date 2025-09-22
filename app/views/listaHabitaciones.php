@@ -46,7 +46,7 @@ $currentPage = 'Habitaciones'; // Para activar el item en el sidebar
             </div>
         <?php else: ?>
             <div class="header">
-                <h1> Gestión de Habitaciones</h1>
+                <h1><i class="fas fa-bed"></i>Gestión de Habitaciones</h1>
                 <p>Administra todas las habitaciones de tu hotel.</p>
             </div>
 
