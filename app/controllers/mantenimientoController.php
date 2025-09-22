@@ -1,8 +1,8 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-// SOLUCIÓN: Usar __DIR__ para asegurar que la ruta al modelo sea siempre correcta.
-require_once __DIR__ . '/../models/mantenimientoModel.php'; 
+// SOLUCIÓN: Corregir el nombre del archivo del modelo para que coincida con el sistema de archivos (sensible a mayúsculas).
+require_once __DIR__ . '/../models/MantenimientoModel.php'; 
 
 class MantenimientoController {
     private $mantenimientoModel;
@@ -170,9 +170,14 @@ class MantenimientoController {
     }
 
     public function obtenerHabitaciones() {
-        $this->validarHotel();
+        // SOLUCIÓN: Usar el id_hotel que viene de la petición AJAX, no el de la sesión.
+        // El JavaScript ya envía el ID correcto del hotel seleccionado.
+        $hotelId = $_GET['id_hotel'] ?? null;
+        if (!$hotelId) {
+            $this->responderJson(['success' => false, 'message' => 'No se especificó un hotel.']);
+        }
         try {
-            $habitaciones = $this->mantenimientoModel->obtenerHabitaciones($this->id_hotel);
+            $habitaciones = $this->mantenimientoModel->obtenerHabitaciones((int)$hotelId);
             $this->responderJson(['success' => true, 'data' => $habitaciones]);
         } catch (Exception $e) {
             $this->responderJson(['success' => false, 'message' => 'Error al obtener habitaciones.']);
