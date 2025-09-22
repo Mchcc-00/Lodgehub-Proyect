@@ -20,7 +20,10 @@
 
         // --- INICIO: CONTROL DE ACCESO ---
         // Solo los administradores pueden acceder a esta página
-        if (!isset($_SESSION['user']['roles']) || $_SESSION['user']['roles'] !== 'Administrador') {
+        // SOLUCIÓN: Hacer la validación más flexible. Un administrador puede ser 'super' (sin hotel)
+        // o 'hotel' (gestionando un hotel). Ambos deben tener acceso.
+        $esAdmin = isset($_SESSION['tipo_admin']) && in_array($_SESSION['tipo_admin'], ['super', 'hotel']);
+        if (!$esAdmin) {
             echo '<div class="container mt-5"><div class="alert alert-danger text-center"><h4><i class="fas fa-lock"></i> Acceso Denegado</h4><p>No tienes los permisos necesarios para gestionar colaboradores.</p><a href="homepage.php" class="btn btn-primary mt-3">Volver al Inicio</a></div></div>';
             exit(); // Detener la ejecución del script
         }

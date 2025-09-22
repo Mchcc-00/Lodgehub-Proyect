@@ -80,10 +80,10 @@ class HotelController {
                 $_SESSION['hotel_nombre'] = $datosHotel['nombre'];
                 $_SESSION['tipo_admin'] = 'hotel'; // Cambiar de 'super' a 'hotel'
                 
-                // SOLUCIÓN ADICIONAL: Actualizar el rol en la sesión para consistencia inmediata.
-                if (isset($_SESSION['user']['roles']) && $_SESSION['user']['roles'] === 'Administrador') {
-                    $_SESSION['user']['roles'] = 'Colaborador';
-                }
+                // // SOLUCIÓN ADICIONAL: Actualizar el rol en la sesión para consistencia inmediata.
+                // if (isset($_SESSION['user']['roles']) && $_SESSION['user']['roles'] === 'Administrador') {
+                //     $_SESSION['user']['roles'] = 'Colaborador';
+                // }
 
                 // Poblar el array $_SESSION['hotel'] para que la homepage lo lea de inmediato
                 $_SESSION['hotel'] = [

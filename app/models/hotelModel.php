@@ -52,16 +52,14 @@ class HotelModel {
                 throw new PDOException("Error al asignar el administrador al hotel.");
             }
 
-            // 3. NO SE ACTUALIZA EL ROL PRINCIPAL DEL USUARIO.
-            // El rol 'Administrador' en tp_usuarios debe mantenerse para el dueño.
-            // La distinción de si es un administrador de hotel o un super admin se maneja
-            // por la existencia de hoteles en la tabla ti_personal.
-            // $queryUpdateUser = "UPDATE tp_usuarios SET roles = 'Colaborador' WHERE numDocumento = :numDocumento AND roles = 'Administrador'";
-            // $stmtUpdateUser = $this->db->prepare($queryUpdateUser);
-            // $stmtUpdateUser->bindParam(':numDocumento', $datos['numDocumentoAdmin']);
-            // if (!$stmtUpdateUser->execute()) {
-            //     throw new PDOException("Error al actualizar el rol del usuario.");
-            // }
+            // 3. Actualizar el rol principal del usuario a 'Colaborador'
+            // para que en futuros logins, el sistema sepa que ya gestiona un hotel.
+            $queryUpdateUser = "UPDATE tp_usuarios SET roles = 'Colaborador' WHERE numDocumento = :numDocumento AND roles = 'Administrador'";
+            $stmtUpdateUser = $this->db->prepare($queryUpdateUser);
+            $stmtUpdateUser->bindParam(':numDocumento', $datos['numDocumentoAdmin']);
+            if (!$stmtUpdateUser->execute()) {
+                throw new PDOException("Error al actualizar el rol del usuario.");
+            }
 
             // Si todo fue bien, confirmar la transacción
             $this->db->commit();

@@ -97,6 +97,12 @@ try {
             if ($_SESSION['roles_especificos'] === 'Administrador de Hotel') {
                 $_SESSION['tipo_admin'] = 'hotel';
                 $_SESSION['nivel_acceso'] = 3;
+                // SOLUCIÓN: Si es un Administrador de Hotel, su rol principal en la sesión
+                // debe ser 'Administrador' para que tenga acceso a las funciones de gestión.
+                // Esto corrige el problema de "Acceso Denegado" después de iniciar sesión.
+                if ($_SESSION['user']['roles'] === 'Colaborador') {
+                    $_SESSION['user']['roles'] = 'Administrador';
+                }
             } else {
                 $_SESSION['tipo_admin'] = 'colaborador';
                 $_SESSION['nivel_acceso'] = 2;
