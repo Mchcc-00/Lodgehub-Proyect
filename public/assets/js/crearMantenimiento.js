@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_URL = '/app/controllers/mantenimientoController.php';
+    const API_URL = '../controllers/mantenimientoController.php';
     const form = document.getElementById('form-crear-mantenimiento');
     const selectFrecuencia = document.getElementById('frecuencia');
     const grupoCantFrecuencia = document.getElementById('grupo-cantFrecuencia');
