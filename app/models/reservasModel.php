@@ -171,7 +171,7 @@ class ReservasModel {
             // Este método es más eficiente y robusto, y es una mejor práctica de SQL para este tipo de filtros.
             $sql = "SELECT h.id, h.numero, h.capacidad, h.costo, th.descripcion as tipo_descripcion, h.foto
                     FROM tp_habitaciones h 
-                    JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
+                    JOIN td_tipohabitacion th ON h.tipoHabitacion = th.id
                     
                     -- Unir con reservas que se solapan en el rango de fechas solicitado
                     LEFT JOIN tp_reservas r ON h.id = r.id_habitacion
