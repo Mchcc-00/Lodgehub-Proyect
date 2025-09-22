@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_URL = '/app/controllers/mantenimientoController.php';
+    const API_URL = '../controllers/mantenimientoController.php';
     const form = document.getElementById('form-crear-mantenimiento');
     const selectFrecuencia = document.getElementById('frecuencia');
     const grupoCantFrecuencia = document.getElementById('grupo-cantFrecuencia');
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewContent = document.getElementById('preview-content');
 
     // Obtener los selects después de la simplificación
-    const selectHabitacion = document.getElementById('id_habitaciones');
+    const selectHabitacion = document.getElementById('id_habitacion');
     const selectResponsable = document.getElementById('numDocumento');
 
     const mostrarMensaje = (mensaje, tipo = 'success') => {
@@ -171,4 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
         grupoCantFrecuencia.style.display = 'none';
         previewSection.style.display = 'none'; // Ocultar vista previa al limpiar
     });
+
+    // SOLUCIÓN: Llamar a la función para cargar los datos iniciales.
+    cargarDatosIniciales();
 });
