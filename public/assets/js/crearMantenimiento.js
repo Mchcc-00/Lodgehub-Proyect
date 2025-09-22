@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
             const formData = new FormData(this);
-            const response = await fetch('/app/controllers/mantenimientoController.php?action=crear', {
+            const response = await fetch('/../controllers/mantenimientoController.php?action=crear', {
                 method: 'POST',
                 body: formData
             });
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function cargarHabitaciones() {
         try {
-            const response = await fetch('/app/controllers/mantenimientoController.php?action=obtenerHabitaciones');
+            const response = await fetch('/../controllers/mantenimientoController.php?action=obtenerHabitaciones');
             const result = await response.json();
 
             selectHabitacion.innerHTML = '<option value="">Selecciona una habitación</option>';
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function cargarResponsables() {
         try {
-            const response = await fetch('/app/controllers/mantenimientoController.php?action=obtenerColaboradores');
+            const response = await fetch('/../controllers/mantenimientoController.php?action=obtenerColaboradores');
             const result = await response.json();
 
             selectResponsable.innerHTML = '<option value="">Selecciona un responsable</option>';
