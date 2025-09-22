@@ -132,11 +132,16 @@ class MantenimientoController {
         try {
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Método no permitido.');
 
-            $camposRequeridos = ['id_habitacion', 'tipo', 'problemaDescripcion', 'frecuencia', 'cantFrecuencia', 'prioridad', 'numDocumento', 'id_hotel'];
+            $camposRequeridos = ['id_habitacion', 'tipo', 'problemaDescripcion', 'frecuencia', 'prioridad', 'numDocumento', 'id_hotel'];
             foreach ($camposRequeridos as $campo) {
                 if (!isset($_POST[$campo]) || empty(trim($_POST[$campo]))) {
                     throw new Exception("El campo '{$campo}' es obligatorio.");
                 }
+            }
+
+            // Validación condicional para cantFrecuencia
+            if ($_POST['frecuencia'] === 'Sí' && (empty($_POST['cantFrecuencia']))) {
+                throw new Exception("El campo 'Frecuencia' es obligatorio cuando el mantenimiento es recurrente.");
             }
 
             $datos = [
@@ -144,7 +149,7 @@ class MantenimientoController {
                 'tipo' => $_POST['tipo'],
                 'problemaDescripcion' => trim($_POST['problemaDescripcion']),
                 'frecuencia' => $_POST['frecuencia'],
-                'cantFrecuencia' => $_POST['cantFrecuencia'],
+                'cantFrecuencia' => $_POST['frecuencia'] === 'Sí' ? $_POST['cantFrecuencia'] : 'No aplica', // Asignar un valor por defecto si no es recurrente
                 'prioridad' => $_POST['prioridad'],
                 'numDocumento' => $_POST['numDocumento'],
                 'id_hotel' => $this->id_hotel,
