@@ -223,15 +223,14 @@ class MantenimientoModel {
      */
     public function obtenerHabitaciones($id_hotel) {
         try {
+            // SOLUCIÓN ALTERNATIVA: Usar LEFT JOIN para excluir habitaciones con mantenimiento pendiente.
+            // Este método es más robusto y a menudo más eficiente que usar una subconsulta con NOT IN.
             $sql = "SELECT h.id, h.numero, th.descripcion as tipo_descripcion 
                     FROM tp_habitaciones h
                     JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
-                    WHERE h.id_hotel = :id_hotel
-                    -- SOLUCIÓN DEFINITIVA: Excluir habitaciones que ya tienen un mantenimiento 'Pendiente'.
-                    -- Esto es más robusto que solo verificar el campo 'estado' de la habitación.
-                    AND h.id NOT IN (
-                        SELECT id_habitacion FROM tp_mantenimiento WHERE estado = 'Pendiente' AND id_hotel = :id_hotel
-                    )
+                    LEFT JOIN tp_mantenimiento m ON h.id = m.id_habitacion AND m.estado = 'Pendiente'
+                    WHERE h.id_hotel = :id_hotel 
+                      AND m.id IS NULL -- La clave: solo trae habitaciones donde no se encontró un mantenimiento pendiente.
                     ORDER BY h.numero ASC";
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':id_hotel', (int)$id_hotel, PDO::PARAM_INT);
