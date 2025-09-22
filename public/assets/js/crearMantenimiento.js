@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function cargarResponsables() {
         try {
-            const response = await fetch('../controllers/mantenimientoController.php?action=obtenerColaboradores');
+            const response = await fetch('/app/controllers/mantenimientoController.php?action=obtenerColaboradores');
             const result = await response.json();
 
             selectResponsable.innerHTML = '<option value="">Selecciona un responsable</option>';
