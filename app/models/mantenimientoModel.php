@@ -234,7 +234,7 @@ class MantenimientoModel {
         try {            
             $sql = "SELECT h.id, h.numero, th.descripcion as tipo_descripcion 
                     FROM tp_habitaciones h
-                    JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
+                    JOIN td_tipohabitacion th ON h.tipoHabitacion = th.id
                     WHERE h.id_hotel = :id_hotel AND h.estado = 'Disponible' AND h.estadoMantenimiento = 'Activo'
                     ORDER BY h.numero ASC";
             $stmt = $this->db->prepare($sql);

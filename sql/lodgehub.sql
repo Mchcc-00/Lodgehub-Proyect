@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS tp_huespedes (
 ) ENGINE=INNODB;
 
 -- Tabla tipo habitación (MODIFICADA)
-CREATE TABLE IF NOT EXISTS td_tipoHabitacion (
+CREATE TABLE IF NOT EXISTS td_tipohabitacion (
     id INT(3) AUTO_INCREMENT NOT NULL,
     descripcion VARCHAR(20) NOT NULL,
     cantidad INT(3) NOT NULL DEFAULT 0,
@@ -345,7 +345,7 @@ INSERT INTO tp_factura (id, infoReserva, fechaFactura, infoHotel, total) VALUES
 (NULL, 9, '2025-06-12', 4, 160000.00);    
 -- =============================================
 -- VISTAS PARA LODGEHUB
--- =============================================
+-- ============================================= 
 
 -- Vista: Información completa de habitaciones
 CREATE OR REPLACE VIEW v_habitaciones_completa AS
@@ -625,8 +625,8 @@ CREATE INDEX idx_factura_hotel ON tp_factura (infoHotel);
 CREATE INDEX idx_factura_fecha ON tp_factura (fechaFactura);
 
 -- Índices para tabla td_tipoHabitacion
-CREATE INDEX idx_tipo_habitacion_hotel ON td_tipohabitacion (id_hotel);
-CREATE INDEX idx_tipo_habitacion_desc ON td_tipohabitacion (descripcion);
+CREATE INDEX idx_tipohabitacion_hotel ON td_tipohabitacion (id_hotel);
+CREATE INDEX idx_tipohabitacion_desc ON td_tipohabitacion (descripcion);
 
 -- =============================================
 -- ÍNDICES COMPUESTOS PARA CONSULTAS ESPECÍFICAS
