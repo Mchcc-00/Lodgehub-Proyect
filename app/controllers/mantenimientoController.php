@@ -1,8 +1,8 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-// SOLUCIÓN: Corregir el nombre del archivo del modelo para que coincida con el sistema de archivos (sensible a mayúsculas).
-require_once __DIR__ . '/../models/MantenimientoModel.php'; 
+
+require_once '../models/mantenimientoModel.php'; // Modelo principal que ya usamos
 
 class MantenimientoController {
     private $mantenimientoModel;
@@ -170,14 +170,9 @@ class MantenimientoController {
     }
 
     public function obtenerHabitaciones() {
-        // SOLUCIÓN: Usar el id_hotel que viene de la petición AJAX, no el de la sesión.
-        // El JavaScript ya envía el ID correcto del hotel seleccionado.
-        $hotelId = $_GET['id_hotel'] ?? null;
-        if (!$hotelId) {
-            $this->responderJson(['success' => false, 'message' => 'No se especificó un hotel.']);
-        }
+        $this->validarHotel();
         try {
-            $habitaciones = $this->mantenimientoModel->obtenerHabitaciones((int)$hotelId);
+            $habitaciones = $this->mantenimientoModel->obtenerHabitaciones($this->id_hotel);
             $this->responderJson(['success' => true, 'data' => $habitaciones]);
         } catch (Exception $e) {
             $this->responderJson(['success' => false, 'message' => 'Error al obtener habitaciones.']);
@@ -185,14 +180,9 @@ class MantenimientoController {
     }
 
     public function obtenerColaboradores() {
-        // SOLUCIÓN: Usar el id_hotel de la petición AJAX para ser consistente con obtenerHabitaciones.
-        $hotelId = $_GET['id_hotel'] ?? null;
-        if (!$hotelId) {
-            $this->responderJson(['success' => false, 'message' => 'No se especificó un hotel.']);
-            return; // Añadir return para detener la ejecución
-        }
+        $this->validarHotel();
         try {
-            $colaboradores = $this->mantenimientoModel->obtenerColaboradores((int)$hotelId);
+            $colaboradores = $this->mantenimientoModel->obtenerColaboradores($this->id_hotel);
             $this->responderJson(['success' => true, 'data' => $colaboradores]);
         } catch (Exception $e) {
             $this->responderJson(['success' => false, 'message' => 'Error al obtener colaboradores.']);
@@ -200,18 +190,15 @@ class MantenimientoController {
     }
 }
 
-// SOLUCIÓN: El manejador de peticiones debe estar fuera de la clase y debe instanciar
-// el controlador para luego llamar al método que procesa la acción.
-// Esto asegura que las llamadas AJAX desde el JavaScript sean procesadas.
-if (isset($_REQUEST['action'])) {
+// Manejo de rutas/acciones
+if (isset($_GET['action'])) {
     $controller = new MantenimientoController();
-    $action = $_REQUEST['action'];
+    $action = $_GET['action'];
 
     if (method_exists($controller, $action)) {
         $controller->$action();
     } else {
         header('Content-Type: application/json');
-        http_response_code(400);
         echo json_encode(['success' => false, 'message' => 'Acción no válida.']);
     }
 }
