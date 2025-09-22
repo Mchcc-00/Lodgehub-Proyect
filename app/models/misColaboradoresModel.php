@@ -176,6 +176,14 @@ class MisColaboradoresModel {
                 $params[] = $filtros['id_hotel_admin'];
                 $types .= "i";
             }
+
+            // SOLUCIÓN: Excluir al propio administrador que está viendo la lista.
+            // Se asume que el documento del admin logueado se pasa en los filtros.
+            if (isset($_SESSION['user']['numDocumento'])) {
+                $condiciones[] = "u.numDocumento != ?";
+                $params[] = $_SESSION['user']['numDocumento'];
+                $types .= "s";
+            }
             
             
             // Aplicar filtros adicionales
