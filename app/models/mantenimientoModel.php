@@ -229,7 +229,8 @@ class MantenimientoModel {
                     FROM tp_habitaciones h
                     JOIN td_tipoHabitacion th ON h.tipoHabitacion = th.id
                     LEFT JOIN tp_mantenimiento m ON h.id = m.id_habitacion AND m.estado = 'Pendiente'
-                    WHERE h.id_hotel = :id_hotel 
+                    WHERE h.id_hotel = :id_hotel
+                      AND h.estadoMantenimiento = 'Activo' -- SOLUCIÓN: Solo considerar habitaciones activas.
                       AND m.id IS NULL -- La clave: solo trae habitaciones donde no se encontró un mantenimiento pendiente.
                     ORDER BY h.numero ASC";
             $stmt = $this->db->prepare($sql);
