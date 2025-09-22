@@ -1,206 +1,245 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-require_once '../models/habitacionesModel.php';
+session_start();
+require_once __DIR__ . '/../models/habitacionesModel.php';
 
 class HabitacionesController {
-    private $habitacionesModel;
-    private $id_hotel;
+    private $modelo;
 
     public function __construct() {
-        $this->habitacionesModel = new HabitacionesModel();
+        $this->modelo = new HabitacionesModel();
+    }
+
+    public function manejarPeticion() {
+        $action = $_GET['action'] ?? null;
+
+        try {
+            switch ($action) {
+                case 'crear':
+                    $this->crear();
+                    break;
+                case 'obtener':
+                    $this->obtener();
+                    break;
+                case 'obtenerPorId':
+                    $this->obtenerPorId();
+                    break;
+                case 'actualizar':
+                    $this->actualizar();
+                    break;
+                case 'eliminar':
+                    $this->eliminar();
+                    break;
+                default:
+                    $this->responder(['success' => false, 'message' => 'Acción no válida'], 400);
+                    break;
+            }
+        } catch (Exception $e) {
+            $this->responder(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    private function crear() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            throw new Exception('Método no permitido');
+        }
+
+        // Validar que un hotel esté seleccionado en la sesión
+        if (!isset($_SESSION['hotel_id']) || empty($_SESSION['hotel_id'])) {
+            throw new Exception('No hay un hotel seleccionado en la sesión.');
+        }
+        $id_hotel = $_SESSION['hotel_id'];
+
+        // Recoger y validar datos del formulario
+        $numero = trim($_POST['numero'] ?? '');
+        $tipoHabitacion = $_POST['tipoHabitacion'] ?? '';
+        $costo = $_POST['costo'] ?? '';
+        $capacidad = $_POST['capacidad'] ?? '';
+        $descripcion = trim($_POST['descripcion'] ?? '');
+
+        if (empty($numero) || empty($tipoHabitacion) || !is_numeric($costo) || !is_numeric($capacidad)) {
+            throw new Exception('Datos incompletos o inválidos. Número, tipo, costo y capacidad son obligatorios.');
+        }
+
+        // Verificar si el número de habitación ya existe en el hotel
+        if ($this->modelo->verificarNumeroExistente($numero, $id_hotel)) {
+            throw new Exception("El número de habitación '{$numero}' ya existe en este hotel.");
+        }
+
+        // Procesar la imagen
+        $rutaFoto = $this->procesarImagen($_FILES['foto'] ?? null);
+
+        // Preparar datos para el modelo
+        $datos = [
+            ':numero' => $numero,
+            ':costo' => $costo,
+            ':capacidad' => $capacidad,
+            ':tipoHabitacion' => $tipoHabitacion,
+            ':foto' => $rutaFoto,
+            ':descripcion' => $descripcion,
+            ':estado' => 'Disponible', // Estado por defecto al crear
+            ':id_hotel' => $id_hotel
+        ];
+
+        // Llamar al modelo para crear la habitación
+        $exito = $this->modelo->crearHabitacion($datos);
+
+        if ($exito) {
+            $this->responder(['success' => true, 'message' => 'Habitación creada exitosamente.']);
+        } else {
+            throw new Exception('No se pudo crear la habitación en la base de datos.');
+        }
+    }
+
+    private function obtener() {
+        if (!isset($_SESSION['hotel_id']) || empty($_SESSION['hotel_id'])) {
+            throw new Exception('No hay un hotel seleccionado en la sesión.');
+        }
+        $id_hotel = $_SESSION['hotel_id'];
+
+        $pagina = filter_input(INPUT_GET, 'pagina', FILTER_VALIDATE_INT, ['options' => ['default' => 1]]);
+        $registrosPorPagina = 9; // 9 tarjetas por página para un grid de 3x3
+
+        $filtros = [
+            'busqueda' => filter_input(INPUT_GET, 'busqueda', FILTER_SANITIZE_STRING) ?? '',
+            'estado' => filter_input(INPUT_GET, 'estado', FILTER_SANITIZE_STRING) ?? 'all',
+            'tipo' => filter_input(INPUT_GET, 'tipo', FILTER_SANITIZE_STRING) ?? 'all',
+        ];
+
+        $resultado = $this->modelo->obtenerHabitacionesPaginadas($id_hotel, $pagina, $registrosPorPagina, $filtros);
         
-        // Asegurarse de que la sesión esté iniciada y obtener el id del hotel
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        $this->id_hotel = $_SESSION['hotel_id'] ?? null;
+        $this->responder(['success' => true, 'data' => $resultado]);
     }
 
-    private function responderJson($datos) {
+    private function obtenerPorId() {
+        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+        if (!$id) {
+            throw new Exception('ID de habitación no válido.');
+        }
+
+        $habitacion = $this->modelo->obtenerPorId($id);
+
+        if ($habitacion) {
+            $this->responder(['success' => true, 'data' => $habitacion]);
+        } else {
+            throw new Exception('Habitación no encontrada.');
+        }
+    }
+
+    private function actualizar() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            throw new Exception('Método no permitido');
+        }
+
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+        if (!$id) {
+            throw new Exception('ID de habitación no proporcionado.');
+        }
+
+        $id_hotel = $_SESSION['hotel_id'];
+        $numero = trim($_POST['numero'] ?? '');
+
+        // Verificar si el número de habitación ya existe, excluyendo la actual
+        if ($this->modelo->verificarNumeroExistente($numero, $id_hotel, $id)) {
+            throw new Exception("El número de habitación '{$numero}' ya está en uso por otra habitación en este hotel.");
+        }
+
+        // Recoger datos a actualizar
+        $datos = [
+            'numero' => $numero,
+            'tipoHabitacion' => $_POST['tipoHabitacion'] ?? null,
+            'costo' => $_POST['costo'] ?? null,
+            'capacidad' => $_POST['capacidad'] ?? null,
+            'descripcion' => trim($_POST['descripcion'] ?? ''),
+            'estado' => $_POST['estado'] ?? null,
+        ];
+
+        // Procesar nueva imagen si se subió
+        if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+            // Opcional: eliminar la foto antigua antes de subir la nueva
+            $habActual = $this->modelo->obtenerPorId($id);
+            if ($habActual && !empty($habActual['foto'])) {
+                $rutaAntigua = $_SERVER['DOCUMENT_ROOT'] . $habActual['foto'];
+                if (file_exists($rutaAntigua)) {
+                    unlink($rutaAntigua);
+                }
+            }
+            $datos['foto'] = $this->procesarImagen($_FILES['foto']);
+        }
+
+        // Filtrar datos nulos para no sobrescribir campos que no se envían
+        $datos = array_filter($datos, function($value) {
+            return $value !== null;
+        });
+
+        if ($this->modelo->actualizarHabitacion($id, $datos)) {
+            $this->responder(['success' => true, 'message' => 'Habitación actualizada exitosamente.']);
+        } else {
+            throw new Exception('No se pudo actualizar la habitación.');
+        }
+    }
+
+    private function eliminar() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            throw new Exception('Método no permitido');
+        }
+
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+        if (!$id) {
+            throw new Exception('ID de habitación no proporcionado.');
+        }
+
+        // La lógica de si se puede eliminar (por ej. si tiene reservas) ya está en el modelo.
+        $this->modelo->eliminarHabitacion($id);
+        $this->responder(['success' => true, 'message' => 'Habitación eliminada exitosamente.']);
+    }
+
+    private function procesarImagen($file) {
+        if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
+            return null; // No hay imagen o hubo un error
+        }
+
+        // Validaciones de seguridad
+        if ($file['size'] > 5 * 1024 * 1024) { // 5 MB
+            throw new Exception('El archivo de imagen es demasiado grande (máx 5MB).');
+        }
+
+        $tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        $tipoMimeReal = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file['tmp_name']);
+
+        if (!in_array($tipoMimeReal, $tiposPermitidos)) {
+            throw new Exception('Formato de imagen no permitido. Sube JPG, PNG, WEBP o GIF.');
+        }
+
+        // Generar nombre único y definir ruta
+        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $nombreArchivo = 'hab_' . uniqid() . '_' . time() . '.' . $extension;
+        
+        // Ruta relativa desde la raíz del servidor web
+        $directorioUploads = '/public/uploads/habitaciones/';
+        $rutaCompletaServidor = $_SERVER['DOCUMENT_ROOT'] . $directorioUploads;
+
+        // Crear directorio si no existe
+        if (!is_dir($rutaCompletaServidor)) {
+            mkdir($rutaCompletaServidor, 0775, true);
+        }
+
+        $rutaArchivo = $rutaCompletaServidor . $nombreArchivo;
+
+        if (move_uploaded_file($file['tmp_name'], $rutaArchivo)) {
+            // Devolver la ruta web para guardarla en la BD
+            return $directorioUploads . $nombreArchivo;
+        } else {
+            throw new Exception('Error al mover el archivo de imagen subido.');
+        }
+    }
+
+    private function responder($data, $statusCode = 200) {
+        http_response_code($statusCode);
         header('Content-Type: application/json');
-        echo json_encode($datos);
-        exit;
-    }
-
-    private function validarHotel() {
-        if (!$this->id_hotel) {
-            $this->responderJson(['success' => false, 'message' => 'No se ha seleccionado un hotel. Por favor, inicie sesión de nuevo.']);
-        }
-    }
-
-    private function manejarFoto($file, $numeroHabitacion) {
-        if (isset($file) && $file['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = __DIR__ . '/../../public/uploads/habitaciones/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true);
-            }
-            $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-            $fileName = 'hab_' . $this->id_hotel . '_' . preg_replace('/[^a-zA-Z0-9]/', '', $numeroHabitacion) . '_' . time() . '.' . $extension;
-            $uploadFile = $uploadDir . $fileName;
-
-            if (move_uploaded_file($file['tmp_name'], $uploadFile)) {
-                return '/public/uploads/habitaciones/' . $fileName;
-            }
-        }
-        return null;
-    }
-
-    public function obtener() {
-        $this->validarHotel();
-        try {
-            $pagina = isset($_GET['pagina']) ? max(1, intval($_GET['pagina'])) : 1;
-            $registrosPorPagina = 8; // Ajustar para un grid
-            
-            $filtros = [
-                'estado' => $_GET['estado'] ?? 'all',
-                'tipo' => $_GET['tipo'] ?? 'all',
-                'busqueda' => $_GET['busqueda'] ?? null,
-            ];
-
-            $resultado = $this->habitacionesModel->obtenerHabitacionesPaginadas($this->id_hotel, $pagina, $registrosPorPagina, $filtros);
-            $this->responderJson(['success' => true, 'data' => $resultado]);
-            
-        } catch (Exception $e) {
-            $this->responderJson(['success' => false, 'message' => $e->getMessage()]);
-        }
-    }
-
-    public function obtenerPorId() {
-        $this->validarHotel();
-        try {
-            $id = $_GET['id'] ?? null;
-            if (!$id) throw new Exception('ID de habitación no proporcionado.');
-
-            $habitacion = $this->habitacionesModel->obtenerPorId($id);
-            
-            if ($habitacion) {
-                $this->responderJson(['success' => true, 'data' => $habitacion]);
-            } else {
-                $this->responderJson(['success' => false, 'message' => 'Habitación no encontrada.']);
-            }
-        } catch (Exception $e) {
-            $this->responderJson(['success' => false, 'message' => $e->getMessage()]);
-        }
-    }
-
-    public function crear() {
-        $this->validarHotel();
-        try {
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Método no permitido.');
-
-            $camposRequeridos = ['numero', 'costo', 'capacidad', 'tipoHabitacion'];
-            foreach ($camposRequeridos as $campo) {
-                if (!isset($_POST[$campo]) || empty(trim($_POST[$campo]))) {
-                    throw new Exception("El campo '{$campo}' es obligatorio.");
-                }
-            }
-
-            $fotoPath = $this->manejarFoto($_FILES['foto'] ?? null, $_POST['numero']);
-
-            $datos = [
-                'numero' => trim($_POST['numero']),
-                'costo' => (float)$_POST['costo'],
-                'capacidad' => (int)$_POST['capacidad'],
-                'tipoHabitacion' => (int)$_POST['tipoHabitacion'],
-                'descripcion' => isset($_POST['descripcion']) ? trim($_POST['descripcion']) : null,
-                'foto' => $fotoPath,
-                'id_hotel' => $this->id_hotel
-            ];
-
-            $resultado = $this->habitacionesModel->crearHabitacion($datos);
-
-            if ($resultado) {
-                $this->responderJson(['success' => true, 'message' => 'Habitación creada correctamente.']);
-            } else {
-                throw new Exception('No se pudo crear la habitación.');
-            }
-
-        } catch (Exception $e) {
-            $this->responderJson(['success' => false, 'message' => $e->getMessage()]);
-        }
-    }
-
-    public function actualizar() {
-        $this->validarHotel();
-        try {
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Método no permitido.');
-            
-            $id = $_POST['id'] ?? null;
-            if (!$id) throw new Exception('ID de habitación no proporcionado.');
-
-            $datos = [];
-            $camposPermitidos = ['numero', 'costo', 'capacidad', 'tipoHabitacion', 'descripcion', 'estado'];
-            foreach ($camposPermitidos as $campo) {
-                if (isset($_POST[$campo])) {
-                    $datos[$campo] = trim($_POST[$campo]);
-                }
-            }
-
-            $fotoPath = $this->manejarFoto($_FILES['foto'] ?? null, $_POST['numero']);
-            if ($fotoPath) {
-                // Si se sube foto nueva, eliminar la anterior
-                $habitacionActual = $this->habitacionesModel->obtenerPorId($id);
-                if ($habitacionActual && !empty($habitacionActual['foto'])) {
-                    $rutaFotoAntigua = __DIR__ . '/../../' . ltrim($habitacionActual['foto'], '/');
-                    if (file_exists($rutaFotoAntigua)) {
-                        unlink($rutaFotoAntigua);
-                    }
-                }
-                $datos['foto'] = $fotoPath;
-            }
-
-            $resultado = $this->habitacionesModel->actualizarHabitacion($id, $datos);
-            if ($resultado) {
-                $this->responderJson(['success' => true, 'message' => 'Habitación actualizada correctamente.']);
-            } else {
-                throw new Exception('No se pudo actualizar la habitación o no hubo cambios.');
-            }
-        } catch (Exception $e) {
-            $this->responderJson(['success' => false, 'message' => $e->getMessage()]);
-        }
-    }
-
-    public function eliminar() {
-        $this->validarHotel();
-        try {
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception('Método no permitido.');
-            $id = $_POST['id'] ?? null;
-            if (!$id) throw new Exception('ID de habitación no proporcionado.');
-
-            // Obtener info de la habitación para borrar la foto
-            $habitacion = $this->habitacionesModel->obtenerPorId($id);
-            
-            $resultado = $this->habitacionesModel->eliminarHabitacion($id);
-            if ($resultado) {
-                // Si se eliminó de la BD, borrar el archivo de foto
-                if ($habitacion && !empty($habitacion['foto'])) {
-                    $rutaFoto = __DIR__ . '/../../' . ltrim($habitacion['foto'], '/');
-                    if (file_exists($rutaFoto)) {
-                        unlink($rutaFoto);
-                    }
-                }
-                $this->responderJson(['success' => true, 'message' => 'Habitación eliminada correctamente.']);
-            } else {
-                throw new Exception('No se pudo eliminar la habitación.');
-            }
-        } catch (Exception $e) {
-            $this->responderJson(['success' => false, 'message' => $e->getMessage()]);
-        }
+        echo json_encode($data);
     }
 }
 
-// Manejo de rutas/acciones
-if (isset($_REQUEST['action'])) {
-    $controller = new HabitacionesController();
-    $action = $_REQUEST['action'];
-
-    if (method_exists($controller, $action)) {
-        $controller->$action();
-    } else {
-        header('Content-Type: application/json');
-        echo json_encode(['success' => false, 'message' => 'Acción no válida.']);
-    }
-}
-?>
+// Punto de entrada para las peticiones
+$controlador = new HabitacionesController();
+$controlador->manejarPeticion();

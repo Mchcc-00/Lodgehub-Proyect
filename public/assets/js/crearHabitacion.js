@@ -3,92 +3,103 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!form) return;
 
     const successMessage = document.getElementById('success-message');
-    const errorMessage = document.getElementById('error-message');
     const successText = document.getElementById('success-text');
+    const errorMessage = document.getElementById('error-message');
     const errorText = document.getElementById('error-text');
-    const fotoInput = document.getElementById('foto');
-    const imagePreview = document.getElementById('image-preview');
-    const previewContainer = document.getElementById('preview-container');
     const resetBtn = document.getElementById('reset-btn');
+    const fotoInput = document.getElementById('foto');
+    const previewContainer = document.getElementById('preview-container');
+    const imagePreview = document.getElementById('image-preview');
 
     const mostrarMensaje = (mensaje, tipo = 'success') => {
         const elem = tipo === 'success' ? successMessage : errorMessage;
         const textElem = tipo === 'success' ? successText : errorText;
-        
         textElem.textContent = mensaje;
         elem.style.display = 'block';
         window.scrollTo(0, 0);
-
-        setTimeout(() => {
-            elem.style.display = 'none';
-        }, 5000);
+        setTimeout(() => { elem.style.display = 'none'; }, 5000);
     };
 
-    const enviarFormulario = async (e) => {
+    const ocultarMensajes = () => {
+        if (successMessage) successMessage.style.display = 'none';
+        if (errorMessage) errorMessage.style.display = 'none';
+    };
+
+    // Vista previa de la imagen
+    fotoInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                previewContainer.style.display = 'block';
+            }
+            reader.readAsDataURL(this.files[0]);
+        } else {
+            previewContainer.style.display = 'none';
+        }
+    });
+
+    // Limpiar formulario
+    resetBtn.addEventListener('click', () => {
+        form.reset();
+        form.classList.remove('was-validated');
+        previewContainer.style.display = 'none';
+        imagePreview.src = '#';
+        ocultarMensajes();
+    });
+
+    // Envío del formulario
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        ocultarMensajes();
 
         if (!form.checkValidity()) {
+            e.stopPropagation();
             form.classList.add('was-validated');
             mostrarMensaje('Por favor, completa todos los campos requeridos.', 'error');
             return;
         }
 
-        const formData = new FormData(form);
         const submitBtn = form.querySelector('button[type="submit"]');
-        const originalBtnHtml = submitBtn.innerHTML;
-        
+        const originalBtnText = submitBtn.innerHTML;
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+        submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Guardando...`;
+
+        const formData = new FormData(form);
 
         try {
-            const response = await fetch('/app/controllers/habitacionesController.php?action=crear', {
+            const response = await fetch('../controllers/habitacionesController.php?action=crear', {
                 method: 'POST',
                 body: formData
             });
 
-            const resultado = await response.json();
-
-            if (resultado.success) {
-                mostrarMensaje('¡Habitación creada exitosamente!', 'success');
-                form.reset();
-                form.classList.remove('was-validated');
-                previewContainer.style.display = 'none';
-                imagePreview.src = '#';
+            // Verificar si la respuesta es JSON
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                const resultado = await response.json();
+                if (resultado.success) {
+                    mostrarMensaje(resultado.message, 'success');
+                    form.reset();
+                    form.classList.remove('was-validated');
+                    previewContainer.style.display = 'none';
+                    imagePreview.src = '#';
+                    // Opcional: Redireccionar a la lista después de un momento
+                    setTimeout(() => {
+                        window.location.href = 'listaHabitaciones.php';
+                    }, 2000);
+                } else {
+                    throw new Error(resultado.message || 'Error desconocido al crear la habitación.');
+                }
             } else {
-                throw new Error(resultado.message || 'Ocurrió un error desconocido.');
+                const textResponse = await response.text();
+                throw new Error('Respuesta inesperada del servidor: ' + textResponse);
             }
+
         } catch (error) {
             mostrarMensaje(error.message, 'error');
         } finally {
             submitBtn.disabled = false;
-            submitBtn.innerHTML = originalBtnHtml;
+            submitBtn.innerHTML = originalBtnText;
         }
-    };
-
-    const mostrarPreviewImagen = () => {
-        const file = fotoInput.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                imagePreview.src = e.target.result;
-                previewContainer.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        } else {
-            previewContainer.style.display = 'none';
-            imagePreview.src = '#';
-        }
-    };
-
-    const limpiarFormulario = () => {
-        form.reset();
-        form.classList.remove('was-validated');
-        previewContainer.style.display = 'none';
-        imagePreview.src = '#';
-        window.scrollTo(0, 0);
-    };
-
-    form.addEventListener('submit', enviarFormulario);
-    fotoInput.addEventListener('change', mostrarPreviewImagen);
-    resetBtn.addEventListener('click', limpiarFormulario);
+    });
 });
